@@ -54,16 +54,19 @@ def read_feature_files(feature_dir):
             if attr not in ["include", "exclude"]:
                 continue
             for ref in node_features[attr]:
-                assert os.path.isfile(
-                    f"{feature_dir}/{ref}/info.yaml"
-                ), f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
+                if not os.path.isfile(f"{feature_dir}/{ref}/info.yaml"):
+                    raise ValueError(
+                        f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
+                    )
                 feature_graph.add_edge(node, ref, attr=attr)
-    assert networkx.is_directed_acyclic_graph(feature_graph)
+    if not networkx.is_directed_acyclic_graph(feature_graph):
+        raise ValueError("Graph is not directed asyclic graph")
     return feature_graph
 
 
 def parse_feature_yaml(feature_yaml_file):
-    assert os.path.basename(feature_yaml_file) == "info.yaml"
+    if os.path.basename(feature_yaml_file) != "info.yaml":
+        raise ValueError("expected info.yaml")
     name = os.path.basename(os.path.dirname(feature_yaml_file))
     content = yaml.load(open(feature_yaml_file), Loader=yaml.FullLoader)
     return {"name": name, "content": content}
@@ -99,10 +102,11 @@ def filter_graph(feature_graph, feature_set, ignore_excludes=False):
         if not exclude_list:
             break
         exclude = exclude_list[0]
-        assert (
-            exclude not in feature_set
-        ), f"excluding explicitly included feature {exclude}, unsatisfiable condition"
+        if exclude in feature_set:
+            raise ValueError(
+                f"excluding explicitly included feature {exclude}, unsatisfiable condition"
+            )
         filter_set.remove(exclude)
-    assert (not graph_by_edge["exclude"].edges()) or ignore_excludes
+    if graph_by_edge["exclude"].edges() and (not ignore_excludes):
+        raise ValueError("Including explicitly excluded feature")
     return graph
-
