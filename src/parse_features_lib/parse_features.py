@@ -68,7 +68,8 @@ def parse_feature_yaml(feature_yaml_file):
     if os.path.basename(feature_yaml_file) != "info.yaml":
         raise ValueError("expected info.yaml")
     name = os.path.basename(os.path.dirname(feature_yaml_file))
-    content = yaml.load(open(feature_yaml_file), Loader=yaml.FullLoader)
+    with open(feature_yaml_file) as f:
+        content = yaml.safe_load(f)
     return {"name": name, "content": content}
 
 
