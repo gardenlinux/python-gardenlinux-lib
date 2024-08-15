@@ -28,6 +28,10 @@ jobs:
     - name: Simple bandit security checks
       run: bandit -ll -ii -r . -f json -o bandit-report.json
 
+    - name: Show Report in Action Output
+      if: always()
+      run: cat bandit-report.json
+
     - name: Upload Bandit Scan Artifact
       uses: actions/upload-artifact@v4
       if: always()
