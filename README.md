@@ -31,6 +31,6 @@ if __name__ == "__main__":
             print(feature, info["oci_artifacts"])
 ```
 
-# Developer Documentation
-https://gardenlinux.github.io/parse_features_lib/
+## Developer Documentation
+The library is documented with docstrings, which are used to generate the developer documentation available [here](https://gardenlinux.github.io/parse_features_lib/). 
 
