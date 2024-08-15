@@ -2,6 +2,44 @@ from glob import glob
 import yaml
 import networkx
 import os
+import re
+
+
+def deduce_feature_name(feature_dir: str):
+    """
+    :param str feature_dir: Directory of single Feature
+    :return: string of feature name
+    """
+    parsed = parse_feature_yaml(feature_dir)
+    if "name" not in parsed:
+        raise ValueError("Expected name from parse_feature_yaml function to be set")
+    return parsed["name"]
+
+
+def deduce_archive_filetype(feature_dir):
+    """
+    :param str feature_dir: Directory of single Feature
+    :return: str of filetype for archive
+    """
+    return deduce_filetype_from_string(feature_dir, "image")
+
+
+def deduce_image_filetype(feature_dir):
+    """
+    :param str feature_dir: Directory of single Feature
+    :return: str of filetype for image
+    """
+    return deduce_filetype_from_string(feature_dir, "convert")
+
+
+def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
+    result = list()
+
+    for filename in os.listdir(feature_dir):
+        if re.search(f"{script_base_name}.*", filename):
+            result.append(filename.split(f"{script_base_name}.")[1])
+
+    return sorted(result)
 
 
 def read_feature_files(feature_dir):
@@ -17,7 +55,8 @@ def read_feature_files(feature_dir):
                 continue
             for ref in node_features[attr]:
                 assert os.path.isfile(
-                    f"{feature_dir}/{ref}/info.yaml"), f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
+                    f"{feature_dir}/{ref}/info.yaml"
+                ), f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
                 feature_graph.add_edge(node, ref, attr=attr)
     assert networkx.is_directed_acyclic_graph(feature_graph)
     return feature_graph
@@ -40,8 +79,12 @@ def filter_graph(feature_graph, feature_set, ignore_excludes=False):
     graph = networkx.subgraph_view(feature_graph, filter_node=filter_func)
     graph_by_edge = dict()
     for attr in ["include", "exclude"]:
-        edge_filter_func = (lambda attr: lambda a, b: graph.get_edge_data(a, b)["attr"] == attr)(attr)
-        graph_by_edge[attr] = networkx.subgraph_view(graph, filter_edge=edge_filter_func)
+        edge_filter_func = (
+            lambda attr: lambda a, b: graph.get_edge_data(a, b)["attr"] == attr
+        )(attr)
+        graph_by_edge[attr] = networkx.subgraph_view(
+            graph, filter_edge=edge_filter_func
+        )
     while True:
         include_set = feature_set.copy()
         for feature in feature_set:
@@ -56,7 +99,10 @@ def filter_graph(feature_graph, feature_set, ignore_excludes=False):
         if not exclude_list:
             break
         exclude = exclude_list[0]
-        assert exclude not in feature_set, f"excluding explicitly included feature {exclude}, unsatisfiable condition"
+        assert (
+            exclude not in feature_set
+        ), f"excluding explicitly included feature {exclude}, unsatisfiable condition"
         filter_set.remove(exclude)
     assert (not graph_by_edge["exclude"].edges()) or ignore_excludes
     return graph
+
