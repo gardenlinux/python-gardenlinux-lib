@@ -4,8 +4,7 @@ from parse_features_lib.parse_features import (
 )
 import pytest
 
-GL_ROOT_DIR = "/Users/I515875/workspace/job/gardenlinux"
-GL_FEATURE_DIR = f"{GL_ROOT_DIR}/features/_bfpxe/"
+from tests.conftest import GL_ROOT_DIR
 
 
 @pytest.mark.parametrize(
