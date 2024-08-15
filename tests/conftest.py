@@ -7,6 +7,7 @@ import pytest
 GL_ROOT_DIR = "gardenlinux"
 GL_REPO_URL = "https://github.com/gardenlinux/gardenlinux"
 
+
 @pytest.fixture(autouse=True, scope="session")
 def setup_repo():
     """
