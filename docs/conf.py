@@ -2,6 +2,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
+import parse_features_lib
 
 # Configuration file for the Sphinx documentation builder.
 #
