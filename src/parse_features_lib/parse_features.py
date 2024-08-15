@@ -3,6 +3,123 @@ import yaml
 import networkx
 import os
 import re
+import subprocess
+
+GL_MEDIA_TYPE_LOOKUP = {
+    "tar": "application/io.gardenlinux.image.archive.format.tar",
+    "pxe.tar.gz": "application/io.gardenlinux.image.archive.format.pxe.tar.gz",
+    "iso": "application/io.gardenlinux.image.archive.format.iso",
+    "oci": "application/io.gardenlinux.image.archive.format.oci",
+    "firecracker.tar.gz": "application/io.gardenlinux.image.archive.format.firecracker.tar.gz",
+    "qcow2": "application/io.gardenlinux.image.format.qcow2",
+    "vhd": "application/io.gardenlinux.image.format.vhd",
+    "gcpimage.tar.gz": "application/io.gardenlinux.image.format.gcpimage.tar.gz",
+    "vmdk": "application/io.gardenlinux.image.format.vmdk",
+    "ova": "application/io.gardenlinux.image.format.ova",
+}
+
+
+def get_gardenlinux_commit(gardenlinux_root: str):
+    """
+    :param str gardenlinux_root: path to garden linux src
+    :return: output of get_commit script from gardenlinux src
+    """
+    get_commit_process_result = subprocess.run(
+        [f"{gardenlinux_root}/get_commit"],
+        capture_output=True,
+    )
+
+    if not get_commit_process_result.stdout:
+        raise ValueError(
+            f"{gardenlinux_root}/get_commit did not return any output, could not determine correct commit hash"
+        )
+    return str(get_commit_process_result.stdout)
+
+
+def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
+    """
+    :param str cname: the target cname to get the feature dict for
+    :param str gardenlinux_root: path of garden linux src root
+    :return: dict with list of features for a given cname, split into platform, element and flag
+
+    """
+    feature_base_dir = f"{gardenlinux_root}/features"
+    input_features = reverse_cname_base(cname)
+    feature_graph = read_feature_files(feature_base_dir)
+    graph = filter_graph(feature_graph, input_features)
+    features = reverse_sort_nodes(graph)
+    features_by_type = dict()
+    for type in ["platform", "element", "flag"]:
+        features_by_type[type] = [
+            feature
+            for feature in features
+            if get_node_type(graph.nodes[feature]) == type
+        ]
+    return features_by_type
+
+
+def construct_layer_metadata(filetype: str, cname: str, version: str, arch: str, commit: str) -> dict:
+    """
+    :param str filetype: filetype of blob
+    :param str cname: the cname of the target image
+    :param str version: the version of the target image
+    :param str arch: the arch of the target image
+    :param str commit: commit of the garden linux source
+    :return: dict of oci layer metadata for a given layer file
+    """
+    media_type = lookup_media_type_for_filetype(filetype)
+    return {
+        "filename": f"{cname}-{version}-{arch}-{commit}.{filetype}",
+        "media_type": media_type,
+    }
+
+
+def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
+    """
+    :param str cname: the target cname of the image 
+    :param str version: the target version of the image 
+    :param str gardenlinux_root: path of garden linux src root
+    :return: list of dicts, where each dict represents a layer
+    """
+    oci_layer_metadata_list = list()
+    feature_base_dir = f"{gardenlinux_root}/features"
+
+    features_by_type = get_features_dict(cname, feature_base_dir)
+    commit = get_gardenlinux_commit(gardenlinux_root)
+
+    for arch in ["amd64", "arm64"]:
+        for platform in features_by_type["platform"]:
+            image_file_types = deduce_image_filetype(platform)
+            archive_file_types = deduce_archive_filetype(platform)
+            # Allow multiple image scripts per feature
+            for ft in archive_file_types:
+                cur_layer_metadata = construct_layer_metadata(ft, cname, version, arch, commit)
+                cur_layer_metadata["annotations"] = {
+                    "io.gardenlinux.image.layer.architecture": arch
+                }
+                oci_layer_metadata_list.append(cur_layer_metadata)
+            # Allow multiple convert scripts per feature
+            for ft in image_file_types:
+                cur_layer_metadata = construct_layer_metadata(ft, cname, version, arch, commit)
+                cur_layer_metadata["annotations"] = {
+                    "io.gardenlinux.image.layer.architecture": arch
+                }
+                oci_layer_metadata_list.append(cur_layer_metadata)
+
+    return oci_layer_metadata_list
+
+
+def lookup_media_type_for_filetype(filetype: str) -> str:
+    """
+    :param str filetype: filetype of the target layer
+    :return: mediatype
+    """
+    if filetype in GL_MEDIA_TYPE_LOOKUP:
+        return GL_MEDIA_TYPE_LOOKUP[filetype]
+    else:
+        raise ValueError(
+            f"No media type for {filetype} is defined. You may want to add the definition to parse_features_lib"
+        )
 
 
 def deduce_feature_name(feature_dir: str):
@@ -111,3 +228,34 @@ def filter_graph(feature_graph, feature_set, ignore_excludes=False):
     if graph_by_edge["exclude"].edges() and (not ignore_excludes):
         raise ValueError("Including explicitly excluded feature")
     return graph
+
+
+def sort_set(input_set, order_list):
+    return [item for item in order_list if item in input_set]
+
+
+def sort_key(graph, node):
+    prefix_map = {"platform": "0", "element": "1", "flag": "2"}
+    node_type = get_node_type(graph.nodes.get(node, {}))
+    prefix = prefix_map[node_type]
+    return f"{prefix}-{node}"
+
+
+def sort_nodes(graph):
+    key_lambda = lambda node: sort_key(graph, node)
+    return list(networkx.lexicographical_topological_sort(graph, key=key_lambda))
+
+
+def reverse_cname_base(cname):
+    cname = cname.replace("_", "-_")
+    return set(cname.split("-"))
+
+
+def reverse_sort_nodes(graph):
+    reverse_graph = graph.reverse()
+    assert networkx.is_directed_acyclic_graph(reverse_graph)
+    return sort_nodes(reverse_graph)
+
+
+def get_node_type(node):
+    return node.get("content", {}).get("type")
