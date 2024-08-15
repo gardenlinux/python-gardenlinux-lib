@@ -58,7 +58,9 @@ def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
     return features_by_type
 
 
-def construct_layer_metadata(filetype: str, cname: str, version: str, arch: str, commit: str) -> dict:
+def construct_layer_metadata(
+    filetype: str, cname: str, version: str, arch: str, commit: str
+) -> dict:
     """
     :param str filetype: filetype of blob
     :param str cname: the cname of the target image
@@ -76,8 +78,8 @@ def construct_layer_metadata(filetype: str, cname: str, version: str, arch: str,
 
 def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
     """
-    :param str cname: the target cname of the image 
-    :param str version: the target version of the image 
+    :param str cname: the target cname of the image
+    :param str version: the target version of the image
     :param str gardenlinux_root: path of garden linux src root
     :return: list of dicts, where each dict represents a layer
     """
@@ -93,14 +95,18 @@ def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
             archive_file_types = deduce_archive_filetype(platform)
             # Allow multiple image scripts per feature
             for ft in archive_file_types:
-                cur_layer_metadata = construct_layer_metadata(ft, cname, version, arch, commit)
+                cur_layer_metadata = construct_layer_metadata(
+                    ft, cname, version, arch, commit
+                )
                 cur_layer_metadata["annotations"] = {
                     "io.gardenlinux.image.layer.architecture": arch
                 }
                 oci_layer_metadata_list.append(cur_layer_metadata)
             # Allow multiple convert scripts per feature
             for ft in image_file_types:
-                cur_layer_metadata = construct_layer_metadata(ft, cname, version, arch, commit)
+                cur_layer_metadata = construct_layer_metadata(
+                    ft, cname, version, arch, commit
+                )
                 cur_layer_metadata["annotations"] = {
                     "io.gardenlinux.image.layer.architecture": arch
                 }
