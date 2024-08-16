@@ -61,8 +61,8 @@ from tests.conftest import GL_ROOT_DIR
 def test_get_features_dict(input_cname: str, expected_output: dict):
     """
     Tests if get_features_dict returns the dict with expected features.
-    
-    If you discover that this test failed, you may want to verify if the included 
+
+    If you discover that this test failed, you may want to verify if the included
     features have changed since writing this test. In this case, update the expected output accordingly.
     You can print the output of get_features_dict so you have the dict in the expected format.
     """
