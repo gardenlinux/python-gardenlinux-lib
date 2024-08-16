@@ -156,6 +156,20 @@ def deduce_image_filetype(feature_dir):
 
 
 def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
+    """
+    Garden Linux features can optionally have a image.<filetype> or convert.<filetype> script,
+    where the <filetype> indicates the target filetype.
+
+    image.<filetype> script converts the .tar to <filetype> archive. 
+    
+    convert.<filetype> script converts the .raw to <filetype> image type.
+    
+    Both scripts are bash scripts invoked by the builder, but this function does only read the file ending
+
+    :param str feature_dir: feature directory of garden linux 
+    :param str script_base_name: typically it is either image or convert
+    :return: list of available filetypes deduced on the available script_base_name.<filetype> 
+    """
     result = list()
 
     for filename in os.listdir(feature_dir):
@@ -166,6 +180,14 @@ def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
 
 
 def read_feature_files(feature_dir):
+    """
+    Legacy function copied from gardenlinux/builder 
+
+    TODO: explain the structure of the graph
+
+    :param str feature_dir: feature directory to create the graph for
+    :returns: an networkx based feature graph
+    """
     feature_yaml_files = glob(f"{feature_dir}/*/info.yaml")
     features = [parse_feature_yaml(i) for i in feature_yaml_files]
     feature_graph = networkx.DiGraph()
@@ -187,7 +209,15 @@ def read_feature_files(feature_dir):
     return feature_graph
 
 
-def parse_feature_yaml(feature_yaml_file):
+def parse_feature_yaml(feature_yaml_file: str):
+    """
+    Legacy function copied from gardenlinux/builder 
+
+    extracts the feature name from the feature_yaml_file param, 
+    reads the info.yaml into a dict and outputs a dict containing the cname and the info yaml
+
+    :param str feature_yaml_file: path to the target info.yaml that must be read
+    """
     if os.path.basename(feature_yaml_file) != "info.yaml":
         raise ValueError("expected info.yaml")
     name = os.path.basename(os.path.dirname(feature_yaml_file))
