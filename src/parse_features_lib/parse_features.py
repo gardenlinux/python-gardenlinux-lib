@@ -160,15 +160,15 @@ def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
     Garden Linux features can optionally have a image.<filetype> or convert.<filetype> script,
     where the <filetype> indicates the target filetype.
 
-    image.<filetype> script converts the .tar to <filetype> archive. 
-    
+    image.<filetype> script converts the .tar to <filetype> archive.
+
     convert.<filetype> script converts the .raw to <filetype> image type.
-    
+
     Both scripts are bash scripts invoked by the builder, but this function does only read the file ending
 
-    :param str feature_dir: feature directory of garden linux 
+    :param str feature_dir: feature directory of garden linux
     :param str script_base_name: typically it is either image or convert
-    :return: list of available filetypes deduced on the available script_base_name.<filetype> 
+    :return: list of available filetypes deduced on the available script_base_name.<filetype>
     """
     result = list()
 
@@ -181,7 +181,7 @@ def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
 
 def read_feature_files(feature_dir):
     """
-    Legacy function copied from gardenlinux/builder 
+    Legacy function copied from gardenlinux/builder
 
     TODO: explain the structure of the graph
 
@@ -211,9 +211,9 @@ def read_feature_files(feature_dir):
 
 def parse_feature_yaml(feature_yaml_file: str):
     """
-    Legacy function copied from gardenlinux/builder 
+    Legacy function copied from gardenlinux/builder
 
-    extracts the feature name from the feature_yaml_file param, 
+    extracts the feature name from the feature_yaml_file param,
     reads the info.yaml into a dict and outputs a dict containing the cname and the info yaml
 
     :param str feature_yaml_file: path to the target info.yaml that must be read
