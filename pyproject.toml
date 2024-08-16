@@ -15,6 +15,10 @@ pytest = "^8.3.2"
 gitpython = "^3.1.43"
 sphinx-rtd-theme = "^2.0.0"
 
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
 
 [build-system]
 requires = ["poetry-core"]
