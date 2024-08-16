@@ -67,5 +67,4 @@ def test_get_features_dict(input_cname: str, expected_output: dict):
     You can print the output of get_features_dict so you have the dict in the expected format.
     """
     features_dict = get_features_dict(input_cname, GL_ROOT_DIR)
-    print(features_dict)
     assert features_dict == expected_output

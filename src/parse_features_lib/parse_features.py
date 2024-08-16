@@ -1,9 +1,11 @@
 from glob import glob
+from git.objects import commit
 import yaml
 import networkx
 import os
 import re
 import subprocess
+from typing import Optional
 
 GL_MEDIA_TYPE_LOOKUP = {
     "tar": "application/io.gardenlinux.image.archive.format.tar",
@@ -16,10 +18,11 @@ GL_MEDIA_TYPE_LOOKUP = {
     "gcpimage.tar.gz": "application/io.gardenlinux.image.format.gcpimage.tar.gz",
     "vmdk": "application/io.gardenlinux.image.format.vmdk",
     "ova": "application/io.gardenlinux.image.format.ova",
+    "raw": "application/io.gardenlinux.image.archive.format.raw",
 }
 
 
-def get_gardenlinux_commit(gardenlinux_root: str):
+def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -> str:
     """
     :param str gardenlinux_root: path to garden linux src
     :return: output of get_commit script from gardenlinux src
@@ -33,7 +36,18 @@ def get_gardenlinux_commit(gardenlinux_root: str):
         raise ValueError(
             f"{gardenlinux_root}/get_commit did not return any output, could not determine correct commit hash"
         )
-    return str(get_commit_process_result.stdout)
+
+    commit_str = get_commit_process_result.stdout.decode("UTF-8").strip("\n")
+
+    if commit_str.count("\n") > 1:
+        raise ValueError(f"{commit_str} contains multiple lines")
+
+    if limit:
+        if limit >= len(commit_str):
+            return commit_str
+        return commit_str[:limit]
+    else:
+        return commit_str
 
 
 def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
@@ -84,19 +98,26 @@ def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
     :return: list of dicts, where each dict represents a layer
     """
     oci_layer_metadata_list = list()
-    feature_base_dir = f"{gardenlinux_root}/features"
-
-    features_by_type = get_features_dict(cname, feature_base_dir)
-    commit = get_gardenlinux_commit(gardenlinux_root)
+    features_by_type = get_features_dict(cname, gardenlinux_root)
+    print(features_by_type)
+    commit_str = get_gardenlinux_commit(gardenlinux_root, 8)
 
     for arch in ["amd64", "arm64"]:
         for platform in features_by_type["platform"]:
-            image_file_types = deduce_image_filetype(platform)
-            archive_file_types = deduce_archive_filetype(platform)
+            image_file_types = deduce_image_filetype(
+                f"{gardenlinux_root}/features/{platform}"
+            )
+            archive_file_types = deduce_archive_filetype(
+                f"{gardenlinux_root}/features/{platform}"
+            )
             # Allow multiple image scripts per feature
+            if not image_file_types:
+                image_file_types.append("raw")
+            if not archive_file_types:
+                image_file_types.append("tar")
             for ft in archive_file_types:
                 cur_layer_metadata = construct_layer_metadata(
-                    ft, cname, version, arch, commit
+                    ft, cname, version, arch, commit_str
                 )
                 cur_layer_metadata["annotations"] = {
                     "io.gardenlinux.image.layer.architecture": arch
@@ -105,7 +126,7 @@ def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
             # Allow multiple convert scripts per feature
             for ft in image_file_types:
                 cur_layer_metadata = construct_layer_metadata(
-                    ft, cname, version, arch, commit
+                    ft, cname, version, arch, commit_str
                 )
                 cur_layer_metadata["annotations"] = {
                     "io.gardenlinux.image.layer.architecture": arch
