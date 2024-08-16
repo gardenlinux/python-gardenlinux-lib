@@ -13,6 +13,7 @@ networkx = "^3.3"
 PyYAML = "^6.0.2"
 pytest = "^8.3.2"
 gitpython = "^3.1.43"
+sphinx-rtd-theme = "^2.0.0"
 
 
 [build-system]
