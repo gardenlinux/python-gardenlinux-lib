@@ -253,9 +253,10 @@ def __get_node_features(node):
 
 def filter_graph(feature_graph, feature_set, ignore_excludes=False):
     filter_set = set(feature_graph.nodes())
+
     def filter_func(node):
         return node in filter_set
-        
+
     graph = networkx.subgraph_view(feature_graph, filter_node=filter_func)
     graph_by_edge = dict()
     for attr in ["include", "exclude"]:
@@ -303,6 +304,7 @@ def __sort_key(graph, node):
 def __sort_nodes(graph):
     def key_function(node):
         return __sort_key(graph, node)
+
     return list(networkx.lexicographical_topological_sort(graph, key=key_function))
 
 

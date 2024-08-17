@@ -53,6 +53,7 @@ def compare_repo(
         if packages_a[name] != packages_b[name]
     ]
 
+
 # EXAMPLE USAGE.
 # gl_repo = GardenLinuxRepo("today")
 # gl_repo_1592 = GardenLinuxRepo("1592.0")
