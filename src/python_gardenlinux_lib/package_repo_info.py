@@ -31,6 +31,16 @@ class GardenLinuxRepo(APTRepository):
         return [(p.package, p.version) for p in self.repo.packages]
 
 
+def compare_gardenlinux_repo_version(version_a: str, version_b: str):
+    """
+    :param str version_a: Version of first Garden Linux repo
+    :param str version_b: Version of first Garden Linux repo
+
+    Example: print(compare_gardenlinux_repo_version("1443.2", "1443.1"))
+    """
+    return compare_repo(GardenLinuxRepo(version_a), GardenLinuxRepo(version_b))
+
+
 def compare_repo(
     a: GardenLinuxRepo, b: GardenLinuxRepo, available_in_both: Optional[bool] = False
 ):
@@ -50,11 +60,18 @@ def compare_repo(
     return [
         (name, packages_a.get(name), packages_b.get(name))
         for name in all_names
-        if packages_a[name] != packages_b[name]
+        if (
+            name in packages_a
+            and name in packages_b
+            and packages_a[name] != packages_b[name]
+        )
+        or (name not in packages_b or name not in packages_a)
     ]
 
 
 # EXAMPLE USAGE.
+print(compare_gardenlinux_repo_version("1443.2", "1443.1"))
+
 # gl_repo = GardenLinuxRepo("today")
 # gl_repo_1592 = GardenLinuxRepo("1592.0")
 # deb_testing = GardenLinuxRepo("testing", "https://deb.debian.org/debian/")
