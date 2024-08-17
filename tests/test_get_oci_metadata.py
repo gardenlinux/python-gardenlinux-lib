@@ -1,6 +1,6 @@
 import pytest
 
-from parse_features_lib.parse_features import get_oci_metadata
+from python_gardenlinux_lib.parse_features import get_oci_metadata
 from tests.conftest import GL_ROOT_DIR
 
 

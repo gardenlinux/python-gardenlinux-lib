@@ -1,6 +1,6 @@
 import pytest
 
-from parse_features_lib.parse_features import get_features_dict
+from python_gardenlinux_lib.parse_features import get_features_dict
 from tests.conftest import GL_ROOT_DIR
 
 
