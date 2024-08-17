@@ -30,8 +30,15 @@ from python_gardenlinux_lib.oras.crypto import (
     verify_sha256,
     verify_signature,
 )
-from python_gardenlinux_lib.oras.defaults import annotation_signature_key, annotation_signed_string_key
-from python_gardenlinux_lib.oras.schemas import EmptyIndex, EmptyManifestMetadata, EmptyPlatform
+from python_gardenlinux_lib.oras.defaults import (
+    annotation_signature_key,
+    annotation_signed_string_key,
+)
+from python_gardenlinux_lib.oras.schemas import (
+    EmptyIndex,
+    EmptyManifestMetadata,
+    EmptyPlatform,
+)
 from python_gardenlinux_lib.oras.schemas import index as indexSchema
 
 
