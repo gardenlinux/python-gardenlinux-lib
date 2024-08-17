@@ -12,6 +12,16 @@ files = [
 ]
 
 [[package]]
+name = "apt-repo"
+version = "0.5"
+description = "Python library to query APT repositories"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "apt-repo-0.5.tar.gz", hash = "sha256:b566195884b8ea59e6b831f814fd106c7e683dccc86ca95f6494a447572f30ea"},
+]
+
+[[package]]
 name = "babel"
 version = "2.16.0"
 description = "Internationalization utilities"
@@ -700,4 +710,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cfb734d6926e9626f8158f49d3abff2898d7fd17543c33664b002bbfb39bd71e"
+content-hash = "f68aa111599c46a6cb2e595931f30845b9bb503c6b61204407b1df51a8aed9e1"
