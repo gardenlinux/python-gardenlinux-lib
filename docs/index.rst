@@ -5,7 +5,9 @@
 
 python-gardenlinux-lib documentation
 ================================
-.. automodule:: python-gardenlinux-lib.parse_features
+.. automodule:: python_gardenlinux_lib.parse_features
+    :members:
+.. automodule:: python_gardenlinux_lib.package_repo_info
     :members:
 .. toctree::
    :maxdepth: 2
