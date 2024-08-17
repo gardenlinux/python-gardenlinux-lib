@@ -32,5 +32,5 @@ if __name__ == "__main__":
 ```
 
 ## Developer Documentation
-The library is documented with docstrings, which are used to generate the developer documentation available [here](https://gardenlinux.github.io/parse_features_lib/). 
+The library is documented with docstrings, which are used to generate the developer documentation available [here](https://gardenlinux.github.io/python-gardenlinux-lib/). 
 
