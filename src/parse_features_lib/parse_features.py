@@ -58,16 +58,16 @@ def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
 
     """
     feature_base_dir = f"{gardenlinux_root}/features"
-    input_features = reverse_cname_base(cname)
+    input_features = __reverse_cname_base(cname)
     feature_graph = read_feature_files(feature_base_dir)
     graph = filter_graph(feature_graph, input_features)
-    features = reverse_sort_nodes(graph)
+    features = __reverse_sort_nodes(graph)
     features_by_type = dict()
     for type in ["platform", "element", "flag"]:
         features_by_type[type] = [
             feature
             for feature in features
-            if get_node_type(graph.nodes[feature]) == type
+            if __get_node_type(graph.nodes[feature]) == type
         ]
     return features_by_type
 
@@ -215,7 +215,7 @@ def read_feature_files(feature_dir):
     for feature in features:
         feature_graph.add_node(feature["name"], content=feature["content"])
     for node in feature_graph.nodes():
-        node_features = get_node_features(feature_graph.nodes[node])
+        node_features = __get_node_features(feature_graph.nodes[node])
         for attr in node_features:
             if attr not in ["include", "exclude"]:
                 continue
@@ -247,13 +247,15 @@ def parse_feature_yaml(feature_yaml_file: str):
     return {"name": name, "content": content}
 
 
-def get_node_features(node):
+def __get_node_features(node):
     return node.get("content", {}).get("features", {})
 
 
 def filter_graph(feature_graph, feature_set, ignore_excludes=False):
     filter_set = set(feature_graph.nodes())
-    filter_func = lambda node: node in filter_set
+    def filter_func(node):
+        return node in filter_set
+        
     graph = networkx.subgraph_view(feature_graph, filter_node=filter_func)
     graph_by_edge = dict()
     for attr in ["include", "exclude"]:
@@ -291,28 +293,29 @@ def sort_set(input_set, order_list):
     return [item for item in order_list if item in input_set]
 
 
-def sort_key(graph, node):
+def __sort_key(graph, node):
     prefix_map = {"platform": "0", "element": "1", "flag": "2"}
-    node_type = get_node_type(graph.nodes.get(node, {}))
+    node_type = __get_node_type(graph.nodes.get(node, {}))
     prefix = prefix_map[node_type]
     return f"{prefix}-{node}"
 
 
-def sort_nodes(graph):
-    key_lambda = lambda node: sort_key(graph, node)
-    return list(networkx.lexicographical_topological_sort(graph, key=key_lambda))
+def __sort_nodes(graph):
+    def key_function(node):
+        return __sort_key(graph, node)
+    return list(networkx.lexicographical_topological_sort(graph, key=key_function)
 
 
-def reverse_cname_base(cname):
+def __reverse_cname_base(cname):
     cname = cname.replace("_", "-_")
     return set(cname.split("-"))
 
 
-def reverse_sort_nodes(graph):
+def __reverse_sort_nodes(graph):
     reverse_graph = graph.reverse()
     assert networkx.is_directed_acyclic_graph(reverse_graph)
-    return sort_nodes(reverse_graph)
+    return __sort_nodes(reverse_graph)
 
 
-def get_node_type(node):
+def __get_node_type(node):
     return node.get("content", {}).get("type")
