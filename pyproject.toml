@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "parse-features-lib"
+name = "python_gardenlinux_lib"
 version = "0.1.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Malte Münch <muench@b1-systems.de>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "parse_features_lib", from="src"}]
+packages = [{include = "python_gardenlinux_lib", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

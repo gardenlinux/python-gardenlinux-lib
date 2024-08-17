@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-parse_features_lib documentation
+python-gardenlinux-lib documentation
 ================================
-.. automodule:: parse_features_lib.parse_features
+.. automodule:: python-gardenlinux-lib.parse_features
     :members:
 .. toctree::
    :maxdepth: 2

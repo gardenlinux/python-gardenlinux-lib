@@ -2,7 +2,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../src"))
-import parse_features_lib
+import python_gardenlinux_lib
 
 
 # Configuration file for the Sphinx documentation builder.
@@ -13,7 +13,7 @@ import parse_features_lib
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "parse_features_lib"
+project = "python-gardenlinux-lib"
 copyright = "2024, gardenlinux maintainer"
 author = "gardenlinux maintainer"
 

@@ -303,7 +303,7 @@ def __sort_key(graph, node):
 def __sort_nodes(graph):
     def key_function(node):
         return __sort_key(graph, node)
-    return list(networkx.lexicographical_topological_sort(graph, key=key_function)
+    return list(networkx.lexicographical_topological_sort(graph, key=key_function))
 
 
 def __reverse_cname_base(cname):
