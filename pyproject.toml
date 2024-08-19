@@ -16,6 +16,9 @@ gitpython = "^3.1.43"
 sphinx-rtd-theme = "^2.0.0"
 apt-repo = "^0.5"
 
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
 [tool.pytest.ini_options]
 pythonpath = [
   "src"
