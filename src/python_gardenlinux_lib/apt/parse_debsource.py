@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-# Based on code from glvd https://github.com/gardenlinux/glvd/blob/main/src/glvd/data/debsrc.py
-# To be used by compare-apt-repo-versions.sh, but can also be used alone to parse apt source files
+# Based on code from glvd https://github.com/gardenlinux/glvd/blob/7ca2ff54e01da5e9eae61d1cd565eaf75f3c62ce/src/glvd/data/debsrc.py#L1
 
 from __future__ import annotations
 
