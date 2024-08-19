@@ -16,7 +16,7 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
-from features.parse_features import get_oci_metadata
+from python_gardenlinux_lib.features.parse_features import get_oci_metadata
 import requests
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
@@ -124,6 +124,27 @@ def construct_layer_signed_data_string(
     data_to_sign = f"version:{version}  cname:{cname} architecture:{architecture}  media_type:{media_type}  digest:{checksum_sha256}"
     return data_to_sign
 
+def setup_registry(
+    container_name: str,
+    private_key: Optional[str] = None,
+    insecure: bool = False,
+    public_key: Optional[str] = None,
+):
+    username = os.getenv("GLOCI_REGISTRY_USERNAME")
+    token = os.getenv("GLOCI_REGISTRY_TOKEN")
+    if username is None:
+        logger.error("No username")
+        raise ValueError("No Username provided when setting up registry")
+    if token is None:
+        logger.error("No token")
+        raise ValueError("No token provided when setting up registry")
+    return GlociRegistry(
+        container_name,
+        token,
+        insecure=insecure,
+        private_key=private_key,
+        public_key=public_key,
+    )
 
 class GlociRegistry(Registry):
     def __init__(
