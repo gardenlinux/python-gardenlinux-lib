@@ -70,7 +70,7 @@ def compare_repo(
 
 
 # EXAMPLE USAGE.
-print(compare_gardenlinux_repo_version("1443.2", "1443.1"))
+# print(compare_gardenlinux_repo_version("1443.2", "1443.1"))
 
 # gl_repo = GardenLinuxRepo("today")
 # gl_repo_1592 = GardenLinuxRepo("1592.0")
