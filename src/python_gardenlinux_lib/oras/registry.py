@@ -597,25 +597,26 @@ class GlociRegistry(Registry):
             self._check_200_response(response)
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
-        layer = self.create_layer(
-            info_yaml,
-            cname,
-            version,
-            architecture,
-            "application/io.gardenlinux.oci.info-yaml",
-        )
-        total_size += int(layer["size"])
-        manifest_image["layers"].append(layer)
+        # layer = self.create_layer(
+        #     info_yaml,
+        #     cname,
+        #     version,
+        #     architecture,
+        #     "application/io.gardenlinux.oci.info-yaml",
+        # )
+        # total_size += int(layer["size"])
+        # manifest_image["layers"].append(layer)
+
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         attach_state(manifest_image["annotations"], "UNTESTED")
 
-        if layer is None:
-            raise ValueError("error: layer is none")
-        response = self.upload_blob(info_yaml, self.container, layer)
-        self._check_200_response(response)
+        # if layer is None:
+        #    raise ValueError("error: layer is none")
+        # response = self.upload_blob(info_yaml, self.container, layer)
+        # self._check_200_response(response)
 
         config_annotations = {"cname": cname, "architecture": architecture}
         conf, config_file = create_config_from_dict(dict(), config_annotations)
