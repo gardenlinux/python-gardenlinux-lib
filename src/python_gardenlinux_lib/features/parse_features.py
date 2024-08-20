@@ -9,6 +9,7 @@ from typing import Optional
 
 GL_MEDIA_TYPE_LOOKUP = {
     "tar": "application/io.gardenlinux.image.archive.format.tar",
+    "tar.gz": "application/io.gardenlinux.image.archive.format.tar.gz",
     "pxe.tar.gz": "application/io.gardenlinux.image.archive.format.pxe.tar.gz",
     "iso": "application/io.gardenlinux.image.archive.format.iso",
     "oci": "application/io.gardenlinux.image.archive.format.oci",
