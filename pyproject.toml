@@ -1,4 +1,3 @@
-[tool.poetry]
 name = "python_gardenlinux_lib"
 version = "0.1.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
@@ -26,6 +25,7 @@ black = "^24.8.0"
 pythonpath = [
   "src"
 ]
+norecursedirs = "test-data"
 
 [build-system]
 requires = ["poetry-core"]
