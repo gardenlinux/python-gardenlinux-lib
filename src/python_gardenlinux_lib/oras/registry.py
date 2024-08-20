@@ -583,8 +583,7 @@ class GlociRegistry(Registry):
             file_path = os.path.join(build_artifacts_dir, artifact["file_name"])
 
             if not os.path.exists(file_path):
-                logger.error(f"{file_path} does not exist.")
-                continue
+                raise ValueError(f"{file_path} does not exist.")
 
             cleanup_blob = False
             if os.path.isdir(file_path):
