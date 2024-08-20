@@ -9,6 +9,7 @@ from typing import Optional
 
 GL_MEDIA_TYPE_LOOKUP = {
     "tar": "application/io.gardenlinux.image.archive.format.tar",
+    "tar.gz": "application/io.gardenlinux.image.archive.format.tar.gz",
     "pxe.tar.gz": "application/io.gardenlinux.image.archive.format.pxe.tar.gz",
     "iso": "application/io.gardenlinux.image.archive.format.iso",
     "oci": "application/io.gardenlinux.image.archive.format.oci",
@@ -85,7 +86,7 @@ def construct_layer_metadata(
     """
     media_type = lookup_media_type_for_filetype(filetype)
     return {
-        "filename": f"{cname}-{version}-{arch}-{commit}.{filetype}",
+        "file_name": f"{cname}-{version}-{arch}-{commit}.{filetype}",
         "media_type": media_type,
     }
 

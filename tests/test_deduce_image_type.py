@@ -1,4 +1,4 @@
-from python_gardenlinux_lib.parse_features import (
+from python_gardenlinux_lib.features.parse_features import (
     deduce_archive_filetype,
     deduce_image_filetype,
 )

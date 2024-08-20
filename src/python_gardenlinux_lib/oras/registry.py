@@ -8,7 +8,6 @@ import sys
 import uuid
 from enum import Enum, auto
 from typing import Optional, Tuple
-from python_gardenlinux_lib.parse_features import read_feature_files
 
 import jsonschema
 import oras.auth
@@ -17,8 +16,8 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
+from python_gardenlinux_lib.features.parse_features import get_oci_metadata
 import requests
-import yaml
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
 from oras.provider import Registry
@@ -124,6 +123,29 @@ def construct_layer_signed_data_string(
 ) -> str:
     data_to_sign = f"version:{version}  cname:{cname} architecture:{architecture}  media_type:{media_type}  digest:{checksum_sha256}"
     return data_to_sign
+
+
+def setup_registry(
+    container_name: str,
+    private_key: Optional[str] = None,
+    insecure: bool = False,
+    public_key: Optional[str] = None,
+):
+    username = os.getenv("GLOCI_REGISTRY_USERNAME")
+    token = os.getenv("GLOCI_REGISTRY_TOKEN")
+    if username is None:
+        logger.error("No username")
+        raise ValueError("No Username provided when setting up registry")
+    if token is None:
+        logger.error("No token")
+        raise ValueError("No token provided when setting up registry")
+    return GlociRegistry(
+        container_name,
+        token,
+        insecure=insecure,
+        private_key=private_key,
+        public_key=public_key,
+    )
 
 
 class GlociRegistry(Registry):
@@ -533,27 +555,35 @@ class GlociRegistry(Registry):
         return response
 
     def push_image_manifest(
-        self, architecture: str, cname: str, version: str, info_yaml: str
+        self,
+        architecture: str,
+        cname: str,
+        version: str,
+        gardenlinux_root: str,
+        build_artifacts_dir: str,
     ):
         """
         creates and pushes an image manifest
+
+        :param str architecture: target architecture of the image
+        :param str cname: canonical name of the target image
+        :param str build_artifacts_dir: directory where the build artifacts are located
         """
-        # container = OrasContainer(container_name)
-        with open(info_yaml, "r") as f:
-            info_data = yaml.safe_load(f)
-            base_path = os.path.join(os.path.dirname(info_yaml))
+
+        # TODO: construct oci_artifacts default data
+
+        oci_metadata = get_oci_metadata(cname, version, gardenlinux_root)
 
         manifest_image = oras.oci.NewManifest()
         total_size = 0
 
-        for artifact in info_data["oci_artifacts"]:
+        for artifact in oci_metadata:
             annotations_input = artifact["annotations"]
             media_type = artifact["media_type"]
-            file_path = os.path.join(base_path, artifact["file_name"])
+            file_path = os.path.join(build_artifacts_dir, artifact["file_name"])
 
             if not os.path.exists(file_path):
-                logger.error(f"{file_path} does not exist.")
-                continue
+                raise ValueError(f"{file_path} does not exist.")
 
             cleanup_blob = False
             if os.path.isdir(file_path):
@@ -573,25 +603,26 @@ class GlociRegistry(Registry):
             self._check_200_response(response)
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
-        layer = self.create_layer(
-            info_yaml,
-            cname,
-            version,
-            architecture,
-            "application/io.gardenlinux.oci.info-yaml",
-        )
-        total_size += int(layer["size"])
-        manifest_image["layers"].append(layer)
+        # layer = self.create_layer(
+        #     info_yaml,
+        #     cname,
+        #     version,
+        #     architecture,
+        #     "application/io.gardenlinux.oci.info-yaml",
+        # )
+        # total_size += int(layer["size"])
+        # manifest_image["layers"].append(layer)
+
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         attach_state(manifest_image["annotations"], "UNTESTED")
 
-        if layer is None:
-            raise ValueError("error: layer is none")
-        response = self.upload_blob(info_yaml, self.container, layer)
-        self._check_200_response(response)
+        # if layer is None:
+        #    raise ValueError("error: layer is none")
+        # response = self.upload_blob(info_yaml, self.container, layer)
+        # self._check_200_response(response)
 
         config_annotations = {"cname": cname, "architecture": architecture}
         conf, config_file = create_config_from_dict(dict(), config_annotations)

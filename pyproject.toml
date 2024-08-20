@@ -2,7 +2,7 @@
 name = "python_gardenlinux_lib"
 version = "0.1.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
-authors = ["Malte Münch <muench@b1-systems.de>"]
+authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
 readme = "README.md"
 packages = [{include = "python_gardenlinux_lib", from="src"}]
@@ -15,6 +15,11 @@ pytest = "^8.3.2"
 gitpython = "^3.1.43"
 sphinx-rtd-theme = "^2.0.0"
 apt-repo = "^0.5"
+jsonschema = "^4.23.0"
+oras = { git  = "https://github.com/oras-project/oras-py.git", rev="caf8db5b279382335fbb1f6d7402ed9b73618d37" }
+python-dotenv = "^1.0.1"
+cryptography = "^43.0.0"
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
@@ -23,6 +28,7 @@ black = "^24.8.0"
 pythonpath = [
   "src"
 ]
+norecursedirs = "test-data"
 
 [build-system]
 requires = ["poetry-core"]

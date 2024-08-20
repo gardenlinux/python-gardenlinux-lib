@@ -1,0 +1,3 @@
+[submodule "test-data/gardenlinux"]
+	path = test-data/gardenlinux
+	url = https://github.com/gardenlinux/gardenlinux
