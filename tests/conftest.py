@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 GL_ROOT_DIR = "test-data/gardenlinux/"
 
+
 def write_zot_config(config_dict, file_path):
     with open(file_path, "w") as config_file:
         json.dump(config_dict, config_file, indent=4)

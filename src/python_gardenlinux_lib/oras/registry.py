@@ -124,6 +124,7 @@ def construct_layer_signed_data_string(
     data_to_sign = f"version:{version}  cname:{cname} architecture:{architecture}  media_type:{media_type}  digest:{checksum_sha256}"
     return data_to_sign
 
+
 def setup_registry(
     container_name: str,
     private_key: Optional[str] = None,
@@ -145,6 +146,7 @@ def setup_registry(
         private_key=private_key,
         public_key=public_key,
     )
+
 
 class GlociRegistry(Registry):
     def __init__(
@@ -553,7 +555,12 @@ class GlociRegistry(Registry):
         return response
 
     def push_image_manifest(
-        self, architecture: str, cname: str, version: str, gardenlinux_root: str, build_artifacts_dir: str
+        self,
+        architecture: str,
+        cname: str,
+        version: str,
+        gardenlinux_root: str,
+        build_artifacts_dir: str,
     ):
         """
         creates and pushes an image manifest
@@ -563,8 +570,8 @@ class GlociRegistry(Registry):
         :param str build_artifacts_dir: directory where the build artifacts are located
         """
 
-        # TODO: construct oci_artifacts default data 
-        
+        # TODO: construct oci_artifacts default data
+
         oci_metadata = get_oci_metadata(cname, version, gardenlinux_root)
 
         manifest_image = oras.oci.NewManifest()

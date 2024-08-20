@@ -33,6 +33,10 @@ def test_push_example(version, cname, arch):
         private_key="cert/oci-sign.key",
         public_key="cert/oci-sign.crt",
     )
-    registry.push_image_manifest(arch, cname, version, GARDENLINUX_ROOT_DIR_EXAMPLE, f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build")
-
-
+    registry.push_image_manifest(
+        arch,
+        cname,
+        version,
+        GARDENLINUX_ROOT_DIR_EXAMPLE,
+        f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build",
+    )
