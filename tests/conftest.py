@@ -51,6 +51,7 @@ def zot_session():
 
 def pytest_sessionstart(session):
     call_command("./cert/gencert.sh")
+    call_command("./test-data/build-test-data.sh --dummy")
 
 
 def pytest_sessionfinish(session):
