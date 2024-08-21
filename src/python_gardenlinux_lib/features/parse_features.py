@@ -88,7 +88,7 @@ def construct_layer_metadata(
     """
     media_type = lookup_media_type_for_filetype(filetype)
     return {
-        "file_name": f"{cname}-{version}-{arch}-{commit}.{filetype}",
+        "file_name": f"{cname}-{arch}-{version}-{commit}.{filetype}",
         "media_type": media_type,
     }
 
