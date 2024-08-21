@@ -43,6 +43,8 @@ def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -
     if commit_str.count("\n") > 1:
         raise ValueError(f"{commit_str} contains multiple lines")
 
+
+
     if limit:
         if limit >= len(commit_str):
             return commit_str
@@ -100,8 +102,10 @@ def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
     """
     oci_layer_metadata_list = list()
     features_by_type = get_features_dict(cname, gardenlinux_root)
-    print(features_by_type)
     commit_str = get_gardenlinux_commit(gardenlinux_root, 8)
+
+    if commit_str == "local":
+        raise ValueError("Using local commit. Refusing to upload to OCI Registry")
 
     for arch in ["amd64", "arm64"]:
         for platform in features_by_type["platform"]:
