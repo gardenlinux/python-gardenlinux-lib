@@ -606,7 +606,9 @@ class GlociRegistry(Registry):
             logger.debug(
                 f"File get modification time of {file_path}: {os.path.getmtime(file_path)}"
             )
-            logger.debug(f"File get creation time of {file_path}: {os.path.getctime(file_path)}")
+            logger.debug(
+                f"File get creation time of {file_path}: {os.path.getctime(file_path)}"
+            )
             logger.debug("---------")
             response = self.upload_blob(file_path, self.container, layer)
             self._check_200_response(response)
