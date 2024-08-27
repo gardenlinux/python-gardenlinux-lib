@@ -43,8 +43,6 @@ def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -
     if commit_str.count("\n") > 1:
         raise ValueError(f"{commit_str} contains multiple lines")
 
-
-
     if limit:
         if limit >= len(commit_str):
             return commit_str

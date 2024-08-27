@@ -603,7 +603,9 @@ class GlociRegistry(Registry):
             logger.debug("---------")
             logger.debug(f"Currentl total size: {total_size}")
             logger.debug(f"File Size of {file_path}: {os.path.get_size()}")
-            logger.debug(f"File get modification time of {file_path}: {os.path.getmtime()}")
+            logger.debug(
+                f"File get modification time of {file_path}: {os.path.getmtime()}"
+            )
             logger.debug(f"File get creation time of {file_path}: {os.path.getctime()}")
             logger.debug("---------")
             response = self.upload_blob(file_path, self.container, layer)
