@@ -572,7 +572,7 @@ class GlociRegistry(Registry):
 
         # TODO: construct oci_artifacts default data
 
-        oci_metadata = get_oci_metadata(cname, version, gardenlinux_root)
+        oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
 
         manifest_image = oras.oci.NewManifest()
         total_size = 0
