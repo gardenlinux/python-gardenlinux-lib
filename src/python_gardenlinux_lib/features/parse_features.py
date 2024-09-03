@@ -88,6 +88,7 @@ def construct_layer_metadata(
     return {
         "file_name": f"{cname}-{arch}-{version}-{commit}.{filetype}",
         "media_type": media_type,
+        "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
 
 
@@ -118,22 +119,17 @@ def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str)
             image_file_types.append("raw")
         if not archive_file_types:
             image_file_types.append("tar")
+
         for ft in archive_file_types:
             cur_layer_metadata = construct_layer_metadata(
                 ft, cname, version, arch, commit_str
             )
-            cur_layer_metadata["annotations"] = {
-                "io.gardenlinux.image.layer.architecture": arch
-            }
             oci_layer_metadata_list.append(cur_layer_metadata)
         # Allow multiple convert scripts per feature
         for ft in image_file_types:
             cur_layer_metadata = construct_layer_metadata(
                 ft, cname, version, arch, commit_str
             )
-            cur_layer_metadata["annotations"] = {
-                "io.gardenlinux.image.layer.architecture": arch
-            }
             oci_layer_metadata_list.append(cur_layer_metadata)
 
     return oci_layer_metadata_list
