@@ -44,13 +44,13 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk": "application/io.gardenlinux.image.format.vmdk",
     "ova": "application/io.gardenlinux.image.format.ova",
     "raw": "application/io.gardenlinux.image.archive.format.raw",
-    "manifest.log": "tbd",
-    "release.log": "tbd",
-    "test-log": "tbd",
-    "manifest": "tbd",
-    "tar.log": "tbd",
-    "release": "tbd",
-    "raw.log": "tbd",
+    "manifest.log": "tbd/tbd",
+    "release.log": "tbd/tbd",
+    "test-log": "tbd/tbd",
+    "manifest": "tbd/tbd",
+    "tar.log": "tbd/tbd",
+    "release": "tbd/tbd",
+    "raw.log": "tbd/tbd",
 }
 
 
