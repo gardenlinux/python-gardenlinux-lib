@@ -11,7 +11,14 @@ from typing import Optional
 GL_MEDIA_TYPES = [
     "firecracker.tar.gz",
     "gcpimage.tar.gz",
+    "manifest.log",
+    "release.log",
     "pxe.tar.gz",
+    "test-log",
+    "manifest",
+    "tar.log",
+    "release",
+    "raw.log",
     "tar.gz",
     "qcow2",
     "tar",
@@ -22,6 +29,8 @@ GL_MEDIA_TYPES = [
     "ova",
     "raw",
 ]
+
+
 GL_MEDIA_TYPE_LOOKUP = {
     "tar": "application/io.gardenlinux.image.archive.format.tar",
     "tar.gz": "application/io.gardenlinux.image.archive.format.tar.gz",
@@ -35,6 +44,13 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk": "application/io.gardenlinux.image.format.vmdk",
     "ova": "application/io.gardenlinux.image.format.ova",
     "raw": "application/io.gardenlinux.image.archive.format.raw",
+    "manifest.log": "tbd",
+    "release.log": "tbd",
+    "test-log": "tbd",
+    "manifest": "tbd",
+    "tar.log": "tbd",
+    "release": "tbd",
+    "raw.log": "tbd",
 }
 
 
