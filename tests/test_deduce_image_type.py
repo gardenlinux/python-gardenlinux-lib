@@ -1,6 +1,6 @@
 from python_gardenlinux_lib.features.parse_features import (
-    deduce_archive_filetype,
-    deduce_image_filetype,
+    deduce_archive_filetypes,
+    deduce_image_filetypes,
 )
 import pytest
 
@@ -20,7 +20,7 @@ from tests.conftest import GL_ROOT_DIR
     ],
 )
 def test_deduce_image_type(feature_name, expected_file_type):
-    file_type = deduce_image_filetype(f"{GL_ROOT_DIR}/features/{feature_name}")
+    file_type = deduce_image_filetypes(f"{GL_ROOT_DIR}/features/{feature_name}")
     assert sorted(expected_file_type) == file_type
 
 
@@ -35,5 +35,5 @@ def test_deduce_image_type(feature_name, expected_file_type):
     ],
 )
 def test_deduce_archive_type(feature_name, expected_file_type):
-    file_type = deduce_archive_filetype(f"{GL_ROOT_DIR}/features/{feature_name}")
+    file_type = deduce_archive_filetypes(f"{GL_ROOT_DIR}/features/{feature_name}")
     assert sorted(expected_file_type) == file_type

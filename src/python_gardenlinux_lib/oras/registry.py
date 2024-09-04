@@ -559,12 +559,13 @@ class GlociRegistry(Registry):
         architecture: str,
         cname: str,
         version: str,
-        gardenlinux_root: str,
         build_artifacts_dir: str,
+        oci_metadata: list,
     ):
         """
         creates and pushes an image manifest
 
+        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with get_oci_metadata
         :param str architecture: target architecture of the image
         :param str cname: canonical name of the target image
         :param str build_artifacts_dir: directory where the build artifacts are located
@@ -572,7 +573,7 @@ class GlociRegistry(Registry):
 
         # TODO: construct oci_artifacts default data
 
-        oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
+        # oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
 
         manifest_image = oras.oci.NewManifest()
         total_size = 0

@@ -1,6 +1,7 @@
 import pytest
 import os
 from python_gardenlinux_lib.oras.registry import GlociRegistry, setup_registry
+from python_gardenlinux_lib.features import parse_features
 
 CONTAINER_NAME_ZOT_EXAMPLE = "127.0.0.1:18081/gardenlinux-example"
 GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
@@ -25,7 +26,9 @@ GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
     ],
 )
 def test_push_example(version, cname, arch):
-
+    oci_metadata = parse_features.get_oci_metadata(
+        cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE
+    )
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
     registry = setup_registry(
         container_name,
@@ -34,9 +37,5 @@ def test_push_example(version, cname, arch):
         public_key="cert/oci-sign.crt",
     )
     registry.push_image_manifest(
-        arch,
-        cname,
-        version,
-        GARDENLINUX_ROOT_DIR_EXAMPLE,
-        f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build",
+        arch, cname, version, f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build", oci_metadata
     )
