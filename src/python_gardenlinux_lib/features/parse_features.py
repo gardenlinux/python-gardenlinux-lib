@@ -12,7 +12,7 @@ GL_MEDIA_TYPES = [
     "gcpimage.tar.gz.log",
     "firecracker.tar.gz",
     "gcpimage.tar.gz",
-    "pxe.tar.gz.log"
+    "pxe.tar.gz.log",
     "manifest.log",
     "release.log",
     "pxe.tar.gz",
@@ -63,7 +63,6 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk.log": "tbd/tbd",
     "vhd.log": "tbd/tbd",
     "ova.log": "tbd/tbd",
-
 }
 
 
@@ -235,7 +234,7 @@ def lookup_media_type_for_file(filename: str) -> str:
             return GL_MEDIA_TYPE_LOOKUP[suffix]
     else:
         raise ValueError(
-            f"No media type for {filename} is defined. You may want to add the definition to parse_features_lib"
+            f"media type for {filename} is not defined. You may want to add the definition to parse_features_lib"
         )
 
 
