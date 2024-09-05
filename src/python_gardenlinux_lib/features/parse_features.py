@@ -9,15 +9,21 @@ from typing import Optional
 
 # It is important that this list is sorted in descending length of the entries
 GL_MEDIA_TYPES = [
+    "gcpimage.tar.gz.log",
     "firecracker.tar.gz",
     "gcpimage.tar.gz",
+    "pxe.tar.gz.log"
     "manifest.log",
     "release.log",
     "pxe.tar.gz",
+    "qcow2.log",
     "test-log",
     "manifest",
+    "vmdk.log",
     "tar.log",
     "release",
+    "vhd.log",
+    "ova.log",
     "raw.log",
     "tar.gz",
     "qcow2",
@@ -51,6 +57,13 @@ GL_MEDIA_TYPE_LOOKUP = {
     "tar.log": "tbd/tbd",
     "release": "tbd/tbd",
     "raw.log": "tbd/tbd",
+    "qcow2.log": "tbd/tbd",
+    "pxe.tar.gz.log": "tbd/tbd",
+    "gcpimage.tar.gz.log": "tbd/tbd",
+    "vmdk.log": "tbd/tbd",
+    "vhd.log": "tbd/tbd",
+    "ova.log": "tbd/tbd",
+
 }
 
 
@@ -208,7 +221,7 @@ def lookup_media_type_for_filetype(filetype: str) -> str:
         return GL_MEDIA_TYPE_LOOKUP[filetype]
     else:
         raise ValueError(
-            f"No media type for {filetype} is defined. You may want to add the definition to parse_features_lib"
+            f"media type for {filetype} is not defined. You may want to add the definition to parse_features_lib"
         )
 
 
