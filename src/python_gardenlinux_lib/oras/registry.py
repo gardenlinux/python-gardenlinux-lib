@@ -114,7 +114,10 @@ def create_config_from_dict(conf: dict, annotations: dict) -> Tuple[dict, str]:
 def construct_manifest_entry_signed_data_string(
     cname: str, version: str, new_manifest_metadata: dict, architecture: str
 ) -> str:
-    data_to_sign = f"versio:{version}  cname{cname}  architecture:{architecture}  manifest-size:{new_manifest_metadata['size']}  manifest-digest:{new_manifest_metadata['digest']}"
+    data_to_sign = (
+        f"version:{version}  cname:{cname}  architecture:{architecture}  manifest-size"
+        f":{new_manifest_metadata['size']}  manifest-digest:{new_manifest_metadata['digest']}"
+    )
     return data_to_sign
 
 
