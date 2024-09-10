@@ -74,13 +74,13 @@ def NewPlatform(architecture: str, version: str) -> dict:
 
 
 def NewManifestMetadata(
-    digest: str, size: int, annotaions: dict, platform_data: dict
+    digest: str, size: int, annotations: dict, platform_data: dict
 ) -> dict:
     manifest_meta_data = copy.deepcopy(EmptyManifestMetadata)
     manifest_meta_data["mediaType"] = "application/vnd.oci.image.manifest.v1+json"
     manifest_meta_data["digest"] = digest
     manifest_meta_data["size"] = size
-    manifest_meta_data["annotations"] = annotaions
+    manifest_meta_data["annotations"] = annotations
     manifest_meta_data["platform"] = platform_data
     manifest_meta_data["artifactType"] = ""
     return manifest_meta_data
