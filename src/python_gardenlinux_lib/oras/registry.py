@@ -497,9 +497,7 @@ class GlociRegistry(Registry):
             if annotation_signed_string_key not in layer["annotations"]:
                 raise ValueError(f"layer is not signed. layer: {layer}")
             media_type = layer["mediaType"]
-            checksum_sha256 = layer["annotations"][
-                "application/vnd.gardenlinux.image.checksum.sha256"
-            ]
+            checksum_sha256 = layer["digest"].removeprefix("sha256:")
             signature = layer["annotations"][annotation_signature_key]
             signed_data = layer["annotations"][annotation_signed_string_key]
             signed_data_expected = construct_layer_signed_data_string(
@@ -695,7 +693,6 @@ class GlociRegistry(Registry):
         layer = oras.oci.NewLayer(file_path, media_type, is_dir=False)
         layer["annotations"] = {
             oras.defaults.annotation_title: os.path.basename(file_path),
-            "application/vnd.gardenlinux.image.checksum.sha256": checksum_sha256,
         }
         self.sign_layer(
             layer, cname, version, architecture, checksum_sha256, media_type
