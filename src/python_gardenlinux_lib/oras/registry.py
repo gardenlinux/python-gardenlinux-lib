@@ -74,13 +74,13 @@ def NewPlatform(architecture: str, version: str) -> dict:
 
 
 def NewManifestMetadata(
-    digest: str, size: int, annotaions: dict, platform_data: dict
+    digest: str, size: int, annotations: dict, platform_data: dict
 ) -> dict:
     manifest_meta_data = copy.deepcopy(EmptyManifestMetadata)
     manifest_meta_data["mediaType"] = "application/vnd.oci.image.manifest.v1+json"
     manifest_meta_data["digest"] = digest
     manifest_meta_data["size"] = size
-    manifest_meta_data["annotations"] = annotaions
+    manifest_meta_data["annotations"] = annotations
     manifest_meta_data["platform"] = platform_data
     manifest_meta_data["artifactType"] = ""
     return manifest_meta_data
@@ -114,7 +114,10 @@ def create_config_from_dict(conf: dict, annotations: dict) -> Tuple[dict, str]:
 def construct_manifest_entry_signed_data_string(
     cname: str, version: str, new_manifest_metadata: dict, architecture: str
 ) -> str:
-    data_to_sign = f"versio:{version}  cname{cname}  architecture:{architecture}  manifest-size:{new_manifest_metadata['size']}  manifest-digest:{new_manifest_metadata['digest']}"
+    data_to_sign = (
+        f"version:{version}  cname:{cname}  architecture:{architecture}  manifest-size"
+        f":{new_manifest_metadata['size']}  manifest-digest:{new_manifest_metadata['digest']}"
+    )
     return data_to_sign
 
 
@@ -494,9 +497,7 @@ class GlociRegistry(Registry):
             if annotation_signed_string_key not in layer["annotations"]:
                 raise ValueError(f"layer is not signed. layer: {layer}")
             media_type = layer["mediaType"]
-            checksum_sha256 = layer["annotations"][
-                "application/vnd.gardenlinux.image.checksum.sha256"
-            ]
+            checksum_sha256 = layer["digest"].removeprefix("sha256:")
             signature = layer["annotations"][annotation_signature_key]
             signed_data = layer["annotations"][annotation_signed_string_key]
             signed_data_expected = construct_layer_signed_data_string(
@@ -559,12 +560,13 @@ class GlociRegistry(Registry):
         architecture: str,
         cname: str,
         version: str,
-        gardenlinux_root: str,
         build_artifacts_dir: str,
+        oci_metadata: list,
     ):
         """
         creates and pushes an image manifest
 
+        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with get_oci_metadata
         :param str architecture: target architecture of the image
         :param str cname: canonical name of the target image
         :param str build_artifacts_dir: directory where the build artifacts are located
@@ -572,7 +574,7 @@ class GlociRegistry(Registry):
 
         # TODO: construct oci_artifacts default data
 
-        oci_metadata = get_oci_metadata(cname, version, gardenlinux_root)
+        # oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
 
         manifest_image = oras.oci.NewManifest()
         total_size = 0
@@ -690,8 +692,7 @@ class GlociRegistry(Registry):
         checksum_sha256 = calculate_sha256(file_path)
         layer = oras.oci.NewLayer(file_path, media_type, is_dir=False)
         layer["annotations"] = {
-            oras.defaults.annotation_title: file_path,
-            "application/vnd.gardenlinux.image.checksum.sha256": checksum_sha256,
+            oras.defaults.annotation_title: os.path.basename(file_path),
         }
         self.sign_layer(
             layer, cname, version, architecture, checksum_sha256, media_type

@@ -7,6 +7,36 @@ import re
 import subprocess
 from typing import Optional
 
+# It is important that this list is sorted in descending length of the entries
+GL_MEDIA_TYPES = [
+    "gcpimage.tar.gz.log",
+    "firecracker.tar.gz",
+    "gcpimage.tar.gz",
+    "pxe.tar.gz.log",
+    "manifest.log",
+    "release.log",
+    "pxe.tar.gz",
+    "qcow2.log",
+    "test-log",
+    "manifest",
+    "vmdk.log",
+    "tar.log",
+    "release",
+    "vhd.log",
+    "ova.log",
+    "raw.log",
+    "tar.gz",
+    "qcow2",
+    "tar",
+    "iso",
+    "oci",
+    "vhd",
+    "vmdk",
+    "ova",
+    "raw",
+]
+
+
 GL_MEDIA_TYPE_LOOKUP = {
     "tar": "application/io.gardenlinux.image.archive.format.tar",
     "tar.gz": "application/io.gardenlinux.image.archive.format.tar.gz",
@@ -20,6 +50,19 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk": "application/io.gardenlinux.image.format.vmdk",
     "ova": "application/io.gardenlinux.image.format.ova",
     "raw": "application/io.gardenlinux.image.archive.format.raw",
+    "manifest.log": "application/io.gardenlinux.log",
+    "release.log": "application/io.gardenlinux.log",
+    "test-log": "application/io.gardenlinux.test-log",
+    "manifest": "application/io.gardenlinux.manifest",
+    "tar.log": "application/io.gardenlinux.log",
+    "release": "application/io.gardenlinux.release",
+    "raw.log": "application/io.gardenlinux.log",
+    "qcow2.log": "application/io.gardenlinux.log",
+    "pxe.tar.gz.log": "application/io.gardenlinux.log",
+    "gcpimage.tar.gz.log": "application/io.gardenlinux.log",
+    "vmdk.log": "application/io.gardenlinux.log",
+    "vhd.log": "application/io.gardenlinux.log",
+    "ova.log": "application/io.gardenlinux.log",
 }
 
 
@@ -88,53 +131,82 @@ def construct_layer_metadata(
     return {
         "file_name": f"{cname}-{arch}-{version}-{commit}.{filetype}",
         "media_type": media_type,
+        "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
 
 
-def get_oci_metadata(cname: str, version: str, gardenlinux_root: str):
+def construct_layer_metadata_from_filename(filename: str, arch: str) -> dict:
+    """
+    :param str filename: filename of the blob
+    :param str arch: the arch of the target image
+    :return: dict of oci layer metadata for a given layer file
+    """
+    media_type = lookup_media_type_for_file(filename)
+    return {
+        "file_name": filename,
+        "media_type": media_type,
+        "annotations": {"io.gardenlinux.image.layer.architecture": arch},
+    }
+
+
+def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_root: str):
     """
     :param str cname: the target cname of the image
-    :param str version: the target version of the image
+    :param str version: the version of the target image
+    :param str arch: the arch of the target image
     :param str gardenlinux_root: path of garden linux src root
-    :return: list of dicts, where each dict represents a layer
+    :return: set of file names for a given cname
     """
-    oci_layer_metadata_list = list()
+    file_set = set()
     features_by_type = get_features_dict(cname, gardenlinux_root)
     commit_str = get_gardenlinux_commit(gardenlinux_root, 8)
 
     if commit_str == "local":
         raise ValueError("Using local commit. Refusing to upload to OCI Registry")
+    for platform in features_by_type["platform"]:
+        image_file_types = deduce_filetypes(f"{gardenlinux_root}/features/{platform}")
+        for ft in image_file_types:
+            file_set.add(
+                f"{cname}-{arch}-{version}-{commit_str}.{ft}",
+            )
+    return file_set
 
-    for arch in ["amd64", "arm64"]:
-        for platform in features_by_type["platform"]:
-            image_file_types = deduce_image_filetype(
-                f"{gardenlinux_root}/features/{platform}"
-            )
-            archive_file_types = deduce_archive_filetype(
-                f"{gardenlinux_root}/features/{platform}"
-            )
-            # Allow multiple image scripts per feature
-            if not image_file_types:
-                image_file_types.append("raw")
-            if not archive_file_types:
-                image_file_types.append("tar")
-            for ft in archive_file_types:
-                cur_layer_metadata = construct_layer_metadata(
-                    ft, cname, version, arch, commit_str
-                )
-                cur_layer_metadata["annotations"] = {
-                    "io.gardenlinux.image.layer.architecture": arch
-                }
-                oci_layer_metadata_list.append(cur_layer_metadata)
-            # Allow multiple convert scripts per feature
-            for ft in image_file_types:
-                cur_layer_metadata = construct_layer_metadata(
-                    ft, cname, version, arch, commit_str
-                )
-                cur_layer_metadata["annotations"] = {
-                    "io.gardenlinux.image.layer.architecture": arch
-                }
-                oci_layer_metadata_list.append(cur_layer_metadata)
+
+def get_oci_metadata_from_fileset(fileset: set, arch: str):
+    """
+    :param str arch: arch of the target image
+    :param set fileset: a list of filenames (not paths) to set oci_metadata for
+    :return: list of dicts, where each dict represents a layer
+    """
+    oci_layer_metadata_list = list()
+
+    for file in fileset:
+        oci_layer_metadata_list.append(
+            construct_layer_metadata_from_filename(file, arch)
+        )
+
+    return oci_layer_metadata_list
+
+
+def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str):
+    """
+    :param str cname: the target cname of the image
+    :param str version: the target version of the image
+    :param str arch: arch of the target image
+    :param str gardenlinux_root: path of garden linux src root
+    :return: list of dicts, where each dict represents a layer
+    """
+
+    # This is the feature deduction approach (glcli oci push)
+    file_set = get_file_set_from_cname(cname, version, arch, gardenlinux_root)
+
+    # This is the tarball extraction approach (glcli oci push-tarball)
+    oci_layer_metadata_list = list()
+
+    for file in file_set:
+        oci_layer_metadata_list.append(
+            construct_layer_metadata_from_filename(file, arch)
+        )
 
     return oci_layer_metadata_list
 
@@ -148,7 +220,21 @@ def lookup_media_type_for_filetype(filetype: str) -> str:
         return GL_MEDIA_TYPE_LOOKUP[filetype]
     else:
         raise ValueError(
-            f"No media type for {filetype} is defined. You may want to add the definition to parse_features_lib"
+            f"media type for {filetype} is not defined. You may want to add the definition to parse_features_lib"
+        )
+
+
+def lookup_media_type_for_file(filename: str) -> str:
+    """
+    :param str filename: filename of the target layer
+    :return: mediatype
+    """
+    for suffix in GL_MEDIA_TYPES:
+        if filename.endswith(suffix):
+            return GL_MEDIA_TYPE_LOOKUP[suffix]
+    else:
+        raise ValueError(
+            f"media type for {filename} is not defined. You may want to add the definition to parse_features_lib"
         )
 
 
@@ -163,25 +249,40 @@ def deduce_feature_name(feature_dir: str):
     return parsed["name"]
 
 
-def deduce_archive_filetype(feature_dir):
+def deduce_archive_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
-    :return: str of filetype for archive
+    :return: str list of filetype for archive
     """
-    return deduce_filetype_from_string(feature_dir, "image")
+    return deduce_filetypes_from_string(feature_dir, "image")
 
 
-def deduce_image_filetype(feature_dir):
+def deduce_image_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
-    :return: str of filetype for image
+    :return: str list of filetype for image
     """
-    return deduce_filetype_from_string(feature_dir, "convert")
+    return deduce_filetypes_from_string(feature_dir, "convert")
 
 
-def deduce_filetype_from_string(feature_dir: str, script_base_name: str):
+def deduce_filetypes(feature_dir):
     """
-    Garden Linux features can optionally have a image.<filetype> or convert.<filetype> script,
+    :param str feature_dir: Directory of single Feature
+    :return: str list of filetypes for the feature
+    """
+    image_file_types = deduce_image_filetypes(feature_dir)
+    archive_file_types = deduce_archive_filetypes(feature_dir)
+    if not image_file_types:
+        image_file_types.append("raw")
+    if not archive_file_types:
+        archive_file_types.append("tar")
+    image_file_types.extend(archive_file_types)
+    return image_file_types
+
+
+def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
+    """
+    Garden Linux features can optionally have an image.<filetype> or convert.<filetype> script,
     where the <filetype> indicates the target filetype.
 
     image.<filetype> script converts the .tar to <filetype> archive.
@@ -229,7 +330,7 @@ def read_feature_files(feature_dir):
                     )
                 feature_graph.add_edge(node, ref, attr=attr)
     if not networkx.is_directed_acyclic_graph(feature_graph):
-        raise ValueError("Graph is not directed asyclic graph")
+        raise ValueError("Graph is not directed acyclic graph")
     return feature_graph
 
 
