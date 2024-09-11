@@ -92,9 +92,9 @@ def NewIndex() -> dict:
 
 def create_config_from_dict(conf: dict, annotations: dict) -> Tuple[dict, str]:
     """
-    Write a new OCI configuration to file, and generate oci meta data for it
+    Write a new OCI configuration to file, and generate oci metadata for it
     For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
-    annotations, mediatrype, size, digest are not part of digest and size calculation,
+    annotations, mediatype, size, digest are not part of digest and size calculation,
     and therefore must be attached to the output dict and not written to the file.
 
     :param conf: dict with custom configuration (the payload of the configuration)
@@ -562,23 +562,26 @@ class GlociRegistry(Registry):
         version: str,
         build_artifacts_dir: str,
         oci_metadata: list,
+        feature_set: str,
     ):
         """
         creates and pushes an image manifest
 
-        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with get_oci_metadata
+        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with
+        parse_features.get_oci_metadata or parse_features.get_oci_metadata_from_fileset
         :param str architecture: target architecture of the image
         :param str cname: canonical name of the target image
         :param str build_artifacts_dir: directory where the build artifacts are located
+        :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
+        manifest itself and in the index entry for this manifest
         """
 
         # TODO: construct oci_artifacts default data
 
-        # oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
-
         manifest_image = oras.oci.NewManifest()
         total_size = 0
 
+        # For each file, create sign, attach and push a layer
         for artifact in oci_metadata:
             annotations_input = artifact["annotations"]
             media_type = artifact["media_type"]
@@ -592,6 +595,7 @@ class GlociRegistry(Registry):
                 file_path = oras.utils.make_targz(file_path)
                 cleanup_blob = True
 
+            # Create and sign layer information
             layer = self.create_layer(
                 file_path, cname, version, architecture, media_type
             )
@@ -599,43 +603,21 @@ class GlociRegistry(Registry):
 
             if annotations_input:
                 layer["annotations"].update(annotations_input)
+            # Attach this layer to the manifest that is currently created (and pushed later)
             manifest_image["layers"].append(layer)
-            logger.debug("Layer:")
-            logger.debug(layer)
-            logger.debug("---------")
-            logger.debug(f"Currentl total size: {total_size}")
-            logger.debug(f"File Size of {file_path}: {os.path.getsize(file_path)}")
-            logger.debug(
-                f"File get modification time of {file_path}: {os.path.getmtime(file_path)}"
-            )
-            logger.debug(
-                f"File get creation time of {file_path}: {os.path.getctime(file_path)}"
-            )
-            logger.debug("---------")
+            logger.debug(f"Layer: {layer}")
+            # Push
             response = self.upload_blob(file_path, self.container, layer)
             self._check_200_response(response)
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
-        # layer = self.create_layer(
-        #     info_yaml,
-        #     cname,
-        #     version,
-        #     architecture,
-        #     "application/io.gardenlinux.oci.info-yaml",
-        # )
-        # total_size += int(layer["size"])
-        # manifest_image["layers"].append(layer)
-
+        # This ends up in the manifest
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
+        manifest_image["annotations"]["feature_set"] = feature_set
         attach_state(manifest_image["annotations"], "UNTESTED")
-
-        # if layer is None:
-        #    raise ValueError("error: layer is none")
-        # response = self.upload_blob(info_yaml, self.container, layer)
-        # self._check_200_response(response)
 
         config_annotations = {"cname": cname, "architecture": architecture}
         conf, config_file = create_config_from_dict(dict(), config_annotations)
@@ -655,8 +637,10 @@ class GlociRegistry(Registry):
             self.upload_manifest(manifest_image, manifest_container)
         )
 
+        # This ends up in the index-entry for the manifest
         metadata_annotations = {"cname": cname, "architecture": architecture}
         attach_state(metadata_annotations, "UNTESTED")
+        metadata_annotations["feature_set"] = feature_set
         manifest_digest = self.get_digest(manifest_container)
         manifest_index_metadata = NewManifestMetadata(
             manifest_digest,
