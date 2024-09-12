@@ -36,6 +36,12 @@ def test_push_example(version, cname, arch):
         private_key="cert/oci-sign.key",
         public_key="cert/oci-sign.crt",
     )
+    features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
     registry.push_image_manifest(
-        arch, cname, version, f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build", oci_metadata
+        arch,
+        cname,
+        version,
+        f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build",
+        oci_metadata,
+        features,
     )
