@@ -13,7 +13,11 @@ from pygments.filter import apply_filters
 GL_MEDIA_TYPES = [
     "gcpimage.tar.gz.log",
     "firecracker.tar.gz",
+    "platform.test.log",
+    "platform.test.xml",
     "gcpimage.tar.gz",
+    "chroot.test.log",
+    "chroot.test.xml",
     "pxe.tar.gz.log",
     "root.squashfs",
     "manifest.log",
@@ -73,6 +77,10 @@ GL_MEDIA_TYPE_LOOKUP = {
     "initrd": "application/io.gardenlinux.initrd",
     "root.squashfs": "application/io.gardenlinux.squashfs",
     "boot.efi": "application/io.gardenlinux.efi",
+    "platform.test.log": "application/io.gardenlinux.io.platform.test.log",
+    "platform.test.xml": "application/io.gardenlinux.io.platform.test.xml",
+    "chroot.test.log": "application/io.gardenlinux.io.chroot.test.log",
+    "chroot.test.xml": "application/io.gardenlinux.io.chroot.test.xml",
 }
 
 
