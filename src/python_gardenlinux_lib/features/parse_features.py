@@ -7,24 +7,30 @@ import re
 import subprocess
 from typing import Optional
 
+from pygments.filter import apply_filters
+
 # It is important that this list is sorted in descending length of the entries
 GL_MEDIA_TYPES = [
     "gcpimage.tar.gz.log",
     "firecracker.tar.gz",
     "gcpimage.tar.gz",
     "pxe.tar.gz.log",
+    "root.squashfs",
     "manifest.log",
     "release.log",
     "pxe.tar.gz",
     "qcow2.log",
     "test-log",
+    "boot.efi",
     "manifest",
     "vmdk.log",
     "tar.log",
+    "vmlinuz",
     "release",
     "vhd.log",
     "ova.log",
     "raw.log",
+    "initrd",
     "tar.gz",
     "qcow2",
     "tar",
@@ -63,6 +69,10 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk.log": "application/io.gardenlinux.log",
     "vhd.log": "application/io.gardenlinux.log",
     "ova.log": "application/io.gardenlinux.log",
+    "vmlinuz": "application/io.gardenlinux.linux",
+    "initrd": "application/io.gardenlinux.initrd",
+    "root.squashfs": "application/io.gardenlinux.squashfs",
+    "boot.efi": "application/io.gardenlinux.efi",
 }
 
 
@@ -186,7 +196,7 @@ def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_roo
     return file_set
 
 
-def get_oci_metadata_from_fileset(fileset: set, arch: str):
+def get_oci_metadata_from_fileset(fileset: list, arch: str):
     """
     :param str arch: arch of the target image
     :param set fileset: a list of filenames (not paths) to set oci_metadata for

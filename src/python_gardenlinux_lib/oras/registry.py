@@ -691,27 +691,18 @@ class GlociRegistry(Registry):
 
     def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
         assert tar.endswith(".tar.xz")
-        fullname = os.path.basename(tar).removesuffix(".tar.xz")
         tmpdir = tempfile.mkdtemp()
-        try:
-            tar_obj = tarfile.open(tar)
-            tar_obj.extractall(filter="data", path=tmpdir)
-            tar_obj.close()
-        except (OSError, tarfile.FilterError, tarfile.TarError) as e:
-            print("Failed to extract tarball", e)
-            shutil.rmtree(tmpdir, ignore_errors=True)
-            exit(1)
+        extract_tar(tar, tmpdir)
 
-        build_output = f"{tmpdir}/{fullname}"
         try:
             oci_metadata = get_oci_metadata_from_fileset(
-                os.listdir(build_output), architecture
+                os.listdir(tmpdir), architecture
             )
 
             features = ""
             for artifact in oci_metadata:
                 if artifact["media_type"] == "application/io.gardenlinux.release":
-                    file = open(f"{build_output}/{artifact["file_name"]}", "r")
+                    file = open(f"{tmpdir}/{artifact["file_name"]}", "r")
                     lines = file.readlines()
                     for line in lines:
                         if line.strip().startswith("GARDENLINUX_FEATURES="):
@@ -722,7 +713,7 @@ class GlociRegistry(Registry):
                     file.close()
 
             self.push_image_manifest(
-                architecture, cname, version, build_output, oci_metadata, features
+                architecture, cname, version, tmpdir, oci_metadata, features
             )
         except Exception as e:
             print("Error: ", e)
@@ -731,3 +722,31 @@ class GlociRegistry(Registry):
             exit(1)
         shutil.rmtree(tmpdir, ignore_errors=True)
         print("removed tmp files.")
+
+
+def extract_tar(tar: str, tmpdir: str):
+    """
+    Extracts the contents of the tarball to the specified tmp directory. In case
+    a nested artifact is found (.pxe.tar.gz) its contents are extracted as well
+    :param tar: str the full path to the tarball
+    :param tmpdir: str the tmp directory to extract to
+    """
+    fullname = os.path.basename(tar).removesuffix(".tar.xz")
+    try:
+        tar_obj = tarfile.open(tar)
+        tar_obj.extractall(filter="data", path=tmpdir)
+        tar_obj.close()
+        for file in os.listdir(f"{tmpdir}/{fullname}"):
+            shutil.move(f"{tmpdir}/{fullname}/{file}", tmpdir)
+        shutil.rmtree(f"{tmpdir}/{fullname}", ignore_errors=True)
+        for file in os.listdir(tmpdir):
+            if file.endswith(".pxe.tar.gz"):
+                logger.info(f"Found nested artifact {file}")
+                nested_tar_obj = tarfile.open(f"{tmpdir}/{file}")
+                nested_tar_obj.extractall(filter="data", path=tmpdir)
+                nested_tar_obj.close()
+
+    except (OSError, tarfile.FilterError, tarfile.TarError) as e:
+        print("Failed to extract tarball", e)
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        exit(1)
