@@ -19,7 +19,10 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
-from python_gardenlinux_lib.features.parse_features import get_oci_metadata, get_oci_metadata_from_fileset
+from python_gardenlinux_lib.features.parse_features import (
+    get_oci_metadata,
+    get_oci_metadata_from_fileset,
+)
 import requests
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
@@ -686,7 +689,6 @@ class GlociRegistry(Registry):
         )
         return layer
 
-
     def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
         assert tar.endswith(".tar.xz")
         fullname = os.path.basename(tar).removesuffix(".tar.xz")
@@ -709,11 +711,13 @@ class GlociRegistry(Registry):
             features = ""
             for artifact in oci_metadata:
                 if artifact["media_type"] == "application/io.gardenlinux.release":
-                    file = open(f"{build_output}/{artifact["file_name"]}", 'r')
+                    file = open(f"{build_output}/{artifact["file_name"]}", "r")
                     lines = file.readlines()
                     for line in lines:
                         if line.strip().startswith("GARDENLINUX_FEATURES="):
-                            features = line.strip().removeprefix("GARDENLINUX_FEATURES=")
+                            features = line.strip().removeprefix(
+                                "GARDENLINUX_FEATURES="
+                            )
                             break
                     file.close()
 

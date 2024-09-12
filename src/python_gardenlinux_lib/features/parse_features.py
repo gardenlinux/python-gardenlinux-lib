@@ -115,6 +115,7 @@ def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
         ]
     return features_by_type
 
+
 def get_features(cname: str, gardenlinux_root: str) -> str:
     """
     :param str cname: the target cname to get the feature set for
