@@ -4,7 +4,10 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import sys
+import tarfile
+import tempfile
 import uuid
 from enum import Enum, auto
 from typing import Optional, Tuple
@@ -16,7 +19,7 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
-from python_gardenlinux_lib.features.parse_features import get_oci_metadata
+from python_gardenlinux_lib.features.parse_features import get_oci_metadata, get_oci_metadata_from_fileset
 import requests
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
@@ -682,3 +685,45 @@ class GlociRegistry(Registry):
             layer, cname, version, architecture, checksum_sha256, media_type
         )
         return layer
+
+
+    def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
+        assert tar.endswith(".tar.xz")
+        fullname = os.path.basename(tar).removesuffix(".tar.xz")
+        tmpdir = tempfile.mkdtemp()
+        try:
+            tar_obj = tarfile.open(tar)
+            tar_obj.extractall(filter="data", path=tmpdir)
+            tar_obj.close()
+        except (OSError, tarfile.FilterError, tarfile.TarError) as e:
+            print("Failed to extract tarball", e)
+            shutil.rmtree(tmpdir, ignore_errors=True)
+            exit(1)
+
+        build_output = f"{tmpdir}/{fullname}"
+        try:
+            oci_metadata = get_oci_metadata_from_fileset(
+                os.listdir(build_output), architecture
+            )
+
+            features = ""
+            for artifact in oci_metadata:
+                if artifact["media_type"] == "application/io.gardenlinux.release":
+                    file = open(f"{build_output}/{artifact["file_name"]}", 'r')
+                    lines = file.readlines()
+                    for line in lines:
+                        if line.strip().startswith("GARDENLINUX_FEATURES="):
+                            features = line.strip().removeprefix("GARDENLINUX_FEATURES=")
+                            break
+                    file.close()
+
+            self.push_image_manifest(
+                architecture, cname, version, build_output, oci_metadata, features
+            )
+        except Exception as e:
+            print("Error: ", e)
+            shutil.rmtree(tmpdir, ignore_errors=True)
+            print("removed tmp files.")
+            exit(1)
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        print("removed tmp files.")
