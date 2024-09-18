@@ -43,6 +43,7 @@ GL_MEDIA_TYPES = [
     "vhd",
     "vmdk",
     "ova",
+    "uki",
     "raw",
 ]
 
@@ -59,6 +60,7 @@ GL_MEDIA_TYPE_LOOKUP = {
     "gcpimage.tar.gz": "application/io.gardenlinux.image.format.gcpimage.tar.gz",
     "vmdk": "application/io.gardenlinux.image.format.vmdk",
     "ova": "application/io.gardenlinux.image.format.ova",
+    "uki": "application/io.gardenlinux.uki",
     "raw": "application/io.gardenlinux.image.archive.format.raw",
     "manifest.log": "application/io.gardenlinux.log",
     "release.log": "application/io.gardenlinux.log",
