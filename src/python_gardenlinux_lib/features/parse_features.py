@@ -75,7 +75,7 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vmdk.log": "application/io.gardenlinux.log",
     "vhd.log": "application/io.gardenlinux.log",
     "ova.log": "application/io.gardenlinux.log",
-    "vmlinuz": "application/io.gardenlinux.linux",
+    "vmlinuz": "application/io.gardenlinux.kernel",
     "initrd": "application/io.gardenlinux.initrd",
     "root.squashfs": "application/io.gardenlinux.squashfs",
     "boot.efi": "application/io.gardenlinux.efi",
