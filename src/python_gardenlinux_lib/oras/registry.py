@@ -4,7 +4,10 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import sys
+import tarfile
+import tempfile
 import uuid
 from enum import Enum, auto
 from typing import Optional, Tuple
@@ -16,7 +19,10 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
-from python_gardenlinux_lib.features.parse_features import get_oci_metadata
+from python_gardenlinux_lib.features.parse_features import (
+    get_oci_metadata,
+    get_oci_metadata_from_fileset,
+)
 import requests
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
@@ -92,9 +98,9 @@ def NewIndex() -> dict:
 
 def create_config_from_dict(conf: dict, annotations: dict) -> Tuple[dict, str]:
     """
-    Write a new OCI configuration to file, and generate oci meta data for it
+    Write a new OCI configuration to file, and generate oci metadata for it
     For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
-    annotations, mediatrype, size, digest are not part of digest and size calculation,
+    annotations, mediatype, size, digest are not part of digest and size calculation,
     and therefore must be attached to the output dict and not written to the file.
 
     :param conf: dict with custom configuration (the payload of the configuration)
@@ -562,23 +568,26 @@ class GlociRegistry(Registry):
         version: str,
         build_artifacts_dir: str,
         oci_metadata: list,
+        feature_set: str,
     ):
         """
         creates and pushes an image manifest
 
-        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with get_oci_metadata
+        :param oci_metadata: a list of filenames and their OCI metadata, can be constructed with
+        parse_features.get_oci_metadata or parse_features.get_oci_metadata_from_fileset
         :param str architecture: target architecture of the image
         :param str cname: canonical name of the target image
         :param str build_artifacts_dir: directory where the build artifacts are located
+        :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
+        manifest itself and in the index entry for this manifest
         """
 
         # TODO: construct oci_artifacts default data
 
-        # oci_metadata = get_oci_metadata(cname, version, architecture, gardenlinux_root)
-
         manifest_image = oras.oci.NewManifest()
         total_size = 0
 
+        # For each file, create sign, attach and push a layer
         for artifact in oci_metadata:
             annotations_input = artifact["annotations"]
             media_type = artifact["media_type"]
@@ -592,6 +601,7 @@ class GlociRegistry(Registry):
                 file_path = oras.utils.make_targz(file_path)
                 cleanup_blob = True
 
+            # Create and sign layer information
             layer = self.create_layer(
                 file_path, cname, version, architecture, media_type
             )
@@ -599,43 +609,21 @@ class GlociRegistry(Registry):
 
             if annotations_input:
                 layer["annotations"].update(annotations_input)
+            # Attach this layer to the manifest that is currently created (and pushed later)
             manifest_image["layers"].append(layer)
-            logger.debug("Layer:")
-            logger.debug(layer)
-            logger.debug("---------")
-            logger.debug(f"Currentl total size: {total_size}")
-            logger.debug(f"File Size of {file_path}: {os.path.getsize(file_path)}")
-            logger.debug(
-                f"File get modification time of {file_path}: {os.path.getmtime(file_path)}"
-            )
-            logger.debug(
-                f"File get creation time of {file_path}: {os.path.getctime(file_path)}"
-            )
-            logger.debug("---------")
+            logger.debug(f"Layer: {layer}")
+            # Push
             response = self.upload_blob(file_path, self.container, layer)
             self._check_200_response(response)
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
-        # layer = self.create_layer(
-        #     info_yaml,
-        #     cname,
-        #     version,
-        #     architecture,
-        #     "application/io.gardenlinux.oci.info-yaml",
-        # )
-        # total_size += int(layer["size"])
-        # manifest_image["layers"].append(layer)
-
+        # This ends up in the manifest
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
+        manifest_image["annotations"]["feature_set"] = feature_set
         attach_state(manifest_image["annotations"], "UNTESTED")
-
-        # if layer is None:
-        #    raise ValueError("error: layer is none")
-        # response = self.upload_blob(info_yaml, self.container, layer)
-        # self._check_200_response(response)
 
         config_annotations = {"cname": cname, "architecture": architecture}
         conf, config_file = create_config_from_dict(dict(), config_annotations)
@@ -655,8 +643,10 @@ class GlociRegistry(Registry):
             self.upload_manifest(manifest_image, manifest_container)
         )
 
+        # This ends up in the index-entry for the manifest
         metadata_annotations = {"cname": cname, "architecture": architecture}
         attach_state(metadata_annotations, "UNTESTED")
+        metadata_annotations["feature_set"] = feature_set
         manifest_digest = self.get_digest(manifest_container)
         manifest_index_metadata = NewManifestMetadata(
             manifest_digest,
@@ -698,3 +688,65 @@ class GlociRegistry(Registry):
             layer, cname, version, architecture, checksum_sha256, media_type
         )
         return layer
+
+    def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
+        assert tar.endswith(".tar.xz")
+        tmpdir = tempfile.mkdtemp()
+        extract_tar(tar, tmpdir)
+
+        try:
+            oci_metadata = get_oci_metadata_from_fileset(
+                os.listdir(tmpdir), architecture
+            )
+
+            features = ""
+            for artifact in oci_metadata:
+                if artifact["media_type"] == "application/io.gardenlinux.release":
+                    file = open(f"{tmpdir}/{artifact["file_name"]}", "r")
+                    lines = file.readlines()
+                    for line in lines:
+                        if line.strip().startswith("GARDENLINUX_FEATURES="):
+                            features = line.strip().removeprefix(
+                                "GARDENLINUX_FEATURES="
+                            )
+                            break
+                    file.close()
+
+            self.push_image_manifest(
+                architecture, cname, version, tmpdir, oci_metadata, features
+            )
+        except Exception as e:
+            print("Error: ", e)
+            shutil.rmtree(tmpdir, ignore_errors=True)
+            print("removed tmp files.")
+            exit(1)
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        print("removed tmp files.")
+
+
+def extract_tar(tar: str, tmpdir: str):
+    """
+    Extracts the contents of the tarball to the specified tmp directory. In case
+    a nested artifact is found (.pxe.tar.gz) its contents are extracted as well
+    :param tar: str the full path to the tarball
+    :param tmpdir: str the tmp directory to extract to
+    """
+    fullname = os.path.basename(tar).removesuffix(".tar.xz")
+    try:
+        tar_obj = tarfile.open(tar)
+        tar_obj.extractall(filter="data", path=tmpdir)
+        tar_obj.close()
+        for file in os.listdir(f"{tmpdir}/{fullname}"):
+            shutil.move(f"{tmpdir}/{fullname}/{file}", tmpdir)
+        shutil.rmtree(f"{tmpdir}/{fullname}", ignore_errors=True)
+        for file in os.listdir(tmpdir):
+            if file.endswith(".pxe.tar.gz"):
+                logger.info(f"Found nested artifact {file}")
+                nested_tar_obj = tarfile.open(f"{tmpdir}/{file}")
+                nested_tar_obj.extractall(filter="data", path=tmpdir)
+                nested_tar_obj.close()
+
+    except (OSError, tarfile.FilterError, tarfile.TarError) as e:
+        print("Failed to extract tarball", e)
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        exit(1)
