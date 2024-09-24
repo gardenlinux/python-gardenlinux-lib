@@ -623,7 +623,7 @@ class GlociRegistry(Registry):
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         manifest_image["annotations"]["feature_set"] = feature_set
-        attach_state(manifest_image["annotations"], "UNTESTED")
+        attach_state(manifest_image["annotations"], "")
 
         config_annotations = {"cname": cname, "architecture": architecture}
         conf, config_file = create_config_from_dict(dict(), config_annotations)
@@ -645,7 +645,7 @@ class GlociRegistry(Registry):
 
         # This ends up in the index-entry for the manifest
         metadata_annotations = {"cname": cname, "architecture": architecture}
-        attach_state(metadata_annotations, "UNTESTED")
+        attach_state(metadata_annotations, "")
         metadata_annotations["feature_set"] = feature_set
         manifest_digest = self.get_digest(manifest_container)
         manifest_index_metadata = NewManifestMetadata(
