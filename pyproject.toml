@@ -13,7 +13,7 @@ networkx = "^3.3"
 PyYAML = "^6.0.2"
 pytest = "^8.3.2"
 gitpython = "^3.1.43"
-sphinx-rtd-theme = "^2.0.0"
+sphinx-rtd-theme = "^3.0.0"
 apt-repo = "^0.5"
 jsonschema = "^4.23.0"
 oras = { git  = "https://github.com/oras-project/oras-py.git", rev="caf8db5b279382335fbb1f6d7402ed9b73618d37" }
