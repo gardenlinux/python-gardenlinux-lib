@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python_gardenlinux_lib"
-version = "0.2.0"
+version = "0.3.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -19,6 +19,7 @@ jsonschema = "^4.23.0"
 oras = { git  = "https://github.com/oras-project/oras-py.git", rev="caf8db5b279382335fbb1f6d7402ed9b73618d37" }
 python-dotenv = "^1.0.1"
 cryptography = "^43.0.0"
+boto3 = "1.35.30"
 
 
 [tool.poetry.group.dev.dependencies]

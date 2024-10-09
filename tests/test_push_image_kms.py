@@ -1,9 +1,7 @@
-from idlelib.window import registry
-
 import pytest
 import os
 
-from python_gardenlinux_lib.oras.crypto import LocalSigner
+from python_gardenlinux_lib.oras.crypto import LocalSigner, KMSSigner
 from python_gardenlinux_lib.oras.registry import GlociRegistry
 from python_gardenlinux_lib.features import parse_features
 
@@ -29,20 +27,17 @@ GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
         ("today", "metal-kvm_dev", "amd64"),
     ],
 )
-def test_push_example(version, cname, arch):
+def test_push_example_kms(version, cname, arch):
     oci_metadata = parse_features.get_oci_metadata(
         cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE
     )
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
-    signer = LocalSigner(
-        private_key_file_path="cert/oci-sign.key",
-        public_key_file_path="cert/oci-sign.crt",
-    )
-    a_registry = GlociRegistry(
+    signer = KMSSigner(arn="b70b0b19-389a-4b3d-b82a-77279a98ed23")
+    registry = GlociRegistry(
         container_name=container_name, insecure=True, signer=signer
     )
     features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
-    a_registry.push_image_manifest(
+    registry.push_image_manifest(
         arch,
         cname,
         version,
