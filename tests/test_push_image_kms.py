@@ -1,9 +1,8 @@
 import pytest
-import os
 
-from python_gardenlinux_lib.oras.crypto import LocalSigner, KMSSigner
-from python_gardenlinux_lib.oras.registry import GlociRegistry
 from python_gardenlinux_lib.features import parse_features
+from python_gardenlinux_lib.oras.crypto import KMSSigner
+from python_gardenlinux_lib.oras.registry import GlociRegistry
 
 CONTAINER_NAME_ZOT_EXAMPLE = "127.0.0.1:18081/gardenlinux-example"
 GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
