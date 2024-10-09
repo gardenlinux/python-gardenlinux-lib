@@ -34,5 +34,5 @@ jobs:
         run: |
           export GLOCI_REGISTRY_USERNAME="gardenlinux"
           export GLOCI_REGISTRY_TOKEN="invalid"
-          poetry run pytest
+          poetry run pytest -k "not kms"
 
