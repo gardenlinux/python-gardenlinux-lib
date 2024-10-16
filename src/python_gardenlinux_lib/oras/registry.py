@@ -20,7 +20,6 @@ import oras.oci
 import oras.provider
 import oras.utils
 from python_gardenlinux_lib.features.parse_features import (
-    get_oci_metadata,
     get_oci_metadata_from_fileset,
 )
 import requests
@@ -31,9 +30,8 @@ from oras.schemas import manifest as oras_manifest_schema
 
 from python_gardenlinux_lib.oras.crypto import (
     calculate_sha256,
-    sign_data,
     verify_sha256,
-    verify_signature,
+    Signer,
 )
 from python_gardenlinux_lib.oras.defaults import (
     annotation_signature_key,
@@ -134,37 +132,13 @@ def construct_layer_signed_data_string(
     return data_to_sign
 
 
-def setup_registry(
-    container_name: str,
-    private_key: Optional[str] = None,
-    insecure: bool = False,
-    public_key: Optional[str] = None,
-):
-    username = os.getenv("GLOCI_REGISTRY_USERNAME")
-    token = os.getenv("GLOCI_REGISTRY_TOKEN")
-    if username is None:
-        logger.error("No username")
-        raise ValueError("No Username provided when setting up registry")
-    if token is None:
-        logger.error("No token")
-        raise ValueError("No token provided when setting up registry")
-    return GlociRegistry(
-        container_name,
-        token,
-        insecure=insecure,
-        private_key=private_key,
-        public_key=public_key,
-    )
-
-
 class GlociRegistry(Registry):
     def __init__(
         self,
         container_name: str,
-        token: Optional[str] = None,
+        signer: Signer,
         insecure: bool = False,
-        private_key: Optional[str] = None,
-        public_key: Optional[str] = None,
+        token: Optional[str] = None,
         config_path: Optional[str] = None,
     ):
         super().__init__(auth_backend="token", insecure=insecure)
@@ -172,10 +146,9 @@ class GlociRegistry(Registry):
         self.container_name = container_name
         self.registry_url = self.container.registry
         self.config_path = config_path
-        self.private_key_path = private_key
-        self.public_key_path = public_key
+        self.signer = signer
         if not token:
-            logger.error("No Token provided")
+            logger.info("No Token provided.")
         else:
             self.token = base64.b64encode(token.encode("utf-8")).decode("utf-8")
             self.auth.set_token_auth(self.token)
@@ -423,11 +396,7 @@ class GlociRegistry(Registry):
         data_to_sign = construct_manifest_entry_signed_data_string(
             cname, version, new_manifest_metadata, architecture
         )
-        if not self.private_key_path:
-            raise ValueError(
-                "No Private Key was given. Can not sign, but signing was required."
-            )
-        signature = sign_data(data_to_sign, self.private_key_path)
+        signature = self.signer.sign_data(data_to_sign)
         new_manifest_metadata["annotations"].update(
             {
                 annotation_signature_key: signature,
@@ -444,15 +413,10 @@ class GlociRegistry(Registry):
         checksum_sha256: str,
         media_type: str,
     ):
-        if self.private_key_path is None:
-            raise ValueError(
-                "No Private Key was given. Can not sign, but signing was required."
-            )
-
         data_to_sign = construct_layer_signed_data_string(
             cname, version, architecture, media_type, checksum_sha256
         )
-        signature = sign_data(data_to_sign, self.private_key_path)
+        signature = self.signer.sign_data(data_to_sign)
         layer["annotations"].update(
             {
                 annotation_signature_key: signature,
@@ -479,12 +443,7 @@ class GlociRegistry(Registry):
             raise ValueError(
                 f"Signed data does not match expected signed data.\n{signed_data} != {signed_data_expected}"
             )
-        logger.debug(f"verifying signature with public key {self.public_key_path}")
-        if self.public_key_path is None:
-            raise ValueError(
-                "No Public Key was given. Can not verify signature, but verification of signature was required."
-            )
-        verify_signature(signed_data, signature, self.public_key_path)
+        self.signer.verify_signature(signed_data, signature)
 
     def verify_manifest_signature(self, manifest: dict):
         if "layers" not in manifest:
@@ -513,11 +472,7 @@ class GlociRegistry(Registry):
                 raise ValueError(
                     f"Signed data does not match expected signed data. {signed_data} != {signed_data_expected}"
                 )
-            if not self.public_key_path:
-                raise ValueError(
-                    "No public key was given, but verification of signature was required"
-                )
-            verify_signature(signed_data, signature, self.public_key_path)
+            self.signer.verify_signature(signed_data, signature)
 
     @ensure_container
     def remove_container(self, container: OrasContainer):
