@@ -168,7 +168,6 @@ class GlociRegistry(Registry):
         get_manifest = f"{self.prefix}://{container.manifest_url()}"
         response = self.do_request(get_manifest, "GET", headers=headers)
         self._check_200_response(response)
-        self.verify_manifest_signature(response.json())
         return response
 
     @ensure_container
@@ -252,7 +251,6 @@ class GlociRegistry(Registry):
                 and manifest_meta["annotations"]["architecture"] == arch
                 and manifest_meta["platform"]["os.version"] == version
             ):
-                self.verify_manifest_meta_signature(manifest_meta)
                 return manifest_meta
 
         return None
@@ -278,7 +276,6 @@ class GlociRegistry(Registry):
         self._check_200_response(response)
         manifest = response.json()
         verify_sha256(digest, response.content)
-        self.verify_manifest_signature(manifest)
         jsonschema.validate(manifest, schema=oras_manifest_schema)
         return manifest
 
@@ -367,8 +364,6 @@ class GlociRegistry(Registry):
             self.container, cname, version, architecture
         )
 
-        self.verify_manifest_signature(manifest)
-
         layer = self.create_layer(file_path, cname, version, architecture, media_type)
         self._check_200_response(self.upload_blob(file_path, self.container, layer))
 
@@ -384,7 +379,6 @@ class GlociRegistry(Registry):
         new_manifest_metadata["size"] = self.get_manifest_size(manifest_container)
         new_manifest_metadata["platform"] = NewPlatform(architecture, version)
 
-        self.sign_manifest_entry(new_manifest_metadata, version, architecture, cname)
         new_index = self.update_index(old_manifest_digest, new_manifest_metadata)
         self._check_200_response(self.upload_index(new_index))
 
@@ -609,7 +603,6 @@ class GlociRegistry(Registry):
             metadata_annotations,
             NewPlatform(architecture, version),
         )
-        self.sign_manifest_entry(manifest_index_metadata, version, architecture, cname)
 
         old_manifest_meta_data = self.get_manifest_meta_data_by_cname(
             self.container, cname, version, architecture
@@ -639,9 +632,6 @@ class GlociRegistry(Registry):
         layer["annotations"] = {
             oras.defaults.annotation_title: os.path.basename(file_path),
         }
-        self.sign_layer(
-            layer, cname, version, architecture, checksum_sha256, media_type
-        )
         return layer
 
     def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
