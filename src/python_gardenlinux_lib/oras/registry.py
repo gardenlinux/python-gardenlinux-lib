@@ -588,6 +588,11 @@ class GlociRegistry(Registry):
             f"{self.container_name}-{cname}-{architecture}"
         )
 
+        fufu = manifest_container.digest
+        print(f"manifest fufu: {fufu}")
+        fufu2 = self.get_digest(manifest_container)
+        print(f"manifest fufu2: {fufu2}")
+
         self._check_200_response(
             self.upload_manifest(manifest_image, manifest_container)
         )
