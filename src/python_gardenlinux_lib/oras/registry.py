@@ -136,7 +136,6 @@ class GlociRegistry(Registry):
     def __init__(
         self,
         container_name: str,
-        signer: Signer,
         insecure: bool = False,
         token: Optional[str] = None,
         config_path: Optional[str] = None,
@@ -146,7 +145,6 @@ class GlociRegistry(Registry):
         self.container_name = container_name
         self.registry_url = self.container.registry
         self.config_path = config_path
-        self.signer = signer
         if not token:
             logger.info("No Token provided.")
         else:
