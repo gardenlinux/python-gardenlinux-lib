@@ -659,7 +659,7 @@ class GlociRegistry(Registry):
                             break
                     file.close()
 
-            self.push_image_manifest(
+            digest = self.push_image_manifest(
                 architecture, cname, version, tmpdir, oci_metadata, features
             )
         except Exception as e:
@@ -669,6 +669,7 @@ class GlociRegistry(Registry):
             exit(1)
         shutil.rmtree(tmpdir, ignore_errors=True)
         print("removed tmp files.")
+        return digest
 
 
 def extract_tar(tar: str, tmpdir: str):
