@@ -34,12 +34,8 @@ def test_push_example(version, cname, arch):
         cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE
     )
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
-    signer = LocalSigner(
-        private_key_file_path="cert/oci-sign.key",
-        public_key_file_path="cert/oci-sign.crt",
-    )
     a_registry = GlociRegistry(
-        container_name=container_name, insecure=True, signer=signer
+        container_name=container_name, insecure=True
     )
     features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
     a_registry.push_image_manifest(
