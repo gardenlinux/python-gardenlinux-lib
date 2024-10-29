@@ -588,6 +588,8 @@ class GlociRegistry(Registry):
             f"{self.container_name}-{cname}-{architecture}"
         )
 
+        local_digest = f"sha256:{hashlib.sha256(json.dumps(manifest_image).encode('utf-8')).hexdigest()}"
+
         self._check_200_response(
             self.upload_manifest(manifest_image, manifest_container)
         )
@@ -597,6 +599,8 @@ class GlociRegistry(Registry):
         attach_state(metadata_annotations, "")
         metadata_annotations["feature_set"] = feature_set
         manifest_digest = self.get_digest(manifest_container)
+        if manifest_digest != local_digest:
+            raise ValueError("local and remotely calculated digests do not match")
         manifest_index_metadata = NewManifestMetadata(
             manifest_digest,
             self.get_manifest_size(manifest_container),
@@ -617,7 +621,7 @@ class GlociRegistry(Registry):
         self._check_200_response(self.upload_index(new_index))
 
         print(f"Successfully pushed {self.container}")
-        return response
+        return local_digest
 
     def create_layer(
         self,
