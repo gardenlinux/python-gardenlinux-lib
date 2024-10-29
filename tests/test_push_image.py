@@ -3,7 +3,6 @@ from idlelib.window import registry
 import pytest
 import os
 
-from python_gardenlinux_lib.oras.crypto import LocalSigner
 from python_gardenlinux_lib.oras.registry import GlociRegistry
 from python_gardenlinux_lib.features import parse_features
 

@@ -31,7 +31,6 @@ from oras.schemas import manifest as oras_manifest_schema
 from python_gardenlinux_lib.oras.crypto import (
     calculate_sha256,
     verify_sha256,
-    Signer,
 )
 from python_gardenlinux_lib.oras.defaults import (
     annotation_signature_key,
