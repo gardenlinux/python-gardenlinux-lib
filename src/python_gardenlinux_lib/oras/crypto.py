@@ -1,10 +1,6 @@
 import hashlib
 
 
-
-
-
-
 def verify_sha256(checksum: str, data: bytes):
     data_checksum = f"sha256:{hashlib.sha256(data).hexdigest()}"
     if checksum != data_checksum:
