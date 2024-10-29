@@ -33,9 +33,7 @@ def test_push_example(version, cname, arch):
         cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE
     )
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
-    a_registry = GlociRegistry(
-        container_name=container_name, insecure=True
-    )
+    a_registry = GlociRegistry(container_name=container_name, insecure=True)
     features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
     a_registry.push_image_manifest(
         arch,
