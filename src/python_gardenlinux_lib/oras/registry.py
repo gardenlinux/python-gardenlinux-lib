@@ -529,6 +529,7 @@ class GlociRegistry(Registry):
         :param str build_artifacts_dir: directory where the build artifacts are located
         :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
         manifest itself and in the index entry for this manifest
+        :returns the digest of the pushed manifest
         """
 
         # TODO: construct oci_artifacts default data
