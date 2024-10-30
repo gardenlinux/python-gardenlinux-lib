@@ -31,7 +31,6 @@ from oras.schemas import manifest as oras_manifest_schema
 from python_gardenlinux_lib.oras.crypto import (
     calculate_sha256,
     verify_sha256,
-    Signer,
 )
 from python_gardenlinux_lib.oras.defaults import (
     annotation_signature_key,
@@ -136,7 +135,6 @@ class GlociRegistry(Registry):
     def __init__(
         self,
         container_name: str,
-        signer: Signer,
         insecure: bool = False,
         token: Optional[str] = None,
         config_path: Optional[str] = None,
@@ -146,7 +144,6 @@ class GlociRegistry(Registry):
         self.container_name = container_name
         self.registry_url = self.container.registry
         self.config_path = config_path
-        self.signer = signer
         if not token:
             logger.info("No Token provided.")
         else:
@@ -168,7 +165,6 @@ class GlociRegistry(Registry):
         get_manifest = f"{self.prefix}://{container.manifest_url()}"
         response = self.do_request(get_manifest, "GET", headers=headers)
         self._check_200_response(response)
-        self.verify_manifest_signature(response.json())
         return response
 
     @ensure_container
@@ -252,7 +248,6 @@ class GlociRegistry(Registry):
                 and manifest_meta["annotations"]["architecture"] == arch
                 and manifest_meta["platform"]["os.version"] == version
             ):
-                self.verify_manifest_meta_signature(manifest_meta)
                 return manifest_meta
 
         return None
@@ -278,7 +273,6 @@ class GlociRegistry(Registry):
         self._check_200_response(response)
         manifest = response.json()
         verify_sha256(digest, response.content)
-        self.verify_manifest_signature(manifest)
         jsonschema.validate(manifest, schema=oras_manifest_schema)
         return manifest
 
@@ -367,8 +361,6 @@ class GlociRegistry(Registry):
             self.container, cname, version, architecture
         )
 
-        self.verify_manifest_signature(manifest)
-
         layer = self.create_layer(file_path, cname, version, architecture, media_type)
         self._check_200_response(self.upload_blob(file_path, self.container, layer))
 
@@ -384,7 +376,6 @@ class GlociRegistry(Registry):
         new_manifest_metadata["size"] = self.get_manifest_size(manifest_container)
         new_manifest_metadata["platform"] = NewPlatform(architecture, version)
 
-        self.sign_manifest_entry(new_manifest_metadata, version, architecture, cname)
         new_index = self.update_index(old_manifest_digest, new_manifest_metadata)
         self._check_200_response(self.upload_index(new_index))
 
@@ -535,6 +526,7 @@ class GlociRegistry(Registry):
         :param str build_artifacts_dir: directory where the build artifacts are located
         :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
         manifest itself and in the index entry for this manifest
+        :returns the digest of the pushed manifest
         """
 
         # TODO: construct oci_artifacts default data
@@ -594,6 +586,8 @@ class GlociRegistry(Registry):
             f"{self.container_name}-{cname}-{architecture}"
         )
 
+        local_digest = f"sha256:{hashlib.sha256(json.dumps(manifest_image).encode('utf-8')).hexdigest()}"
+
         self._check_200_response(
             self.upload_manifest(manifest_image, manifest_container)
         )
@@ -603,13 +597,14 @@ class GlociRegistry(Registry):
         attach_state(metadata_annotations, "")
         metadata_annotations["feature_set"] = feature_set
         manifest_digest = self.get_digest(manifest_container)
+        if manifest_digest != local_digest:
+            raise ValueError("local and remotely calculated digests do not match")
         manifest_index_metadata = NewManifestMetadata(
             manifest_digest,
             self.get_manifest_size(manifest_container),
             metadata_annotations,
             NewPlatform(architecture, version),
         )
-        self.sign_manifest_entry(manifest_index_metadata, version, architecture, cname)
 
         old_manifest_meta_data = self.get_manifest_meta_data_by_cname(
             self.container, cname, version, architecture
@@ -624,7 +619,7 @@ class GlociRegistry(Registry):
         self._check_200_response(self.upload_index(new_index))
 
         print(f"Successfully pushed {self.container}")
-        return response
+        return local_digest
 
     def create_layer(
         self,
@@ -639,9 +634,6 @@ class GlociRegistry(Registry):
         layer["annotations"] = {
             oras.defaults.annotation_title: os.path.basename(file_path),
         }
-        self.sign_layer(
-            layer, cname, version, architecture, checksum_sha256, media_type
-        )
         return layer
 
     def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
@@ -667,7 +659,7 @@ class GlociRegistry(Registry):
                             break
                     file.close()
 
-            self.push_image_manifest(
+            digest = self.push_image_manifest(
                 architecture, cname, version, tmpdir, oci_metadata, features
             )
         except Exception as e:
@@ -677,6 +669,7 @@ class GlociRegistry(Registry):
             exit(1)
         shutil.rmtree(tmpdir, ignore_errors=True)
         print("removed tmp files.")
+        return digest
 
 
 def extract_tar(tar: str, tmpdir: str):
