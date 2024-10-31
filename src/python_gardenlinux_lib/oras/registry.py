@@ -637,7 +637,6 @@ class GlociRegistry(Registry):
         return layer
 
     def push_from_tar(self, architecture: str, version: str, cname: str, tar: str):
-        assert tar.endswith(".tar.xz")
         tmpdir = tempfile.mkdtemp()
         extract_tar(tar, tmpdir)
 
@@ -679,14 +678,10 @@ def extract_tar(tar: str, tmpdir: str):
     :param tar: str the full path to the tarball
     :param tmpdir: str the tmp directory to extract to
     """
-    fullname = os.path.basename(tar).removesuffix(".tar.xz")
     try:
         tar_obj = tarfile.open(tar)
         tar_obj.extractall(filter="data", path=tmpdir)
         tar_obj.close()
-        for file in os.listdir(f"{tmpdir}/{fullname}"):
-            shutil.move(f"{tmpdir}/{fullname}/{file}", tmpdir)
-        shutil.rmtree(f"{tmpdir}/{fullname}", ignore_errors=True)
         for file in os.listdir(tmpdir):
             if file.endswith(".pxe.tar.gz"):
                 logger.info(f"Found nested artifact {file}")
