@@ -56,5 +56,4 @@ EmptyIndex = {
     "schemaVersion": 2,
     "mediaType": "application/vnd.oci.image.index.v1+json",
     "manifests": [],
-    "annotations": {},
 }

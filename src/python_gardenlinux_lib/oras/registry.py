@@ -228,27 +228,19 @@ class GlociRegistry(Registry):
             return None
 
         for manifest_meta in index["manifests"]:
-            if "annotations" not in manifest_meta:
-                logger.debug("Manifest annotations was none, which is invalid")
-                return None
+            # Annotations are optional: 
+            # https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md#properties
 
-            if "cname" not in manifest_meta["annotations"]:
-                logger.debug("cname annotation was none, which is invalid")
-                return None
-
-            if "architecture" not in manifest_meta["annotations"]:
-                logger.debug("architecture annotation was none, which is invalid")
-                return None
-
-            if "platform" not in manifest_meta:
-                logger.debug("platform data was none, which is invalid")
-                return None
-            if (
-                manifest_meta["annotations"]["cname"] == cname
-                and manifest_meta["annotations"]["architecture"] == arch
-                and manifest_meta["platform"]["os.version"] == version
-            ):
-                return manifest_meta
+            if "annotations" in manifest_meta:
+                if (
+                    "cname" in manifest_meta["annotations"]
+                    and "architecture" in manifest_meta["annotations"]
+                    and "platform" in manifest_meta["annotations"]
+                    and manifest_meta["annotations"]["cname"] == cname
+                    and manifest_meta["annotations"]["architecture"] == arch
+                    and manifest_meta["platform"]["os.version"] == version
+                ):
+                    return manifest_meta
 
         return None
 

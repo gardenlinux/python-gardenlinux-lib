@@ -86,7 +86,7 @@ GL_MEDIA_TYPE_LOOKUP = {
     "platform.test.xml": "application/io.gardenlinux.io.platform.test.xml",
     "chroot.test.log": "application/io.gardenlinux.io.chroot.test.log",
     "chroot.test.xml": "application/io.gardenlinux.io.chroot.test.xml",
-    "oci.log": "application/io.gardenlinux.log"
+    "oci.log": "application/io.gardenlinux.log",
 }
 
 
