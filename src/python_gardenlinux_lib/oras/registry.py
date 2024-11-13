@@ -235,7 +235,7 @@ class GlociRegistry(Registry):
                 if (
                     "cname" in manifest_meta["annotations"]
                     and "architecture" in manifest_meta["annotations"]
-                    and "platform" in manifest_meta["annotations"]
+                    and "os.version" in manifest_meta["platform"]
                     and manifest_meta["annotations"]["cname"] == cname
                     and manifest_meta["annotations"]["architecture"] == arch
                     and manifest_meta["platform"]["os.version"] == version
