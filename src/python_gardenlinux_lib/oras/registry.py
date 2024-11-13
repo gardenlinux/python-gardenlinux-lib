@@ -228,7 +228,7 @@ class GlociRegistry(Registry):
             return None
 
         for manifest_meta in index["manifests"]:
-            # Annotations are optional: 
+            # Annotations are optional:
             # https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md#properties
 
             if "annotations" in manifest_meta:
