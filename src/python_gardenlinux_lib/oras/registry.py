@@ -662,6 +662,43 @@ class GlociRegistry(Registry):
         print("removed tmp files.")
         return digest
 
+    def push_from_dir(self, architecture: str, version: str, cname: str, dir: str):
+        # Step 1 scan and extract nested artifacts:
+        for file in os.listdir(dir):
+            try:
+                if file.endswith(".pxe.tar.gz"):
+                    logger.info(f"Found nested artifact {file}")
+                    nested_tar_obj = tarfile.open(f"{dir}/{file}")
+                    nested_tar_obj.extractall(filter="data", path=dir)
+                    nested_tar_obj.close()
+            except (OSError, tarfile.FilterError, tarfile.TarError) as e:
+                print(f"Failed to extract nested artifact {file}", e)
+                exit(1)
+
+        try:
+            oci_metadata = get_oci_metadata_from_fileset(os.listdir(dir), architecture)
+
+            features = ""
+            for artifact in oci_metadata:
+                if artifact["media_type"] == "application/io.gardenlinux.release":
+                    file = open(f"{dir}/{artifact["file_name"]}", "r")
+                    lines = file.readlines()
+                    for line in lines:
+                        if line.strip().startswith("GARDENLINUX_FEATURES="):
+                            features = line.strip().removeprefix(
+                                "GARDENLINUX_FEATURES="
+                            )
+                            break
+                    file.close()
+
+            digest = self.push_image_manifest(
+                architecture, cname, version, dir, oci_metadata, features
+            )
+        except Exception as e:
+            print("Error: ", e)
+            exit(1)
+        return digest
+
 
 def extract_tar(tar: str, tmpdir: str):
     """
