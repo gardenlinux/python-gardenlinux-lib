@@ -240,6 +240,22 @@ class GlociRegistry(Registry):
                     and manifest_meta["annotations"]["architecture"] == arch
                     and manifest_meta["platform"]["os.version"] == version
                 ):
+                    # Add description annotation if not present
+                    if "org.opencontainers.image.description" not in manifest_meta["annotations"]:
+                        features = manifest_meta["annotations"].get("features", "")
+                        arch = manifest_meta["annotations"]["architecture"]
+                        image_type = manifest_meta["annotations"].get("image_type", "")
+                        archive_type = manifest_meta["annotations"].get("archive_type", "")
+                        
+                        description = (
+                            f"GardenLinux image {cname}-{version}-{arch}\n"
+                            f"Architecture: {arch}\n"
+                            f"Features: {features}\n"
+                            f"Image type: {image_type}\n" 
+                            f"Archive type: {archive_type}"
+                        )
+                        manifest_meta["annotations"]["org.opencontainers.image.description"] = description
+                        
                     return manifest_meta
 
         return None
