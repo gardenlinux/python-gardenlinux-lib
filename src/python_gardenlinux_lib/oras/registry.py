@@ -562,6 +562,14 @@ class GlociRegistry(Registry):
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         manifest_image["annotations"]["feature_set"] = feature_set
+        description = (
+            f"Garden Linux: {cname} "
+            f"Architecture: {architecture} "
+            f"Features: {feature_set}"
+        )
+        manifest_image["annotations"][
+            "org.opencontainers.image.description"
+        ] = description
         attach_state(manifest_image["annotations"], "")
 
         config_annotations = {"cname": cname, "architecture": architecture}
@@ -585,15 +593,9 @@ class GlociRegistry(Registry):
         )
 
         # This ends up in the index-entry for the manifest
-        description = (
-            f"Garden Linux image {cname}-{version}-{architecture}\n"
-            f"Architecture: {architecture}\n"
-            f"Features: {feature_set}"
-        )
         metadata_annotations = {"cname": cname, "architecture": architecture}
         attach_state(metadata_annotations, "")
         metadata_annotations["feature_set"] = feature_set
-        metadata_annotations["org.opencontainers.image.description"] = description
         manifest_digest = self.get_digest(manifest_container)
         if manifest_digest != local_digest:
             raise ValueError("local and remotely calculated digests do not match")
