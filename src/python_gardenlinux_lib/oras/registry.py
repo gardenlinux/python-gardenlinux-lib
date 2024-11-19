@@ -562,6 +562,14 @@ class GlociRegistry(Registry):
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         manifest_image["annotations"]["feature_set"] = feature_set
+        description = (
+            f"Garden Linux: {cname} "
+            f"Architecture: {architecture} "
+            f"Features: {feature_set}"
+        )
+        manifest_image["annotations"][
+            "org.opencontainers.image.description"
+        ] = description
         attach_state(manifest_image["annotations"], "")
 
         config_annotations = {"cname": cname, "architecture": architecture}
