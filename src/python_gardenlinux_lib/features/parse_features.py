@@ -138,7 +138,8 @@ def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
             if __get_node_type(graph.nodes[feature]) == type
         ]
     return features_by_type
-    
+
+
 def get_features_list(cname: str, gardenlinux_root: str) -> list:
     """
     :param str cname: the target cname to get the feature dict for
@@ -152,6 +153,7 @@ def get_features_list(cname: str, gardenlinux_root: str) -> list:
     graph = filter_graph(feature_graph, input_features)
     features = __reverse_sort_nodes(graph)
     return features
+
 
 def get_features(cname: str, gardenlinux_root: str) -> str:
     """
