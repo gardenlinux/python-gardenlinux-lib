@@ -140,6 +140,21 @@ def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
     return features_by_type
 
 
+def get_features_list(cname: str, gardenlinux_root: str) -> list:
+    """
+    :param str cname: the target cname to get the feature dict for
+    :param str gardenlinux_root: path of garden linux src root
+    :return: list of features for a given cname
+
+    """
+    feature_base_dir = f"{gardenlinux_root}/features"
+    input_features = __reverse_cname_base(cname)
+    feature_graph = read_feature_files(feature_base_dir)
+    graph = filter_graph(feature_graph, input_features)
+    features = __reverse_sort_nodes(graph)
+    return features
+
+
 def get_features(cname: str, gardenlinux_root: str) -> str:
     """
     :param str cname: the target cname to get the feature set for
