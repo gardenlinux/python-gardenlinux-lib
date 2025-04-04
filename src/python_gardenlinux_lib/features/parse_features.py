@@ -1,5 +1,6 @@
+from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
+
 from glob import glob
-from git.objects import commit
 import yaml
 import networkx
 import os
@@ -8,86 +9,6 @@ import subprocess
 from typing import Optional
 
 from pygments.filter import apply_filters
-
-# It is important that this list is sorted in descending length of the entries
-GL_MEDIA_TYPES = [
-    "gcpimage.tar.gz.log",
-    "firecracker.tar.gz",
-    "platform.test.log",
-    "platform.test.xml",
-    "gcpimage.tar.gz",
-    "chroot.test.log",
-    "chroot.test.xml",
-    "pxe.tar.gz.log",
-    "root.squashfs",
-    "manifest.log",
-    "release.log",
-    "pxe.tar.gz",
-    "qcow2.log",
-    "test-log",
-    "boot.efi",
-    "manifest",
-    "vmdk.log",
-    "tar.log",
-    "uki.log",
-    "vmlinuz",
-    "release",
-    "vhd.log",
-    "ova.log",
-    "raw.log",
-    "oci.log",
-    "initrd",
-    "tar.gz",
-    "qcow2",
-    "tar",
-    "iso",
-    "oci",
-    "vhd",
-    "vmdk",
-    "ova",
-    "uki",
-    "raw",
-]
-
-
-GL_MEDIA_TYPE_LOOKUP = {
-    "tar": "application/io.gardenlinux.image.archive.format.tar",
-    "tar.gz": "application/io.gardenlinux.image.archive.format.tar.gz",
-    "pxe.tar.gz": "application/io.gardenlinux.image.archive.format.pxe.tar.gz",
-    "iso": "application/io.gardenlinux.image.archive.format.iso",
-    "oci": "application/io.gardenlinux.image.archive.format.oci",
-    "firecracker.tar.gz": "application/io.gardenlinux.image.archive.format.firecracker.tar.gz",
-    "qcow2": "application/io.gardenlinux.image.format.qcow2",
-    "vhd": "application/io.gardenlinux.image.format.vhd",
-    "gcpimage.tar.gz": "application/io.gardenlinux.image.format.gcpimage.tar.gz",
-    "vmdk": "application/io.gardenlinux.image.format.vmdk",
-    "ova": "application/io.gardenlinux.image.format.ova",
-    "uki": "application/io.gardenlinux.uki",
-    "uki.log": "application/io.gardenlinux.log",
-    "raw": "application/io.gardenlinux.image.archive.format.raw",
-    "manifest.log": "application/io.gardenlinux.log",
-    "release.log": "application/io.gardenlinux.log",
-    "test-log": "application/io.gardenlinux.test-log",
-    "manifest": "application/io.gardenlinux.manifest",
-    "tar.log": "application/io.gardenlinux.log",
-    "release": "application/io.gardenlinux.release",
-    "raw.log": "application/io.gardenlinux.log",
-    "qcow2.log": "application/io.gardenlinux.log",
-    "pxe.tar.gz.log": "application/io.gardenlinux.log",
-    "gcpimage.tar.gz.log": "application/io.gardenlinux.log",
-    "vmdk.log": "application/io.gardenlinux.log",
-    "vhd.log": "application/io.gardenlinux.log",
-    "ova.log": "application/io.gardenlinux.log",
-    "vmlinuz": "application/io.gardenlinux.kernel",
-    "initrd": "application/io.gardenlinux.initrd",
-    "root.squashfs": "application/io.gardenlinux.squashfs",
-    "boot.efi": "application/io.gardenlinux.efi",
-    "platform.test.log": "application/io.gardenlinux.io.platform.test.log",
-    "platform.test.xml": "application/io.gardenlinux.io.platform.test.xml",
-    "chroot.test.log": "application/io.gardenlinux.io.chroot.test.log",
-    "chroot.test.xml": "application/io.gardenlinux.io.chroot.test.xml",
-    "oci.log": "application/io.gardenlinux.log",
-}
 
 
 def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -> str:
@@ -117,57 +38,74 @@ def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -
     else:
         return commit_str
 
-
-def get_features_dict(cname: str, gardenlinux_root: str) -> dict:
+def get_features_dict(
+    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
+) -> dict:
     """
     :param str cname: the target cname to get the feature dict for
     :param str gardenlinux_root: path of garden linux src root
     :return: dict with list of features for a given cname, split into platform, element and flag
 
     """
-    feature_base_dir = f"{gardenlinux_root}/features"
-    input_features = __reverse_cname_base(cname)
-    feature_graph = read_feature_files(feature_base_dir)
-    graph = filter_graph(feature_graph, input_features)
+
+    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
     features = __reverse_sort_nodes(graph)
     features_by_type = dict()
+
     for type in ["platform", "element", "flag"]:
         features_by_type[type] = [
             feature
             for feature in features
             if __get_node_type(graph.nodes[feature]) == type
         ]
+
     return features_by_type
 
-
-def get_features_list(cname: str, gardenlinux_root: str) -> list:
+def get_features_graph(
+    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
+) -> networkx.graph:
     """
     :param str cname: the target cname to get the feature dict for
     :param str gardenlinux_root: path of garden linux src root
     :return: list of features for a given cname
 
     """
-    feature_base_dir = f"{gardenlinux_root}/features"
+
+    feature_base_dir = f"{gardenlinux_root}/{feature_dir_name}"
     input_features = __reverse_cname_base(cname)
     feature_graph = read_feature_files(feature_base_dir)
     graph = filter_graph(feature_graph, input_features)
+
+    return graph
+
+def get_features_list(
+    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
+) -> list:
+    """
+    :param str cname: the target cname to get the feature dict for
+    :param str gardenlinux_root: path of garden linux src root
+    :return: list of features for a given cname
+
+    """
+
+    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
     features = __reverse_sort_nodes(graph)
+
     return features
 
-
-def get_features(cname: str, gardenlinux_root: str) -> str:
+def get_features(
+    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
+) -> str:
     """
     :param str cname: the target cname to get the feature set for
     :param str gardenlinux_root: path of garden linux src root
     :return: a comma separated string with the expanded feature set for the cname
     """
-    feature_base_dir = f"{gardenlinux_root}/features"
-    input_features = __reverse_cname_base(cname)
-    feature_graph = read_feature_files(feature_base_dir)
-    graph = filter_graph(feature_graph, input_features)
-    features = __reverse_sort_nodes(graph)
-    return ",".join(features)
 
+    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
+    features = __reverse_sort_nodes(graph)
+
+    return ",".join(features)
 
 def construct_layer_metadata(
     filetype: str, cname: str, version: str, arch: str, commit: str
@@ -187,7 +125,6 @@ def construct_layer_metadata(
         "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
 
-
 def construct_layer_metadata_from_filename(filename: str, arch: str) -> dict:
     """
     :param str filename: filename of the blob
@@ -200,7 +137,6 @@ def construct_layer_metadata_from_filename(filename: str, arch: str) -> dict:
         "media_type": media_type,
         "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
-
 
 def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_root: str):
     """
@@ -224,7 +160,6 @@ def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_roo
             )
     return file_set
 
-
 def get_oci_metadata_from_fileset(fileset: list, arch: str):
     """
     :param str arch: arch of the target image
@@ -239,7 +174,6 @@ def get_oci_metadata_from_fileset(fileset: list, arch: str):
         )
 
     return oci_layer_metadata_list
-
 
 def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str):
     """
@@ -263,7 +197,6 @@ def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str)
 
     return oci_layer_metadata_list
 
-
 def lookup_media_type_for_filetype(filetype: str) -> str:
     """
     :param str filetype: filetype of the target layer
@@ -275,7 +208,6 @@ def lookup_media_type_for_filetype(filetype: str) -> str:
         raise ValueError(
             f"media type for {filetype} is not defined. You may want to add the definition to parse_features_lib"
         )
-
 
 def lookup_media_type_for_file(filename: str) -> str:
     """
@@ -290,7 +222,6 @@ def lookup_media_type_for_file(filename: str) -> str:
             f"media type for {filename} is not defined. You may want to add the definition to parse_features_lib"
         )
 
-
 def deduce_feature_name(feature_dir: str):
     """
     :param str feature_dir: Directory of single Feature
@@ -301,7 +232,6 @@ def deduce_feature_name(feature_dir: str):
         raise ValueError("Expected name from parse_feature_yaml function to be set")
     return parsed["name"]
 
-
 def deduce_archive_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
@@ -309,14 +239,12 @@ def deduce_archive_filetypes(feature_dir):
     """
     return deduce_filetypes_from_string(feature_dir, "image")
 
-
 def deduce_image_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
     :return: str list of filetype for image
     """
     return deduce_filetypes_from_string(feature_dir, "convert")
-
 
 def deduce_filetypes(feature_dir):
     """
@@ -331,7 +259,6 @@ def deduce_filetypes(feature_dir):
         archive_file_types.append("tar")
     image_file_types.extend(archive_file_types)
     return image_file_types
-
 
 def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
     """
@@ -355,7 +282,6 @@ def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
             result.append(filename.split(f"{script_base_name}.")[1])
 
     return sorted(result)
-
 
 def read_feature_files(feature_dir):
     """
@@ -386,7 +312,6 @@ def read_feature_files(feature_dir):
         raise ValueError("Graph is not directed acyclic graph")
     return feature_graph
 
-
 def parse_feature_yaml(feature_yaml_file: str):
     """
     Legacy function copied from gardenlinux/builder
@@ -403,10 +328,8 @@ def parse_feature_yaml(feature_yaml_file: str):
         content = yaml.safe_load(f)
     return {"name": name, "content": content}
 
-
 def __get_node_features(node):
     return node.get("content", {}).get("features", {})
-
 
 def filter_graph(feature_graph, feature_set, ignore_excludes=False):
     filter_set = set(feature_graph.nodes())
@@ -446,10 +369,8 @@ def filter_graph(feature_graph, feature_set, ignore_excludes=False):
         raise ValueError("Including explicitly excluded feature")
     return graph
 
-
 def sort_set(input_set, order_list):
     return [item for item in order_list if item in input_set]
-
 
 def __sort_key(graph, node):
     prefix_map = {"platform": "0", "element": "1", "flag": "2"}
@@ -457,24 +378,20 @@ def __sort_key(graph, node):
     prefix = prefix_map[node_type]
     return f"{prefix}-{node}"
 
-
-def __sort_nodes(graph):
+def sort_nodes(graph):
     def key_function(node):
         return __sort_key(graph, node)
 
     return list(networkx.lexicographical_topological_sort(graph, key=key_function))
 
-
 def __reverse_cname_base(cname):
     cname = cname.replace("_", "-_")
     return set(cname.split("-"))
 
-
 def __reverse_sort_nodes(graph):
     reverse_graph = graph.reverse()
     assert networkx.is_directed_acyclic_graph(reverse_graph)
-    return __sort_nodes(reverse_graph)
-
+    return sort_nodes(reverse_graph)
 
 def __get_node_type(node):
     return node.get("content", {}).get("type")
