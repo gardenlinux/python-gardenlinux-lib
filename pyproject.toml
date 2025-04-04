@@ -26,7 +26,7 @@ boto3 = "*"
 black = "^24.8.0"
 
 [tool.poetry.scripts]
-gl-flavors-parse = "python_gardenlinux_lib.flavors.__main__:main"
+gl-cname = "src.python_gardenlinux_lib.cname:main"
 flavors-parse = "python_gardenlinux_lib.flavors.__main__:main"
 
 [tool.pytest.ini_options]
