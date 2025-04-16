@@ -213,6 +213,26 @@ def generate_markdown_table(combinations, no_arch):
     return table
 
 
+def _get_flavors_from_github(commit):
+    """Returns the flavors.yaml from GitHub if readable."""
+
+    # Try flavors.yaml first
+    api_path = "/repos/gardenlinux/gardenlinux/contents/flavors.yaml"
+    if commit != "latest":
+        api_path = f"{api_path}?ref={commit}"
+    command = ["gh", "api", api_path]
+    logger.debug(f"Fetching flavors.yaml from GitHub for commit {commit_short}")
+    result = subprocess.run(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+
+    if result.returncode == 0:
+        content_data = json.loads(result.stdout)
+        return base64.b64decode(content_data["content"]).decode("utf-8")
+    else:
+        raise RuntimeError("Failed receiving result from GitHub: {0}".format(result.stderr))
+
+
 def parse_flavors_commit(
     commit=None,
     version=None,
@@ -249,113 +269,104 @@ def parse_flavors_commit(
     Returns:
         list: List of flavor strings, or empty list if no flavors found
     """
-    try:
-        version_info = (
-            f"{version['major']}.{version.get('minor', 0)}" if version else "unknown"
+
+    version_info = (
+        f"{version['major']}.{version.get('minor', 0)}" if version else "unknown"
+    )
+    if commit is None:
+        commit = "latest"
+    commit_short = commit[:8]
+
+    logger.debug(
+        f"Checking flavors for version {version_info} (commit {commit_short})"
+    )
+
+    flavors_content = None
+
+    if os.access("./flavors.yaml", os.F_OK | os.R_OK):
+        with open("./flavors.yaml", "r") as fp:
+            flavors_content = fp.read()
+    else:
+        try:
+            flavors_content = _get_flavors_from_github()
+        except Exception as exc:
+            logger.debug(exc)
+
+    if flavors_content is not None:
+        # Parse flavors with all filters
+        combinations = parse_flavors_data(
+            yaml.safe_load(flavors_content),
+            include_only_patterns=include_only_patterns or [],
+            wildcard_excludes=wildcard_excludes or [],
+            only_build=only_build,
+            only_test=only_test,
+            only_test_platform=only_test_platform,
+            only_publish=only_publish,
+            filter_categories=filter_categories or [],
+            exclude_categories=exclude_categories or [],
         )
-        if commit is None:
-            commit = "latest"
-        commit_short = commit[:8]
 
-        logger.debug(
-            f"Checking flavors for version {version_info} (commit {commit_short})"
-        )
+        all_flavors = set()
+        for _, combination in combinations:
+            all_flavors.add(combination)
 
-        # Try flavors.yaml first
-        api_path = "/repos/gardenlinux/gardenlinux/contents/flavors.yaml"
-        if commit != "latest":
-            api_path = f"{api_path}?ref={commit}"
-        command = ["gh", "api", api_path]
-        logger.debug(f"Fetching flavors.yaml from GitHub for commit {commit_short}")
-        result = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-        )
+        if all_flavors:
+            logger.info(f"Found {len(all_flavors)} flavors in flavors.yaml")
+            return sorted(all_flavors)
+        else:
+            logger.info("No flavors found in flavors.yaml")
+    elif query_s3 and s3_objects and isinstance(s3_objects, dict):
+        logger.debug("Checking S3 artifacts")
+        index = s3_objects.get("index", {})
+        artifacts = s3_objects.get("artifacts", [])
 
-        if result.returncode == 0:
-            content_data = json.loads(result.stdout)
-            yaml_content = base64.b64decode(content_data["content"]).decode("utf-8")
-            flavors_data = yaml.safe_load(yaml_content)
+        # Try index lookup first
+        search_key = f"{version_info}-{commit_short}"
+        if search_key in index:
+            flavors = index[search_key]
+            logger.debug(f"Found flavors in S3 index for {search_key}")
+        else:
+            # If no index match, search through artifacts
+            found_flavors = set()
 
-            # Parse flavors with all filters
-            combinations = parse_flavors_data(
-                flavors_data,
-                include_only_patterns=include_only_patterns or [],
-                wildcard_excludes=wildcard_excludes or [],
-                only_build=only_build,
-                only_test=only_test,
-                only_test_platform=only_test_platform,
-                only_publish=only_publish,
-                filter_categories=filter_categories or [],
-                exclude_categories=exclude_categories or [],
+            # Search for artifacts matching version and commit
+            for key in artifacts:
+                if version_info in key and commit_short in key:
+                    try:
+                        parts = key.split("/")
+                        if len(parts) >= 2:
+                            flavor_with_version = parts[1]
+                            flavor = flavor_with_version.rsplit(
+                                "-" + version_info, 1
+                            )[0]
+                            if flavor:
+                                found_flavors.add(flavor)
+                    except Exception as e:
+                        logger.debug(f"Error parsing artifact key {key}: {e}")
+                        continue
+
+            flavors = list(found_flavors)
+
+        # Apply filters to S3 flavors
+        filtered_flavors = []
+        for flavor in flavors:
+            # Create a dummy combination with amd64 architecture for filtering
+            combination = ("amd64", flavor)
+            if should_include_only(
+                flavor, include_only_patterns or []
+            ) and not should_exclude(flavor, wildcard_excludes or [], []):
+                filtered_flavors.append(flavor)
+
+        if filtered_flavors:
+            logger.info(
+                f"Found {len(filtered_flavors)} flavors in S3 artifacts after filtering"
+            )
+            return sorted(filtered_flavors)
+        else:
+            logger.info(
+                f"No flavors found in S3 for version {version_info} and commit {commit_short} after filtering"
             )
 
-            all_flavors = set()
-            for _, combination in combinations:
-                all_flavors.add(combination)
-
-            if all_flavors:
-                logger.info(f"Found {len(all_flavors)} flavors in flavors.yaml")
-                return sorted(all_flavors)
-            else:
-                logger.info("No flavors found in flavors.yaml")
-
-        # If no flavors.yaml found and query_s3 is enabled, try S3 artifacts
-        if query_s3 and s3_objects and isinstance(s3_objects, dict):
-            logger.debug("Checking S3 artifacts")
-            index = s3_objects.get("index", {})
-            artifacts = s3_objects.get("artifacts", [])
-
-            # Try index lookup first
-            search_key = f"{version_info}-{commit_short}"
-            if search_key in index:
-                flavors = index[search_key]
-                logger.debug(f"Found flavors in S3 index for {search_key}")
-            else:
-                # If no index match, search through artifacts
-                found_flavors = set()
-
-                # Search for artifacts matching version and commit
-                for key in artifacts:
-                    if version_info in key and commit_short in key:
-                        try:
-                            parts = key.split("/")
-                            if len(parts) >= 2:
-                                flavor_with_version = parts[1]
-                                flavor = flavor_with_version.rsplit(
-                                    "-" + version_info, 1
-                                )[0]
-                                if flavor:
-                                    found_flavors.add(flavor)
-                        except Exception as e:
-                            logger.debug(f"Error parsing artifact key {key}: {e}")
-                            continue
-
-                flavors = list(found_flavors)
-
-            # Apply filters to S3 flavors
-            filtered_flavors = []
-            for flavor in flavors:
-                # Create a dummy combination with amd64 architecture for filtering
-                combination = ("amd64", flavor)
-                if should_include_only(
-                    flavor, include_only_patterns or []
-                ) and not should_exclude(flavor, wildcard_excludes or [], []):
-                    filtered_flavors.append(flavor)
-
-            if filtered_flavors:
-                logger.info(
-                    f"Found {len(filtered_flavors)} flavors in S3 artifacts after filtering"
-                )
-                return sorted(filtered_flavors)
-            else:
-                logger.info(
-                    f"No flavors found in S3 for version {version_info} and commit {commit_short} after filtering"
-                )
-
-        return []
-
-    except Exception as e:
-        logger.error(f"Error parsing flavors for commit {commit_short}: {e}")
         return []
 
 
@@ -446,7 +457,7 @@ def main():
     )
 
     if not flavors:
-        sys.exit(1)
+        sys.exit("No flavors parsed")
 
     # Output the results in the requested format
     if args.json_by_arch:
