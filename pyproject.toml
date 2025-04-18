@@ -12,7 +12,7 @@ python = "^3.10"
 networkx = "^3.3"
 PyYAML = "^6.0.2"
 pytest = "^8.3.2"
-gitpython = "^3.1.43"
+gitpython = "^3.1.44"
 sphinx-rtd-theme = "^2.0.0"
 apt-repo = "^0.5"
 jsonschema = "^4.23.0"
@@ -26,9 +26,8 @@ boto3 = "*"
 black = "^24.8.0"
 
 [tool.poetry.scripts]
-gl-cname = "python_gardenlinux_lib.cname:main"
-gl-flavors-parse = "python_gardenlinux_lib.flavors.parse_flavors:main"
-flavors-parse = "python_gardenlinux_lib.flavors.parse_flavors:main"
+gl-flavors-parse = "python_gardenlinux_lib.flavors.__main__:main"
+flavors-parse = "python_gardenlinux_lib.flavors.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
