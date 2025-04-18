@@ -1,4 +1,40 @@
-#!/usr/bin/env python3
+# GardenLinux flavors schema for validation
+GL_FLAVORS_SCHEMA = {
+    "type": "object",
+    "version": {"type": "integer"},
+    "properties": {
+        "targets": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "category": {"type": "string"},
+                    "flavors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "features": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                                "arch": {"type": "string"},
+                                "build": {"type": "boolean"},
+                                "test": {"type": "boolean"},
+                                "test-platform": {"type": "boolean"},
+                                "publish": {"type": "boolean"},
+                            },
+                            "required": ["features", "arch", "build", "test", "test-platform", "publish"],
+                        },
+                    },
+                },
+                "required": ["name", "category", "flavors"],
+            },
+        },
+    },
+    "required": ["targets"]
+}
 
 # It is important that this list is sorted in descending length of the entries
 GL_MEDIA_TYPES = [
