@@ -1,5 +1,3 @@
-from idlelib.window import registry
-
 import pytest
 import os
 

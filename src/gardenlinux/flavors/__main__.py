@@ -5,10 +5,8 @@ from git import Git
 import json
 import os
 import sys
-import yaml
 
-from jsonschema import ValidationError
-from .parser import group_by_arch, parse_flavors, validate_flavors
+from .parser import Parser
 
 
 def generate_markdown_table(combinations, no_arch):
@@ -93,16 +91,10 @@ def main():
         sys.exit(f"Error: {flavors_file} does not exist.")
 
     # Load and validate the flavors.yaml
-    with open(flavors_file, 'r') as file:
-        flavors_data = yaml.safe_load(file)
+    with open(flavors_file, "r") as file:
+        flavors_data = file.read()
 
-    try:
-        validate_flavors(flavors_data)
-    except ValidationError as e:
-        sys.exit(f"Validation Error: {e.message}")
-
-    combinations = parse_flavors(
-        flavors_data,
+    combinations = Parser(flavors_data).filter(
         include_only_patterns=args.include_only,
         wildcard_excludes=args.exclude,
         only_build=args.build,
@@ -114,7 +106,7 @@ def main():
     )
 
     if args.json_by_arch:
-        grouped_combinations = group_by_arch(combinations)
+        grouped_combinations = Parser.group_by_arch(combinations)
 
         # If --no-arch, strip architectures from the grouped output
         if args.no_arch:
@@ -128,7 +120,7 @@ def main():
         print(generate_markdown_table(combinations, args.no_arch))
     else:
         if args.no_arch:
-            printable_combinations = sorted(set(remove_arch(combinations)))
+            printable_combinations = sorted(set(Parser.remove_arch(combinations)))
         else:
             printable_combinations = sorted(set(comb[1] for comb in combinations))
 

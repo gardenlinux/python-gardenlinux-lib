@@ -1,24 +1,18 @@
 #!/usr/bin/env python
 
+# @TODO: This code is provided for backward compatibility only and deprecated.
+
+from gardenlinux.flavors.parser import Parser
 from git import Git
 import base64
 import json
 import logging
 import os
+import sys
 import subprocess
 import yaml
 
-from .parser import (
-    group_by_arch,
-    remove_arch,
-    should_include_only,
-    should_exclude,
-    validate_flavors
-)
-
-from .parser import parse_flavors as parse_flavors_data
-
-from ..constants import GL_FLAVORS_SCHEMA
+from gardenlinux.constants import GL_FLAVORS_SCHEMA
 
 # Define the schema for validation
 SCHEMA = GL_FLAVORS_SCHEMA
@@ -28,6 +22,52 @@ def find_repo_root():
     """Finds the root directory of the Git repository."""
 
     return Git(".").rev_parse("--show-superproject-working-tree")
+
+def validate_flavors(data):
+    """Validate the flavors.yaml data against the schema."""
+    try:
+        validate(instance=data, schema=SCHEMA)
+    except ValidationError as e:
+        sys.exit(f"Validation Error: {e.message}")
+
+
+def should_exclude(combination, excludes, wildcard_excludes):
+    """
+    Checks if a combination should be excluded based on exact match or wildcard patterns.
+    """
+    return Parser.should_exclude(combination, excludes, wildcard_excludes)
+
+
+def should_include_only(combination, include_only_patterns):
+    """
+    Checks if a combination should be included based on `--include-only` wildcard patterns.
+    If no patterns are provided, all combinations are included by default.
+    """
+    return Parser.should_include_only(combination, include_only_patterns)
+
+
+def parse_flavors_data(
+    data,
+    include_only_patterns=None,
+    wildcard_excludes=None,
+    only_build=False,
+    only_test=False,
+    only_test_platform=False,
+    only_publish=False,
+    filter_categories=None,
+    exclude_categories=None,
+):
+    """Parse flavors.yaml data and generate combinations."""
+    return Parser(data).filter(
+        include_only_patterns,
+        wildcard_excludes,
+        only_build,
+        only_test,
+        only_test_platform,
+        only_publish,
+        filter_categories,
+        exclude_categories
+    )
 
 def _get_flavors_from_github(commit):
     """Returns the flavors.yaml from GitHub if readable."""
@@ -87,7 +127,7 @@ def parse_flavors_commit(
     """
 
     if logger is None:
-        logger = logging.getLogger("gardenlinux.lib.flavors")
+        logger = logging.getLogger("gardenlinux.flavors")
         logger.addHandler(logging.NullHandler())
 
     version_info = (
