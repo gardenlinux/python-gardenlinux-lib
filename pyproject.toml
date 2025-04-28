@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "python_gardenlinux_lib"
+name = "gardenlinux"
 version = "0.6.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "python_gardenlinux_lib", from="src"}]
+packages = [{include = "gardenlinux", from="src"}, {include = "python_gardenlinux_lib", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -21,18 +21,17 @@ python-dotenv = "^1.0.1"
 cryptography = "^44.0.0"
 boto3 = "*"
 
-
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
 
 [tool.poetry.scripts]
-gl-cname = "src.python_gardenlinux_lib.cname:main"
-flavors-parse = "python_gardenlinux_lib.flavors.__main__:main"
+gl-cname = "gardenlinux.features.cname_main:main"
+gl-features-parse = "gardenlinux.features.__main__:main"
+gl-flavors-parse = "gardenlinux.flavors.__main__:main"
+flavors-parse = "gardenlinux.flavors.__main__:main"
 
 [tool.pytest.ini_options]
-pythonpath = [
-  "src"
-]
+pythonpath = ["src"]
 norecursedirs = "test-data"
 
 [build-system]
