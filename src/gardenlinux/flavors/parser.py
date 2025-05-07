@@ -1,23 +1,22 @@
+# -*- coding: utf-8 -*-
+
 from jsonschema import validate as jsonschema_validate
 import fnmatch
-import logging
 import yaml
 
 from ..constants import GL_FLAVORS_SCHEMA
+from ..logger import LoggerSetup
 
 class Parser(object):
     def __init__(self, data, logger = None):
         flavors_data = (yaml.safe_load(data) if isinstance(data, str) else data)
         jsonschema_validate(instance=flavors_data, schema=GL_FLAVORS_SCHEMA)
 
+        if logger is None or not logger.hasHandlers():
+            logger = LoggerSetup.get_logger("gardenlinux.flavors")
+
         self._flavors_data = flavors_data
         self._logger = logger
-
-        if self._logger is None:
-            self._logger = logging.getLogger("gardenlinux.flavors")
-
-        if not self._logger.hasHandlers():
-            self._logger.addHandler(logging.NullHandler())
 
         self._logger.debug("flavors.Parser initialized with data: {0!r}".format(flavors_data))
 
