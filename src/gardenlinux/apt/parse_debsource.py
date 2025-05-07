@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # SPDX-License-Identifier: MIT
 
 # Based on code from glvd https://github.com/gardenlinux/glvd/blob/7ca2ff54e01da5e9eae61d1cd565eaf75f3c62ce/src/glvd/data/debsrc.py#L1
