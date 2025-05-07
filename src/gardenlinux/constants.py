@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # GardenLinux flavors schema for validation
 GL_FLAVORS_SCHEMA = {
     "type": "object",

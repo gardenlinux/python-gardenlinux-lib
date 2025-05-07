@@ -2,7 +2,7 @@ name: flavors_parse
 description: Parses the given GardenLinux flavors parameters
 inputs:
   flags:
-    description: 'Flags passed to bin/flavors_parse.py'
+    description: 'Flags passed to `gl-flavors-parse`'
     required: true
   flavors_matrix:
     description: 'Generated GitHub workflow flavors matrix'
