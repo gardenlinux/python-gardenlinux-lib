@@ -48,7 +48,7 @@ def main():
     if args.arch is not None:
         arch = args.arch
 
-    assert arch is None or arch == "", "Architecture could not be determined"
+    assert arch is not None and arch != "", "Architecture could not be determined"
 
     if not commit_id or not version:
         version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
