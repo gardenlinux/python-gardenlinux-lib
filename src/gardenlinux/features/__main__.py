@@ -4,9 +4,9 @@
 from .parser import Parser
 
 from functools import reduce
-from os.path import basename, dirname
-
+from os import path
 import argparse
+import os
 import re
 import sys
 
@@ -44,6 +44,7 @@ def main():
     arch = None
     cname_base = None
     commit_id = None
+    gardenlinux_root = path.dirname(args.feature_dir)
     version = None
 
     if args.cname:
@@ -85,12 +86,14 @@ def main():
         assert args.default_arch, "Architecture could not be determined and no default architecture set"
         arch = args.default_arch
 
+    if not commit_id or not version:
+        version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
+
     if not version and (args.type in ("cname", "version" )):
         assert args.default_version, "version not specified and no default version set"
         version = args.default_version
 
-    gardenlinux_root = dirname(args.feature_dir)
-    feature_dir_name = basename(args.feature_dir)
+    feature_dir_name = path.basename(args.feature_dir)
 
     if gardenlinux_root == "":
         gardenlinux_root = "."
@@ -148,6 +151,20 @@ def get_cname_base(sorted_features):
     return reduce(
         lambda a, b : a + ("-" if not b.startswith("_") else "") + b, sorted_features
     )
+
+def get_version_and_commit_id_from_files(gardenlinux_root):
+    commit_id = None
+    version = None
+
+    if os.access(path.join(gardenlinux_root, "COMMIT"), os.R_OK):
+        with open(path.join(gardenlinux_root, "COMMIT"), "r") as fp:
+            commit_id = fp.read().strip()
+
+    if os.access(path.join(gardenlinux_root, "VERSION"), os.R_OK):
+        with open(path.join(gardenlinux_root, "VERSION"), "r") as fp:
+            version = fp.read().strip()
+
+    return (version, commit_id)
 
 def get_minimal_feature_set(graph):
     return set([node for (node, degree) in graph.in_degree() if degree == 0])

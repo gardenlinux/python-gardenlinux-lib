@@ -6,7 +6,7 @@ from os.path import basename, dirname
 import argparse
 import re
 
-from .__main__ import get_cname_base, get_minimal_feature_set, sort_subset
+from .__main__ import get_cname_base, get_minimal_feature_set, get_version_and_commit_id_from_files, sort_subset
 from .parser import Parser
 
 
@@ -29,6 +29,7 @@ def main():
 
     arch = None
     commit_id = None
+    gardenlinux_root = dirname(args.feature_dir)
     version = None
 
     if re_match.lastindex == 1:
@@ -49,6 +50,9 @@ def main():
 
     assert arch is None or arch == "", "Architecture could not be determined"
 
+    if not commit_id or not version:
+        version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
+
     if args.version is not None:
         re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", args.version)
         assert re_match, f"Not a valid version {args.version}"
@@ -56,7 +60,6 @@ def main():
         commit_id = re_match[3]
         version = re_match[1]
 
-    gardenlinux_root = dirname(args.feature_dir)
     feature_dir_name = basename(args.feature_dir)
 
     if gardenlinux_root == "":
