@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from glob import glob
 from typing import Callable, Optional
 import logging
@@ -7,6 +9,8 @@ import re
 import subprocess
 import yaml
 
+from ..logger import LoggerSetup
+
 
 class Parser(object):
     def __init__(self, gardenlinux_root: str = ".", feature_dir_name: str = "features", logger: Optional[logging.Logger] = None):
@@ -15,16 +19,13 @@ class Parser(object):
         if not os.access(feature_base_dir, os.R_OK):
             raise ValueError("Feature directory given is invalid: {0}".format(feature_base_dir))
 
+        if logger is None or not logger.hasHandlers():
+            logger = LoggerSetup.get_logger("gardenlinux.features")
+
         self._feature_base_dir = feature_base_dir
 
         self._graph = None
         self._logger = logger
-
-        if self._logger is None:
-            self._logger = logging.getLogger("gardenlinux.features")
-
-        if not self._logger.hasHandlers():
-            self._logger.addHandler(logging.NullHandler())
 
         self._logger.debug("features.Parser initialized for directory: {0}".format(feature_base_dir))
 
