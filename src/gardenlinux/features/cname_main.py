@@ -35,10 +35,13 @@ def main():
     if re_match.lastindex == 1:
         data_splitted = re_match[1].split("-", 1)
 
-        if len(data_splitted) > 1:
-            arch = data_splitted[1]
-
         cname_base = data_splitted[0]
+
+        if len(data_splitted) > 1:
+            if args.arch is None:
+                arch = data_splitted[1]
+            else:
+                cname_base += "-" + data_splitted[1]
     else:
         arch = re_match[4]
         cname_base = re_match[1]
