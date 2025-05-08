@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from apt_repo import APTRepository
 from typing import Optional
 

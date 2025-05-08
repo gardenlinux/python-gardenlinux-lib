@@ -1,14 +1,12 @@
-from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
+from gardenlinux.constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
 
-from glob import glob
-import yaml
+from gardenlinux.features import Parser
+from typing import Optional
 import networkx
 import os
 import re
 import subprocess
-from typing import Optional
-
-from pygments.filter import apply_filters
+import yaml
 
 
 def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -> str:
@@ -48,22 +46,11 @@ def get_features_dict(
 
     """
 
-    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
-    features = __reverse_sort_nodes(graph)
-    features_by_type = dict()
-
-    for type in ["platform", "element", "flag"]:
-        features_by_type[type] = [
-            feature
-            for feature in features
-            if __get_node_type(graph.nodes[feature]) == type
-        ]
-
-    return features_by_type
+    return Parser(gardenlinux_root, feature_dir_name).filter_as_dict(cname)
 
 def get_features_graph(
     cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
-) -> networkx.graph:
+) -> networkx.Graph:
     """
     :param str cname: the target cname to get the feature dict for
     :param str gardenlinux_root: path of garden linux src root
@@ -71,12 +58,7 @@ def get_features_graph(
 
     """
 
-    feature_base_dir = f"{gardenlinux_root}/{feature_dir_name}"
-    input_features = __reverse_cname_base(cname)
-    feature_graph = read_feature_files(feature_base_dir)
-    graph = filter_graph(feature_graph, input_features)
-
-    return graph
+    return Parser(gardenlinux_root, feature_dir_name).filter(cname)
 
 def get_features_list(
     cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
@@ -88,10 +70,7 @@ def get_features_list(
 
     """
 
-    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
-    features = __reverse_sort_nodes(graph)
-
-    return features
+    return Parser(gardenlinux_root, feature_dir_name).filter_as_list(cname)
 
 def get_features(
     cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
@@ -102,10 +81,7 @@ def get_features(
     :return: a comma separated string with the expanded feature set for the cname
     """
 
-    graph = get_features_graph(cname, gardenlinux_root, feature_dir_name)
-    features = __reverse_sort_nodes(graph)
-
-    return ",".join(features)
+    return Parser(gardenlinux_root, feature_dir_name).filter_as_string(cname)
 
 def construct_layer_metadata(
     filetype: str, cname: str, version: str, arch: str, commit: str
@@ -283,115 +259,5 @@ def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
 
     return sorted(result)
 
-def read_feature_files(feature_dir):
-    """
-    Legacy function copied from gardenlinux/builder
-
-    TODO: explain the structure of the graph
-
-    :param str feature_dir: feature directory to create the graph for
-    :returns: an networkx based feature graph
-    """
-    feature_yaml_files = glob(f"{feature_dir}/*/info.yaml")
-    features = [parse_feature_yaml(i) for i in feature_yaml_files]
-    feature_graph = networkx.DiGraph()
-    for feature in features:
-        feature_graph.add_node(feature["name"], content=feature["content"])
-    for node in feature_graph.nodes():
-        node_features = __get_node_features(feature_graph.nodes[node])
-        for attr in node_features:
-            if attr not in ["include", "exclude"]:
-                continue
-            for ref in node_features[attr]:
-                if not os.path.isfile(f"{feature_dir}/{ref}/info.yaml"):
-                    raise ValueError(
-                        f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
-                    )
-                feature_graph.add_edge(node, ref, attr=attr)
-    if not networkx.is_directed_acyclic_graph(feature_graph):
-        raise ValueError("Graph is not directed acyclic graph")
-    return feature_graph
-
-def parse_feature_yaml(feature_yaml_file: str):
-    """
-    Legacy function copied from gardenlinux/builder
-
-    extracts the feature name from the feature_yaml_file param,
-    reads the info.yaml into a dict and outputs a dict containing the cname and the info yaml
-
-    :param str feature_yaml_file: path to the target info.yaml that must be read
-    """
-    if os.path.basename(feature_yaml_file) != "info.yaml":
-        raise ValueError("expected info.yaml")
-    name = os.path.basename(os.path.dirname(feature_yaml_file))
-    with open(feature_yaml_file) as f:
-        content = yaml.safe_load(f)
-    return {"name": name, "content": content}
-
-def __get_node_features(node):
-    return node.get("content", {}).get("features", {})
-
-def filter_graph(feature_graph, feature_set, ignore_excludes=False):
-    filter_set = set(feature_graph.nodes())
-
-    def filter_func(node):
-        return node in filter_set
-
-    graph = networkx.subgraph_view(feature_graph, filter_node=filter_func)
-    graph_by_edge = dict()
-    for attr in ["include", "exclude"]:
-        edge_filter_func = (
-            lambda attr: lambda a, b: graph.get_edge_data(a, b)["attr"] == attr
-        )(attr)
-        graph_by_edge[attr] = networkx.subgraph_view(
-            graph, filter_edge=edge_filter_func
-        )
-    while True:
-        include_set = feature_set.copy()
-        for feature in feature_set:
-            include_set.update(networkx.descendants(graph_by_edge["include"], feature))
-        filter_set = include_set
-        if ignore_excludes:
-            break
-        exclude_list = []
-        for node in networkx.lexicographical_topological_sort(graph):
-            for exclude in graph_by_edge["exclude"].successors(node):
-                exclude_list.append(exclude)
-        if not exclude_list:
-            break
-        exclude = exclude_list[0]
-        if exclude in feature_set:
-            raise ValueError(
-                f"excluding explicitly included feature {exclude}, unsatisfiable condition"
-            )
-        filter_set.remove(exclude)
-    if graph_by_edge["exclude"].edges() and (not ignore_excludes):
-        raise ValueError("Including explicitly excluded feature")
-    return graph
-
 def sort_set(input_set, order_list):
     return [item for item in order_list if item in input_set]
-
-def __sort_key(graph, node):
-    prefix_map = {"platform": "0", "element": "1", "flag": "2"}
-    node_type = __get_node_type(graph.nodes.get(node, {}))
-    prefix = prefix_map[node_type]
-    return f"{prefix}-{node}"
-
-def sort_nodes(graph):
-    def key_function(node):
-        return __sort_key(graph, node)
-
-    return list(networkx.lexicographical_topological_sort(graph, key=key_function))
-
-def __reverse_cname_base(cname):
-    cname = cname.replace("_", "-_")
-    return set(cname.split("-"))
-
-def __reverse_sort_nodes(graph):
-    reverse_graph = graph.reverse()
-    assert networkx.is_directed_acyclic_graph(reverse_graph)
-    return sort_nodes(reverse_graph)
-
-def __get_node_type(node):
-    return node.get("content", {}).get("type")

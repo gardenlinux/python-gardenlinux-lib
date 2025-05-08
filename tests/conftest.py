@@ -8,7 +8,7 @@ import json
 import pytest
 from dotenv import load_dotenv
 
-GL_ROOT_DIR = "test-data/gardenlinux/"
+GL_ROOT_DIR = "test-data/gardenlinux"
 
 
 def write_zot_config(config_dict, file_path):
