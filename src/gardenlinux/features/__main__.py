@@ -158,7 +158,7 @@ def get_version_and_commit_id_from_files(gardenlinux_root):
 
     if os.access(path.join(gardenlinux_root, "COMMIT"), os.R_OK):
         with open(path.join(gardenlinux_root, "COMMIT"), "r") as fp:
-            commit_id = fp.read().strip()
+            commit_id = fp.read().strip()[:8]
 
     if os.access(path.join(gardenlinux_root, "VERSION"), os.R_OK):
         with open(path.join(gardenlinux_root, "VERSION"), "r") as fp:
