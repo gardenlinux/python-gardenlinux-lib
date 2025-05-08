@@ -215,7 +215,7 @@ class Parser(object):
         return node.get("content", {}).get("type")
 
     @staticmethod
-    def sort_reversed_graph_nodes(graph):
+    def sort_graph_nodes(graph):
         def key_function(node):
             prefix_map = {"platform": "0", "element": "1", "flag": "2"}
             node_type = Parser._get_graph_node_type(graph.nodes.get(node, {}))
@@ -223,4 +223,8 @@ class Parser(object):
 
             return f"{prefix}-{node}"
 
-        return list(networkx.lexicographical_topological_sort(graph.reverse(), key = key_function))
+        return list(networkx.lexicographical_topological_sort(graph, key = key_function))
+
+    @staticmethod
+    def sort_reversed_graph_nodes(graph):
+        return Parser.sort_graph_nodes(graph.reverse())
