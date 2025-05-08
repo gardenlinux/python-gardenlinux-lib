@@ -108,8 +108,7 @@ def main():
     elif args.type in ( "cname_base", "cname", "graph" ):
         graph = Parser(gardenlinux_root, feature_dir_name).filter(cname_base, additional_filter_func = additional_filter_func)
 
-        sorted_features = Parser.sort_reversed_graph_nodes(graph)
-
+        sorted_features = Parser.sort_graph_nodes(graph)
         minimal_feature_set = get_minimal_feature_set(graph)
 
         sorted_minimal_features = sort_subset(
