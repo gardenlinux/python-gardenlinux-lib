@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# GardenLinux "bare" feature
+BARE_FLAVOR_FEATURE_CONTENT = { "description": "Bare flavor", "type": "platform" }
+
 # GardenLinux flavors schema for validation
 GL_FLAVORS_SCHEMA = {
     "type": "object",
