@@ -29,6 +29,7 @@ black = "^24.8.0"
 gl-cname = "python_gardenlinux_lib.cname:main"
 gl-flavors-parse = "python_gardenlinux_lib.flavors.parse_flavors:main"
 flavors-parse = "python_gardenlinux_lib.flavors.parse_flavors:main"
+gl-oci = "python_gardenlinux_lib.oci.cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = [

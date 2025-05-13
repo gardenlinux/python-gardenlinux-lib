@@ -21,7 +21,7 @@ def main():
 
     re_match = re.match(
         "([a-zA-Z0-9]+(-[a-zA-Z0-9\\_\\-]*?)?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
-        args.cname
+        args.cname,
     )
 
     assert re_match, f"not a valid cname {args.cname}"
@@ -72,10 +72,12 @@ def main():
 
     print(cname)
 
+
 def get_cname_base(sorted_features):
     return reduce(
-        lambda a, b : a + ("-" if not b.startswith("_") else "") + b, sorted_features
+        lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
     )
+
 
 def get_minimal_feature_set(graph):
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
