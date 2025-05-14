@@ -2,6 +2,7 @@
 
 # GardenLinux "bare" feature
 BARE_FLAVOR_FEATURE_CONTENT = { "description": "Bare flavor", "type": "platform" }
+BARE_FLAVOR_LIBC_FEATURE_CONTENT = { "description": "Bare libc feature", "type": "element" }
 
 # GardenLinux flavors schema for validation
 GL_FLAVORS_SCHEMA = {

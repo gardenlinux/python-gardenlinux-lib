@@ -9,7 +9,7 @@ import re
 import subprocess
 import yaml
 
-from ..constants import BARE_FLAVOR_FEATURE_CONTENT
+from ..constants import BARE_FLAVOR_FEATURE_CONTENT, BARE_FLAVOR_LIBC_FEATURE_CONTENT
 from ..logger import LoggerSetup
 
 
@@ -75,7 +75,11 @@ class Parser(object):
         for feature in input_features:
             # @TODO: Remove "special" handling once "bare" is a first-class citizen of the feature graph
             if feature == "bare":
-                self.graph.add_node("bare", content=BARE_FLAVOR_FEATURE_CONTENT)
+                if not self.graph.has_node("bare"):
+                    self.graph.add_node("bare", content=BARE_FLAVOR_FEATURE_CONTENT)
+                if not self.graph.has_node("libc"):
+                    self.graph.add_node("libc", content=BARE_FLAVOR_LIBC_FEATURE_CONTENT)
+
                 continue
 
             filter_set.update(networkx.descendants(Parser._get_graph_view_for_attr(self.graph, "include"), feature))
