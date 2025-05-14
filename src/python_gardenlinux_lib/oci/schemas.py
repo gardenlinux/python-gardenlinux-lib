@@ -33,6 +33,7 @@ index = {
     "required": [
         "schemaVersion",
         "manifests",
+        "mediaType",
     ],
     "properties": indexProperties,
     "additionalProperties": True,
@@ -49,7 +50,6 @@ EmptyManifestMetadata = {
     "digest": "",
     "size": 0,
     "annotations": {},
-    "artifactType": "",
 }
 
 EmptyIndex = {
