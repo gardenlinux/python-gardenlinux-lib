@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "This will take a while. Building for the following targets:"
 
