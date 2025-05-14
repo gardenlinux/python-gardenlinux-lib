@@ -83,5 +83,29 @@ def get_minimal_feature_set(graph):
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
 
+def get_flavor_from_cname(cname: str, get_arch: bool = True) -> str:
+    """
+    Extracts the flavor from a canonical name.
+
+    :param str cname: Canonical name of an image
+    :param bool get_arch: Whether to include the architecture in the flavor
+    :return: Flavor string
+    """
+
+    # cname:
+    # azure-gardener_prod_tpm2_trustedboot-amd64-1312.2-80ffcc87
+    # transform to flavor:
+    # azure-gardener_prod_tpm2_trustedboot-amd64
+
+    platform = cname.split("-")[0]
+    features = cname.split("-")[1:-1]
+    arch = cname.split("-")[-1]
+
+    if get_arch:
+        return f"{platform}-{features}-{arch}"
+    else:
+        return f"{platform}-{features}"
+
+
 if __name__ == "__main__":
     main()
