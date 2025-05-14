@@ -4,11 +4,31 @@
    contain the root `toctree` directive.
 
 python-gardenlinux-lib documentation
-================================
-.. automodule:: python_gardenlinux_lib.parse_features
+====================================
+
+.. automodule:: python_gardenlinux_lib.apt.package_repo_info
     :members:
-.. automodule:: python_gardenlinux_lib.package_repo_info
+.. automodule:: python_gardenlinux_lib.apt.parse_debsource
     :members:
+.. automodule:: python_gardenlinux_lib.features.parse_features
+    :members:
+.. automodule:: python_gardenlinux_lib.git.git
+    :members:
+.. automodule:: python_gardenlinux_lib.oci.cli
+    :members:
+.. automodule:: python_gardenlinux_lib.oci.helper
+    :members:
+.. automodule:: python_gardenlinux_lib.oci.registry
+    :members:
+.. automodule:: python_gardenlinux_lib.cname
+    :members:
+.. automodule:: python_gardenlinux_lib.crypto
+    :members:
+.. automodule:: python_gardenlinux_lib.logger
+    :members:
+.. automodule:: python_gardenlinux_lib.version
+    :members:
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -18,4 +38,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
