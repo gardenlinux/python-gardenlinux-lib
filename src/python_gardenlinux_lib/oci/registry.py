@@ -483,6 +483,8 @@ class GlociRegistry(Registry):
         build_artifacts_dir: str,
         oci_metadata: list,
         feature_set: str,
+        flavor: str,
+        commit: str,
         manifest_file: str,
     ):
         """
@@ -494,8 +496,9 @@ class GlociRegistry(Registry):
         :param str cname: canonical name of the target image
         :param str build_artifacts_dir: directory where the build artifacts are located
         :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
-        :param str manifest_file: a file where the index entry for the pushed manifest is written to.
         manifest itself and in the index entry for this manifest
+        :param str flavor: the flavor of the image
+        :param str commit: the commit hash of the image
         :returns the digest of the pushed manifest
         """
 
@@ -541,6 +544,8 @@ class GlociRegistry(Registry):
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         manifest_image["annotations"]["feature_set"] = feature_set
+        manifest_image["annotations"]["flavor"] = flavor
+        manifest_image["annotations"]["commit"] = commit
         description = (
             f"Image: {cname} "
             f"Architecture: {architecture} "
@@ -705,6 +710,7 @@ class GlociRegistry(Registry):
             )
 
             features = ""
+            commit = ""
             for artifact in oci_metadata:
                 if artifact["media_type"] == "application/io.gardenlinux.release":
                     file = open(f"{directory}/{artifact["file_name"]}", "r")
@@ -715,7 +721,14 @@ class GlociRegistry(Registry):
                                 "GARDENLINUX_FEATURES="
                             )
                             break
+                        elif line.strip().startswith("GARDENLINUX_COMMIT_ID="):
+                            commit = line.strip().removeprefix(
+                                "GARDENLINUX_COMMIT_ID="
+                            )
+                            break
                     file.close()
+
+            flavor = get_flavor_from_cname(cname, get_arch=True)
 
             digest = self.push_image_manifest(
                 architecture,
