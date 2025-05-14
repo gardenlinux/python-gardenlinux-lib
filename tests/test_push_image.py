@@ -1,4 +1,3 @@
-from idlelib.window import registry
 import json
 import os
 import tempfile
