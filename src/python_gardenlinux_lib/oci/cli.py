@@ -58,7 +58,7 @@ def push_manifest(
     container_name = f"{container}:{version}"
     registry = GlociRegistry(
         container_name=container_name,
-        token=os.getenv("GLOCI_REGISTRY_TOKEN"),
+        token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
         insecure=insecure,
     )
     digest = registry.push_from_dir(arch, version, cname, directory, manifest_file)
@@ -96,7 +96,7 @@ def update_index(container, version, manifest_folder, insecure):
     container_name = f"{container}:{version}"
     registry = GlociRegistry(
         container_name=container_name,
-        token=os.getenv("GLOCI_REGISTRY_TOKEN"),
+        token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
         insecure=insecure,
     )
     registry.update_index(manifest_folder)

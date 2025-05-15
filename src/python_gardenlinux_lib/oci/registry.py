@@ -721,9 +721,7 @@ class GlociRegistry(Registry):
                             )
                             break
                         elif line.strip().startswith("GARDENLINUX_COMMIT_ID="):
-                            commit = line.strip().removeprefix(
-                                "GARDENLINUX_COMMIT_ID="
-                            )
+                            commit = line.strip().removeprefix("GARDENLINUX_COMMIT_ID=")
                             break
                     file.close()
 

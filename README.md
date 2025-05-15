@@ -63,17 +63,17 @@ The process to push a Gardenlinux build-output folder to an OCI registry is spli
 
 #### 1. Push layers + manifest
 
-To push layers you have to supply the directory with the build outputs `--dir`. Also you have to supply cname (`--cname`), architecture `--arch` and version `--version` of the build. This information will be included in the manifest. You have to supply an endpoint where the artifacts shall be pushed to `--container`, for example `ghcr.io/gardenlinux/gardenlinux`. You can disable enforced HTTPS connections to your registry with `--insecure True`. You can supply `--cosign_file <filename>` if you want to have the hash saved in `<filename>`. This can be handy to read the hash later to sign the manifest with cosign. With `--manifest_file <filename>` you tell the program in which file to store the manifests index entry. This is the file that can be used in the next step to update the index. You can use the environment variable GLOCI_REGISTRY_TOKEN to authenticate against the registry. Below is an example of a full program call of `push-manifest`
+To push layers you have to supply the directory with the build outputs `--dir`. Also you have to supply cname (`--cname`), architecture `--arch` and version `--version` of the build. This information will be included in the manifest. You have to supply an endpoint where the artifacts shall be pushed to `--container`, for example `ghcr.io/gardenlinux/gardenlinux`. You can disable enforced HTTPS connections to your registry with `--insecure True`. You can supply `--cosign_file <filename>` if you want to have the hash saved in `<filename>`. This can be handy to read the hash later to sign the manifest with cosign. With `--manifest_file <filename>` you tell the program in which file to store the manifests index entry. This is the file that can be used in the next step to update the index. You can use the environment variable GL_CLI_REGISTRY_TOKEN to authenticate against the registry. Below is an example of a full program call of `push-manifest`
 
 ```bash
-GLOCI_REGISTRY_TOKEN=asdf123 gl-oci push-manifest --dir build-metal-gardener_prod --container ghcr.io/gardenlinux/gl-oci --arch amd64 --version 1592.1 --cname metal-gardener_prod --cosign_file digest --manifest_file oci_manifest_entry_metal.json
+GL_CLI_REGISTRY_TOKEN=asdf123 gl-oci push-manifest --dir build-metal-gardener_prod --container ghcr.io/gardenlinux/gl-oci --arch amd64 --version 1592.1 --cname metal-gardener_prod --cosign_file digest --manifest_file oci_manifest_entry_metal.json
 ```
 
 #### 2. Update index with manifest entry
 
 Parameters that are the same as for `push-manifest`:
 
--   env-var `GLOCI_REGISTRY_TOKEN`
+-   env-var `GL_CLI_REGISTRY_TOKEN`
 -   `--version`
 -   `--container`
 -   `--manifest-file` this time this parameter adjusts the manifest entry file to be read from instead of being written to
@@ -81,5 +81,5 @@ Parameters that are the same as for `push-manifest`:
 A full example looks like this:
 
 ```bash
-GLOCI_REGISTRY_TOKEN=asdf123 gl-oci update-index --container ghcr.io/gardenlinux/gl-oci --version 1592.1 --manifest_file oci_manifest_entry_metal.json
+GL_CLI_REGISTRY_TOKEN=asdf123 gl-oci update-index --container ghcr.io/gardenlinux/gl-oci --version 1592.1 --manifest_file oci_manifest_entry_metal.json
 ```
