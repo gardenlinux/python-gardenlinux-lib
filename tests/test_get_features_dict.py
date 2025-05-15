@@ -1,6 +1,6 @@
 import pytest
 
-from python_gardenlinux_lib.features.parse_features import get_features_dict
+from gardenlinux.features import Parser
 from tests.conftest import GL_ROOT_DIR
 
 
@@ -66,5 +66,5 @@ def test_get_features_dict(input_cname: str, expected_output: dict):
     features have changed since writing this test. In this case, update the expected output accordingly.
     You can print the output of get_features_dict so you have the dict in the expected format.
     """
-    features_dict = get_features_dict(input_cname, GL_ROOT_DIR)
+    features_dict = Parser(GL_ROOT_DIR).filter_as_dict(input_cname)
     assert features_dict == expected_output

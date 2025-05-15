@@ -1,8 +1,9 @@
 import pytest
 import os
 
+from gardenlinux.features import Parser
+from python_gardenlinux_lib.features.parse_features import get_oci_metadata
 from python_gardenlinux_lib.oras.registry import GlociRegistry
-from python_gardenlinux_lib.features import parse_features
 
 CONTAINER_NAME_ZOT_EXAMPLE = "127.0.0.1:18081/gardenlinux-example"
 GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
@@ -27,12 +28,11 @@ GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
     ],
 )
 def test_push_example(version, cname, arch):
-    oci_metadata = parse_features.get_oci_metadata(
-        cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE
-    )
+    oci_metadata = get_oci_metadata(cname, version, arch, GARDENLINUX_ROOT_DIR_EXAMPLE)
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
     a_registry = GlociRegistry(container_name=container_name, insecure=True)
-    features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
+    features = Parser(GARDENLINUX_ROOT_DIR_EXAMPLE).filter_as_string(cname)
+
     a_registry.push_image_manifest(
         arch,
         cname,

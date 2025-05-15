@@ -1,4 +1,4 @@
-from python_gardenlinux_lib.apt.parse_debsource import DebsrcFile
+from gardenlinux.apt import DebsrcFile
 import io
 
 test_data = """Package: vim

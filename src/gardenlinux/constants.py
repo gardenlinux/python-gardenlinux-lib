@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
 # GardenLinux "bare" feature
-BARE_FLAVOR_FEATURE_CONTENT = { "description": "Bare flavor", "type": "platform" }
-BARE_FLAVOR_LIBC_FEATURE_CONTENT = { "description": "Bare libc feature", "type": "element" }
+BARE_FLAVOR_FEATURE_CONTENT = {"description": "Bare flavor", "type": "platform"}
+
+BARE_FLAVOR_LIBC_FEATURE_CONTENT = {
+    "description": "Bare libc feature",
+    "type": "element",
+}
 
 # GardenLinux flavors schema for validation
 GL_FLAVORS_SCHEMA = {
@@ -31,7 +35,14 @@ GL_FLAVORS_SCHEMA = {
                                 "test-platform": {"type": "boolean"},
                                 "publish": {"type": "boolean"},
                             },
-                            "required": ["features", "arch", "build", "test", "test-platform", "publish"],
+                            "required": [
+                                "features",
+                                "arch",
+                                "build",
+                                "test",
+                                "test-platform",
+                                "publish",
+                            ],
                         },
                     },
                 },
@@ -39,7 +50,7 @@ GL_FLAVORS_SCHEMA = {
             },
         },
     },
-    "required": ["targets"]
+    "required": ["targets"],
 }
 
 # It is important that this list is sorted in descending length of the entries

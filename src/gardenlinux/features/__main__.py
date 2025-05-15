@@ -20,26 +20,38 @@ _ARGS_TYPE_ALLOWED = [
     "elements",
     "arch",
     "version",
-    "graph"
+    "graph",
 ]
 
 
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--arch", dest = "arch")
-    parser.add_argument("--feature-dir", default = "features")
-    parser.add_argument("--features", type = lambda arg: set([f for f in arg.split(",") if f]))
-    parser.add_argument("--ignore", dest = "ignore", type = lambda arg: set([f for f in arg.split(",") if f]), default = set())
+    parser.add_argument("--arch", dest="arch")
+    parser.add_argument("--feature-dir", default="features")
     parser.add_argument("--cname")
     parser.add_argument("--default-arch")
     parser.add_argument("--default-version")
     parser.add_argument("--version", dest="version")
-    parser.add_argument("type", nargs="?", choices = _ARGS_TYPE_ALLOWED, default = "cname")
+
+    parser.add_argument(
+        "--features", type=lambda arg: set([f for f in arg.split(",") if f])
+    )
+
+    parser.add_argument(
+        "--ignore",
+        dest="ignore",
+        type=lambda arg: set([f for f in arg.split(",") if f]),
+        default=set(),
+    )
+
+    parser.add_argument("type", nargs="?", choices=_ARGS_TYPE_ALLOWED, default="cname")
 
     args = parser.parse_args()
 
-    assert bool(args.features) or bool(args.cname), "Please provide either `--features` or `--cname` argument"
+    assert bool(args.features) or bool(
+        args.cname
+    ), "Please provide either `--features` or `--cname` argument"
 
     arch = None
     cname_base = None
@@ -50,7 +62,7 @@ def main():
     if args.cname:
         re_match = re.match(
             "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)+?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
-            args.cname
+            args.cname,
         )
 
         assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
@@ -85,14 +97,16 @@ def main():
         commit_id = re_match[3]
         version = re_match[1]
 
-    if arch is None or arch == "" and (args.type in ( "cname", "arch" )):
-        assert args.default_arch, "Architecture could not be determined and no default architecture set"
+    if arch is None or arch == "" and (args.type in ("cname", "arch")):
+        assert (
+            args.default_arch
+        ), "Architecture could not be determined and no default architecture set"
         arch = args.default_arch
 
     if not commit_id or not version:
         version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
 
-    if not version and (args.type in ("cname", "version" )):
+    if not version and (args.type in ("cname", "version")):
         assert args.default_version, "version not specified and no default version set"
         version = args.default_version
 
@@ -108,15 +122,15 @@ def main():
 
     if args.type == "arch":
         print(arch)
-    elif args.type in ( "cname_base", "cname", "graph" ):
-        graph = Parser(gardenlinux_root, feature_dir_name).filter(cname_base, additional_filter_func = additional_filter_func)
+    elif args.type in ("cname_base", "cname", "graph"):
+        graph = Parser(gardenlinux_root, feature_dir_name).filter(
+            cname_base, additional_filter_func=additional_filter_func
+        )
 
         sorted_features = Parser.sort_graph_nodes(graph)
         minimal_feature_set = get_minimal_feature_set(graph)
 
-        sorted_minimal_features = sort_subset(
-            minimal_feature_set, sorted_features
-        )
+        sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
 
         cname_base = get_cname_base(sorted_minimal_features)
 
@@ -135,9 +149,15 @@ def main():
         elif args.type == "graph":
             print(graph_as_mermaid_markup(cname_base, graph))
     elif args.type == "features":
-	    print(Parser(gardenlinux_root, feature_dir_name).filter_as_string(cname_base, additional_filter_func = additional_filter_func))
-    elif args.type in ( "flags", "elements", "platforms" ):
-        features_by_type = Parser(gardenlinux_root, feature_dir_name).filter_as_dict(cname_base, additional_filter_func = additional_filter_func)
+        print(
+            Parser(gardenlinux_root, feature_dir_name).filter_as_string(
+                cname_base, additional_filter_func=additional_filter_func
+            )
+        )
+    elif args.type in ("flags", "elements", "platforms"):
+        features_by_type = Parser(gardenlinux_root, feature_dir_name).filter_as_dict(
+            cname_base, additional_filter_func=additional_filter_func
+        )
 
         if args.type == "platforms":
             print(",".join(features_by_type["platform"]))
@@ -151,8 +171,9 @@ def main():
 
 def get_cname_base(sorted_features):
     return reduce(
-        lambda a, b : a + ("-" if not b.startswith("_") else "") + b, sorted_features
+        lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
     )
+
 
 def get_version_and_commit_id_from_files(gardenlinux_root):
     commit_id = None
@@ -168,21 +189,24 @@ def get_version_and_commit_id_from_files(gardenlinux_root):
 
     return (version, commit_id)
 
+
 def get_minimal_feature_set(graph):
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
-def graph_as_mermaid_markup(cname_base, graph):
-	"""
-	Generates a mermaid.js representation of the graph.
-	This is helpful to identify dependencies between features.
 
-	Syntax docs:
-	https://mermaid.js.org/syntax/flowchart.html?id=flowcharts-basic-syntax
-	"""
-	markup = f"---\ntitle: Dependency Graph for Feature {cname_base}\n---\ngraph TD;\n"
-	for u,v in graph.edges:
-		markup += f"    {u}-->{v};\n"
-	return markup
+def graph_as_mermaid_markup(cname_base, graph):
+    """
+    Generates a mermaid.js representation of the graph.
+    This is helpful to identify dependencies between features.
+
+    Syntax docs:
+    https://mermaid.js.org/syntax/flowchart.html?id=flowcharts-basic-syntax
+    """
+    markup = f"---\ntitle: Dependency Graph for Feature {cname_base}\n---\ngraph TD;\n"
+    for u, v in graph.edges:
+        markup += f"    {u}-->{v};\n"
+    return markup
+
 
 def sort_subset(input_set, order_list):
     return [item for item in order_list if item in input_set]

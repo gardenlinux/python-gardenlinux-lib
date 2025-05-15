@@ -14,11 +14,18 @@ from ..logger import LoggerSetup
 
 
 class Parser(object):
-    def __init__(self, gardenlinux_root: str = ".", feature_dir_name: str = "features", logger: Optional[logging.Logger] = None):
+    def __init__(
+        self,
+        gardenlinux_root: str = ".",
+        feature_dir_name: str = "features",
+        logger: Optional[logging.Logger] = None,
+    ):
         feature_base_dir = os.path.join(gardenlinux_root, feature_dir_name)
 
         if not os.access(feature_base_dir, os.R_OK):
-            raise ValueError("Feature directory given is invalid: {0}".format(feature_base_dir))
+            raise ValueError(
+                "Feature directory given is invalid: {0}".format(feature_base_dir)
+            )
 
         if logger is None or not logger.hasHandlers():
             logger = LoggerSetup.get_logger("gardenlinux.features")
@@ -28,7 +35,9 @@ class Parser(object):
         self._graph = None
         self._logger = logger
 
-        self._logger.debug("features.Parser initialized for directory: {0}".format(feature_base_dir))
+        self._logger.debug(
+            "features.Parser initialized for directory: {0}".format(feature_base_dir)
+        )
 
     @property
     def graph(self) -> networkx.Graph:
@@ -49,7 +58,9 @@ class Parser(object):
                         continue
 
                     for ref in node_features[attr]:
-                        if not os.path.isfile("{0}/{1}/info.yaml".format(self._feature_base_dir, ref)):
+                        if not os.path.isfile(
+                            "{0}/{1}/info.yaml".format(self._feature_base_dir, ref)
+                        ):
                             raise ValueError(
                                 f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
                             )
@@ -67,7 +78,7 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None
+        additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> networkx.Graph:
         input_features = Parser.get_cname_as_feature_set(cname)
         filter_set = input_features.copy()
@@ -80,9 +91,18 @@ class Parser(object):
                 self.graph.add_node("libc", content=BARE_FLAVOR_LIBC_FEATURE_CONTENT)
 
         for feature in input_features:
-            filter_set.update(networkx.descendants(Parser._get_graph_view_for_attr(self.graph, "include"), feature))
+            filter_set.update(
+                networkx.descendants(
+                    Parser._get_graph_view_for_attr(self.graph, "include"), feature
+                )
+            )
 
-        graph = networkx.subgraph_view(self.graph, filter_node = self._get_filter_set_callable(filter_set, additional_filter_func))
+        graph = networkx.subgraph_view(
+            self.graph,
+            filter_node=self._get_filter_set_callable(
+                filter_set, additional_filter_func
+            ),
+        )
 
         if not ignore_excludes:
             Parser._exclude_from_filter_set(graph, input_features, filter_set)
@@ -93,13 +113,13 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None
+        additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> dict:
         """
-:param str cname: the target cname to get the feature dict for
-:param str gardenlinux_root: path of garden linux src root
+        :param str cname: the target cname to get the feature dict for
+        :param str gardenlinux_root: path of garden linux src root
 
-:return: dict with list of features for a given cname, split into platform, element and flag
+        :return: dict with list of features for a given cname, split into platform, element and flag
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -121,13 +141,13 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None
+        additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> list:
         """
-:param str cname: the target cname to get the feature dict for
-:param str gardenlinux_root: path of garden linux src root
+        :param str cname: the target cname to get the feature dict for
+        :param str gardenlinux_root: path of garden linux src root
 
-:return: list of features for a given cname
+        :return: list of features for a given cname
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -137,13 +157,13 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None
+        additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> str:
         """
-:param str cname: the target cname to get the feature set for
-:param str gardenlinux_root: path of garden linux src root
+        :param str cname: the target cname to get the feature set for
+        :param str gardenlinux_root: path of garden linux src root
 
-:return: a comma separated string with the expanded feature set for the cname
+        :return: a comma separated string with the expanded feature set for the cname
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -200,15 +220,17 @@ class Parser(object):
     @staticmethod
     def _get_filter_set_callable(filter_set, additional_filter_func):
         def filter_func(node):
-            additional_filter_result = True if additional_filter_func is None else additional_filter_func(node)
-            return (node in filter_set and additional_filter_result)
+            additional_filter_result = (
+                True if additional_filter_func is None else additional_filter_func(node)
+            )
+            return node in filter_set and additional_filter_result
 
         return filter_func
 
     @staticmethod
     def _get_graph_view_for_attr(graph, attr):
         return networkx.subgraph_view(
-            graph, filter_edge = Parser._get_graph_view_for_attr_callable(graph, attr)
+            graph, filter_edge=Parser._get_graph_view_for_attr_callable(graph, attr)
         )
 
     @staticmethod
@@ -231,7 +253,7 @@ class Parser(object):
 
             return f"{prefix}-{node}"
 
-        return list(networkx.lexicographical_topological_sort(graph, key = key_function))
+        return list(networkx.lexicographical_topological_sort(graph, key=key_function))
 
     @staticmethod
     def sort_reversed_graph_nodes(graph):

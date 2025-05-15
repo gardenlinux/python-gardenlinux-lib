@@ -17,76 +17,84 @@ def generate_markdown_table(combinations, no_arch):
 
     for arch, combination in combinations:
         platform = combination.split("-")[0]
-        table += f"| {platform:<10} | {arch:<18} | `{combination}`                   |\n"
+        table += (
+            f"| {platform:<10} | {arch:<18} | `{combination}`                   |\n"
+        )
 
     return table
+
 
 def parse_args():
     parser = ArgumentParser(description="Parse flavors.yaml and generate combinations.")
 
-    parser.add_argument("--no-arch", action="store_true", help="Exclude architecture from the flavor output.")
+    parser.add_argument(
+        "--no-arch",
+        action="store_true",
+        help="Exclude architecture from the flavor output.",
+    )
     parser.add_argument(
         "--include-only",
         action="append",
         default=[],
-        help="Restrict combinations to those matching wildcard patterns (can be specified multiple times)."
+        help="Restrict combinations to those matching wildcard patterns (can be specified multiple times).",
     )
     parser.add_argument(
         "--exclude",
         action="append",
         default=[],
-        help="Exclude combinations based on wildcard patterns (can be specified multiple times)."
+        help="Exclude combinations based on wildcard patterns (can be specified multiple times).",
     )
     parser.add_argument(
         "--build",
         action="store_true",
-        help="Filter combinations to include only those with build enabled."
+        help="Filter combinations to include only those with build enabled.",
     )
     parser.add_argument(
         "--publish",
         action="store_true",
-        help="Filter combinations to include only those with publish enabled."
+        help="Filter combinations to include only those with publish enabled.",
     )
     parser.add_argument(
         "--test",
         action="store_true",
-        help="Filter combinations to include only those with test enabled."
+        help="Filter combinations to include only those with test enabled.",
     )
     parser.add_argument(
         "--test-platform",
         action="store_true",
-        help="Filter combinations to include only platforms with test-platform: true."
+        help="Filter combinations to include only platforms with test-platform: true.",
     )
     parser.add_argument(
         "--category",
         action="append",
         default=[],
-        help="Filter combinations to include only platforms belonging to the specified categories (can be specified multiple times)."
+        help="Filter combinations to include only platforms belonging to the specified categories (can be specified multiple times).",
     )
     parser.add_argument(
         "--exclude-category",
         action="append",
         default=[],
-        help="Exclude platforms belonging to the specified categories (can be specified multiple times)."
+        help="Exclude platforms belonging to the specified categories (can be specified multiple times).",
     )
     parser.add_argument(
         "--json-by-arch",
         action="store_true",
-        help="Output a JSON dictionary where keys are architectures and values are lists of flavors."
+        help="Output a JSON dictionary where keys are architectures and values are lists of flavors.",
     )
     parser.add_argument(
         "--markdown-table-by-platform",
         action="store_true",
-        help="Generate a markdown table by platform."
+        help="Generate a markdown table by platform.",
     )
 
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
 
     repo_path = Git(".").rev_parse("--show-superproject-working-tree")
-    flavors_file = os.path.join(repo_path, 'flavors.yaml')
+    flavors_file = os.path.join(repo_path, "flavors.yaml")
 
     if not os.path.isfile(flavors_file):
         sys.exit(f"Error: {flavors_file} does not exist.")
@@ -103,7 +111,7 @@ def main():
         only_test_platform=args.test_platform,
         only_publish=args.publish,
         filter_categories=args.category,
-        exclude_categories=args.exclude_category
+        exclude_categories=args.exclude_category,
     )
 
     if args.json_by_arch:

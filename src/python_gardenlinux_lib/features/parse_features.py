@@ -36,52 +36,6 @@ def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -
     else:
         return commit_str
 
-def get_features_dict(
-    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
-) -> dict:
-    """
-    :param str cname: the target cname to get the feature dict for
-    :param str gardenlinux_root: path of garden linux src root
-    :return: dict with list of features for a given cname, split into platform, element and flag
-
-    """
-
-    return Parser(gardenlinux_root, feature_dir_name).filter_as_dict(cname)
-
-def get_features_graph(
-    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
-) -> networkx.Graph:
-    """
-    :param str cname: the target cname to get the feature dict for
-    :param str gardenlinux_root: path of garden linux src root
-    :return: list of features for a given cname
-
-    """
-
-    return Parser(gardenlinux_root, feature_dir_name).filter(cname)
-
-def get_features_list(
-    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
-) -> list:
-    """
-    :param str cname: the target cname to get the feature dict for
-    :param str gardenlinux_root: path of garden linux src root
-    :return: list of features for a given cname
-
-    """
-
-    return Parser(gardenlinux_root, feature_dir_name).filter_as_list(cname)
-
-def get_features(
-    cname: str, gardenlinux_root: str, feature_dir_name: str = "features"
-) -> str:
-    """
-    :param str cname: the target cname to get the feature set for
-    :param str gardenlinux_root: path of garden linux src root
-    :return: a comma separated string with the expanded feature set for the cname
-    """
-
-    return Parser(gardenlinux_root, feature_dir_name).filter_as_string(cname)
 
 def construct_layer_metadata(
     filetype: str, cname: str, version: str, arch: str, commit: str
@@ -101,6 +55,7 @@ def construct_layer_metadata(
         "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
 
+
 def construct_layer_metadata_from_filename(filename: str, arch: str) -> dict:
     """
     :param str filename: filename of the blob
@@ -114,6 +69,7 @@ def construct_layer_metadata_from_filename(filename: str, arch: str) -> dict:
         "annotations": {"io.gardenlinux.image.layer.architecture": arch},
     }
 
+
 def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_root: str):
     """
     :param str cname: the target cname of the image
@@ -123,7 +79,7 @@ def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_roo
     :return: set of file names for a given cname
     """
     file_set = set()
-    features_by_type = get_features_dict(cname, gardenlinux_root)
+    features_by_type = Parser(gardenlinux_root).filter_as_dict(cname)
     commit_str = get_gardenlinux_commit(gardenlinux_root, 8)
 
     if commit_str == "local":
@@ -135,6 +91,7 @@ def get_file_set_from_cname(cname: str, version: str, arch: str, gardenlinux_roo
                 f"{cname}-{arch}-{version}-{commit_str}.{ft}",
             )
     return file_set
+
 
 def get_oci_metadata_from_fileset(fileset: list, arch: str):
     """
@@ -150,6 +107,7 @@ def get_oci_metadata_from_fileset(fileset: list, arch: str):
         )
 
     return oci_layer_metadata_list
+
 
 def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str):
     """
@@ -173,6 +131,7 @@ def get_oci_metadata(cname: str, version: str, arch: str, gardenlinux_root: str)
 
     return oci_layer_metadata_list
 
+
 def lookup_media_type_for_filetype(filetype: str) -> str:
     """
     :param str filetype: filetype of the target layer
@@ -184,6 +143,7 @@ def lookup_media_type_for_filetype(filetype: str) -> str:
         raise ValueError(
             f"media type for {filetype} is not defined. You may want to add the definition to parse_features_lib"
         )
+
 
 def lookup_media_type_for_file(filename: str) -> str:
     """
@@ -198,6 +158,7 @@ def lookup_media_type_for_file(filename: str) -> str:
             f"media type for {filename} is not defined. You may want to add the definition to parse_features_lib"
         )
 
+
 def deduce_feature_name(feature_dir: str):
     """
     :param str feature_dir: Directory of single Feature
@@ -208,6 +169,7 @@ def deduce_feature_name(feature_dir: str):
         raise ValueError("Expected name from parse_feature_yaml function to be set")
     return parsed["name"]
 
+
 def deduce_archive_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
@@ -215,12 +177,14 @@ def deduce_archive_filetypes(feature_dir):
     """
     return deduce_filetypes_from_string(feature_dir, "image")
 
+
 def deduce_image_filetypes(feature_dir):
     """
     :param str feature_dir: Directory of single Feature
     :return: str list of filetype for image
     """
     return deduce_filetypes_from_string(feature_dir, "convert")
+
 
 def deduce_filetypes(feature_dir):
     """
@@ -235,6 +199,7 @@ def deduce_filetypes(feature_dir):
         archive_file_types.append("tar")
     image_file_types.extend(archive_file_types)
     return image_file_types
+
 
 def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
     """
@@ -258,6 +223,7 @@ def deduce_filetypes_from_string(feature_dir: str, script_base_name: str):
             result.append(filename.split(f"{script_base_name}.")[1])
 
     return sorted(result)
+
 
 def sort_set(input_set, order_list):
     return [item for item in order_list if item in input_set]
