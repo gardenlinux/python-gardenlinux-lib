@@ -483,7 +483,6 @@ class GlociRegistry(Registry):
         build_artifacts_dir: str,
         oci_metadata: list,
         feature_set: str,
-        flavor: str,
         commit: str,
         manifest_file: str,
     ):
@@ -497,7 +496,6 @@ class GlociRegistry(Registry):
         :param str build_artifacts_dir: directory where the build artifacts are located
         :param str feature_set: the expanded list of the included features of this manifest. It will be set in the
         manifest itself and in the index entry for this manifest
-        :param str flavor: the flavor of the image
         :param str commit: the commit hash of the image
         :returns the digest of the pushed manifest
         """
@@ -539,6 +537,7 @@ class GlociRegistry(Registry):
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
         # This ends up in the manifest
+        flavor = get_flavor_from_cname(cname, get_arch=True)
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
@@ -548,8 +547,10 @@ class GlociRegistry(Registry):
         manifest_image["annotations"]["commit"] = commit
         description = (
             f"Image: {cname} "
+            f"Flavor: {flavor} "
             f"Architecture: {architecture} "
-            f"Features: {feature_set}"
+            f"Features: {feature_set} "
+            f"Commit: {commit} "
         )
         manifest_image["annotations"][
             "org.opencontainers.image.description"
@@ -654,6 +655,7 @@ class GlociRegistry(Registry):
             )
 
             features = ""
+            commit = ""
             for artifact in oci_metadata:
                 if artifact["media_type"] == "application/io.gardenlinux.release":
                     file = open(f"{tmpdir}/{artifact["file_name"]}", "r")
@@ -664,6 +666,9 @@ class GlociRegistry(Registry):
                                 "GARDENLINUX_FEATURES="
                             )
                             break
+                        elif line.strip().startswith("GARDENLINUX_COMMIT_ID="):
+                            commit = line.strip().removeprefix("GARDENLINUX_COMMIT_ID=")
+                            break
                     file.close()
 
             digest = self.push_image_manifest(
@@ -673,6 +678,7 @@ class GlociRegistry(Registry):
                 tmpdir,
                 oci_metadata,
                 features,
+                commit,
                 "/dev/null",
             )
         except Exception as e:
@@ -735,6 +741,7 @@ class GlociRegistry(Registry):
                 directory,
                 oci_metadata,
                 features,
+                commit,
                 manifest_file,
             )
         except Exception as e:

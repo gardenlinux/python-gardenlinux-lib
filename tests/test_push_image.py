@@ -49,7 +49,6 @@ def test_push_example(version, cname, arch):
         f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build",
         oci_metadata,
         features,
-        flavor,
         commit,
         manifest_file,
     )
