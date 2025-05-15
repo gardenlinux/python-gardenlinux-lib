@@ -26,6 +26,7 @@ from oras.decorator import ensure_container
 from oras.provider import Registry
 from oras.schemas import manifest as oras_manifest_schema
 
+from python_gardenlinux_lib.cname import get_flavor_from_cname
 from python_gardenlinux_lib.crypto import (
     calculate_sha256,
     verify_sha256,
