@@ -19,6 +19,7 @@ oras = { git  = "https://github.com/oras-project/oras-py.git", rev="caf8db5b2793
 python-dotenv = "^1.0.1"
 cryptography = "^44.0.0"
 boto3 = "*"
+pygments = "^2.19.1"
 
 
 [tool.poetry.group.dev.dependencies]
