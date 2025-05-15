@@ -26,7 +26,7 @@ def main():
     args = parser.parse_args()
 
     re_match = re.match(
-        "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)+?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
+        "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
         args.cname,
     )
 
