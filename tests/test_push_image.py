@@ -6,6 +6,7 @@ import pytest
 
 from python_gardenlinux_lib.features import parse_features
 from python_gardenlinux_lib.oci.registry import GlociRegistry
+from python_gardenlinux_lib.cname import get_flavor_from_cname
 
 CONTAINER_NAME_ZOT_EXAMPLE = "127.0.0.1:18081/gardenlinux-example"
 GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"
@@ -36,7 +37,10 @@ def test_push_example(version, cname, arch):
     container_name = f"{CONTAINER_NAME_ZOT_EXAMPLE}:{version}"
     a_registry = GlociRegistry(container_name=container_name, insecure=True)
     features = parse_features.get_features(cname, GARDENLINUX_ROOT_DIR_EXAMPLE)
+    flavor = get_flavor_from_cname(cname, True)
     manifest_file = "/dev/null"
+
+    commit = "test1234"
 
     a_registry.push_image_manifest(
         arch,
@@ -45,5 +49,7 @@ def test_push_example(version, cname, arch):
         f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/.build",
         oci_metadata,
         features,
-        manifest_file=manifest_file,
+        flavor,
+        commit,
+        manifest_file,
     )
