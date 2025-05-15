@@ -6,7 +6,12 @@ from os.path import basename, dirname
 import argparse
 import re
 
-from .__main__ import get_cname_base, get_minimal_feature_set, get_version_and_commit_id_from_files, sort_subset
+from .__main__ import (
+    get_cname_base,
+    get_minimal_feature_set,
+    get_version_and_commit_id_from_files,
+    sort_subset,
+)
 from .parser import Parser
 
 
@@ -22,7 +27,7 @@ def main():
 
     re_match = re.match(
         "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)+?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
-        args.cname
+        args.cname,
     )
 
     assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
@@ -73,9 +78,7 @@ def main():
     sorted_features = Parser.sort_graph_nodes(graph)
     minimal_feature_set = get_minimal_feature_set(graph)
 
-    sorted_minimal_features = sort_subset(
-        minimal_feature_set, sorted_features
-    )
+    sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
 
     cname = get_cname_base(sorted_minimal_features)
 

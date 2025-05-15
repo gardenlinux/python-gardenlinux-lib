@@ -4,8 +4,7 @@ from datetime import datetime, timezone
 import requests
 from pathlib import Path
 
-from .logger import LoggerSetup
-from .features.parse_features import get_features
+from gardenlinux.logger import LoggerSetup
 
 
 class Version:

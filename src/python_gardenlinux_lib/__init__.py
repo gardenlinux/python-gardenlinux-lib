@@ -1,4 +1,3 @@
-from .git import Git
 from .version import Version
 
-__all__ = ["Git", "Version"]
+__all__ = ["Version"]

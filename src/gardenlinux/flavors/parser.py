@@ -7,9 +7,10 @@ import yaml
 from ..constants import GL_FLAVORS_SCHEMA
 from ..logger import LoggerSetup
 
+
 class Parser(object):
-    def __init__(self, data, logger = None):
-        flavors_data = (yaml.safe_load(data) if isinstance(data, str) else data)
+    def __init__(self, data, logger=None):
+        flavors_data = yaml.safe_load(data) if isinstance(data, str) else data
         jsonschema_validate(instance=flavors_data, schema=GL_FLAVORS_SCHEMA)
 
         if logger is None or not logger.hasHandlers():
@@ -18,7 +19,9 @@ class Parser(object):
         self._flavors_data = flavors_data
         self._logger = logger
 
-        self._logger.debug("flavors.Parser initialized with data: {0!r}".format(flavors_data))
+        self._logger.debug(
+            "flavors.Parser initialized with data: {0!r}".format(flavors_data)
+        )
 
     def filter(
         self,
@@ -29,16 +32,16 @@ class Parser(object):
         only_test_platform=False,
         only_publish=False,
         filter_categories=[],
-        exclude_categories=[]
+        exclude_categories=[],
     ):
         """Parses the flavors.yaml file and generates combinations."""
         self._logger.debug("flavors.Parser filtering with {0}".format(locals()))
 
         combinations = []  # Use a list for consistent order
 
-        for target in self._flavors_data['targets']:
-            name = target['name']
-            category = target.get('category', '')
+        for target in self._flavors_data["targets"]:
+            name = target["name"]
+            category = target.get("category", "")
 
             # Apply category filters
             if filter_categories and category not in filter_categories:
@@ -46,13 +49,13 @@ class Parser(object):
             if exclude_categories and category in exclude_categories:
                 continue
 
-            for flavor in target['flavors']:
-                features = flavor.get('features', [])
-                arch = flavor.get('arch', 'amd64')
-                build = flavor.get('build', False)
-                test = flavor.get('test', False)
-                test_platform = flavor.get('test-platform', False)
-                publish = flavor.get('publish', False)
+            for flavor in target["flavors"]:
+                features = flavor.get("features", [])
+                arch = flavor.get("arch", "amd64")
+                build = flavor.get("build", False)
+                test = flavor.get("test", False)
+                test_platform = flavor.get("test-platform", False)
+                publish = flavor.get("publish", False)
 
                 # Apply flag-specific filters in the order: build, test, test-platform, publish
                 if only_build and not build:
@@ -83,7 +86,9 @@ class Parser(object):
 
                 combinations.append((arch, combination))
 
-        return sorted(combinations, key=lambda platform: platform[1].split("-")[0])  # Sort by platform name
+        return sorted(
+            combinations, key=lambda platform: platform[1].split("-")[0]
+        )  # Sort by platform name
 
     @staticmethod
     def group_by_arch(combinations):
@@ -98,7 +103,9 @@ class Parser(object):
     @staticmethod
     def remove_arch(combinations):
         """Removes the architecture from combinations."""
-        return [combination.replace(f"-{arch}", "") for arch, combination in combinations]
+        return [
+            combination.replace(f"-{arch}", "") for arch, combination in combinations
+        ]
 
     @staticmethod
     def should_exclude(combination, excludes, wildcard_excludes):
@@ -109,7 +116,9 @@ class Parser(object):
         if combination in excludes:
             return True
         # Exclude if matches any wildcard pattern
-        return any(fnmatch.fnmatch(combination, pattern) for pattern in wildcard_excludes)
+        return any(
+            fnmatch.fnmatch(combination, pattern) for pattern in wildcard_excludes
+        )
 
     @staticmethod
     def should_include_only(combination, include_only_patterns):
@@ -119,4 +128,6 @@ class Parser(object):
         """
         if not include_only_patterns:
             return True
-        return any(fnmatch.fnmatch(combination, pattern) for pattern in include_only_patterns)
+        return any(
+            fnmatch.fnmatch(combination, pattern) for pattern in include_only_patterns
+        )
