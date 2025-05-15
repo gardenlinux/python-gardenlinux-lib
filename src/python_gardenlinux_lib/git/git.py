@@ -1,5 +1,5 @@
-import subprocess
 from pathlib import Path
+import subprocess
 import sys
 
 from ..logger import LoggerSetup

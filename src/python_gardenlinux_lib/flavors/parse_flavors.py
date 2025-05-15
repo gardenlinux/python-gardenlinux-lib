@@ -11,9 +11,9 @@ import sys
 import time
 
 import boto3
-import yaml
 from botocore.exceptions import ClientError
 from jsonschema import validate, ValidationError
+import yaml
 
 # Create a null logger as default
 null_logger = logging.getLogger("gardenlinux.lib.flavors")

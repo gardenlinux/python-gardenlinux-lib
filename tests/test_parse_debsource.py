@@ -1,5 +1,6 @@
-from python_gardenlinux_lib.apt.parse_debsource import DebsrcFile
 import io
+
+from python_gardenlinux_lib.apt.parse_debsource import DebsrcFile
 
 test_data = """Package: vim
 Source: vim (2:9.1.0496-1)

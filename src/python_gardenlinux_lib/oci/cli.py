@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import click
 import os
+import click
 
 from pygments.lexer import default
 

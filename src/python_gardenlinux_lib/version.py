@@ -1,8 +1,9 @@
 import re
 import subprocess
 from datetime import datetime, timezone
-import requests
 from pathlib import Path
+
+import requests
 
 from .logger import LoggerSetup
 from .features.parse_features import get_features

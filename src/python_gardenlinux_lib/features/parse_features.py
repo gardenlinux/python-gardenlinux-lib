@@ -1,14 +1,14 @@
-from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
-
 from glob import glob
-import yaml
-import networkx
 import os
 import re
 import subprocess
 from typing import Optional
+import yaml
 
+import networkx
 from pygments.filter import apply_filters
+
+from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
 
 
 def get_gardenlinux_commit(gardenlinux_root: str, limit: Optional[int] = None) -> str:

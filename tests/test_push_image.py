@@ -4,8 +4,8 @@ import tempfile
 
 import pytest
 
-from python_gardenlinux_lib.oci.registry import GlociRegistry
 from python_gardenlinux_lib.features import parse_features
+from python_gardenlinux_lib.oci.registry import GlociRegistry
 
 CONTAINER_NAME_ZOT_EXAMPLE = "127.0.0.1:18081/gardenlinux-example"
 GARDENLINUX_ROOT_DIR_EXAMPLE = "test-data/gardenlinux/"

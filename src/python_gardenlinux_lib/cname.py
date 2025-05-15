@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-from .features import parse_features
-
+import argparse
+import re
 from functools import reduce
 from os.path import basename, dirname
 
-import argparse
-import re
+from .features import parse_features
 
 
 def main():

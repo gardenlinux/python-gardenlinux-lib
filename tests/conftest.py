@@ -1,13 +1,14 @@
-from .helper import call_command
-import os
-import tempfile
-from .helper import spawn_background_process
-import sys
-import shutil
 import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
 import pytest
 from dotenv import load_dotenv
-import subprocess
+
+from .helper import call_command, spawn_background_process
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "test-data")
 GL_ROOT_DIR = os.path.join(TEST_DATA_DIR, "gardenlinux")

@@ -20,7 +20,6 @@ import oras.defaults
 import oras.oci
 import oras.provider
 import oras.utils
-from python_gardenlinux_lib.features.parse_features import get_oci_metadata_from_fileset
 import requests
 from oras.container import Container as OrasContainer
 from oras.decorator import ensure_container
@@ -31,7 +30,7 @@ from python_gardenlinux_lib.crypto import (
     calculate_sha256,
     verify_sha256,
 )
-
+from python_gardenlinux_lib.features.parse_features import get_oci_metadata_from_fileset
 from python_gardenlinux_lib.oci.defaults import (
     annotation_signature_key,
     annotation_signed_string_key,

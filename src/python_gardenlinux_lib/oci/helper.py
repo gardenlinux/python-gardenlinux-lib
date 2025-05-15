@@ -1,6 +1,6 @@
-import re
 import json
 import os
+import re
 
 
 def write_dict_to_json_file(input, output_path):

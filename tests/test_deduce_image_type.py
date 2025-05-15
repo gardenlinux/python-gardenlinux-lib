@@ -1,9 +1,9 @@
+import pytest
+
 from python_gardenlinux_lib.features.parse_features import (
     deduce_archive_filetypes,
     deduce_image_filetypes,
 )
-import pytest
-
 from tests.conftest import GL_ROOT_DIR
 
 
