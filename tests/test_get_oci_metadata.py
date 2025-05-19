@@ -1,7 +1,7 @@
 import pytest
 
 from python_gardenlinux_lib.features.parse_features import get_oci_metadata
-from tests.conftest import GL_ROOT_DIR
+from .constants import GL_ROOT_DIR
 
 
 @pytest.mark.parametrize(
