@@ -9,7 +9,11 @@ import re
 import subprocess
 import yaml
 
-from ..constants import BARE_FLAVOR_FEATURE_CONTENT, BARE_FLAVOR_LIBC_FEATURE_CONTENT
+from ..constants import (
+    ARCHS,
+    BARE_FLAVOR_FEATURE_CONTENT,
+    BARE_FLAVOR_LIBC_FEATURE_CONTENT,
+)
 from ..logger import LoggerSetup
 
 
@@ -216,6 +220,57 @@ class Parser(object):
     def get_cname_as_feature_set(cname):
         cname = cname.replace("_", "-_")
         return set(cname.split("-"))
+
+    @staticmethod
+    def get_flavor_from_cname(cname: str, get_arch: bool = True) -> str:
+        """
+        Extracts the flavor from a canonical name.
+
+        This method parses a Garden Linux canonical name (cname) and extracts
+        the flavor component, with or without the architecture suffix.
+
+        Example canonical names:
+        - "aws-gardener_prod-amd64"
+        - "azure-gardener_prod_tpm2_trustedboot-amd64-1312.2-80ffcc87"
+
+        The flavor is the platform plus feature string (e.g., "aws-gardener_prod")
+
+        Args:
+            cname (str): Canonical name of an image
+            get_arch (bool): Whether to include the architecture in the returned flavor
+                            If True: returns "aws-gardener_prod-amd64"
+                            If False: returns "aws-gardener_prod"
+
+        Returns:
+            str: The extracted flavor string, with or without architecture
+        """
+        # Use regex to extract components from the canonical name
+        # This handles complex cnames with version and commit hash
+        re_match = re.match(
+            "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
+            cname,
+        )
+
+        assert re_match, f"Not a valid GardenLinux canonical name {cname}"
+
+        if re_match.lastindex == 1:
+            data_splitted = re_match[1].split("-", 1)
+
+            flavor = data_splitted[0]
+
+            if len(data_splitted) > 1:
+                if get_arch is True:
+                    arch = data_splitted[1]
+                else:
+                    flavor += "-" + data_splitted[1]
+        else:
+            arch = re_match[4]
+            flavor = re_match[1]
+        # Add architecture if requested
+        if get_arch and arch:
+            return f"{flavor}-{arch}"
+        else:
+            return flavor
 
     @staticmethod
     def _get_filter_set_callable(filter_set, additional_filter_func):

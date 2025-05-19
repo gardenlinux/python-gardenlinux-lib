@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+ARCHS = ["amd64", "arm64"]
+
 # GardenLinux "bare" feature
 BARE_FLAVOR_FEATURE_CONTENT = {"description": "Bare flavor", "type": "platform"}
 
@@ -55,8 +57,19 @@ GL_FLAVORS_SCHEMA = {
 
 # It is important that this list is sorted in descending length of the entries
 GL_MEDIA_TYPES = [
+    "secureboot.aws-efivars",
+    "secureboot.kek.auth",
     "gcpimage.tar.gz.log",
+    "secureboot.pk.auth",
+    "secureboot.kek.crt",
+    "secureboot.kek.der",
+    "secureboot.db.auth",
     "firecracker.tar.gz",
+    "secureboot.pk.crt",
+    "secureboot.pk.der",
+    "secureboot.db.crt",
+    "secureboot.db.der",
+    "secureboot.db.arn",
     "platform.test.log",
     "platform.test.xml",
     "gcpimage.tar.gz",
@@ -65,11 +78,15 @@ GL_MEDIA_TYPES = [
     "pxe.tar.gz.log",
     "root.squashfs",
     "manifest.log",
+    "squashfs.log",
     "release.log",
+    "vmlinuz.log",
+    "initrd.log",
     "pxe.tar.gz",
     "qcow2.log",
     "test-log",
     "boot.efi",
+    "squashfs",
     "manifest",
     "vmdk.log",
     "tar.log",
@@ -122,12 +139,30 @@ GL_MEDIA_TYPE_LOOKUP = {
     "vhd.log": "application/io.gardenlinux.log",
     "ova.log": "application/io.gardenlinux.log",
     "vmlinuz": "application/io.gardenlinux.kernel",
+    "vmlinuz.log": "application/io.gardenlinux.log",
     "initrd": "application/io.gardenlinux.initrd",
+    "initrd.log": "application/io.gardenlinux.log",
     "root.squashfs": "application/io.gardenlinux.squashfs",
+    "squashfs": "application/io.gardenlinux.squashfs",
+    "squashfs.log": "application/io.gardenlinux.log",
     "boot.efi": "application/io.gardenlinux.efi",
     "platform.test.log": "application/io.gardenlinux.io.platform.test.log",
     "platform.test.xml": "application/io.gardenlinux.io.platform.test.xml",
     "chroot.test.log": "application/io.gardenlinux.io.chroot.test.log",
     "chroot.test.xml": "application/io.gardenlinux.io.chroot.test.xml",
     "oci.log": "application/io.gardenlinux.log",
+    "secureboot.pk.crt": "application/io.gardenlinux.cert.secureboot.pk.crt",
+    "secureboot.pk.der": "application/io.gardenlinux.cert.secureboot.pk.der",
+    "secureboot.pk.auth": "application/io.gardenlinux.cert.secureboot.pk.auth",
+    "secureboot.kek.crt": "application/io.gardenlinux.cert.secureboot.kek.crt",
+    "secureboot.kek.der": "application/io.gardenlinux.cert.secureboot.kek.der",
+    "secureboot.kek.auth": "application/io.gardenlinux.cert.secureboot.kek.auth",
+    "secureboot.db.crt": "application/io.gardenlinux.cert.secureboot.db.crt",
+    "secureboot.db.der": "application/io.gardenlinux.cert.secureboot.db.der",
+    "secureboot.db.auth": "application/io.gardenlinux.cert.secureboot.db.auth",
+    "secureboot.db.arn": "application/io.gardenlinux.cert.secureboot.db.arn",
+    "secureboot.aws-efivars": "application/io.gardenlinux.cert.secureboot.aws-efivars",
 }
+
+OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
+OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"

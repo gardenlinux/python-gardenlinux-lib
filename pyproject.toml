@@ -23,6 +23,7 @@ boto3 = "*"
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.3"
 black = "^24.8.0"
+opencontainers = "^0.0.14"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^2.0.0"
@@ -31,6 +32,7 @@ sphinx-rtd-theme = "^2.0.0"
 gl-cname = "gardenlinux.features.cname_main:main"
 gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
+gl-oci = "gardenlinux.oci.__main__:main"
 flavors-parse = "gardenlinux.flavors.__main__:main"
 
 [tool.pytest.ini_options]

@@ -1,7 +1,7 @@
 import pytest
 
 from gardenlinux.features import Parser
-from tests.conftest import GL_ROOT_DIR
+from .constants import GL_ROOT_DIR
 
 
 @pytest.mark.parametrize(

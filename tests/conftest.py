@@ -13,11 +13,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from dotenv import load_dotenv
 
-from .helper import call_command, spawn_background_process
-
-TEST_DATA_DIR = "test-data"
-GL_ROOT_DIR = f"{TEST_DATA_DIR}/gardenlinux"
-CERT_DIR = f"{TEST_DATA_DIR}/cert"
+from .constants import TEST_DATA_DIR, GL_ROOT_DIR, CERT_DIR
+from .helper import call_command, spawn_background_process, generate_test_certificates
 
 
 def generate_test_certificates():
@@ -112,6 +109,7 @@ def zot_session():
 def pytest_sessionstart(session):
     generate_test_certificates()
     call_command("./test-data/build-test-data.sh --dummy")
+    call_command("mkdir -p manifests")
 
 
 def pytest_sessionfinish(session):
@@ -119,3 +117,5 @@ def pytest_sessionfinish(session):
         os.remove(CERT_DIR + "/oci-sign.crt")
     if os.path.isfile(CERT_DIR + "/oci-sign.key"):
         os.remove(CERT_DIR + "/oci-sign.key")
+    if os.path.isdir("./manifests"):
+        shutil.rmtree("./manifests")
