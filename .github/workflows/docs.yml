@@ -3,23 +3,15 @@ name: Update Sphinx documentation
 on: [push, pull_request, workflow_dispatch]
 
 permissions:
-  contents: write
+    contents: write
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-      - name: Install dependencies
-        run: |
-          pip install sphinx poetry
-      - name: Sphinx build
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          poetry install
-          sphinx-build docs _build
+      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - run: make docs
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

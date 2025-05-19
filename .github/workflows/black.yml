@@ -7,4 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: psf/black@stable
+      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - run: make lint
