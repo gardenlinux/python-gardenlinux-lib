@@ -23,6 +23,7 @@ from .constants import (
     TEST_COMMIT,
     TEST_FEATURE_SET,
     TEST_VERSION,
+    TEST_VERSION_STABLE,
     TEST_PLATFORMS,
     TEST_FEATURE_STRINGS_SHORT,
     TEST_ARCHITECTURES,
@@ -53,7 +54,6 @@ def push_manifest(runner, version, arch, cname, additional_tags=None):
         "manifests/manifest.json",
     ]
 
-    # Add additional tags if provided
     if additional_tags:
         for tag in additional_tags:
             cmd.extend(["--additional_tag", tag])
@@ -71,23 +71,35 @@ def push_manifest(runner, version, arch, cname, additional_tags=None):
         return False
 
 
-def update_index(runner, version):
-    """Update index in registry"""
+def update_index(runner, version, additional_tags=None):
+    """Update index in registry and return success status"""
     print("Updating index")
-    result = runner.invoke(
-        gl_oci,
-        [
-            "update-index",
-            "--container",
-            CONTAINER_NAME_ZOT_EXAMPLE,
-            "--version",
-            version,
-            "--insecure",
-            "True",
-        ],
-        catch_exceptions=False,
-    )
-    print(f"Update index output: {result.output}")
+
+    cmd = [
+        "update-index",
+        "--container",
+        CONTAINER_NAME_ZOT_EXAMPLE,
+        "--version",
+        version,
+        "--insecure",
+        "True",
+    ]
+
+    if additional_tags:
+        for tag in additional_tags:
+            cmd.extend(["--additional_tag", tag])
+
+    try:
+        result = runner.invoke(
+            gl_oci,
+            cmd,
+            catch_exceptions=False,
+        )
+        print(f"Update index output: {result.output}")
+        return result.exit_code == 0
+    except Exception as e:
+        print(f"Error during update index: {str(e)}")
+        return False
 
 
 def get_catalog(client):
@@ -181,14 +193,84 @@ def verify_combined_tag_manifest(manifest, arch, cname, version, feature_set, co
         ), f"Manifest should have commit {commit}"
 
 
+def verify_additional_tags(
+    client, repo, additional_tags, reference_digest=None, fail_on_missing=True
+):
+    """
+    Verify that all additional tags exist and match the reference digest if provided.
+
+    Args:
+        client: Reggie client
+        repo: Repository name
+        additional_tags: List of tags to verify
+        reference_digest: Optional digest to compare against
+        fail_on_missing: If True, fail the test when tags are missing
+
+    Returns:
+        List of missing tags
+    """
+    missing_tags = []
+
+    for tag in additional_tags:
+        print(f"Verifying additional tag: {tag}")
+        try:
+            # Create a simple request for the manifest
+            tag_req = client.NewRequest("GET", f"/v2/{repo}/manifests/{tag}")
+            tag_req.headers.update(
+                {
+                    "Accept": "application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json"
+                }
+            )
+
+            tag_resp = client.Do(tag_req)
+
+            if tag_resp.status_code != 200:
+                print(
+                    f"✗ Could not find additional tag {tag}: status {tag_resp.status_code}"
+                )
+                missing_tags.append(tag)
+                continue
+
+            # Get the digest
+            digest = tag_resp.headers.get("Docker-Content-Digest")
+
+            # Check digest if reference provided
+            if reference_digest and digest != reference_digest:
+                print(
+                    f"✗ Tag {tag} has different digest: {digest} (expected {reference_digest})"
+                )
+                missing_tags.append(tag)
+                continue
+
+            print(f"✓ Successfully verified additional tag {tag} with digest: {digest}")
+
+        except Exception as e:
+            print(f"✗ Error verifying tag {tag}: {str(e)}")
+            missing_tags.append(tag)
+
+    # If any tags are missing and fail_on_missing is True, fail the test
+    if missing_tags and fail_on_missing:
+        missing_tags_str = "\n  - ".join(missing_tags)
+        pytest.fail(f"Missing tags:\n  - {missing_tags_str}")
+
+    return missing_tags
+
+
 @pytest.mark.usefixtures("zot_session")
 @pytest.mark.parametrize(
-    "version, cname, arch, additional_tags",
+    "version, cname, arch, additional_tags_index, additional_tags_manifest",
     [
         (
             TEST_VERSION,
             f"{platform}-{feature_string}",
             arch,
+            [
+                f"{TEST_VERSION}-patch",
+                f"{TEST_VERSION}-patch-{TEST_COMMIT}",
+                f"{TEST_VERSION_STABLE}",
+                f"{TEST_VERSION_STABLE}-stable",
+                f"latest",
+            ],
             [
                 f"{TEST_VERSION}-patch-{platform}-{feature_string}-{arch}",
                 f"{TEST_VERSION}-{TEST_COMMIT}-patch-{platform}-{feature_string}-{arch}",
@@ -200,7 +282,9 @@ def verify_combined_tag_manifest(manifest, arch, cname, version, feature_set, co
         for arch in TEST_ARCHITECTURES
     ],
 )
-def test_push_manifest_and_index(version, arch, cname, additional_tags):
+def test_push_manifest_and_index(
+    version, arch, cname, additional_tags_index, additional_tags_manifest
+):
     print(f"\n\n=== Starting test for {cname} {arch} {version} ===")
     runner = CliRunner()
     registry_url = "http://127.0.0.1:18081"
@@ -208,11 +292,14 @@ def test_push_manifest_and_index(version, arch, cname, additional_tags):
     combined_tag = f"{version}-{cname}-{arch}"
 
     # Push manifest and update index
-    push_successful = push_manifest(runner, version, arch, cname, additional_tags)
+    push_successful = push_manifest(
+        runner, version, arch, cname, additional_tags_manifest
+    )
     assert push_successful, "Manifest push should succeed"
 
     if push_successful:
-        update_index(runner, version)
+        update_index_successful = update_index(runner, version, additional_tags_index)
+        assert update_index_successful, "Index update should succeed"
 
     # Verify registry contents
     print(f"\n=== Verifying registry for {cname} {arch} {version} ===")
@@ -234,54 +321,44 @@ def test_push_manifest_and_index(version, arch, cname, additional_tags):
     tags = get_tags(client, repo_name)
     print(f"Tags for {repo_name}: {tags}")
 
-    # Verify version tag (index)
-    if version in tags:
-        print(f"\nVerifying index with tag {version}...")
-        index_manifest, index_digest = get_manifest(client, repo_name, version)
-        print(f"Successfully retrieved index with digest: {index_digest}")
-        verify_index_manifest(index_manifest, arch)
-    else:
-        pytest.fail(f"Tag {version} not found in repository {repo_name}")
-
-    # Verify combined tag
+    # FIRST: Verify manifest with combined tag (the actual artifact)
+    print(f"\n=== Verifying manifest with combined tag {combined_tag} ===")
     if combined_tag in tags:
-        print(f"\nVerifying manifest with combined tag {combined_tag}...")
-        combined_manifest, combined_digest = get_manifest(
-            client, repo_name, combined_tag
-        )
-        print(f"Successfully retrieved manifest with digest: {combined_digest}")
+        manifest, manifest_digest = get_manifest(client, repo_name, combined_tag)
+        print(f"Successfully retrieved manifest with digest: {manifest_digest}")
         verify_combined_tag_manifest(
-            combined_manifest, arch, cname, version, TEST_FEATURE_SET, TEST_COMMIT
+            manifest, arch, cname, version, TEST_FEATURE_SET, TEST_COMMIT
+        )
+
+        # Verify additional tags for manifest
+        print("\n=== Verifying additional tags for manifest ===")
+        verify_additional_tags(
+            client,
+            repo_name,
+            additional_tags_manifest,
+            reference_digest=manifest_digest,
+            fail_on_missing=True,
         )
     else:
         pytest.fail(f"Combined tag {combined_tag} not found in repository {repo_name}")
 
-    print("\n=== Verifying additional tags in main repository ===")
-    # Force update the tags list to ensure it's current
-    updated_tags = get_tags(client, repo_name)
-    print(f"Updated tags for {repo_name}: {updated_tags}")
+    # SECOND: Verify index (the collection of manifests)
+    print(f"\n=== Verifying index with tag {version} ===")
+    if version in tags:
+        index_manifest, index_digest = get_manifest(client, repo_name, version)
+        print(f"Successfully retrieved index with digest: {index_digest}")
+        verify_index_manifest(index_manifest, arch)
 
-    # Now try each additional tag but don't fail the test if not found
-    missing_tags = []
-    for tag in additional_tags:
-        print(f"Verifying additional tag: {tag}")
-        try:
-            tag_manifest, tag_digest = get_manifest(client, repo_name, tag)
-            print(
-                f"✓ Successfully retrieved additional tag {tag} with digest: {tag_digest}"
-            )
-        except Exception as e:
-            print(f"✗ Could not find additional tag {tag}: {str(e)}")
-            missing_tags.append(tag)
-
-    # Report missing tags but don't fail the test
-    if missing_tags:
-        print(
-            f"\nWarning: {len(missing_tags)} additional tags were not found in the registry:"
+        # Verify additional tags for index
+        print("\n=== Verifying additional tags for index ===")
+        verify_additional_tags(
+            client,
+            repo_name,
+            additional_tags_index,
+            reference_digest=index_digest,
+            fail_on_missing=True,
         )
-        for tag in missing_tags:
-            print(f"  - {tag}")
     else:
-        print("\nAll additional tags were successfully pushed!")
+        pytest.fail(f"Tag {version} not found in repository {repo_name}")
 
     print("\n=== Registry verification completed ===")

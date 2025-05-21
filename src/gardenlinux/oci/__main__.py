@@ -107,7 +107,13 @@ def push_manifest(
     default=False,
     help="Use HTTP to communicate with the registry",
 )
-def update_index(container, version, manifest_folder, insecure):
+@click.option(
+    "--additional_tag",
+    required=False,
+    multiple=True,
+    help="Additional tag to push the index with",
+)
+def update_index(container, version, manifest_folder, insecure, additional_tag):
     """push a index entry from a list of files to an index"""
     container_name = f"{container}:{version}"
     registry = GlociRegistry(
@@ -115,7 +121,7 @@ def update_index(container, version, manifest_folder, insecure):
         token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
         insecure=insecure,
     )
-    registry.update_index(manifest_folder)
+    registry.update_index(manifest_folder, additional_tag)
 
 
 def main():
