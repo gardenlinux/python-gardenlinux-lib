@@ -19,3 +19,4 @@ TEST_FEATURE_STRINGS_SHORT = ["gardener_prod"]
 TEST_FEATURE_SET = "_slim,base,container"
 TEST_COMMIT = get_gardenlinux_commit(GL_ROOT_DIR, 8)
 TEST_VERSION = "1000.0"
+TEST_VERSION_STABLE = "1000"

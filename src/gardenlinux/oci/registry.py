@@ -600,9 +600,12 @@ class GlociRegistry(Registry):
 
         return local_digest
 
-    def update_index(self, manifest_folder):
+    def update_index(self, manifest_folder, additional_tags: list = None):
         """
         replaces an old manifest entry with a new manifest entry
+
+        :param str manifest_folder: the folder where the manifest entries are read from
+        :param list additional_tags: the additional tags to push the index with
         """
         index = self.get_index()
         # Ensure mediaType is set for existing indices
@@ -634,6 +637,12 @@ class GlociRegistry(Registry):
 
         self._check_200_response(self.upload_index(index))
         logger.info(f"Index pushed with {new_entries} new entries")
+
+        for tag in additional_tags:
+            self.container.digest = None
+            self.container.tag = tag
+            self.upload_index(index)
+            logger.info(f"Index pushed with additional tag {tag}")
 
     def create_layer(
         self,
