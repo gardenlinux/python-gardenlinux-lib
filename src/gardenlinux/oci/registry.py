@@ -35,6 +35,7 @@ from .checksum import (
     calculate_sha256,
     verify_sha256,
 )
+from .helper import retry_on_error
 from python_gardenlinux_lib.features.parse_features import get_oci_metadata_from_fileset
 from .schemas import (
     EmptyIndex,
@@ -648,6 +649,22 @@ class GlociRegistry(Registry):
             oras.defaults.annotation_title: os.path.basename(file_path),
         }
         return layer
+
+    @retry_on_error(max_retries=3, initial_delay=2, backoff_factor=2)
+    def upload_blob(self, file_path, container, metadata=None):
+        """
+        Upload a blob to the registry with retry logic for network errors.
+
+        Args:
+            file_path: Path to the file to upload
+            container: Container object
+            metadata: Optional metadata for the blob
+
+        Returns:
+            Response from the upload
+        """
+        # Call the parent class's upload_blob method
+        return super().upload_blob(file_path, container, metadata)
 
     def push_from_dir(
         self,
