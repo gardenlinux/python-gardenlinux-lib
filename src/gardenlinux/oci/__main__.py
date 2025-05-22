@@ -27,13 +27,6 @@ def cli():
     help="Version of image",
 )
 @click.option(
-    "--commit",
-    required=False,
-    type=click.Path(),
-    default=None,
-    help="Commit of image",
-)
-@click.option(
     "--arch",
     required=True,
     type=click.Path(),
@@ -58,16 +51,22 @@ def cli():
     default=False,
     help="Use HTTP to communicate with the registry",
 )
+@click.option(
+    "--additional_tag",
+    required=False,
+    multiple=True,
+    help="Additional tag to push the manifest with",
+)
 def push_manifest(
     container,
     version,
-    commit,
     arch,
     cname,
     directory,
     cosign_file,
     manifest_file,
     insecure,
+    additional_tag,
 ):
     """push artifacts from a dir to a registry, get the index-entry for the manifest in return"""
     container_name = f"{container}:{version}"
@@ -77,7 +76,7 @@ def push_manifest(
         insecure=insecure,
     )
     digest = registry.push_from_dir(
-        arch, version, cname, directory, manifest_file, commit=commit
+        arch, version, cname, directory, manifest_file, additional_tag
     )
     if cosign_file:
         print(digest, file=open(cosign_file, "w"))
@@ -108,7 +107,13 @@ def push_manifest(
     default=False,
     help="Use HTTP to communicate with the registry",
 )
-def update_index(container, version, manifest_folder, insecure):
+@click.option(
+    "--additional_tag",
+    required=False,
+    multiple=True,
+    help="Additional tag to push the index with",
+)
+def update_index(container, version, manifest_folder, insecure, additional_tag):
     """push a index entry from a list of files to an index"""
     container_name = f"{container}:{version}"
     registry = GlociRegistry(
@@ -116,7 +121,7 @@ def update_index(container, version, manifest_folder, insecure):
         token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
         insecure=insecure,
     )
-    registry.update_index(manifest_folder)
+    registry.update_index(manifest_folder, additional_tag)
 
 
 def main():
