@@ -27,13 +27,6 @@ def cli():
     help="Version of image",
 )
 @click.option(
-    "--commit",
-    required=False,
-    type=click.Path(),
-    default=None,
-    help="Commit of image",
-)
-@click.option(
     "--arch",
     required=True,
     type=click.Path(),
@@ -58,16 +51,22 @@ def cli():
     default=False,
     help="Use HTTP to communicate with the registry",
 )
+@click.option(
+    "--additional_tag",
+    required=False,
+    multiple=True,
+    help="Additional tag to push the manifest with",
+)
 def push_manifest(
     container,
     version,
-    commit,
     arch,
     cname,
     directory,
     cosign_file,
     manifest_file,
     insecure,
+    additional_tag,
 ):
     """push artifacts from a dir to a registry, get the index-entry for the manifest in return"""
     container_name = f"{container}:{version}"
@@ -77,7 +76,7 @@ def push_manifest(
         insecure=insecure,
     )
     digest = registry.push_from_dir(
-        arch, version, cname, directory, manifest_file, commit=commit
+        arch, version, cname, directory, manifest_file, additional_tag
     )
     if cosign_file:
         print(digest, file=open(cosign_file, "w"))
