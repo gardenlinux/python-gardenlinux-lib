@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from .cname import CName
 from .parser import Parser
 
 from functools import reduce
@@ -54,61 +55,43 @@ def main():
     ), "Please provide either `--features` or `--cname` argument"
 
     arch = None
-    cname_base = None
+    flavor = None
     commit_id = None
     gardenlinux_root = path.dirname(args.feature_dir)
     version = None
-
-    if args.cname:
-        re_match = re.match(
-            "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
-            args.cname,
-        )
-
-        assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
-
-        if re_match.lastindex == 1:
-            data_splitted = re_match[1].split("-", 1)
-
-            cname_base = data_splitted[0]
-
-            if len(data_splitted) > 1:
-                if args.arch is None:
-                    arch = data_splitted[1]
-                else:
-                    cname_base += "-" + data_splitted[1]
-        else:
-            arch = re_match[4]
-            cname_base = re_match[1]
-            commit_id = re_match[7]
-            version = re_match[6]
-
-        input_features = Parser.get_cname_as_feature_set(cname_base)
-    else:
-        input_features = args.features
 
     if args.arch is not None:
         arch = args.arch
 
     if args.version is not None:
-        re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", args.version)
-        assert re_match, f"Not a valid version {args.version}"
+        version = args.version
 
-        commit_id = re_match[3]
-        version = re_match[1]
-
-    if arch is None or arch == "" and (args.type in ("cname", "arch")):
-        assert (
-            args.default_arch
-        ), "Architecture could not be determined and no default architecture set"
+    if arch is None or arch == "":
         arch = args.default_arch
 
-    if not commit_id or not version:
-        version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
+    if version is None or version == "":
+        version_data = get_version_and_commit_id_from_files(gardenlinux_root)
+        version = f"{version_data[0]}-{version_data[1]}"
 
-    if not version and (args.type in ("cname", "version")):
-        assert args.default_version, "version not specified and no default version set"
-        version = args.default_version
+    if args.cname:
+        cname = CName(args.cname, arch=arch, version=version)
+
+        arch = cname.arch
+        flavor = cname.flavor
+        commit_id = cname.commit_id
+        version = cname.version
+
+        input_features = Parser.get_cname_as_feature_set(flavor)
+    else:
+        input_features = args.features
+
+    if arch is None or arch == "" and (args.type in ("cname", "arch")):
+        raise RuntimeError(
+            "Architecture could not be determined and no default architecture set"
+        )
+
+    if version is None or version == "" and (args.type in ("cname", "version")):
+        raise RuntimeError("Version not specified and no default version set")
 
     feature_dir_name = path.basename(args.feature_dir)
 
@@ -124,7 +107,7 @@ def main():
         print(arch)
     elif args.type in ("cname_base", "cname", "graph"):
         graph = Parser(gardenlinux_root, feature_dir_name).filter(
-            cname_base, additional_filter_func=additional_filter_func
+            flavor, additional_filter_func=additional_filter_func
         )
 
         sorted_features = Parser.sort_graph_nodes(graph)
@@ -137,7 +120,7 @@ def main():
         if args.type == "cname_base":
             print(cname_base)
         elif args.type == "cname":
-            cname = cname_base
+            cname = flavor
 
             if arch is not None:
                 cname += f"-{arch}"
@@ -147,16 +130,16 @@ def main():
 
             print(cname)
         elif args.type == "graph":
-            print(graph_as_mermaid_markup(cname_base, graph))
+            print(graph_as_mermaid_markup(flavor, graph))
     elif args.type == "features":
         print(
             Parser(gardenlinux_root, feature_dir_name).filter_as_string(
-                cname_base, additional_filter_func=additional_filter_func
+                flavor, additional_filter_func=additional_filter_func
             )
         )
     elif args.type in ("flags", "elements", "platforms"):
         features_by_type = Parser(gardenlinux_root, feature_dir_name).filter_as_dict(
-            cname_base, additional_filter_func=additional_filter_func
+            flavor, additional_filter_func=additional_filter_func
         )
 
         if args.type == "platforms":
@@ -194,7 +177,7 @@ def get_minimal_feature_set(graph):
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
 
-def graph_as_mermaid_markup(cname_base, graph):
+def graph_as_mermaid_markup(flavor, graph):
     """
     Generates a mermaid.js representation of the graph.
     This is helpful to identify dependencies between features.
@@ -202,7 +185,7 @@ def graph_as_mermaid_markup(cname_base, graph):
     Syntax docs:
     https://mermaid.js.org/syntax/flowchart.html?id=flowcharts-basic-syntax
     """
-    markup = f"---\ntitle: Dependency Graph for Feature {cname_base}\n---\ngraph TD;\n"
+    markup = f"---\ntitle: Dependency Graph for Feature {flavor}\n---\ngraph TD;\n"
     for u, v in graph.edges:
         markup += f"    {u}-->{v};\n"
     return markup
