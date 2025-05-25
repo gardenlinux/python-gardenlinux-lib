@@ -28,8 +28,9 @@ from oras.decorator import ensure_container
 from oras.provider import Registry
 from oras.schemas import manifest as oras_manifest_schema
 
-from gardenlinux.features import Parser
 from ..constants import OCI_ANNOTATION_SIGNATURE_KEY, OCI_ANNOTATION_SIGNED_STRING_KEY
+from ..features import CName
+
 from .checksum import (
     calculate_sha256,
     verify_sha256,
@@ -538,13 +539,15 @@ class GlociRegistry(Registry):
             if cleanup_blob and os.path.exists(file_path):
                 os.remove(file_path)
         # This ends up in the manifest
-        flavor = Parser.get_flavor_from_cname(cname, get_arch=True)
+        parsed_cname = CName(cname, arch=architecture)
+        architecture = parsed_cname.arch
+        flavor = parsed_cname.flavor
         manifest_image["annotations"] = {}
         manifest_image["annotations"]["version"] = version
         manifest_image["annotations"]["cname"] = cname
         manifest_image["annotations"]["architecture"] = architecture
         manifest_image["annotations"]["feature_set"] = feature_set
-        manifest_image["annotations"]["flavor"] = flavor
+        manifest_image["annotations"]["flavor"] = f"${flavor}-${architecture}"
         manifest_image["annotations"]["commit"] = commit
         description = (
             f"Image: {cname} "
@@ -684,8 +687,6 @@ class GlociRegistry(Registry):
                             )
                             break
                     file.close()
-
-            flavor = Parser.get_flavor_from_cname(cname, get_arch=True)
 
             digest = self.push_image_manifest(
                 architecture,
