@@ -13,8 +13,19 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from dotenv import load_dotenv
 
-from .constants import TEST_DATA_DIR, GL_ROOT_DIR, CERT_DIR
-from .helper import call_command, spawn_background_process, generate_test_certificates
+from .constants import (
+    TEST_DATA_DIR,
+    GL_ROOT_DIR,
+    CERT_DIR,
+    GARDENLINUX_ROOT_DIR_EXAMPLE,
+    TEST_COMMIT,
+    TEST_VERSION,
+    TEST_PLATFORMS,
+    TEST_FEATURE_SET,
+    TEST_FEATURE_STRINGS_SHORT,
+    TEST_ARCHITECTURES,
+)
+from .helper import call_command, spawn_background_process
 
 
 def generate_test_certificates():
@@ -73,6 +84,48 @@ def write_zot_config(config_dict, file_path):
         json.dump(config_dict, config_file, indent=4)
 
 
+def create_test_data():
+    """Generate test data for OCI registry tests (replaces build-test-data.sh)"""
+    print("Creating fake artifacts...")
+
+    # Ensure the build directory exists
+    os.makedirs(GARDENLINUX_ROOT_DIR_EXAMPLE, exist_ok=True)
+
+    # Generate test artifacts for each combination
+    for platform in TEST_PLATFORMS:
+        for feature_string in TEST_FEATURE_STRINGS_SHORT:
+            for arch in TEST_ARCHITECTURES:
+                # Base name for the artifact
+                cname = (
+                    f"{platform}-{feature_string}-{arch}-{TEST_VERSION}-{TEST_COMMIT}"
+                )
+
+                print("Building mocked test data...")
+                # Create release file with metadata
+                release_file = f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/{cname}.release"
+                with open(release_file, "w") as f:
+                    f.write(f"GARDENLINUX_FEATURES={TEST_FEATURE_SET}\n")
+                    f.write(f"GARDENLINUX_COMMIT_ID={TEST_COMMIT}\n")
+
+                # Create various file formats
+                for ext in ["raw", "tar", "qcow2", "vmdk"]:
+                    file_path = f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/{cname}.{ext}"
+                    with open(file_path, "w") as f:
+                        f.write(f"dummy content for {file_path}")
+
+                # Create platform-specific files
+                if platform == "gcp":
+                    for ext in ["tar.gz", "gcpimage.tar.gz"]:
+                        file_path = f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/{cname}.{ext}"
+                        with open(file_path, "w") as f:
+                            f.write(f"dummy content for {file_path}")
+
+                if platform == "azure":
+                    file_path = f"{GARDENLINUX_ROOT_DIR_EXAMPLE}/{cname}.vhd"
+                    with open(file_path, "w") as f:
+                        f.write(f"dummy content for {file_path}")
+
+
 @pytest.fixture(autouse=False, scope="function")
 def zot_session():
     load_dotenv()
@@ -108,8 +161,9 @@ def zot_session():
 
 def pytest_sessionstart(session):
     generate_test_certificates()
-    call_command("./test-data/build-test-data.sh --dummy")
-    call_command("mkdir -p manifests")
+    # Replace the bash script call with our Python function
+    create_test_data()
+    os.makedirs("./manifests", exist_ok=True)
 
 
 def pytest_sessionfinish(session):
@@ -119,3 +173,5 @@ def pytest_sessionfinish(session):
         os.remove(CERT_DIR + "/oci-sign.key")
     if os.path.isdir("./manifests"):
         shutil.rmtree("./manifests")
+    if os.path.isdir(GARDENLINUX_ROOT_DIR_EXAMPLE):
+        shutil.rmtree(GARDENLINUX_ROOT_DIR_EXAMPLE)

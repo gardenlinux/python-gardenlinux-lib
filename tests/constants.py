@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from python_gardenlinux_lib.features.parse_features import get_gardenlinux_commit
+
 TEST_DATA_DIR = "test-data"
 GL_ROOT_DIR = f"{TEST_DATA_DIR}/gardenlinux"
 CERT_DIR = f"{TEST_DATA_DIR}/cert"
@@ -10,3 +12,11 @@ REGISTRY_URL = f"http://{REGISTRY}"
 REPO_NAME = "gardenlinux-example"
 CONTAINER_NAME_ZOT_EXAMPLE = f"{REGISTRY}/{REPO_NAME}"
 GARDENLINUX_ROOT_DIR_EXAMPLE = f"{TEST_DATA_DIR}/gardenlinux/.build"
+
+TEST_PLATFORMS = ["aws", "azure", "gcp", "openstack", "openstackbaremetal", "metal"]
+TEST_ARCHITECTURES = ["arm64", "amd64"]
+TEST_FEATURE_STRINGS_SHORT = ["gardener_prod"]
+TEST_FEATURE_SET = "_slim,base,container"
+TEST_COMMIT = get_gardenlinux_commit(GL_ROOT_DIR, 8)
+TEST_VERSION = "1000.0"
+TEST_VERSION_STABLE = "1000"
