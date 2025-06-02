@@ -35,7 +35,7 @@ from .checksum import (
     calculate_sha256,
     verify_sha256,
 )
-from .helper import retry_on_error
+from .wrapper import retry_on_error
 from python_gardenlinux_lib.features.parse_features import get_oci_metadata_from_fileset
 from .schemas import (
     EmptyIndex,
