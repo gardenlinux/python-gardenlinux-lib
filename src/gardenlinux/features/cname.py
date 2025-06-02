@@ -3,6 +3,8 @@
 from typing import Optional
 import re
 
+from ..constants import ARCHS
+
 
 class CName(object):
     def __init__(self, cname, arch=None, version=None):
@@ -25,10 +27,10 @@ class CName(object):
             self._flavor = re_match[1]
             self._version = re_match[6]
 
-            if re_match[2] is None:
-                self._flavor += re_match[3]
-            else:
+            if re_match[4] in ARCHS:
                 self._arch = re_match[4]
+            else:
+                self._flavor += re_match[3]
 
         if self._arch is None and arch is not None:
             self._arch = arch
