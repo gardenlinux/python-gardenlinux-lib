@@ -5,7 +5,7 @@ description = "Contains tools to work with the features directory of gardenlinux
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "gardenlinux", from="src"}, {include = "python_gardenlinux_lib", from="src"}]
+packages = [{include = "gardenlinux", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -21,12 +21,10 @@ cryptography = "^44.0.0"
 boto3 = "*"
 click = "^8.2.0"
 pygments = "^2.19.1"
-opencontainers = "^0.0.14"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.3"
 black = "^24.8.0"
-opencontainers = "^0.0.14"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^2.0.0"
@@ -36,7 +34,6 @@ gl-cname = "gardenlinux.features.cname_main:main"
 gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-oci = "gardenlinux.oci.__main__:main"
-flavors-parse = "gardenlinux.flavors.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

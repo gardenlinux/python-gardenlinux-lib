@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from argparse import ArgumentParser
-from git import Git
 import json
 import os
 import sys
+
+from ..git import Git
 
 from .parser import Parser
 
@@ -93,8 +94,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    repo_path = Git(".").rev_parse("--show-superproject-working-tree")
-    flavors_file = os.path.join(repo_path, "flavors.yaml")
+    flavors_file = os.path.join(Git().root, "flavors.yaml")
 
     if not os.path.isfile(flavors_file):
         sys.exit(f"Error: {flavors_file} does not exist.")
