@@ -46,6 +46,12 @@ install-test: install-dev
 test: install-test
 	$(POETRY) run pytest -k "not kms"
 
+test-debug: install-test
+	$(POETRY) run pytest -k "not kms" -vvv -s
+
+test-trace: install-test
+	$(POETRY) run pytest -k "not kms" -vvv --log-cli-level=DEBUG
+
 format: install-dev
 	$(POETRY) run black --extend-exclude test-data/gardenlinux .
 

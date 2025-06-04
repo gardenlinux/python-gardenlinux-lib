@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import configparser
 import copy
 import hashlib
 import json
@@ -30,11 +31,11 @@ from oras.schemas import manifest as oras_manifest_schema
 
 from ..constants import OCI_ANNOTATION_SIGNATURE_KEY, OCI_ANNOTATION_SIGNED_STRING_KEY
 from ..features import CName
-
 from .checksum import (
     calculate_sha256,
     verify_sha256,
 )
+from .wrapper import retry_on_error
 from python_gardenlinux_lib.features.parse_features import get_oci_metadata_from_fileset
 from .schemas import (
     EmptyIndex,
@@ -599,9 +600,12 @@ class GlociRegistry(Registry):
 
         return local_digest
 
-    def update_index(self, manifest_folder):
+    def update_index(self, manifest_folder, additional_tags: list = None):
         """
         replaces an old manifest entry with a new manifest entry
+
+        :param str manifest_folder: the folder where the manifest entries are read from
+        :param list additional_tags: the additional tags to push the index with
         """
         index = self.get_index()
         # Ensure mediaType is set for existing indices
@@ -634,6 +638,12 @@ class GlociRegistry(Registry):
         self._check_200_response(self.upload_index(index))
         logger.info(f"Index pushed with {new_entries} new entries")
 
+        for tag in additional_tags:
+            self.container.digest = None
+            self.container.tag = tag
+            self.upload_index(index)
+            logger.info(f"Index pushed with additional tag {tag}")
+
     def create_layer(
         self,
         file_path: str,
@@ -649,6 +659,22 @@ class GlociRegistry(Registry):
         }
         return layer
 
+    @retry_on_error(max_retries=3, initial_delay=2, backoff_factor=2)
+    def upload_blob(self, file_path, container, metadata=None):
+        """
+        Upload a blob to the registry with retry logic for network errors.
+
+        Args:
+            file_path: Path to the file to upload
+            container: Container object
+            metadata: Optional metadata for the blob
+
+        Returns:
+            Response from the upload
+        """
+        # Call the parent class's upload_blob method
+        return super().upload_blob(file_path, container, metadata)
+
     def push_from_dir(
         self,
         architecture: str,
@@ -656,38 +682,73 @@ class GlociRegistry(Registry):
         cname: str,
         directory: str,
         manifest_file: str,
-        commit: Optional[str] = None,
+        additional_tags: list = None,
     ):
-        # Step 1 scan and extract nested artifacts:
-        for file in os.listdir(directory):
-            try:
-                if file.endswith(".pxe.tar.gz"):
-                    logger.info(f"Found nested artifact {file}")
-                    nested_tar_obj = tarfile.open(f"{directory}/{file}")
-                    nested_tar_obj.extractall(filter="data", path=directory)
-                    nested_tar_obj.close()
-            except (OSError, tarfile.FilterError, tarfile.TarError) as e:
-                print(f"Failed to extract nested artifact {file}", e)
-                exit(1)
+        """
+        Push artifacts from a directory to a registry
+
+        Args:
+            architecture: Target architecture of the image
+            version: Version tag for the image
+            cname: Canonical name of the image
+            directory: Directory containing the artifacts
+            manifest_file: File to write the manifest index entry to
+            additional_tags: Additional tags to push the manifest with
+
+        Returns:
+            The digest of the pushed manifest
+        """
+        if additional_tags is None:
+            additional_tags = []
 
         try:
+            # scan and extract nested artifacts
+            for file in os.listdir(directory):
+                try:
+                    if file.endswith(".pxe.tar.gz"):
+                        logger.info(f"Found nested artifact {file}")
+                        nested_tar_obj = tarfile.open(f"{directory}/{file}")
+                        nested_tar_obj.extractall(filter="data", path=directory)
+                        nested_tar_obj.close()
+                except (OSError, tarfile.FilterError, tarfile.TarError) as e:
+                    print(f"Failed to extract nested artifact {file}", e)
+                    exit(1)
+
+            # Get metadata from files
             oci_metadata = get_oci_metadata_from_fileset(
                 os.listdir(directory), architecture
             )
 
             features = ""
+            commit = ""
             for artifact in oci_metadata:
                 if artifact["media_type"] == "application/io.gardenlinux.release":
-                    file = open(f"{directory}/{artifact["file_name"]}", "r")
-                    lines = file.readlines()
-                    for line in lines:
-                        if line.strip().startswith("GARDENLINUX_FEATURES="):
-                            features = line.strip().removeprefix(
-                                "GARDENLINUX_FEATURES="
-                            )
-                            break
-                    file.close()
+                    try:
+                        file_path = f"{directory}/{artifact['file_name']}"
 
+                        config = configparser.ConfigParser(allow_unnamed_section=True)
+                        config.read(file_path)
+
+                        if config.has_option(
+                            configparser.UNNAMED_SECTION, "GARDENLINUX_FEATURES"
+                        ):
+                            features = config.get(
+                                configparser.UNNAMED_SECTION, "GARDENLINUX_FEATURES"
+                            )
+                        if config.has_option(
+                            configparser.UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID"
+                        ):
+                            commit = config.get(
+                                configparser.UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID"
+                            )
+
+                    except (configparser.Error, IOError) as e:
+                        logger.error(
+                            f"Error reading config file {artifact['file_name']}: {e}"
+                        )
+                    break
+
+            # Push the image manifest
             digest = self.push_image_manifest(
                 architecture,
                 cname,
@@ -698,7 +759,103 @@ class GlociRegistry(Registry):
                 manifest_file,
                 commit=commit,
             )
+
+            # Process additional tags if provided
+            if additional_tags and len(additional_tags) > 0:
+                print(f"DEBUG: Processing {len(additional_tags)} additional tags")
+                logger.info(f"Processing {len(additional_tags)} additional tags")
+
+                self.push_additional_tags_manifest(
+                    architecture,
+                    cname,
+                    version,
+                    additional_tags,
+                    container=self.container,
+                )
+
+            return digest
         except Exception as e:
             print("Error: ", e)
             exit(1)
-        return digest
+
+    def push_additional_tags_manifest(
+        self, architecture, cname, version, additional_tags, container
+    ):
+        """
+        Push additional tags for an existing manifest using ORAS Registry methods
+
+        Args:
+            architecture: Target architecture of the image
+            cname: Canonical name of the image
+            version: Version tag for the image
+            additional_tags: List of additional tags to push
+            container: Container object
+        """
+        try:
+            # Source tag is the tag containing the version-cname-architecture combination
+            source_tag = f"{version}-{cname}-{architecture}"
+            source_container = copy.deepcopy(container)
+            source_container.tag = source_tag
+
+            # Authentication credentials from environment
+            token = os.getenv("GL_CLI_REGISTRY_TOKEN")
+            username = os.getenv("GL_CLI_REGISTRY_USERNAME")
+            password = os.getenv("GL_CLI_REGISTRY_PASSWORD")
+
+            # Login to registry if credentials are provided
+            if username and password:
+                logger.debug(f"Logging in with username/password")
+                try:
+                    self.login(username, password)
+                except Exception as login_error:
+                    logger.error(f"Login error: {str(login_error)}")
+            elif token:
+                # If token is provided, set it directly on the Registry instance
+                logger.debug(f"Using token authentication")
+                self.token = base64.b64encode(token.encode("utf-8")).decode("utf-8")
+                self.auth.set_token_auth(self.token)
+
+            # Get the manifest from the source container
+            try:
+                logger.debug(f"Getting manifest from {source_container}")
+                manifest = self.get_manifest(source_container)
+                if not manifest:
+                    logger.error(f"Failed to get manifest for {source_container}")
+                    return
+                logger.info(
+                    f"Successfully retrieved manifest: {manifest['mediaType'] if 'mediaType' in manifest else 'unknown'}"
+                )
+            except Exception as get_error:
+                logger.error(f"Error getting manifest: {str(get_error)}")
+                return
+
+            # For each additional tag, push the manifest using Registry.upload_manifest
+            for tag in additional_tags:
+                try:
+                    logger.debug(f"Pushing additional tag: {tag}")
+
+                    # Create a new container for this tag
+                    tag_container = copy.deepcopy(container)
+                    tag_container.tag = tag
+
+                    logger.debug(f"Pushing to container: {tag_container}")
+
+                    # Upload the manifest to the new tag
+                    response = self.upload_manifest(manifest, tag_container)
+
+                    if response and response.status_code in [200, 201]:
+                        logger.info(f"Successfully pushed tag {tag} for manifest")
+                    else:
+                        status_code = getattr(response, "status_code", "unknown")
+                        response_text = getattr(response, "text", "No response text")
+                        logger.error(
+                            f"Failed to push tag {tag} for manifest: {status_code}"
+                        )
+
+                except Exception as tag_error:
+                    logger.error(
+                        f"Error pushing tag {tag} for manifest: {str(tag_error)}"
+                    )
+
+        except Exception as e:
+            logger.error(f"Error in push_additional_tags_manifest: {str(e)}")

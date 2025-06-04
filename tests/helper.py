@@ -24,34 +24,3 @@ def call_command(cmd):
     except subprocess.CalledProcessError as e:
         error_message = e.stderr.decode("utf-8")
         return f"An error occurred: {error_message}"
-
-
-def generate_test_certificates():
-    """Generate self-signed certificates for testing"""
-    os.makedirs(CERT_DIR, exist_ok=True)
-    key_path = os.path.join(CERT_DIR, "oci-sign.key")
-    cert_path = os.path.join(CERT_DIR, "oci-sign.crt")
-    cmd = [
-        "openssl",
-        "req",
-        "-x509",
-        "-newkey",
-        "rsa:4096",
-        "-keyout",
-        key_path,
-        "-out",
-        cert_path,
-        "-days",
-        "365",
-        "-nodes",
-        "-subj",
-        "/CN=Garden Linux test signing key for oci",
-    ]
-    try:
-        subprocess.run(cmd, check=True)
-        # Set proper permissions
-        os.chmod(key_path, 0o600)
-        print(f"Generated test certificates in {CERT_DIR}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error generating certificates: {e}")
-        raise
