@@ -2,7 +2,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../src"))
-import python_gardenlinux_lib
 
 
 # Configuration file for the Sphinx documentation builder.
