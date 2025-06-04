@@ -5,7 +5,7 @@ import click
 
 from pygments.lexer import default
 
-from .registry import GlociRegistry
+from .container import Container
 
 
 @click.group()
@@ -25,6 +25,13 @@ def cli():
     required=True,
     type=click.Path(),
     help="Version of image",
+)
+@click.option(
+    "--commit",
+    required=False,
+    type=click.Path(),
+    default=None,
+    help="Commit of image",
 )
 @click.option(
     "--arch",
@@ -60,6 +67,7 @@ def cli():
 def push_manifest(
     container,
     version,
+    commit,
     arch,
     cname,
     directory,
@@ -69,17 +77,19 @@ def push_manifest(
     additional_tag,
 ):
     """push artifacts from a dir to a registry, get the index-entry for the manifest in return"""
-    container_name = f"{container}:{version}"
-    registry = GlociRegistry(
-        container_name=container_name,
-        token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
+    container = Container(
+        f"{container}:{version}",
         insecure=insecure,
     )
-    digest = registry.push_from_dir(
-        arch, version, cname, directory, manifest_file, additional_tag
+
+    manifest = container.read_or_generate_manifest(cname, arch, version, commit)
+
+    container.push_manifest_and_artifacts_from_directory(
+        manifest, directory, manifest_file, additional_tag
     )
+
     if cosign_file:
-        print(digest, file=open(cosign_file, "w"))
+        print(manifest.digest, file=open(cosign_file, "w"))
 
 
 @cli.command()
@@ -115,13 +125,12 @@ def push_manifest(
 )
 def update_index(container, version, manifest_folder, insecure, additional_tag):
     """push a index entry from a list of files to an index"""
-    container_name = f"{container}:{version}"
-    registry = GlociRegistry(
-        container_name=container_name,
-        token=os.getenv("GL_CLI_REGISTRY_TOKEN"),
+    container = Container(
+        f"{container}:{version}",
         insecure=insecure,
     )
-    registry.update_index(manifest_folder, additional_tag)
+
+    container.push_index_from_directory(manifest_folder, additional_tag)
 
 
 def main():

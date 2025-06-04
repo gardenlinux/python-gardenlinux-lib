@@ -4,14 +4,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime, timedelta
-
 import pytest
+
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from gardenlinux.features import Parser
 
 from .constants import (
     TEST_DATA_DIR,
@@ -161,9 +162,12 @@ def zot_session():
 
 def pytest_sessionstart(session):
     generate_test_certificates()
+
     # Replace the bash script call with our Python function
     create_test_data()
     os.makedirs("./manifests", exist_ok=True)
+
+    Parser.set_default_gardenlinux_root_dir(GL_ROOT_DIR)
 
 
 def pytest_sessionfinish(session):
