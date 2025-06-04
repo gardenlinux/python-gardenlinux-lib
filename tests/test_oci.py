@@ -6,20 +6,17 @@ import os
 import logging
 
 # Import reggie library correctly
-from opencontainers.distribution.reggie import (
-    NewClient,
-    WithDebug,
-    WithName,
-    WithReference,
-    WithUserAgent,
-)
+from oras.provider import Registry
 
 sys.path.append("src")
 
 from gardenlinux.oci.__main__ import cli as gl_oci
+
 from .constants import (
     CONTAINER_NAME_ZOT_EXAMPLE,
     GARDENLINUX_ROOT_DIR_EXAMPLE,
+    REGISTRY,
+    REGISTRY_URL,
     TEST_COMMIT,
     TEST_FEATURE_SET,
     TEST_VERSION,
@@ -104,8 +101,7 @@ def update_index(runner, version, additional_tags=None):
 
 def get_catalog(client):
     """Get catalog from registry and return repositories list"""
-    catalog_req = client.NewRequest("GET", "/v2/_catalog")
-    catalog_resp = client.Do(catalog_req)
+    catalog_resp = client.do_request(f"{REGISTRY_URL}/v2/_catalog")
 
     assert (
         catalog_resp.status_code == 200
@@ -117,8 +113,7 @@ def get_catalog(client):
 
 def get_tags(client, repo):
     """Get tags for a repository"""
-    tags_req = client.NewRequest("GET", f"/v2/{repo}/tags/list")
-    tags_resp = client.Do(tags_req)
+    tags_resp = client.do_request(f"{REGISTRY_URL}/v2/{repo}/tags/list")
 
     assert (
         tags_resp.status_code == 200
@@ -131,16 +126,13 @@ def get_tags(client, repo):
 def get_manifest(client, repo, reference):
     """Get manifest and digest for a repository reference"""
     # Create a simple request for the manifest
-    manifest_req = client.NewRequest("GET", f"/v2/{repo}/manifests/{reference}")
-
-    # Set the headers for accept types - use headers (with an 's') instead of header
-    manifest_req.headers.update(
-        {
+    manifest_resp = client.do_request(
+        f"{REGISTRY_URL}/v2/{repo}/manifests/{reference}",
+        headers={
             "Accept": "application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json"
-        }
+        },
     )
 
-    manifest_resp = client.Do(manifest_req)
     assert (
         manifest_resp.status_code == 200
     ), f"Failed to get manifest for {repo}:{reference}, status: {manifest_resp.status_code}"
@@ -215,14 +207,12 @@ def verify_additional_tags(
         print(f"Verifying additional tag: {tag}")
         try:
             # Create a simple request for the manifest
-            tag_req = client.NewRequest("GET", f"/v2/{repo}/manifests/{tag}")
-            tag_req.headers.update(
-                {
+            tag_resp = client.do_request(
+                f"{REGISTRY_URL}/v2/{repo}/manifests/{tag}",
+                headers={
                     "Accept": "application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json"
-                }
+                },
             )
-
-            tag_resp = client.Do(tag_req)
 
             if tag_resp.status_code != 200:
                 print(
@@ -287,7 +277,6 @@ def test_push_manifest_and_index(
 ):
     print(f"\n\n=== Starting test for {cname} {arch} {version} ===")
     runner = CliRunner()
-    registry_url = "http://127.0.0.1:18081"
     repo_name = "gardenlinux-example"
     combined_tag = f"{version}-{cname}-{arch}"
 
@@ -305,9 +294,7 @@ def test_push_manifest_and_index(
     print(f"\n=== Verifying registry for {cname} {arch} {version} ===")
 
     # Initialize reggie client
-    client = NewClient(
-        registry_url, WithDebug(True), WithUserAgent("gardenlinux-test-client/1.0")
-    )
+    client = Registry(hostname=REGISTRY, insecure=True)
 
     # Get repositories and verify main repo exists
     print("\nFetching catalog...")

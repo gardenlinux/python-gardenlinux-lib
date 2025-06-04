@@ -5,6 +5,8 @@ import re
 
 from ..constants import ARCHS
 
+from .parser import Parser
+
 
 class CName(object):
     def __init__(self, cname, arch=None, version=None):
@@ -65,6 +67,10 @@ class CName(object):
     @property
     def flavor(self) -> str:
         return self._flavor
+
+    @property
+    def feature_set(self) -> str:
+        return Parser().filter_as_string(self.flavor)
 
     @property
     def version(self) -> Optional[str]:
