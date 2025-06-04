@@ -18,6 +18,10 @@ from gardenlinux.features import CName
             "metal_pxe",
             "metal_pxe",
         ),
+        (
+            "container-amd64",
+            "container",
+        ),
     ],
 )
 def test_cname_flavor(input_cname: str, expected_output: dict):
