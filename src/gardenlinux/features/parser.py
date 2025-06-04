@@ -18,12 +18,17 @@ from ..logger import LoggerSetup
 
 
 class Parser(object):
+    _GARDENLINUX_ROOT: str = "."
+
     def __init__(
         self,
-        gardenlinux_root: str = ".",
-        feature_dir_name: str = "features",
+        gardenlinux_root: Optional[str] = None,
+        feature_dir_name: Optional[str] = "features",
         logger: Optional[logging.Logger] = None,
     ):
+        if gardenlinux_root is None:
+            gardenlinux_root = Parser._GARDENLINUX_ROOT
+
         feature_base_dir = os.path.join(gardenlinux_root, feature_dir_name)
 
         if not os.access(feature_base_dir, os.R_OK):
@@ -247,6 +252,10 @@ class Parser(object):
     @staticmethod
     def _get_graph_node_type(node):
         return node.get("content", {}).get("type")
+
+    @staticmethod
+    def set_default_gardenlinux_root_dir(root_dir):
+        Parser._GARDENLINUX_ROOT = root_dir
 
     @staticmethod
     def sort_graph_nodes(graph):
