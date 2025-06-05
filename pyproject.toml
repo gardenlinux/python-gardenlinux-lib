@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "0.6.0"
+version = "0.7.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
