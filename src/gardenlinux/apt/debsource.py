@@ -88,24 +88,23 @@ class DebsrcFile(dict[str, Debsrc]):
         :since: 0.7.0
         """
 
-        current_source = current_version = None
+        parsed_source = parsed_version = None
 
         for line in f.readlines():
             if match := self.__re.match(line):
                 if i := match["source"]:
-                    current_source = i
+                    parsed_source = i
                 elif i := match["version"]:
-                    current_version = i
+                    parsed_version = i
                 elif match["eso"]:
-                    current_source = current_version = None
+                    parsed_source = parsed_version = None
                 elif match["eoe"] is not None:
-                    current_source = current_version = None
-                    break
+                    self._set_source(parsed_source, parsed_version)
+                    parsed_source = parsed_version = None
             else:
                 raise RuntimeError(f"Unable to read line: {line}")
 
-        if current_source and current_version:
-            self._set_source(current_source, current_version)
+        self._set_source(parsed_source, parsed_version)
 
     def _set_source(self, source: str, version: str) -> None:
         """
@@ -114,7 +113,8 @@ class DebsrcFile(dict[str, Debsrc]):
         :since: 0.7.0
         """
 
-        self[source] = Debsrc(
-            deb_source=source,
-            deb_version=version,
-        )
+        if source and version:
+            self[source] = Debsrc(
+                deb_source=source,
+                deb_version=version,
+            )
