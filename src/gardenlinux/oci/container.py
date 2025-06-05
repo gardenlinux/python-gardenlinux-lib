@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+OCI container
+"""
+
 import json
 import jsonschema
 import logging
@@ -29,6 +33,18 @@ from .schemas import index as IndexSchema
 
 
 class Container(Registry):
+    """
+    OCI container instance to provide methods for interaction.
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: flavors
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(
         self,
         container_url: str,
@@ -36,6 +52,17 @@ class Container(Registry):
         token: Optional[str] = None,
         logger: Optional[logging.Logger] = None,
     ):
+        """
+        Constructor __init__(Container)
+
+        :param container_url: OCI container URL
+        :param insecure: True if access is provided via HTTP without encryption
+        :param token: OCI access token
+        :param logger: Logger instance
+
+        :since: 0.7.0
+        """
+
         if "://" in container_url:
             container_data = container_url.rsplit(":", 2)
 
@@ -92,7 +119,10 @@ class Container(Registry):
 
     def generate_index(self):
         """
-        Generates an image index
+        Generates an OCI image index
+
+        :return: (object) OCI image index
+        :since:  0.7.0
         """
 
         return Index()
@@ -106,13 +136,16 @@ class Container(Registry):
         feature_set: Optional[str] = None,
     ):
         """
-        Generates an image manifest
+        Generates an OCI image manifest
 
-        :param str cname: Canonical name of the manifest
-        :param str architecture: Target architecture of the manifest
-        :param str version: Artifacts version of the manifest
-        :param str commit: The commit hash of the manifest
-        :param str feature_set: The expanded list of the included features of this manifest
+        :param cname: Canonical name of the manifest
+        :param architecture: Target architecture of the manifest
+        :param version: Artifacts version of the manifest
+        :param commit: The commit hash of the manifest
+        :param feature_set: The expanded list of the included features of this manifest
+
+        :return: (object) OCI image manifest
+        :since:  0.7.0
         """
 
         cname_object = CName(cname, architecture, version)
@@ -157,6 +190,13 @@ class Container(Registry):
         return manifest
 
     def _get_index_without_response_parsing(self):
+        """
+        Return the response of an OCI image index request.
+
+        :return: (object) OCI image index request response
+        :since:  0.7.0
+        """
+
         manifest_url = self.get_container(
             f"{self._container_name}:{self._container_version}"
         ).manifest_url()
@@ -167,6 +207,13 @@ class Container(Registry):
         )
 
     def _get_manifest_without_response_parsing(self, reference):
+        """
+        Return the response of an OCI image manifest request.
+
+        :return: (object) OCI image manifest request response
+        :since:  0.7.0
+        """
+
         return self.do_request(
             f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
             headers={"Accept": "application/vnd.oci.image.manifest.v1+json"},
@@ -178,8 +225,10 @@ class Container(Registry):
         """
         Replaces an old manifest entries with new ones
 
-        :param str manifest_folder: the folder where the manifest entries are read from
-        :param list additional_tags: the additional tags to push the index with
+        :param manifests_dir:   Directory where the manifest entries are read from
+        :param additional_tags: Additional tags to push the index with
+
+        :since: 0.7.0
         """
 
         if not isinstance(manifests_dir, PathLike):
@@ -230,10 +279,12 @@ class Container(Registry):
 
     def push_index_for_tags(self, index, tags):
         """
-        Push tags for an given index.
+        Push tags for an given OCI image index.
 
-        :param manifest: Image manifest
-        :param tags: List of tags to push the manifest for
+        :param index: OCI image index
+        :param tags:  List of tags to push the index for
+
+        :since: 0.7.0
         """
 
         # For each additional tag, push the manifest using Registry.upload_manifest
@@ -247,14 +298,15 @@ class Container(Registry):
         additional_tags: Optional[list] = None,
     ) -> Manifest:
         """
-        Pushes an image manifest and its artifacts.
+        Pushes an OCI image manifest.
 
-        :param manifest: Image manifest
+        :param manifest:                OCI image manifest
         :param artifacts_with_metadata: A list of file names and their artifacts metadata
-        :param str artifacts_dir: Path of the image artifacts
-        :param str feature_set: The expanded list of the included features of this manifest
-        :param str manifest_file: The file name where the modified manifest is written to
-        :param list additional_tags: Additional tags to push the manifest with
+        :param manifest_file:           File name where the modified manifest is written to
+        :param additional_tags:         Additional tags to push the manifest with
+
+        :return: (object) OCI image manifest
+        :since:  0.7.0
         """
 
         if not isinstance(manifest, Manifest):
@@ -309,14 +361,16 @@ class Container(Registry):
         additional_tags: Optional[list] = None,
     ) -> Manifest:
         """
-        Pushes an image manifest and its artifacts.
+        Pushes an OCI image manifest and its artifacts.
 
-        :param manifest: Image manifest
+        :param manifest:                OCI image manifest
         :param artifacts_with_metadata: A list of file names and their artifacts metadata
-        :param str artifacts_dir: Path of the image artifacts
-        :param str feature_set: The expanded list of the included features of this manifest
-        :param str manifest_file: The file name where the modified manifest is written to
-        :param list additional_tags: Additional tags to push the manifest with
+        :param artifacts_dir:           Path of the image artifacts
+        :param manifest_file:           File name where the modified manifest is written to
+        :param additional_tags:         Additional tags to push the manifest with
+
+        :return: (object) OCI image manifest
+        :since:  0.7.0
         """
 
         if not isinstance(manifest, Manifest):
@@ -373,6 +427,18 @@ class Container(Registry):
         manifest_file: Optional[str] = None,
         additional_tags: Optional[list] = None,
     ) -> Manifest:
+        """
+        Pushes an OCI image manifest and its artifacts from the given directory.
+
+        :param manifest:        OCI image manifest
+        :param artifacts_dir:   Path of the image artifacts
+        :param manifest_file:   File name where the modified manifest is written to
+        :param additional_tags: Additional tags to push the manifest with
+
+        :return: (object) OCI image manifest
+        :since:  0.7.0
+        """
+
         if not isinstance(artifacts_dir, PathLike):
             artifacts_dir = Path(artifacts_dir)
 
@@ -420,10 +486,12 @@ class Container(Registry):
 
     def push_manifest_for_tags(self, manifest, tags):
         """
-        Push tags for an given manifest.
+        Push tags for an given OCI image manifest.
 
-        :param manifest: Image manifest
-        :param tags: List of tags to push the manifest for
+        :param manifest: OCI image manifest
+        :param tags:     List of tags to push the index for
+
+        :since: 0.7.0
         """
 
         # For each additional tag, push the manifest using Registry.upload_manifest
@@ -434,8 +502,10 @@ class Container(Registry):
 
     def read_or_generate_index(self):
         """
-        Returns the manifest for a cname+arch combination of a container
-        Will return None if no result was found
+        Reads from registry or generates the OCI image index.
+
+        :return: OCI image manifest
+        :since:  0.7.0
         """
 
         response = self._get_index_without_response_parsing()
@@ -458,13 +528,16 @@ class Container(Registry):
         feature_set: Optional[str] = None,
     ) -> Manifest:
         """
-        Reads an image manifest from registry or generates it if not found.
+        Reads from registry or generates the OCI image manifest.
 
-        :param str cname: canonical name of the manifest
-        :param str architecture: target architecture of the manifest
-        :param str version: artifacts version of the manifest
-        :param str commit: the commit hash of the manifest
-        :param str feature_set: The expanded list of the included features of this manifest
+        :param cname: Canonical name of the manifest
+        :param architecture: Target architecture of the manifest
+        :param version: Artifacts version of the manifest
+        :param commit: The Git commit ID of the manifest
+        :param feature_set: The expanded list of the included features of this manifest
+
+        :return: OCI image manifest
+        :since:  0.7.0
         """
 
         if architecture is None:
@@ -486,6 +559,16 @@ class Container(Registry):
         return manifest
 
     def _upload_index(self, index: dict, reference: Optional[str] = None) -> Response:
+        """
+        Uploads the given OCI image index and returns the response.
+
+        :param index:     OCI image index
+        :param reference: OCI container reference (tag) to push to
+
+        :return: (object) OCI image index put response
+        :since:  0.7.0
+        """
+
         jsonschema.validate(index, schema=IndexSchema)
 
         if reference is None:
@@ -501,9 +584,13 @@ class Container(Registry):
     @staticmethod
     def get_artifacts_metadata_from_files(files: list, arch: str) -> list:
         """
-        :param str arch: arch of the target image
-        :param set files: a list of filenames (not paths) to set oci_metadata for
-        :return: list of dicts, where each dict represents a layer
+        Returns OCI layer metadata for the given list of files.
+
+        :param files: a list of filenames (not paths) to set oci_metadata for
+        :param arch: arch of the target image
+
+        :return: (list) List of dicts, where each dict represents a layer
+        :since:  0.7.0
         """
 
         artifacts_with_metadata = []

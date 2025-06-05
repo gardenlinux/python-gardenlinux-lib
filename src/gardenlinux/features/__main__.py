@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .cname import CName
-from .parser import Parser
+"""
+gl-features-parse main entrypoint
+"""
 
-from functools import reduce
-from os import path
 import argparse
 import os
 import re
 import sys
+from functools import reduce
+from os import path
+from typing import Any, List, Set
+
+from .cname import CName
+from .parser import Parser
 
 
 _ARGS_TYPE_ALLOWED = [
@@ -25,7 +30,13 @@ _ARGS_TYPE_ALLOWED = [
 ]
 
 
-def main():
+def main() -> None:
+    """
+    gl-features-parse main()
+
+    :since: 0.7.0
+    """
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--arch", dest="arch")
@@ -152,13 +163,31 @@ def main():
         print(f"{version}-{commit_id}")
 
 
-def get_cname_base(sorted_features):
+def get_cname_base(sorted_features: Set[str]):
+    """
+    Get the base cname for the feature set given.
+
+    :param sorted_features: Sorted feature set
+
+    :return: (str) Base cname
+    :since: 0.7.0
+    """
+
     return reduce(
         lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
     )
 
 
-def get_version_and_commit_id_from_files(gardenlinux_root):
+def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, str]:
+    """
+    Returns the version and commit ID based on files in the GardenLinux root directory.
+
+    :param gardenlinux_root: GardenLinux root directory
+
+    :return: (tuple) Version and commit ID if readable
+    :since:  0.7.0
+    """
+
     commit_id = None
     version = None
 
@@ -173,25 +202,53 @@ def get_version_and_commit_id_from_files(gardenlinux_root):
     return (version, commit_id)
 
 
-def get_minimal_feature_set(graph):
+def get_minimal_feature_set(graph: Any) -> Set[str]:
+    """
+    Returns the minimal set of features described by the given graph.
+
+    :param graph: networkx.Digraph
+
+    :return: (set) Minimal set of features
+    :since:  0.7.0
+    """
+
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
 
-def graph_as_mermaid_markup(flavor, graph):
+def graph_as_mermaid_markup(flavor: str, graph: Any) -> str:
     """
     Generates a mermaid.js representation of the graph.
     This is helpful to identify dependencies between features.
 
     Syntax docs:
     https://mermaid.js.org/syntax/flowchart.html?id=flowcharts-basic-syntax
+
+    :param flavor: Flavor name
+    :param graph:  networkx.Digraph
+
+    :return: (str) mermaid.js representation
+    :since:  0.7.0
     """
+
     markup = f"---\ntitle: Dependency Graph for Feature {flavor}\n---\ngraph TD;\n"
+
     for u, v in graph.edges:
         markup += f"    {u}-->{v};\n"
+
     return markup
 
 
-def sort_subset(input_set, order_list):
+def sort_subset(input_set: Set[str], order_list: List[str]) -> List[str]:
+    """
+    Returns items from `order_list` if given in `input_set`.
+
+    :param input_set:  Set of values
+    :param order_list: networkx.Digraph
+
+    :return: (str) mermaid.js representation
+    :since:  0.7.0
+    """
+
     return [item for item in order_list if item in input_set]
 
 

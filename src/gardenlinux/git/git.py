@@ -10,13 +10,26 @@ from ..logger import LoggerSetup
 
 
 class Git(object):
-    """Git operations handler."""
+    """
+    Git operations handler based on the given Git directory.
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: git
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
 
     def __init__(self, git_directory=".", logger=None):
-        """Initialize Git handler.
+        """
+        Constructor __init__(Git)
 
-        Args:
-            logger: Optional logger instance
+        :param git_directory: Git directory
+        :param logger: Logger instance
+
+        :since: 0.7.0
         """
 
         if logger is None or not logger.hasHandlers():
@@ -33,12 +46,24 @@ class Git(object):
 
     @property
     def commit_id(self):
-        """Get the commit ID for Git `HEAD`."""
+        """
+        Returns the commit ID for Git `HEAD`.
+
+        :return: (str) Git commit ID
+        :since:  0.7.0
+        """
+
         return str(self.root_repo.head.commit)
 
     @property
     def root(self):
-        """Get the root directory of the current Git repository."""
+        """
+        Returns the root directory of the current Git repository.
+
+        :return: (object) Git root directory
+        :since:  0.7.0
+        """
+
         root_dir = _Git(self._git_directory).rev_parse(
             "--show-superproject-working-tree"
         )
@@ -48,5 +73,11 @@ class Git(object):
 
     @property
     def root_repo(self):
-        """Get the root Git `Repo` instance."""
+        """
+        Returns the root Git `Repo` instance.
+
+        :return: (object) Git root Git `Repo` instance
+        :since:  0.7.0
+        """
+
         return Repo(self.root)

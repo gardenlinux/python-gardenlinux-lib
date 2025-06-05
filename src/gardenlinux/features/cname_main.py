@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+gl-cname main entrypoint
+"""
+
 from functools import reduce
 from os.path import basename, dirname
 import argparse
 import re
+
+from .cname import CName
+from .parser import Parser
 
 from .__main__ import (
     get_cname_base,
@@ -12,11 +19,15 @@ from .__main__ import (
     get_version_and_commit_id_from_files,
     sort_subset,
 )
-from .cname import CName
-from .parser import Parser
 
 
 def main():
+    """
+    gl-cname main()
+
+    :since: 0.7.0
+    """
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--arch", dest="arch")
