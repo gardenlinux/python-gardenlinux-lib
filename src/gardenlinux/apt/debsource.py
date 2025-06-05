@@ -99,8 +99,8 @@ class DebsrcFile(dict[str, Debsrc]):
                 elif match["eso"]:
                     current_source = current_version = None
                 elif match["eoe"] is not None:
-                    finish()
                     current_source = current_version = None
+                    break
             else:
                 raise RuntimeError(f"Unable to read line: {line}")
 
