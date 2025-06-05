@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+gl-flavors-parse main entrypoint
+"""
+
 from argparse import ArgumentParser
 import json
 import os
@@ -12,7 +16,16 @@ from .parser import Parser
 
 
 def generate_markdown_table(combinations, no_arch):
-    """Generate a markdown table of platforms and their flavors."""
+    """
+    Generate a markdown table of platforms and their flavors.
+
+    :param combinations: List of tuples of architectures and flavors
+    :param no_arch: Noop
+
+    :return: (str) Markdown table
+    :since:  0.7.0
+    """
+
     table = "| Platform   | Architecture       | Flavor                                  |\n"
     table += "|------------|--------------------|------------------------------------------|\n"
 
@@ -26,6 +39,13 @@ def generate_markdown_table(combinations, no_arch):
 
 
 def parse_args():
+    """
+    Parses arguments used for main()
+
+    :return: (object) Parsed argparse.ArgumentParser namespace
+    :since:  0.7.0
+    """
+
     parser = ArgumentParser(description="Parse flavors.yaml and generate combinations.")
 
     parser.add_argument(
@@ -92,6 +112,12 @@ def parse_args():
 
 
 def main():
+    """
+    gl-flavors-parse main()
+
+    :since: 0.7.0
+    """
+
     args = parse_args()
 
     flavors_file = os.path.join(Git().root, "flavors.yaml")

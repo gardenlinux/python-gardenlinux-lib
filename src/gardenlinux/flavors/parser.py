@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Flavors parser
+"""
+
 from jsonschema import validate as jsonschema_validate
 import fnmatch
 import yaml
@@ -9,7 +13,28 @@ from ..logger import LoggerSetup
 
 
 class Parser(object):
+    """
+    Parser for GardenLinux `flavors.yaml`.
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: flavors
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(self, data, logger=None):
+        """
+        Constructor __init__(Parser)
+
+        :param data: Flavors data to parse
+        :param logger: Logger instance
+
+        :since: 0.7.0
+        """
+
         flavors_data = yaml.safe_load(data) if isinstance(data, str) else data
         jsonschema_validate(instance=flavors_data, schema=GL_FLAVORS_SCHEMA)
 
@@ -34,7 +59,22 @@ class Parser(object):
         filter_categories=[],
         exclude_categories=[],
     ):
-        """Parses the flavors.yaml file and generates combinations."""
+        """
+        Filters flavors data and generates combinations.
+
+        :param include_only_patterns: Include pattern list
+        :param wildcard_excludes:     Exclude wildcard list
+        :param only_build:            Return only build-enabled flavors
+        :param only_test:             Return only test-enabled flavors
+        :param only_test_platform:    Return only platform-test-enabled flavors
+        :param only_publish:          Return only flavors to be published
+        :param filter_categories:     List of categories to include
+        :param exclude_categories:    List of categories to exclude
+
+        :return: (list) Filtered flavors
+        :since:  0.7.0
+        """
+
         self._logger.debug("flavors.Parser filtering with {0}".format(locals()))
 
         combinations = []  # Use a list for consistent order
@@ -92,7 +132,15 @@ class Parser(object):
 
     @staticmethod
     def group_by_arch(combinations):
-        """Groups combinations by architecture into a JSON dictionary."""
+        """
+        Groups combinations by architecture into a dictionary.
+
+        :param combinations: Flavor combinations to group
+
+        :return: (list) Grouped flavor combinations
+        :since:  0.7.0
+        """
+
         arch_dict = {}
         for arch, combination in combinations:
             arch_dict.setdefault(arch, []).append(combination)
@@ -102,7 +150,15 @@ class Parser(object):
 
     @staticmethod
     def remove_arch(combinations):
-        """Removes the architecture from combinations."""
+        """
+        Removes the architecture from combinations.
+
+        :param combinations: Flavor combinations to remove the architecture
+
+        :return: (list) Changed flavor combinations
+        :since:  0.7.0
+        """
+
         return [
             combination.replace(f"-{arch}", "") for arch, combination in combinations
         ]
@@ -111,7 +167,15 @@ class Parser(object):
     def should_exclude(combination, excludes, wildcard_excludes):
         """
         Checks if a combination should be excluded based on exact match or wildcard patterns.
+
+        :param combinations:      Flavor combinations
+        :param excludes:          List of features to exclude
+        :param wildcard_excludes: List of feature wildcards to exclude
+
+        :return: (bool) True if excluded
+        :since:  0.7.0
         """
+
         # Exclude if in explicit excludes
         if combination in excludes:
             return True
@@ -125,7 +189,14 @@ class Parser(object):
         """
         Checks if a combination should be included based on `--include-only` wildcard patterns.
         If no patterns are provided, all combinations are included by default.
+
+        :param combinations:          Flavor combinations
+        :param include_only_patterns: List of features to include
+
+        :return: (bool) True if included
+        :since:  0.7.0
         """
+
         if not include_only_patterns:
             return True
         return any(

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Canonical name (cname)
+"""
+
 from typing import Optional
 import re
 
@@ -9,7 +13,29 @@ from .parser import Parser
 
 
 class CName(object):
+    """
+    Class to represent a canonical name (cname).
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: features
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(self, cname, arch=None, version=None):
+        """
+        Constructor __init__(CName)
+
+        :param cname:   Canonical name to represent
+        :param arch:    Architecture if not part of cname
+        :param version: Version if not part of cname
+
+        :since: 0.7.0
+        """
+
         self._arch = None
         self._flavor = None
         self._commit_id = None
@@ -46,10 +72,22 @@ class CName(object):
 
     @property
     def arch(self) -> Optional[str]:
+        """
+        Returns the architecture for the cname parsed.
+
+        :return: (str) CName architecture
+        """
+
         return self._arch
 
     @property
     def cname(self) -> str:
+        """
+        Returns the cname parsed.
+
+        :return: (str) CName
+        """
+
         cname = self._flavor
 
         if self._arch is not None:
@@ -62,22 +100,52 @@ class CName(object):
 
     @property
     def commit_id(self) -> Optional[str]:
+        """
+        Returns the commit ID if part of the cname parsed.
+
+        :return: (str) Commit ID
+        """
+
         return self._commit_id
 
     @property
     def flavor(self) -> str:
+        """
+        Returns the flavor for the cname parsed.
+
+        :return: (str) Flavor
+        """
+
         return self._flavor
 
     @property
     def feature_set(self) -> str:
+        """
+        Returns the feature set for the cname parsed.
+
+        :return: (str) Feature set of the cname
+        """
+
         return Parser().filter_as_string(self.flavor)
 
     @property
     def version(self) -> Optional[str]:
+        """
+        Returns the version if part of the cname parsed.
+
+        :return: (str) Version
+        """
+
         return self._version
 
     @property
     def version_and_commit_id(self) -> Optional[str]:
+        """
+        Returns the version and commit ID if part of the cname parsed.
+
+        :return: (str) Version and commit ID
+        """
+
         if self._commit_id is None:
             return None
 

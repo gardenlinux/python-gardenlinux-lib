@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+gl-oci main entrypoint
+"""
+
 import os
 import click
 
@@ -10,6 +14,12 @@ from .container import Container
 
 @click.group()
 def cli():
+    """
+    gl-oci click argument entrypoint
+
+    :since: 0.7.0
+    """
+
     pass
 
 
@@ -76,7 +86,12 @@ def push_manifest(
     insecure,
     additional_tag,
 ):
-    """push artifacts from a dir to a registry, get the index-entry for the manifest in return"""
+    """
+    Push artifacts and the manifest from a directory to a registry.
+
+    :since: 0.7.0
+    """
+
     container = Container(
         f"{container}:{version}",
         insecure=insecure,
@@ -124,7 +139,12 @@ def push_manifest(
     help="Additional tag to push the index with",
 )
 def update_index(container, version, manifest_folder, insecure, additional_tag):
-    """push a index entry from a list of files to an index"""
+    """
+    Push a list of files from the `manifest_folder` to an index.
+
+    :since: 0.7.0
+    """
+
     container = Container(
         f"{container}:{version}",
         insecure=insecure,
@@ -134,7 +154,12 @@ def update_index(container, version, manifest_folder, insecure, additional_tag):
 
 
 def main():
-    """Entry point for the gl-oci command."""
+    """
+    gl-oci main()
+
+    :since: 0.7.0
+    """
+
     cli()
 
 

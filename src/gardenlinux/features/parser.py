@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Features parser based on networkx.Digraph
+"""
+
 from glob import glob
 from typing import Callable, Optional
 import logging
@@ -14,11 +18,27 @@ from ..constants import (
     BARE_FLAVOR_FEATURE_CONTENT,
     BARE_FLAVOR_LIBC_FEATURE_CONTENT,
 )
+
 from ..logger import LoggerSetup
 
 
 class Parser(object):
+    """
+    Parser for GardenLinux features.
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: features
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     _GARDENLINUX_ROOT: str = "."
+    """
+    Default GardenLinux root directory
+    """
 
     def __init__(
         self,
@@ -26,6 +46,16 @@ class Parser(object):
         feature_dir_name: Optional[str] = "features",
         logger: Optional[logging.Logger] = None,
     ):
+        """
+        Constructor __init__(Parser)
+
+        :param gardenlinux_root: GardenLinux root directory
+        :param feature_dir_name: Name of the features directory
+        :param logger: Logger instance
+
+        :since: 0.7.0
+        """
+
         if gardenlinux_root is None:
             gardenlinux_root = Parser._GARDENLINUX_ROOT
 
@@ -50,6 +80,13 @@ class Parser(object):
 
     @property
     def graph(self) -> networkx.Graph:
+        """
+        Returns the features graph based on the GardenLinux features directory.
+
+        :return: (networkx.Graph) Features graph
+        :since:  0.7.0
+        """
+
         if self._graph is None:
             feature_yaml_files = glob("{0}/*/info.yaml".format(self._feature_base_dir))
             features = [self._read_feature_yaml(i) for i in feature_yaml_files]
@@ -89,6 +126,17 @@ class Parser(object):
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> networkx.Graph:
+        """
+        Filters the features graph.
+
+        :param cname:                  Canonical name to filter
+        :param ignore_excludes:        Ignore `exclude` feature files
+        :param additional_filter_func: Additional filter function
+
+        :return: (networkx.Graph) Filtered features graph
+        :since:  0.7.0
+        """
+
         input_features = Parser.get_cname_as_feature_set(cname)
         filter_set = input_features.copy()
 
@@ -125,10 +173,14 @@ class Parser(object):
         additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> dict:
         """
-        :param str cname: the target cname to get the feature dict for
-        :param str gardenlinux_root: path of garden linux src root
+        Filters the features graph and returns it as a dict.
 
-        :return: dict with list of features for a given cname, split into platform, element and flag
+        :param cname:                  Canonical name to filter
+        :param ignore_excludes:        Ignore `exclude` feature files
+        :param additional_filter_func: Additional filter function
+
+        :return: (dict) List of features for a given cname, split into platform, element and flag
+        :since:  0.7.0
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -153,10 +205,14 @@ class Parser(object):
         additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> list:
         """
-        :param str cname: the target cname to get the feature dict for
-        :param str gardenlinux_root: path of garden linux src root
+        Filters the features graph and returns it as a list.
 
-        :return: list of features for a given cname
+        :param cname:                  Canonical name to filter
+        :param ignore_excludes:        Ignore `exclude` feature files
+        :param additional_filter_func: Additional filter function
+
+        :return: (list) Features list for a given cname
+        :since:  0.7.0
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -169,10 +225,14 @@ class Parser(object):
         additional_filter_func: Optional[Callable[(str,), bool]] = None,
     ) -> str:
         """
-        :param str cname: the target cname to get the feature set for
-        :param str gardenlinux_root: path of garden linux src root
+        Filters the features graph and returns it as a string.
 
-        :return: a comma separated string with the expanded feature set for the cname
+        :param cname:                  Canonical name to filter
+        :param ignore_excludes:        Ignore `exclude` feature files
+        :param additional_filter_func: Additional filter function
+
+        :return: (str) Comma separated string with the expanded feature set for the cname
+        :since:  0.7.0
         """
 
         graph = self.filter(cname, ignore_excludes, additional_filter_func)
@@ -181,6 +241,15 @@ class Parser(object):
         return ",".join(features)
 
     def _exclude_from_filter_set(graph, input_features, filter_set):
+        """
+        Removes the given `filter_set` out of `input_features`.
+
+        :param input_features: Features
+        :param filter_set: Set to filter out
+
+        :since: 0.7.0
+        """
+
         exclude_graph_view = Parser._get_graph_view_for_attr(graph, "exclude")
         exclude_list = []
 
@@ -202,16 +271,25 @@ class Parser(object):
             raise ValueError("Including explicitly excluded feature")
 
     def _get_node_features(self, node):
+        """
+        Returns the features for a given features node.
+
+        :param node: Graph node
+
+        :return: (dict) Features content dictionary
+        :since:  0.7.0
+        """
+
         return node.get("content", {}).get("features", {})
 
     def _read_feature_yaml(self, feature_yaml_file: str):
         """
-        Legacy function copied from gardenlinux/builder
+        Reads and returns the content of the given features file.
 
-        extracts the feature name from the feature_yaml_file param,
-        reads the info.yaml into a dict and outputs a dict containing the cname and the info yaml
+        :param feature_yaml_file: Features file to read
 
-        :param str feature_yaml_file: path to the target info.yaml that must be read
+        :return: (dict) Features content dictionary
+        :since:  0.7.0
         """
 
         name = os.path.basename(os.path.dirname(feature_yaml_file))
@@ -223,11 +301,30 @@ class Parser(object):
 
     @staticmethod
     def get_cname_as_feature_set(cname):
+        """
+        Returns the features of a given canonical name.
+
+        :param cname: Canonical name
+
+        :return: (set) Features of the cname
+        :since:  0.7.0
+        """
+
         cname = cname.replace("_", "-_")
         return set(cname.split("-"))
 
     @staticmethod
     def _get_filter_set_callable(filter_set, additional_filter_func):
+        """
+        Returns the filter function used for the graph.
+
+        :param filter_set: Filter set
+        :param additional_filter_func: Additional filter function to apply
+
+        :return: (callable) Filter function
+        :since:  0.7.0
+        """
+
         def filter_func(node):
             additional_filter_result = (
                 True if additional_filter_func is None else additional_filter_func(node)
@@ -238,12 +335,32 @@ class Parser(object):
 
     @staticmethod
     def _get_graph_view_for_attr(graph, attr):
+        """
+        Returns a graph view to return `attr` data.
+
+        :param filter_set:             Filter set
+        :param additional_filter_func: Additional filter function to apply
+
+        :return: (object) networkx view
+        :since:  0.7.0
+        """
+
         return networkx.subgraph_view(
             graph, filter_edge=Parser._get_graph_view_for_attr_callable(graph, attr)
         )
 
     @staticmethod
     def _get_graph_view_for_attr_callable(graph, attr):
+        """
+        Returns the filter function used to filter for `attr` data.
+
+        :param graph: Graph to filter
+        :param attr: Graph edge attribute to filter for
+
+        :return: (callable) Filter function
+        :since:  0.7.0
+        """
+
         def filter_func(a, b):
             return graph.get_edge_data(a, b)["attr"] == attr
 
@@ -251,14 +368,40 @@ class Parser(object):
 
     @staticmethod
     def _get_graph_node_type(node):
+        """
+        Returns the node feature type.
+
+        :param node: Graph node
+
+        :return: (str) Feature type
+        :since:  0.7.0
+        """
+
         return node.get("content", {}).get("type")
 
     @staticmethod
     def set_default_gardenlinux_root_dir(root_dir):
+        """
+        Sets the default GardenLinux root directory used.
+
+        :param root_dir: GardenLinux root directory
+
+        :since: 0.7.0
+        """
+
         Parser._GARDENLINUX_ROOT = root_dir
 
     @staticmethod
     def sort_graph_nodes(graph):
+        """
+        Sorts graph nodes by feature type.
+
+        :param graph: Graph to sort
+
+        :return: (list) Sorted feature set
+        :since:  0.7.0
+        """
+
         def key_function(node):
             prefix_map = {"platform": "0", "element": "1", "flag": "2"}
             node_type = Parser._get_graph_node_type(graph.nodes.get(node, {}))
@@ -270,4 +413,13 @@ class Parser(object):
 
     @staticmethod
     def sort_reversed_graph_nodes(graph):
+        """
+        Sorts graph nodes by feature type.
+
+        :param graph: Graph to reverse and sort
+
+        :return: (list) Reversed and sorted feature set
+        :since:  0.7.0
+        """
+
         return Parser.sort_graph_nodes(graph.reverse())
