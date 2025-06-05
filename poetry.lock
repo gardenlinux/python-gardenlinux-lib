@@ -757,13 +757,15 @@ files = [
 
 [[package]]
 name = "oras"
-version = "0.2.0"
+version = "0.2.33"
 description = "OCI Registry as Storage Python SDK"
 optional = false
 python-versions = "*"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "oras-0.2.33-py3-none-any.whl", hash = "sha256:832a08b7b4d0bf6f962b1e644f58bf3277a71154c759c825eaf87d28aa6e904a"},
+    {file = "oras-0.2.33.tar.gz", hash = "sha256:ecb7e55970c864c23f9412b788ec4a5f1935dbf742d8af2135fdbd1a0293e638"},
+]
 
 [package.dependencies]
 jsonschema = "*"
@@ -773,12 +775,6 @@ requests = "*"
 all = ["docker (==5.0.1)", "jsonschema", "pytest (>=4.6.2)", "requests"]
 docker = ["docker (==5.0.1)"]
 tests = ["pytest (>=4.6.2)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/oras-project/oras-py.git"
-reference = "caf8db5b279382335fbb1f6d7402ed9b73618d37"
-resolved_reference = "caf8db5b279382335fbb1f6d7402ed9b73618d37"
 
 [[package]]
 name = "packaging"
@@ -1459,4 +1455,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "1853f81edad02bab1fe0810a988b4a61751964fa3d0b1158010c71a84c0584b3"
+content-hash = "9fbed8ec4c180afa36cb96471b225c00e4f02e32070dbad39057d1faf8d9ef3b"

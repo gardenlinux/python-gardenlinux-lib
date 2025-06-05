@@ -15,7 +15,7 @@ pytest = "^8.3.2"
 gitpython = "^3.1.44"
 apt-repo = "^0.5"
 jsonschema = "^4.23.0"
-oras = { git  = "https://github.com/oras-project/oras-py.git", rev="caf8db5b279382335fbb1f6d7402ed9b73618d37" }
+oras = "^0.2.33"
 python-dotenv = "^1.0.1"
 cryptography = "^44.0.0"
 boto3 = "*"
