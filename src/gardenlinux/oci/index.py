@@ -7,7 +7,25 @@ from .schemas import EmptyIndex
 
 
 class Index(dict):
+    """
+    OCI image index
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: oci
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Constructor __init__(Index)
+
+        :since: 0.7.0
+        """
+
         dict.__init__(self)
 
         self.update(deepcopy(EmptyIndex))
@@ -16,10 +34,24 @@ class Index(dict):
 
     @property
     def json(self):
+        """
+        Returns the OCI image index as a JSON
+
+        :return: (bytes) OCI image index as JSON
+        :since:  0.7.0
+        """
+
         return json.dumps(self).encode("utf-8")
 
     @property
     def manifests_as_dict(self):
+        """
+        Returns the OCI image manifests of the index
+
+        :return: (dict) OCI image manifests with CNAME or digest as key
+        :since:  0.7.0
+        """
+
         manifests = {}
 
         for manifest in self["manifests"]:
@@ -33,6 +65,14 @@ class Index(dict):
         return manifests
 
     def append_manifest(self, manifest):
+        """
+        Appends the given OCI image manifest to the index
+
+        :param manifest: OCI image manifest
+
+        :since: 0.7.0
+        """
+
         if not isinstance(manifest, dict):
             raise RuntimeError("Unexpected manifest type given")
 
