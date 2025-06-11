@@ -129,6 +129,16 @@ class CName(object):
         return Parser().filter_as_string(self.flavor)
 
     @property
+    def platform(self) -> str:
+        """
+        Returns the platform for the cname parsed.
+
+        :return: (str) Flavor
+        """
+
+        return re.split("[_-]", self._flavor, 1)[0]
+
+    @property
     def version(self) -> Optional[str]:
         """
         Returns the version if part of the cname parsed.
