@@ -84,9 +84,8 @@ class Index(dict):
 
         for existing_manifest in self["manifests"]:
             if "cname" not in existing_manifest.get("annotations", {}):
-                raise RuntimeError(
-                    "Unexpected layer with missing annotation 'cname' found"
-                )
+                existing_manifest_index += 1
+                continue
 
             if cname == existing_manifest["annotations"]["cname"]:
                 break
