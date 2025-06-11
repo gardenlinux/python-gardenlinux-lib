@@ -55,12 +55,12 @@ class Index(dict):
         manifests = {}
 
         for manifest in self["manifests"]:
-            if "cname" not in manifest.get("annotations", {}):
-                raise RuntimeError(
-                    "Unexpected manifest with missing annotation 'cname' found"
-                )
+            if "annotations" not in manifest or "cname" not in manifest["annotations"]:
+                manifest_key = manifest["digest"]
+            else:
+                manifest_key = manifest["annotations"]["cname"]
 
-            manifests[manifest["annotations"]["cname"]] = manifest
+            manifests[manifest_key] = manifest
 
         return manifests
 
