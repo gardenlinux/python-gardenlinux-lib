@@ -13,12 +13,34 @@ _SUPPORTED_MAPPING_KEYS = ("annotations",)
 
 
 class Layer(_Layer, Mapping):
+    """
+    OCI image layer
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: oci
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(
         self,
         blob_path: PathLike | str,
         media_type: Optional[str] = None,
         is_dir: bool = False,
     ):
+        """
+        Constructor __init__(Index)
+
+        :param blob_path: The path of the blob for the layer
+        :param media_type: Media type for the blob (optional)
+        :param is_dir: Is the blob a directory?
+
+        :since: 0.7.0
+        """
+
         if not isinstance(blob_path, PathLike):
             blob_path = Path(blob_path)
 
@@ -28,11 +50,26 @@ class Layer(_Layer, Mapping):
             ANNOTATION_TITLE: blob_path.name,
         }
 
+    @property
+    def dict(self):
+        """
+        Return a dictionary representation of the layer
+
+        :return: (dict) OCI manifest layer metadata dictionary
+        :since:  0.7.2
+        """
+        layer = _Layer.to_dict(self)
+        layer["annotations"] = self._annotations
+
+        return layer
+
     def __delitem__(self, key):
         """
         python.org: Called to implement deletion of self[key].
 
         :param key: Mapping key
+
+        :since: 0.7.0
         """
 
         if key == "annotations":
@@ -49,6 +86,7 @@ class Layer(_Layer, Mapping):
         :param key: Mapping key
 
         :return: (mixed) Mapping key value
+        :since:  0.7.0
         """
 
         if key == "annotations":
@@ -63,6 +101,7 @@ class Layer(_Layer, Mapping):
         python.org: Return an iterator object.
 
         :return: (object) Iterator object
+        :since:  0.7.0
         """
 
         iter(_SUPPORTED_MAPPING_KEYS)
@@ -71,7 +110,8 @@ class Layer(_Layer, Mapping):
         """
         python.org: Called to implement the built-in function len().
 
-        :return: (int) Number of database instance attributes
+        :return: (int) Number of attributes
+        :since:  0.7.0
         """
 
         return len(_SUPPORTED_MAPPING_KEYS)
@@ -82,6 +122,8 @@ class Layer(_Layer, Mapping):
 
         :param key: Mapping key
         :param value: self[key] value
+
+        :since: 0.7.0
         """
 
         if key == "annotations":
@@ -91,21 +133,16 @@ class Layer(_Layer, Mapping):
             f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
         )
 
-    def to_dict(self):
-        """
-        Return a dictionary representation of the layer
-        """
-        layer = _Layer.to_dict(self)
-        layer["annotations"] = self._annotations
-
-        return layer
-
     @staticmethod
     def generate_metadata_from_file_name(file_name: PathLike | str, arch: str) -> dict:
         """
-        :param str file_name: file_name of the blob
-        :param str arch: the arch of the target image
-        :return: dict of oci layer metadata for a given layer file
+        Generates OCI manifest layer metadata for the given file path and name.
+
+        :param file_name: File path and name of the target layer
+        :param arch: The arch of the target image
+
+        :return: (dict) OCI manifest layer metadata dictionary
+        :since:  0.7.0
         """
 
         if not isinstance(file_name, PathLike):
@@ -122,8 +159,12 @@ class Layer(_Layer, Mapping):
     @staticmethod
     def lookup_media_type_for_file_name(file_name: str) -> str:
         """
-        :param str file_name: file_name of the target layer
-        :return: mediatype
+        Looks up the media type based on file extension.
+
+        :param file_name: File path and name of the target layer
+
+        :return: (str) Media type
+        :since:  0.7.0
         """
 
         if not isinstance(file_name, PathLike):

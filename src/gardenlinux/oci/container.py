@@ -39,7 +39,7 @@ class Container(Registry):
     :author:     Garden Linux Maintainers
     :copyright:  Copyright 2024 SAP SE
     :package:    gardenlinux
-    :subpackage: flavors
+    :subpackage: oci
     :since:      0.7.0
     :license:    https://www.apache.org/licenses/LICENSE-2.0
                  Apache License, Version 2.0
@@ -401,7 +401,7 @@ class Container(Registry):
                     cleanup_blob = True
 
                 manifest.append_layer(layer)
-                layer_dict = layer.to_dict()
+                layer_dict = layer.dict
 
                 self._logger.debug(f"Layer: {layer_dict}")
 

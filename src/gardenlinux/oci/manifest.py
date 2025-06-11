@@ -15,7 +15,25 @@ from .schemas import EmptyManifestMetadata
 
 
 class Manifest(dict):
+    """
+    OCI image manifest
+
+    :author:     Garden Linux Maintainers
+    :copyright:  Copyright 2024 SAP SE
+    :package:    gardenlinux
+    :subpackage: oci
+    :since:      0.7.0
+    :license:    https://www.apache.org/licenses/LICENSE-2.0
+                 Apache License, Version 2.0
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Constructor __init__(Manifest)
+
+        :since: 0.7.0
+        """
+
         dict.__init__(self)
 
         self._config_bytes = b"{}"
@@ -26,6 +44,13 @@ class Manifest(dict):
 
     @property
     def arch(self):
+        """
+        Returns the architecture of the OCI image manifest.
+
+        :return: (str) OCI image architecture
+        :since:  0.7.0
+        """
+
         if "architecture" not in self.get("annotations", {}):
             raise RuntimeError(
                 "Unexpected manifest with missing config annotation 'architecture' found"
@@ -35,11 +60,26 @@ class Manifest(dict):
 
     @arch.setter
     def arch(self, value):
+        """
+        Sets the architecture of the OCI image manifest.
+
+        :param value: OCI image architecture
+
+        :since: 0.7.0
+        """
+
         self._ensure_annotations_dict()
         self["annotations"]["architecture"] = value
 
     @property
     def cname(self):
+        """
+        Returns the GardenLinux canonical name of the OCI image manifest.
+
+        :return: (str) OCI image GardenLinux canonical name
+        :since:  0.7.0
+        """
+
         if "cname" not in self.get("annotations", {}):
             raise RuntimeError(
                 "Unexpected manifest with missing config annotation 'cname' found"
@@ -49,11 +89,26 @@ class Manifest(dict):
 
     @cname.setter
     def cname(self, value):
+        """
+        Sets the GardenLinux canonical name of the OCI image manifest.
+
+        :param value: OCI image GardenLinux canonical name
+
+        :since: 0.7.0
+        """
+
         self._ensure_annotations_dict()
         self["annotations"]["cname"] = value
 
     @property
     def commit(self):
+        """
+        Returns the GardenLinux Git commit ID of the OCI image manifest.
+
+        :return: (str) OCI image GardenLinux Git commit ID
+        :since:  0.7.0
+        """
+
         if "commit" not in self.get("annotations", {}):
             raise RuntimeError(
                 "Unexpected manifest with missing config annotation 'commit' found"
@@ -63,20 +118,49 @@ class Manifest(dict):
 
     @commit.setter
     def commit(self, value):
+        """
+        Sets the GardenLinux Git commit ID of the OCI image manifest.
+
+        :param value: OCI image GardenLinux Git commit ID
+
+        :since: 0.7.0
+        """
+
         self._ensure_annotations_dict()
         self["annotations"]["commit"] = value
 
     @property
     def config_json(self):
+        """
+        Returns the OCI image manifest config.
+
+        :return: (bytes) OCI image manifest config
+        :since:  0.7.0
+        """
+
         return self._config_bytes
 
     @property
     def digest(self):
+        """
+        Returns the OCI image manifest digest.
+
+        :return: (str) OCI image manifest digest
+        :since:  0.7.0
+        """
+
         digest = sha256(self.json).hexdigest()
         return f"sha256:{digest}"
 
     @property
     def feature_set(self):
+        """
+        Returns the GardenLinux feature set of the OCI image manifest.
+
+        :return: (str) OCI image GardenLinux feature set
+        :since:  0.7.0
+        """
+
         if "feature_set" not in self.get("annotations", {}):
             raise RuntimeError(
                 "Unexpected manifest with missing config annotation 'feature_set' found"
@@ -86,19 +170,48 @@ class Manifest(dict):
 
     @feature_set.setter
     def feature_set(self, value):
+        """
+        Sets the GardenLinux feature set of the OCI image manifest.
+
+        :param value: OCI image GardenLinux feature set
+
+        :since: 0.7.0
+        """
+
         self._ensure_annotations_dict()
         self["annotations"]["feature_set"] = value
 
     @property
     def flavor(self):
+        """
+        Returns the GardenLinux flavor of the OCI image manifest.
+
+        :return: (str) OCI image GardenLinux flavor
+        :since:  0.7.0
+        """
+
         return CName(self.cname).flavor
 
     @property
     def json(self):
+        """
+        Returns the OCI image manifest as a JSON
+
+        :return: (bytes) OCI image manifest as JSON
+        :since:  0.7.0
+        """
+
         return json.dumps(self).encode("utf-8")
 
     @property
     def layers_as_dict(self):
+        """
+        Returns the OCI image manifest layers as a dictionary.
+
+        :return: (dict) OCI image manifest layers with title as key
+        :since:  0.7.0
+        """
+
         layers = {}
 
         for layer in self["layers"]:
@@ -113,10 +226,24 @@ class Manifest(dict):
 
     @property
     def size(self):
+        """
+        Returns the OCI image manifest JSON size in bytes.
+
+        :return: (int) OCI image manifest JSON size in bytes
+        :since:  0.7.0
+        """
+
         return len(self.json)
 
     @property
     def version(self):
+        """
+        Returns the GardenLinux version of the OCI image manifest.
+
+        :return: (str) OCI image GardenLinux version
+        :since:  0.7.0
+        """
+
         if "version" not in self.get("annotations", {}):
             raise RuntimeError(
                 "Unexpected manifest with missing config annotation 'version' found"
@@ -126,12 +253,21 @@ class Manifest(dict):
 
     @version.setter
     def version(self, value):
+        """
+        Sets the GardenLinux version of the OCI image manifest.
+
+        :param value: OCI image GardenLinux version
+
+        :since: 0.7.0
+        """
+
         self._ensure_annotations_dict()
         self["annotations"]["version"] = value
 
     def config_from_dict(self, config: dict, annotations: dict):
         """
-        Write a new OCI configuration to file, and generate oci metadata for it
+        Write a new OCI configuration to file, and generate oci metadata for it.
+
         For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
         annotations, mediatype, size, digest are not part of digest and size calculation,
         and therefore must be attached to the output dict and not written to the file.
@@ -139,6 +275,7 @@ class Manifest(dict):
         :param config: dict with custom configuration (the payload of the configuration)
         :param annotations: dict with custom annotations to be attached to metadata part of config
 
+        :since: 0.7.0
         """
 
         self._config_bytes = json.dumps(config).encode("utf-8")
@@ -151,10 +288,18 @@ class Manifest(dict):
         self["config"] = config
 
     def append_layer(self, layer):
+        """
+        Appends the given OCI image manifest layer to the manifest
+
+        :param layer: OCI image manifest layer
+
+        :since: 0.7.0
+        """
+
         if not isinstance(layer, Layer):
             raise RuntimeError("Unexpected layer type given")
 
-        layer_dict = layer.to_dict()
+        layer_dict = layer.dict
 
         if "org.opencontainers.image.title" not in layer_dict.get("annotations", {}):
             raise RuntimeError(
