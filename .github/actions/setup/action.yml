@@ -7,6 +7,12 @@ inputs:
 runs:
     using: composite
     steps:
+        - name: Verify requirements.txt for "actions/setup-python" with enabled "pip" cache
+          shell: bash
+          run: |
+            if [ ! -f "requirements.txt" ]; then
+                echo "python-gardenlinux-lib @ git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}" | tee -a requirements.txt
+            fi
         - name: Set up Python 3.13
           uses: actions/setup-python@v5
           with:
