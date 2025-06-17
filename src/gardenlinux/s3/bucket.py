@@ -65,6 +65,8 @@ class Bucket(object):
         :since:  0.8.0
         """
 
+        self._logger.debug(f"Returning all S3 bucket objects for {self._bucket.name}")
+
         return self._bucket.objects.all()
 
     def __getattr__(self, name):
@@ -80,3 +82,59 @@ class Bucket(object):
         """
 
         return getattr(self._bucket, name)
+
+    def download_file(self, key, file_name, *args, **kwargs):
+        """
+        boto3: Download an S3 object to a file.
+
+        :param key:       The name of the key to download from.
+        :param file_name: The path to the file to download to.
+
+        :since: 0.8.0
+        """
+
+        self._bucket.download_file(key, file_name, *args, **kwargs)
+
+        self._logger.info(f"Downloaded {key} from S3 to {file_name}")
+
+    def download_fileobj(self, key, fp, *args, **kwargs):
+        """
+        boto3: Download an object from this bucket to a file-like-object.
+
+        :param key: The name of the key to download from.
+        :param fp:  A file-like object to download into.
+
+        :since: 0.8.0
+        """
+
+        self._bucket.download_fileobj(key, fp, *args, **kwargs)
+
+        self._logger.info(f"Downloaded {key} from S3 as binary data")
+
+    def upload_file(self, file_name, key, *args, **kwargs):
+        """
+        boto3: Upload a file to an S3 object.
+
+        :param file_name: The path to the file to upload.
+        :param key:       The name of the key to upload to.
+
+        :since: 0.8.0
+        """
+
+        self._bucket.upload_file(file_name, key, *args, **kwargs)
+
+        self._logger.info(f"Uploaded {key} to S3 for {file_name}")
+
+    def upload_fileobj(self, fp, key, *args, **kwargs):
+        """
+        boto3: Upload a file-like object to this bucket.
+
+        :param fp:  A file-like object to upload.
+        :param key: The name of the key to upload to.
+
+        :since: 0.8.0
+        """
+
+        self._bucket.upload_fileobj(fp, key, *args, **kwargs)
+
+        self._logger.info(f"Uploaded {key} to S3 as binary data")
