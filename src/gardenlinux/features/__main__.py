@@ -65,24 +65,24 @@ def main() -> None:
         args.cname
     ), "Please provide either `--features` or `--cname` argument"
 
-    arch = None
+    arch = args.arch
     flavor = None
     commit_id = None
     gardenlinux_root = path.dirname(args.feature_dir)
-    version = None
-
-    if args.arch is not None:
-        arch = args.arch
-
-    if args.version is not None:
-        version = args.version
+    version = args.version
 
     if arch is None or arch == "":
         arch = args.default_arch
 
+    if gardenlinux_root == "":
+        gardenlinux_root = "."
+
     if version is None or version == "":
-        version_data = get_version_and_commit_id_from_files(gardenlinux_root)
-        version = f"{version_data[0]}-{version_data[1]}"
+        try:
+            version_data = get_version_and_commit_id_from_files(gardenlinux_root)
+            version = f"{version_data[0]}-{version_data[1]}"
+        except:
+            version = args.default_version
 
     if args.cname:
         cname = CName(args.cname, arch=arch, version=version)
@@ -105,12 +105,6 @@ def main() -> None:
         raise RuntimeError("Version not specified and no default version set")
 
     feature_dir_name = path.basename(args.feature_dir)
-
-    if gardenlinux_root == "":
-        gardenlinux_root = "."
-
-    if gardenlinux_root == "":
-        gardenlinux_root = "."
 
     additional_filter_func = lambda node: node not in args.ignore
 
@@ -198,6 +192,9 @@ def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, st
     if os.access(path.join(gardenlinux_root, "VERSION"), os.R_OK):
         with open(path.join(gardenlinux_root, "VERSION"), "r") as fp:
             version = fp.read().strip()
+
+    if commit_id is None or version is None:
+        raise RuntimeError("Failed to read version or commit ID from files")
 
     return (version, commit_id)
 

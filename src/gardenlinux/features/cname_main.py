@@ -44,19 +44,19 @@ def main():
 
     assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
 
-    arch = None
+    arch = args.arch
     gardenlinux_root = dirname(args.feature_dir)
     version = args.version
 
-    if args.arch is not None:
-        arch = args.arch
-
-    if args.version is not None:
-        version = args.version
+    if gardenlinux_root == "":
+        gardenlinux_root = "."
 
     if not version:
-        version_data = get_version_and_commit_id_from_files(gardenlinux_root)
-        version = f"{version_data[0]}-{version_data[1]}"
+        try:
+            version_data = get_version_and_commit_id_from_files(gardenlinux_root)
+            version = f"{version_data[0]}-{version_data[1]}"
+        except:
+            pass
 
     cname = CName(args.cname, arch=arch, version=version)
 
