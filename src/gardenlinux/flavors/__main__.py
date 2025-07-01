@@ -11,6 +11,7 @@ import os
 import sys
 
 from ..git import Git
+from ..github import GitHub
 
 from .parser import Parser
 
@@ -48,6 +49,11 @@ def parse_args():
 
     parser = ArgumentParser(description="Parse flavors.yaml and generate combinations.")
 
+    parser.add_argument(
+        "--commit",
+        default=None,
+        help="Commit hash to fetch flavors.yaml from GitHub (if not specified, uses local file).",
+    )
     parser.add_argument(
         "--no-arch",
         action="store_true",
@@ -120,25 +126,44 @@ def main():
 
     args = parse_args()
 
-    flavors_file = os.path.join(Git().root, "flavors.yaml")
+    if args.commit:
+        # Use GitHub API to fetch flavors.yaml
+        github = GitHub()
+        flavors_content = github.get_flavors_yaml(commit=args.commit)
 
-    if not os.path.isfile(flavors_file):
-        sys.exit(f"Error: {flavors_file} does not exist.")
+        parser = Parser(data=flavors_content)
 
-    # Load and validate the flavors.yaml
-    with open(flavors_file, "r") as file:
-        flavors_data = file.read()
+        combinations = parser.filter(
+            include_only_patterns=args.include_only,
+            wildcard_excludes=args.exclude,
+            only_build=args.build,
+            only_test=args.test,
+            only_test_platform=args.test_platform,
+            only_publish=args.publish,
+            filter_categories=args.category,
+            exclude_categories=args.exclude_category,
+        )
+    else:
+        # Use local file
+        flavors_file = os.path.join(Git().root, "flavors.yaml")
 
-    combinations = Parser(flavors_data).filter(
-        include_only_patterns=args.include_only,
-        wildcard_excludes=args.exclude,
-        only_build=args.build,
-        only_test=args.test,
-        only_test_platform=args.test_platform,
-        only_publish=args.publish,
-        filter_categories=args.category,
-        exclude_categories=args.exclude_category,
-    )
+        if not os.path.isfile(flavors_file):
+            sys.exit(f"Error: {flavors_file} does not exist.")
+
+        # Load and validate the flavors.yaml
+        with open(flavors_file, "r") as file:
+            flavors_data = file.read()
+
+        combinations = Parser(flavors_data).filter(
+            include_only_patterns=args.include_only,
+            wildcard_excludes=args.exclude,
+            only_build=args.build,
+            only_test=args.test,
+            only_test_platform=args.test_platform,
+            only_publish=args.publish,
+            filter_categories=args.category,
+            exclude_categories=args.exclude_category,
+        )
 
     if args.json_by_arch:
         grouped_combinations = Parser.group_by_arch(combinations)
