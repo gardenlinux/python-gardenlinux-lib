@@ -146,7 +146,7 @@ class S3Artifacts(object):
             "base_image": None,
             "build_committish": commit_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
-            "gardenlinux_epoch": cname_object.version.split(".", 1)[0],
+            "gardenlinux_epoch": int(cname_object.version.split(".", 1)[0]),
             "logs": None,
             "modifiers": feature_list,
             "require_uefi": "_usi" in feature_list,
