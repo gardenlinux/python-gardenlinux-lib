@@ -3,7 +3,7 @@ description: Installs the given GardenLinux Python library
 inputs:
     version:
         description: GardenLinux Python library version
-        default: "0.8.2"
+        default: "0.8.3"
 runs:
     using: composite
     steps:

@@ -169,11 +169,18 @@ class S3Artifacts(object):
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
+            if artifact.name.startswith(cname):
+                suffix = artifact.name[len(cname) :]
+            else:
+                raise RuntimeError(
+                    f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
+                )
+
             artifact_metadata = {
                 "name": artifact.name,
                 "s3_bucket_name": self._bucket.name,
                 "s3_key": s3_key,
-                "suffix": "".join(artifact.suffixes),
+                "suffix": suffix,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
