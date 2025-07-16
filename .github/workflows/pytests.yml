@@ -6,13 +6,38 @@ on:
       - main
   pull_request:
 
+
 jobs:
   test:
+    name: Run tests and collect coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Gardenlinux
+        uses: ./.github/actions/setup
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Prepare environment
+        run: make install-test
+
       - name: Run tests
-        run: |
+        run: | 
           export GLOCI_REGISTRY_TOKEN="invalid"
-          make test
+          make test-coverage-ci
+
+      - name: Check for report
+        run: test -f coverage.xml
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
