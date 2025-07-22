@@ -454,6 +454,11 @@ class Container(Registry):
             if file_path_name.match("*.pxe.tar.gz"):
                 self._logger.info(f"Found nested artifact {file_path_name}")
                 extract_targz(file_path_name, artifacts_dir)
+                files = [
+                    file_name
+                    for file_name in artifacts_dir.iterdir()
+                    if file_name.is_file()
+                ]
 
         artifacts_with_metadata = Container.get_artifacts_metadata_from_files(
             files, manifest.arch
