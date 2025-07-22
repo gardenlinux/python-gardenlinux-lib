@@ -159,7 +159,7 @@ class Layer(_Layer, Mapping):
     @staticmethod
     def lookup_media_type_for_file_name(file_name: str) -> str:
         """
-        Looks up the media type based on file extension.
+        Looks up the media type based on file name or extension.
 
         :param file_name: File path and name of the target layer
 
@@ -170,9 +170,9 @@ class Layer(_Layer, Mapping):
         if not isinstance(file_name, PathLike):
             file_name = Path(file_name)
 
-        for suffix in GL_MEDIA_TYPES:
-            if file_name.match(f"*.{suffix}"):
-                return GL_MEDIA_TYPE_LOOKUP[suffix]
+        for lookup_name in GL_MEDIA_TYPES:
+            if file_name.match(f"*.{lookup_name}") or str(file_name) == lookup_name:
+                return GL_MEDIA_TYPE_LOOKUP[lookup_name]
 
         raise ValueError(
             f"Media type for {file_name} is not defined. You may want to add the definition to parse_features_lib"
