@@ -445,15 +445,14 @@ class Container(Registry):
         if not isinstance(manifest, Manifest):
             raise RuntimeError("Artifacts image manifest given is invalid")
 
+        # Scan and extract nested artifacts
+        for file_path_name in artifacts_dir.glob("*.pxe.tar.gz"):
+            self._logger.info(f"Found nested artifact {file_path_name}")
+            extract_targz(file_path_name, artifacts_dir)
+
         files = [
             file_name for file_name in artifacts_dir.iterdir() if file_name.is_file()
         ]
-
-        # Scan and extract nested artifacts
-        for file_path_name in files:
-            if file_path_name.match("*.pxe.tar.gz"):
-                self._logger.info(f"Found nested artifact {file_path_name}")
-                extract_targz(file_path_name, artifacts_dir)
 
         artifacts_with_metadata = Container.get_artifacts_metadata_from_files(
             files, manifest.arch
