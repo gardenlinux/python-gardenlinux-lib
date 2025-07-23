@@ -1,0 +1,1378 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>python-gardenlinux-lib documentation &mdash; python-gardenlinux-lib  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            python-gardenlinux-lib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">python-gardenlinux-lib documentation</a><ul>
+<li><a class="reference internal" href="#gardenlinux.apt.Debsrc"><code class="docutils literal notranslate"><span class="pre">Debsrc</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.apt.DebsrcFile"><code class="docutils literal notranslate"><span class="pre">DebsrcFile</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.apt.DebsrcFile.read"><code class="docutils literal notranslate"><span class="pre">DebsrcFile.read()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.features.CName"><code class="docutils literal notranslate"><span class="pre">CName</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.features.CName.arch"><code class="docutils literal notranslate"><span class="pre">CName.arch</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.cname"><code class="docutils literal notranslate"><span class="pre">CName.cname</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.commit_id"><code class="docutils literal notranslate"><span class="pre">CName.commit_id</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.feature_set"><code class="docutils literal notranslate"><span class="pre">CName.feature_set</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.flavor"><code class="docutils literal notranslate"><span class="pre">CName.flavor</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.platform"><code class="docutils literal notranslate"><span class="pre">CName.platform</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.version"><code class="docutils literal notranslate"><span class="pre">CName.version</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.CName.version_and_commit_id"><code class="docutils literal notranslate"><span class="pre">CName.version_and_commit_id</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.filter"><code class="docutils literal notranslate"><span class="pre">Parser.filter()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.filter_as_dict"><code class="docutils literal notranslate"><span class="pre">Parser.filter_as_dict()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.filter_as_list"><code class="docutils literal notranslate"><span class="pre">Parser.filter_as_list()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.filter_as_string"><code class="docutils literal notranslate"><span class="pre">Parser.filter_as_string()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.get_cname_as_feature_set"><code class="docutils literal notranslate"><span class="pre">Parser.get_cname_as_feature_set()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.graph"><code class="docutils literal notranslate"><span class="pre">Parser.graph</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.set_default_gardenlinux_root_dir"><code class="docutils literal notranslate"><span class="pre">Parser.set_default_gardenlinux_root_dir()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.sort_graph_nodes"><code class="docutils literal notranslate"><span class="pre">Parser.sort_graph_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.features.Parser.sort_reversed_graph_nodes"><code class="docutils literal notranslate"><span class="pre">Parser.sort_reversed_graph_nodes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser.filter"><code class="docutils literal notranslate"><span class="pre">Parser.filter()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser.group_by_arch"><code class="docutils literal notranslate"><span class="pre">Parser.group_by_arch()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser.remove_arch"><code class="docutils literal notranslate"><span class="pre">Parser.remove_arch()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser.should_exclude"><code class="docutils literal notranslate"><span class="pre">Parser.should_exclude()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.flavors.Parser.should_include_only"><code class="docutils literal notranslate"><span class="pre">Parser.should_include_only()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.git.Git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.git.Git.commit_id"><code class="docutils literal notranslate"><span class="pre">Git.commit_id</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.git.Git.root"><code class="docutils literal notranslate"><span class="pre">Git.root</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.git.Git.root_repo"><code class="docutils literal notranslate"><span class="pre">Git.root_repo</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container"><code class="docutils literal notranslate"><span class="pre">Container</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.generate_index"><code class="docutils literal notranslate"><span class="pre">Container.generate_index()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.generate_manifest"><code class="docutils literal notranslate"><span class="pre">Container.generate_manifest()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.get_artifacts_metadata_from_files"><code class="docutils literal notranslate"><span class="pre">Container.get_artifacts_metadata_from_files()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_index_for_tags"><code class="docutils literal notranslate"><span class="pre">Container.push_index_for_tags()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_index_from_directory"><code class="docutils literal notranslate"><span class="pre">Container.push_index_from_directory()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_manifest"><code class="docutils literal notranslate"><span class="pre">Container.push_manifest()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_manifest_and_artifacts"><code class="docutils literal notranslate"><span class="pre">Container.push_manifest_and_artifacts()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_manifest_and_artifacts_from_directory"><code class="docutils literal notranslate"><span class="pre">Container.push_manifest_and_artifacts_from_directory()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.push_manifest_for_tags"><code class="docutils literal notranslate"><span class="pre">Container.push_manifest_for_tags()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.read_or_generate_index"><code class="docutils literal notranslate"><span class="pre">Container.read_or_generate_index()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Container.read_or_generate_manifest"><code class="docutils literal notranslate"><span class="pre">Container.read_or_generate_manifest()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.oci.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.oci.Index.append_manifest"><code class="docutils literal notranslate"><span class="pre">Index.append_manifest()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Index.json"><code class="docutils literal notranslate"><span class="pre">Index.json</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Index.manifests_as_dict"><code class="docutils literal notranslate"><span class="pre">Index.manifests_as_dict</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.oci.Layer"><code class="docutils literal notranslate"><span class="pre">Layer</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.oci.Layer.dict"><code class="docutils literal notranslate"><span class="pre">Layer.dict</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Layer.generate_metadata_from_file_name"><code class="docutils literal notranslate"><span class="pre">Layer.generate_metadata_from_file_name()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Layer.lookup_media_type_for_file_name"><code class="docutils literal notranslate"><span class="pre">Layer.lookup_media_type_for_file_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest"><code class="docutils literal notranslate"><span class="pre">Manifest</span></code></a><ul>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.append_layer"><code class="docutils literal notranslate"><span class="pre">Manifest.append_layer()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.arch"><code class="docutils literal notranslate"><span class="pre">Manifest.arch</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.cname"><code class="docutils literal notranslate"><span class="pre">Manifest.cname</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.commit"><code class="docutils literal notranslate"><span class="pre">Manifest.commit</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.config_from_dict"><code class="docutils literal notranslate"><span class="pre">Manifest.config_from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.config_json"><code class="docutils literal notranslate"><span class="pre">Manifest.config_json</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.digest"><code class="docutils literal notranslate"><span class="pre">Manifest.digest</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.feature_set"><code class="docutils literal notranslate"><span class="pre">Manifest.feature_set</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.flavor"><code class="docutils literal notranslate"><span class="pre">Manifest.flavor</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.json"><code class="docutils literal notranslate"><span class="pre">Manifest.json</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.layers_as_dict"><code class="docutils literal notranslate"><span class="pre">Manifest.layers_as_dict</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.size"><code class="docutils literal notranslate"><span class="pre">Manifest.size</span></code></a></li>
+<li><a class="reference internal" href="#gardenlinux.oci.Manifest.version"><code class="docutils literal notranslate"><span class="pre">Manifest.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">python-gardenlinux-lib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">python-gardenlinux-lib documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gardenlinux">
+<span id="python-gardenlinux-lib-documentation"></span><h1>python-gardenlinux-lib documentation<a class="headerlink" href="#module-gardenlinux" title="Link to this heading"></a></h1>
+<p id="module-gardenlinux.apt">APT module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.apt.Debsrc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.apt.</span></span><span class="sig-name descname"><span class="pre">Debsrc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deb_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deb_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.apt.Debsrc" title="Link to this definition"></a></dt>
+<dd><p>Class to reflect deb sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>apt</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.apt.DebsrcFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.apt.</span></span><span class="sig-name descname"><span class="pre">DebsrcFile</span></span><a class="headerlink" href="#gardenlinux.apt.DebsrcFile" title="Link to this definition"></a></dt>
+<dd><p>Class to represent deb sources loaded and parsed as dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>apt</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.apt.DebsrcFile.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gardenlinux.apt.DebsrcFile.read" title="Link to this definition"></a></dt>
+<dd><p>Read and parse the given TextIO data to extract deb sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> – TextIO data to parse</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-gardenlinux.features">Features module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.features.CName">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.features.</span></span><span class="sig-name descname"><span class="pre">CName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.CName" title="Link to this definition"></a></dt>
+<dd><p>Class to represent a canonical name (cname).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>features</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.arch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gardenlinux.features.CName.arch" title="Link to this definition"></a></dt>
+<dd><p>Returns the architecture for the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) CName architecture</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.cname">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#gardenlinux.features.CName.cname" title="Link to this definition"></a></dt>
+<dd><p>Returns the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) CName</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.commit_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">commit_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gardenlinux.features.CName.commit_id" title="Link to this definition"></a></dt>
+<dd><p>Returns the commit ID if part of the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Commit ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.feature_set">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">feature_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#gardenlinux.features.CName.feature_set" title="Link to this definition"></a></dt>
+<dd><p>Returns the feature set for the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Feature set of the cname</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.flavor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flavor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#gardenlinux.features.CName.flavor" title="Link to this definition"></a></dt>
+<dd><p>Returns the flavor for the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Flavor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.platform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">platform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#gardenlinux.features.CName.platform" title="Link to this definition"></a></dt>
+<dd><p>Returns the platform for the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Flavor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gardenlinux.features.CName.version" title="Link to this definition"></a></dt>
+<dd><p>Returns the version if part of the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Version</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.CName.version_and_commit_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version_and_commit_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gardenlinux.features.CName.version_and_commit_id" title="Link to this definition"></a></dt>
+<dd><p>Returns the version and commit ID if part of the cname parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Version and commit ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.features.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gardenlinux_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_dir_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'features'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.Parser" title="Link to this definition"></a></dt>
+<dd><p>Parser for GardenLinux features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>features</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_filter_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">networkx.Graph</span></span></span><a class="headerlink" href="#gardenlinux.features.Parser.filter" title="Link to this definition"></a></dt>
+<dd><p>Filters the features graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name to filter</p></li>
+<li><p><strong>ignore_excludes</strong> – Ignore <cite>exclude</cite> feature files</p></li>
+<li><p><strong>additional_filter_func</strong> – Additional filter function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(networkx.Graph) Filtered features graph</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.filter_as_dict">
+<span class="sig-name descname"><span class="pre">filter_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_filter_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#gardenlinux.features.Parser.filter_as_dict" title="Link to this definition"></a></dt>
+<dd><p>Filters the features graph and returns it as a dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name to filter</p></li>
+<li><p><strong>ignore_excludes</strong> – Ignore <cite>exclude</cite> feature files</p></li>
+<li><p><strong>additional_filter_func</strong> – Additional filter function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(dict) List of features for a given cname, split into platform, element and flag</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.filter_as_list">
+<span class="sig-name descname"><span class="pre">filter_as_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_filter_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#gardenlinux.features.Parser.filter_as_list" title="Link to this definition"></a></dt>
+<dd><p>Filters the features graph and returns it as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name to filter</p></li>
+<li><p><strong>ignore_excludes</strong> – Ignore <cite>exclude</cite> feature files</p></li>
+<li><p><strong>additional_filter_func</strong> – Additional filter function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Features list for a given cname</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.filter_as_string">
+<span class="sig-name descname"><span class="pre">filter_as_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_filter_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#gardenlinux.features.Parser.filter_as_string" title="Link to this definition"></a></dt>
+<dd><p>Filters the features graph and returns it as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name to filter</p></li>
+<li><p><strong>ignore_excludes</strong> – Ignore <cite>exclude</cite> feature files</p></li>
+<li><p><strong>additional_filter_func</strong> – Additional filter function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(str) Comma separated string with the expanded feature set for the cname</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.get_cname_as_feature_set">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_cname_as_feature_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.Parser.get_cname_as_feature_set" title="Link to this definition"></a></dt>
+<dd><p>Returns the features of a given canonical name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cname</strong> – Canonical name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(set) Features of the cname</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.graph">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">networkx.Graph</span></em><a class="headerlink" href="#gardenlinux.features.Parser.graph" title="Link to this definition"></a></dt>
+<dd><p>Returns the features graph based on the GardenLinux features directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(networkx.Graph) Features graph</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.set_default_gardenlinux_root_dir">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_default_gardenlinux_root_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.Parser.set_default_gardenlinux_root_dir" title="Link to this definition"></a></dt>
+<dd><p>Sets the default GardenLinux root directory used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root_dir</strong> – GardenLinux root directory</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.sort_graph_nodes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sort_graph_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.Parser.sort_graph_nodes" title="Link to this definition"></a></dt>
+<dd><p>Sorts graph nodes by feature type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> – Graph to sort</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Sorted feature set</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.features.Parser.sort_reversed_graph_nodes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sort_reversed_graph_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.features.Parser.sort_reversed_graph_nodes" title="Link to this definition"></a></dt>
+<dd><p>Sorts graph nodes by feature type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> – Graph to reverse and sort</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Reversed and sorted feature set</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-gardenlinux.flavors">Flavors module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.flavors.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser" title="Link to this definition"></a></dt>
+<dd><p>Parser for GardenLinux <cite>flavors.yaml</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>flavors</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_only_patterns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wildcard_excludes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_test_platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_publish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser.filter" title="Link to this definition"></a></dt>
+<dd><p>Filters flavors data and generates combinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_only_patterns</strong> – Include pattern list</p></li>
+<li><p><strong>wildcard_excludes</strong> – Exclude wildcard list</p></li>
+<li><p><strong>only_build</strong> – Return only build-enabled flavors</p></li>
+<li><p><strong>only_test</strong> – Return only test-enabled flavors</p></li>
+<li><p><strong>only_test_platform</strong> – Return only platform-test-enabled flavors</p></li>
+<li><p><strong>only_publish</strong> – Return only flavors to be published</p></li>
+<li><p><strong>filter_categories</strong> – List of categories to include</p></li>
+<li><p><strong>exclude_categories</strong> – List of categories to exclude</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Filtered flavors</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser.group_by_arch">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">group_by_arch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combinations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser.group_by_arch" title="Link to this definition"></a></dt>
+<dd><p>Groups combinations by architecture into a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>combinations</strong> – Flavor combinations to group</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Grouped flavor combinations</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser.remove_arch">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_arch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combinations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser.remove_arch" title="Link to this definition"></a></dt>
+<dd><p>Removes the architecture from combinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>combinations</strong> – Flavor combinations to remove the architecture</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) Changed flavor combinations</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser.should_exclude">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_exclude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wildcard_excludes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser.should_exclude" title="Link to this definition"></a></dt>
+<dd><p>Checks if a combination should be excluded based on exact match or wildcard patterns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combinations</strong> – Flavor combinations</p></li>
+<li><p><strong>excludes</strong> – List of features to exclude</p></li>
+<li><p><strong>wildcard_excludes</strong> – List of feature wildcards to exclude</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(bool) True if excluded</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.flavors.Parser.should_include_only">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_include_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_only_patterns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.flavors.Parser.should_include_only" title="Link to this definition"></a></dt>
+<dd><p>Checks if a combination should be included based on <cite>–include-only</cite> wildcard patterns.
+If no patterns are provided, all combinations are included by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combinations</strong> – Flavor combinations</p></li>
+<li><p><strong>include_only_patterns</strong> – List of features to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(bool) True if included</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-gardenlinux.git">Git module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.git.Git">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.git.</span></span><span class="sig-name descname"><span class="pre">Git</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">git_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.git.Git" title="Link to this definition"></a></dt>
+<dd><p>Git operations handler based on the given Git directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>git</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.git.Git.commit_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">commit_id</span></span><a class="headerlink" href="#gardenlinux.git.Git.commit_id" title="Link to this definition"></a></dt>
+<dd><p>Returns the commit ID for Git <cite>HEAD</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) Git commit ID</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.git.Git.root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#gardenlinux.git.Git.root" title="Link to this definition"></a></dt>
+<dd><p>Returns the root directory of the current Git repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(object) Git root directory</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.git.Git.root_repo">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_repo</span></span><a class="headerlink" href="#gardenlinux.git.Git.root_repo" title="Link to this definition"></a></dt>
+<dd><p>Returns the root Git <cite>Repo</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(object) Git root Git <cite>Repo</cite> instance</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-gardenlinux.oci">OCI module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.oci.</span></span><span class="sig-name descname"><span class="pre">Container</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">container_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container" title="Link to this definition"></a></dt>
+<dd><p>OCI container instance to provide methods for interaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>oci</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.generate_index">
+<span class="sig-name descname"><span class="pre">generate_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.generate_index" title="Link to this definition"></a></dt>
+<dd><p>Generates an OCI image index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(object) OCI image index</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.generate_manifest">
+<span class="sig-name descname"><span class="pre">generate_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.generate_manifest" title="Link to this definition"></a></dt>
+<dd><p>Generates an OCI image manifest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name of the manifest</p></li>
+<li><p><strong>architecture</strong> – Target architecture of the manifest</p></li>
+<li><p><strong>version</strong> – Artifacts version of the manifest</p></li>
+<li><p><strong>commit</strong> – The commit hash of the manifest</p></li>
+<li><p><strong>feature_set</strong> – The expanded list of the included features of this manifest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(object) OCI image manifest</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.get_artifacts_metadata_from_files">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_artifacts_metadata_from_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#gardenlinux.oci.Container.get_artifacts_metadata_from_files" title="Link to this definition"></a></dt>
+<dd><p>Returns OCI layer metadata for the given list of files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> – a list of filenames (not paths) to set oci_metadata for</p></li>
+<li><p><strong>arch</strong> – arch of the target image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(list) List of dicts, where each dict represents a layer</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_index_for_tags">
+<span class="sig-name descname"><span class="pre">push_index_for_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.push_index_for_tags" title="Link to this definition"></a></dt>
+<dd><p>Push tags for an given OCI image index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> – OCI image index</p></li>
+<li><p><strong>tags</strong> – List of tags to push the index for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_index_from_directory">
+<span class="sig-name descname"><span class="pre">push_index_from_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifests_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.push_index_from_directory" title="Link to this definition"></a></dt>
+<dd><p>Replaces an old manifest entries with new ones</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifests_dir</strong> – Directory where the manifest entries are read from</p></li>
+<li><p><strong>additional_tags</strong> – Additional tags to push the index with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_manifest">
+<span class="sig-name descname"><span class="pre">push_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></span><a class="headerlink" href="#gardenlinux.oci.Container.push_manifest" title="Link to this definition"></a></dt>
+<dd><p>Pushes an OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> – OCI image manifest</p></li>
+<li><p><strong>artifacts_with_metadata</strong> – A list of file names and their artifacts metadata</p></li>
+<li><p><strong>manifest_file</strong> – File name where the modified manifest is written to</p></li>
+<li><p><strong>additional_tags</strong> – Additional tags to push the manifest with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(object) OCI image manifest</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_manifest_and_artifacts">
+<span class="sig-name descname"><span class="pre">push_manifest_and_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_with_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></span><a class="headerlink" href="#gardenlinux.oci.Container.push_manifest_and_artifacts" title="Link to this definition"></a></dt>
+<dd><p>Pushes an OCI image manifest and its artifacts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> – OCI image manifest</p></li>
+<li><p><strong>artifacts_with_metadata</strong> – A list of file names and their artifacts metadata</p></li>
+<li><p><strong>artifacts_dir</strong> – Path of the image artifacts</p></li>
+<li><p><strong>manifest_file</strong> – File name where the modified manifest is written to</p></li>
+<li><p><strong>additional_tags</strong> – Additional tags to push the manifest with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(object) OCI image manifest</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_manifest_and_artifacts_from_directory">
+<span class="sig-name descname"><span class="pre">push_manifest_and_artifacts_from_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></span><a class="headerlink" href="#gardenlinux.oci.Container.push_manifest_and_artifacts_from_directory" title="Link to this definition"></a></dt>
+<dd><p>Pushes an OCI image manifest and its artifacts from the given directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> – OCI image manifest</p></li>
+<li><p><strong>artifacts_dir</strong> – Path of the image artifacts</p></li>
+<li><p><strong>manifest_file</strong> – File name where the modified manifest is written to</p></li>
+<li><p><strong>additional_tags</strong> – Additional tags to push the manifest with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(object) OCI image manifest</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.push_manifest_for_tags">
+<span class="sig-name descname"><span class="pre">push_manifest_for_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.push_manifest_for_tags" title="Link to this definition"></a></dt>
+<dd><p>Push tags for an given OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> – OCI image manifest</p></li>
+<li><p><strong>tags</strong> – List of tags to push the index for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.read_or_generate_index">
+<span class="sig-name descname"><span class="pre">read_or_generate_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Container.read_or_generate_index" title="Link to this definition"></a></dt>
+<dd><p>Reads from registry or generates the OCI image index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>OCI image manifest</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Container.read_or_generate_manifest">
+<span class="sig-name descname"><span class="pre">read_or_generate_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gardenlinux.oci.Manifest" title="gardenlinux.oci.manifest.Manifest"><span class="pre">Manifest</span></a></span></span><a class="headerlink" href="#gardenlinux.oci.Container.read_or_generate_manifest" title="Link to this definition"></a></dt>
+<dd><p>Reads from registry or generates the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cname</strong> – Canonical name of the manifest</p></li>
+<li><p><strong>architecture</strong> – Target architecture of the manifest</p></li>
+<li><p><strong>version</strong> – Artifacts version of the manifest</p></li>
+<li><p><strong>commit</strong> – The Git commit ID of the manifest</p></li>
+<li><p><strong>feature_set</strong> – The expanded list of the included features of this manifest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OCI image manifest</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.oci.Index">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.oci.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Index" title="Link to this definition"></a></dt>
+<dd><p>OCI image index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>oci</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Index.append_manifest">
+<span class="sig-name descname"><span class="pre">append_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Index.append_manifest" title="Link to this definition"></a></dt>
+<dd><p>Appends the given OCI image manifest to the index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>manifest</strong> – OCI image manifest</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Index.json">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><a class="headerlink" href="#gardenlinux.oci.Index.json" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image index as a JSON</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(bytes) OCI image index as JSON</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Index.manifests_as_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">manifests_as_dict</span></span><a class="headerlink" href="#gardenlinux.oci.Index.manifests_as_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifests of the index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(dict) OCI image manifests with CNAME or digest as key</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.oci.Layer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.oci.</span></span><span class="sig-name descname"><span class="pre">Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blob_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Layer" title="Link to this definition"></a></dt>
+<dd><p>OCI image layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>oci</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Layer.dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dict</span></span><a class="headerlink" href="#gardenlinux.oci.Layer.dict" title="Link to this definition"></a></dt>
+<dd><p>Return a dictionary representation of the layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(dict) OCI manifest layer metadata dictionary</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.2</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Layer.generate_metadata_from_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_metadata_from_file_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;property</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f5ba2ca9350&gt;</span></span></span><a class="headerlink" href="#gardenlinux.oci.Layer.generate_metadata_from_file_name" title="Link to this definition"></a></dt>
+<dd><p>Generates OCI manifest layer metadata for the given file path and name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> – File path and name of the target layer</p></li>
+<li><p><strong>arch</strong> – The arch of the target image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(dict) OCI manifest layer metadata dictionary</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Layer.lookup_media_type_for_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lookup_media_type_for_file_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#gardenlinux.oci.Layer.lookup_media_type_for_file_name" title="Link to this definition"></a></dt>
+<dd><p>Looks up the media type based on file name or extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> – File path and name of the target layer</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(str) Media type</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gardenlinux.oci.</span></span><span class="sig-name descname"><span class="pre">Manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Manifest" title="Link to this definition"></a></dt>
+<dd><p>OCI image manifest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Garden Linux Maintainers</p>
+</dd>
+<dt class="field-even">Copyright<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copyright 2024 SAP SE</p>
+</dd>
+<dt class="field-odd">Package<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gardenlinux</p>
+</dd>
+<dt class="field-even">Subpackage<span class="colon">:</span></dt>
+<dd class="field-even"><p>oci</p>
+</dd>
+<dt class="field-odd">Since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>
+Apache License, Version 2.0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.append_layer">
+<span class="sig-name descname"><span class="pre">append_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Manifest.append_layer" title="Link to this definition"></a></dt>
+<dd><p>Appends the given OCI image manifest layer to the manifest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer</strong> – OCI image manifest layer</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.arch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arch</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.arch" title="Link to this definition"></a></dt>
+<dd><p>Returns the architecture of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image architecture</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.cname">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cname</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.cname" title="Link to this definition"></a></dt>
+<dd><p>Returns the GardenLinux canonical name of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image GardenLinux canonical name</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.commit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">commit</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.commit" title="Link to this definition"></a></dt>
+<dd><p>Returns the GardenLinux Git commit ID of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image GardenLinux Git commit ID</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.config_from_dict">
+<span class="sig-name descname"><span class="pre">config_from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gardenlinux.oci.Manifest.config_from_dict" title="Link to this definition"></a></dt>
+<dd><p>Write a new OCI configuration to file, and generate oci metadata for it.</p>
+<p>For reference see <a class="reference external" href="https://github.com/opencontainers/image-spec/blob/main/config.md">https://github.com/opencontainers/image-spec/blob/main/config.md</a>
+annotations, mediatype, size, digest are not part of digest and size calculation,
+and therefore must be attached to the output dict and not written to the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – dict with custom configuration (the payload of the configuration)</p></li>
+<li><p><strong>annotations</strong> – dict with custom annotations to be attached to metadata part of config</p></li>
+</ul>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.config_json">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_json</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.config_json" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifest config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(bytes) OCI image manifest config</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.digest">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">digest</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.digest" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifest digest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image manifest digest</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.feature_set">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">feature_set</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.feature_set" title="Link to this definition"></a></dt>
+<dd><p>Returns the GardenLinux feature set of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image GardenLinux feature set</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.flavor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flavor</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.flavor" title="Link to this definition"></a></dt>
+<dd><p>Returns the GardenLinux flavor of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image GardenLinux flavor</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.json">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.json" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifest as a JSON</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(bytes) OCI image manifest as JSON</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.layers_as_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">layers_as_dict</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.layers_as_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifest layers as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(dict) OCI image manifest layers with title as key</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.size" title="Link to this definition"></a></dt>
+<dd><p>Returns the OCI image manifest JSON size in bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(int) OCI image manifest JSON size in bytes</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gardenlinux.oci.Manifest.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#gardenlinux.oci.Manifest.version" title="Link to this definition"></a></dt>
+<dd><p>Returns the GardenLinux version of the OCI image manifest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str) OCI image GardenLinux version</p>
+</dd>
+<dt class="field-even">Since<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.7.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, gardenlinux maintainer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
