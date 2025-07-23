@@ -171,7 +171,7 @@ class Layer(_Layer, Mapping):
             file_name = Path(file_name)
 
         for lookup_name in GL_MEDIA_TYPES:
-            if file_name.match(f"*.{lookup_name}") or str(file_name) == lookup_name:
+            if file_name.match(f"*.{lookup_name}") or file_name.name == lookup_name:
                 return GL_MEDIA_TYPE_LOOKUP[lookup_name]
 
         raise ValueError(
