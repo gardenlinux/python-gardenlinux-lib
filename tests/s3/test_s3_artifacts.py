@@ -21,10 +21,10 @@ def dummy_digest(data: bytes, algo: str) -> str:
     Dummy for file_digest() to compute hashes for in-memory byte streams
     """
     content = data.read()
-    data.seek(0) # Reset byte cursor to start for multiple uses
+    data.seek(0)  # Reset byte cursor to start for multiple uses
 
     if algo == "md5":
-        return md5(content)
+        return md5(content)  # nosec B324
     elif algo == "sha256":
         return sha256(content)
     else:
@@ -87,11 +87,11 @@ def test_download_to_directory_success(mock_bucket_class):
     def filter_side_effect(Prefix):
         # When fetching metadata
         if Prefix == "meta/singles/testcname":
-            return [release_object] # return list with release file
+            return [release_object]  # return list with release file
         # When fetching actual artifact
         elif Prefix == "objects/testcname":
-            return MockFilterReturn() # return mock object
-        return [] # Nothing found
+            return MockFilterReturn()  # return mock object
+        return []  # Nothing found
 
     # Act
     mock_bucket.objects.filter.side_effect = filter_side_effect
@@ -217,5 +217,9 @@ def test_upload_from_directory_with_delete(mock_bucket_class, mock_digest, tmp_p
 
     s3.upload_from_directory(cname, tmp_path, delete_before_push=True)
 
-    mock_bucket.delete_objects.assert_any_call(Delete={"Objects": [{"Key": f"objects/{cname}/{artifact.name}"}]})
-    mock_bucket.delete_objects.assert_any_call(Delete={"Objects": [{"Key": f"meta/singles/{cname}"}]})
+    mock_bucket.delete_objects.assert_any_call(
+        Delete={"Objects": [{"Key": f"objects/{cname}/{artifact.name}"}]}
+    )
+    mock_bucket.delete_objects.assert_any_call(
+        Delete={"Objects": [{"Key": f"meta/singles/{cname}"}]}
+    )
