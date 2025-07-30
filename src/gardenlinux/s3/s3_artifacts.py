@@ -140,6 +140,20 @@ class S3Artifacts(object):
         feature_set = release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES")
         feature_list = feature_set.split(",")
 
+        requirements_file = artifacts_dir.joinpath(f"{cname}.requirements")
+        req = {}
+        if requirements_file.exists():
+            with requirements_file.open("r", encoding="utf-8") as req_fp:
+                for line in req_fp:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    key, value = line.split("=", 1)
+                    req[key.strip()] = value.strip()
+
+        require_uefi = req.get("uefi", "false").lower() == "true"
+        secureboot = req.get("secureboot", "false").lower() == "true"
+
         metadata = {
             "platform": cname_object.platform,
             "architecture": cname_object.arch,
@@ -149,8 +163,8 @@ class S3Artifacts(object):
             "gardenlinux_epoch": int(cname_object.version.split(".", 1)[0]),
             "logs": None,
             "modifiers": feature_list,
-            "require_uefi": "_usi" in feature_list,
-            "secureboot": "_trustedboot" in feature_list,
+            "require_uefi": require_uefi,
+            "secureboot": secureboot,
             "published_image_metadata": None,
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{cname}",
