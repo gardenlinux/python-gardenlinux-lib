@@ -8,6 +8,7 @@ gl-cname main entrypoint
 from functools import reduce
 from os.path import basename, dirname
 import argparse
+import logging
 import re
 
 from .cname import CName
@@ -55,8 +56,12 @@ def main():
         try:
             version_data = get_version_and_commit_id_from_files(gardenlinux_root)
             version = f"{version_data[0]}-{version_data[1]}"
-        except:
-            pass
+        except RuntimeError as exc:
+            logging.warning(
+                "Failed to parse version information for GL root '{0}': {1}".format(
+                    gardenlinux_root, exc
+                )
+            )
 
     cname = CName(args.cname, arch=arch, version=version)
 
