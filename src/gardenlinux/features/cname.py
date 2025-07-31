@@ -136,7 +136,7 @@ class CName(object):
         :return: (str) Flavor
         """
 
-        return re.split("[_-]", self._flavor, 1)[0]
+        return re.split("[_-]", self._flavor, maxsplit=1)[0]
 
     @property
     def version(self) -> Optional[str]:
