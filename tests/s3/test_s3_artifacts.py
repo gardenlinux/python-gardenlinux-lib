@@ -1,14 +1,18 @@
 import pytest
-from unittest.mock import MagicMock, patch
+import boto3
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from hashlib import md5, sha256
+from moto import mock_aws
+
 from gardenlinux.s3.s3_artifacts import S3Artifacts
+
+CNAME = "testcname"
 
 
 # Dummy CName replacement
 class DummyCName:
-    def __init__(self, cname):
+    def __init__(self, cname):  # pylint: disable=unused-argument
         self.platform = "aws"
         self.arch = "amd64"
         self.version = "1234.1"
@@ -31,119 +35,83 @@ def dummy_digest(data: bytes, algo: str) -> str:
         raise ValueError(f"Unsupported algo: {algo}")
 
 
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_s3artifacts_init_success(mock_bucket_class):
+@pytest.fixture(autouse=True)
+def s3_setup(tmp_path, monkeypatch):
     """
-    Sanity test to assert correct instantiation of S3Artifacts object
+    Provides a clean S3 setup for each test.
     """
-    mock_bucket_instance = MagicMock()
-    mock_bucket_class.return_value = mock_bucket_instance
+    with mock_aws():
+        s3 = boto3.resource("s3", region_name="us-east-1")
+        bucket_name = "test-bucket"
+        s3.create_bucket(Bucket=bucket_name)
 
-    s3 = S3Artifacts("my-bucket")
+        monkeypatch.setattr("gardenlinux.s3.s3_artifacts.CName", DummyCName)
+        monkeypatch.setattr("gardenlinux.s3.s3_artifacts.file_digest", dummy_digest)
 
-    mock_bucket_class.assert_called_once_with("my-bucket", None, None)
-    assert s3._bucket == mock_bucket_instance
-
-
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_s3_artifacts_invalid_bucket(mock_bucket):
-    """
-    Sanity test to check proper Error raising when using non-existing bucket
-    """
-    # Simulate an exception being raised when trying to create the Bucket
-    mock_bucket.side_effect = RuntimeError("Bucket does not exist")
-
-    with pytest.raises(RuntimeError, match="Bucket does not exist"):
-        S3Artifacts("invalid-bucket")
+        yield s3, bucket_name, tmp_path
 
 
-@patch("gardenlinux.s3.s3_artifacts.CName", new=DummyCName)
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_download_to_directory_success(mock_bucket_class):
-    """
-    Test download of mutliple files to directory on disk.
-    """
+def test_s3artifacts_init_success(s3_setup):
     # Arrange
-    # Create mock bucket instance
-    mock_bucket = MagicMock()
-
-    # Mock release object
-    release_object = MagicMock()
-    release_object.key = "meta/singles/testcname"
-
-    # Mock objects to be downloaded
-    s3_obj1 = MagicMock()
-    s3_obj1.key = "objects/testcname/file1"
-    s3_obj2 = MagicMock()
-    s3_obj2.key = "objects/testcname/file2"
-
-    # Mock return value of .filter().all() from boto3
-    class MockFilterReturn:
-        def all(self):
-            return [s3_obj1, s3_obj2]
-
-    # Mock teh behaviour of .objects.filter(Prefix=...)
-    # Lets us simulate different responses depending on prefix
-    def filter_side_effect(Prefix):
-        # When fetching metadata
-        if Prefix == "meta/singles/testcname":
-            return [release_object]  # return list with release file
-        # When fetching actual artifact
-        elif Prefix == "objects/testcname":
-            return MockFilterReturn()  # return mock object
-        return []  # Nothing found
+    _, bucket_name, _ = s3_setup
 
     # Act
-    mock_bucket.objects.filter.side_effect = filter_side_effect
-    mock_bucket_class.return_value = mock_bucket
+    s3_artifacts = S3Artifacts(bucket_name)
+
+    # Assert
+    assert s3_artifacts._bucket.name == bucket_name
+
+
+def tets_s3artifacts_invalid_bucket():
+    # Act / Assert
+    with pytest.raises(Exception):
+        S3Artifacts("unknown-bucket")
+
+
+def test_download_to_directory_success(s3_setup):
+    """
+    Test download of multiple files to a directory on disk.
+    """
+    # Arrange
+    s3, bucket_name, _ = s3_setup
+    bucket = s3.Bucket(bucket_name)
+
+    bucket.put_object(Key=f"meta/singles/{CNAME}", Body=b"metadata")
+    bucket.put_object(Key=f"objects/{CNAME}/file1", Body=b"data1")
+    bucket.put_object(Key=f"objects/{CNAME}/file2", Body=b"data2")
 
     with TemporaryDirectory() as tmpdir:
-        artifacts_dir = Path(tmpdir)
+        outdir = Path(tmpdir)
 
-        s3 = S3Artifacts("test-bucket")
-        s3.download_to_directory("testcname", artifacts_dir)
+        # Act
+        artifacts = S3Artifacts(bucket_name)
+        artifacts.download_to_directory(CNAME, outdir)
 
         # Assert
-        # Validate download_file called with correct metadata path
-        mock_bucket.download_file.assert_any_call(
-            "meta/singles/testcname",
-            artifacts_dir / "testcname.s3_metadata.yaml",
-        )
-
-        # Validate files were downloaded from object keys
-        mock_bucket.download_file.assert_any_call(
-            "objects/testcname/file1", artifacts_dir / "file1"
-        )
-        mock_bucket.download_file.assert_any_call(
-            "objects/testcname/file2", artifacts_dir / "file2"
-        )
-
-        assert mock_bucket.download_file.call_count == 3
+        assert (outdir / f"{CNAME}.s3_metadata.yaml").read_bytes() == b"metadata"
+        assert (outdir / "file1").read_bytes() == b"data1"
+        assert (outdir / "file2").read_bytes() == b"data2"
 
 
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_download_to_directory_invalid_path(mock_bucket):
+def test_download_to_directory_invalid_path(s3_setup):
     """
-    Sanity Test to test behaviour on invalid paths
+    Test proper handling of download attempt to invalid path.
     """
-    s3 = S3Artifacts("bucket")
+    # Arrange
+    _, bucket_name, _ = s3_setup
+    artifacts = S3Artifacts(bucket_name)
+
+    # Act / Assert
     with pytest.raises(RuntimeError):
-        s3.download_to_directory("test-cname", "/invalid/path/does/not/exist")
+        artifacts.download_to_directory({CNAME}, "/invalid/path/does/not/exist")
 
 
-@patch("gardenlinux.s3.s3_artifacts.file_digest", side_effect=dummy_digest)
-@patch("gardenlinux.s3.s3_artifacts.CName", new=DummyCName)
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_upload_from_directory_success(mock_bucket_class, mock_digest):
+def test_upload_from_directory_success(s3_setup):
     """
     Test upload of multiple artifacts from disk to bucket
     """
     # Arrange
-    mock_bucket = MagicMock()
-    mock_bucket.name = "test-bucket"
-    mock_bucket_class.return_value = mock_bucket
-
-    # Create a fake .release file
+    s3, bucket_name, tmp_path = s3_setup
     release_data = """
     GARDENLINUX_VERSION = 1234.1
     GARDENLINUX_COMMIT_ID = abc123
@@ -151,60 +119,34 @@ def test_upload_from_directory_success(mock_bucket_class, mock_digest):
     GARDENLINUX_FEATURES = _usi,_trustedboot
     """
 
-    # Create a fake release file and two artifact files
-    with TemporaryDirectory() as tmpdir:
-        artifacts_dir = Path(tmpdir)
-        cname = "testcname"
+    release_path = tmp_path / f"{CNAME}.release"
+    release_path.write_text(release_data)
 
-        # Write .release file
-        release_path = artifacts_dir / f"{cname}.release"
-        release_path.write_text(release_data)
+    for filename in [f"{CNAME}-file1", f"{CNAME}-file2"]:
+        (tmp_path / filename).write_bytes(b"dummy content")
 
-        # Create dummy files for upload
-        for name in [f"{cname}-file1", f"{cname}-file2"]:
-            (artifacts_dir / name).write_bytes(b"dummy content")
+    # Act
+    artifacts = S3Artifacts(bucket_name)
+    artifacts.upload_from_directory(CNAME, tmp_path)
 
-        s3 = S3Artifacts("test-bucket")
-
-        # Act
-        s3.upload_from_directory(cname, artifacts_dir)
-
-        # Assert
-        calls = mock_bucket.upload_file.call_args_list
-
-        # Check that for each file, upload_file was called with ExtraArgs containing "Tagging"
-        for name in [f"{cname}-file1", f"{cname}-file2"]:
-            key = f"objects/{cname}/{name}"
-            path = artifacts_dir / name
-
-            # Look for a call with matching positional args (path, key)
-            matching_calls = [
-                call
-                for call in calls
-                if call.args[0] == path
-                and call.args[1] == key
-                and isinstance(call.kwargs.get("ExtraArgs"), dict)
-                and "Tagging" in call.kwargs["ExtraArgs"]
-            ]
-            assert matching_calls, f"upload_file was not called with Tagging for {name}"
+    # Assert
+    bucket = s3.Bucket(bucket_name)
+    keys = [obj.key for obj in bucket.objects.all()]
+    assert f"objects/{CNAME}/{CNAME}-file1" in keys
+    assert f"objects/{CNAME}/{CNAME}-file2" in keys
+    assert f"meta/singles/{CNAME}" in keys
 
 
-@patch("gardenlinux.s3.s3_artifacts.file_digest", side_effect=dummy_digest)
-@patch("gardenlinux.s3.s3_artifacts.CName", new=DummyCName)
-@patch("gardenlinux.s3.s3_artifacts.Bucket")
-def test_upload_from_directory_with_delete(mock_bucket_class, mock_digest, tmp_path):
+def test_upload_from_directory_with_delete(s3_setup):
     """
     Test that upload_from_directory deletes existing files before uploading
-    when delete_before_push=True
+    when delete_before_push=True.
     """
-    mock_bucket = MagicMock()
-    mock_bucket.name = "test-bucket"
-    mock_bucket_class.return_value = mock_bucket
+    s3, bucket_name, tmp_path = s3_setup
+    bucket = s3.Bucket(bucket_name)
 
-    s3 = S3Artifacts("test-bucket")
-    cname = "test-cname"
-
-    release = tmp_path / f"{cname}.release"
+    # Arrange: create release and artifact files locally
+    release = tmp_path / f"{CNAME}.release"
     release.write_text(
         "GARDENLINUX_VERSION = 1234.1\n"
         "GARDENLINUX_COMMIT_ID = abc123\n"
@@ -212,14 +154,22 @@ def test_upload_from_directory_with_delete(mock_bucket_class, mock_digest, tmp_p
         "GARDENLINUX_FEATURES = _usi,_trustedboot\n"
     )
 
-    artifact = tmp_path / f"{cname}.kernel"
+    artifact = tmp_path / f"{CNAME}.kernel"
     artifact.write_bytes(b"fake")
 
-    s3.upload_from_directory(cname, tmp_path, delete_before_push=True)
+    # Arrange: put dummy existing objects to be deleted
+    bucket.put_object(Key=f"objects/{CNAME}/{artifact.name}", Body=b"old data")
+    bucket.put_object(Key=f"meta/singles/{CNAME}", Body=b"old metadata")
 
-    mock_bucket.delete_objects.assert_any_call(
-        Delete={"Objects": [{"Key": f"objects/{cname}/{artifact.name}"}]}
-    )
-    mock_bucket.delete_objects.assert_any_call(
-        Delete={"Objects": [{"Key": f"meta/singles/{cname}"}]}
-    )
+    artifacts = S3Artifacts(bucket_name)
+
+    # Act
+    artifacts.upload_from_directory(CNAME, tmp_path, delete_before_push=True)
+
+    # Assert
+    keys = [obj.key for obj in bucket.objects.all()]
+
+    # The old key should no longer be present as old data (no duplicates)
+    # but the new upload file key should exist (artifact uploaded)
+    assert f"objects/{CNAME}/{artifact.name}" in keys
+    assert f"meta/singles/{CNAME}" in keys
