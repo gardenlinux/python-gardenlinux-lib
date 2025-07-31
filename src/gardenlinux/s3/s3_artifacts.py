@@ -152,7 +152,9 @@ class S3Artifacts(object):
                 require_uefi = requirements_config.getboolean(UNNAMED_SECTION, "uefi")
 
             if requirements_config.has_option(UNNAMED_SECTION, "secureboot"):
-                secureboot = requirements_config.getboolean(UNNAMED_SECTION, "secureboot")
+                secureboot = requirements_config.getboolean(
+                    UNNAMED_SECTION, "secureboot"
+                )
 
         if require_uefi is None:
             require_uefi = "_usi" in feature_list
