@@ -141,18 +141,24 @@ class S3Artifacts(object):
         feature_list = feature_set.split(",")
 
         requirements_file = artifacts_dir.joinpath(f"{cname}.requirements")
-        req = {}
-        if requirements_file.exists():
-            with requirements_file.open("r", encoding="utf-8") as req_fp:
-                for line in req_fp:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    key, value = line.split("=", 1)
-                    req[key.strip()] = value.strip()
+        require_uefi = None
+        secureboot = None
 
-        require_uefi = req.get("uefi", "false").lower() == "true"
-        secureboot = req.get("secureboot", "false").lower() == "true"
+        if requirements_file.exists():
+            requirements_config = ConfigParser(allow_unnamed_section=True)
+            requirements_config.read(requirements_file)
+
+            if requirements_config.has_option(UNNAMED_SECTION, "uefi"):
+                require_uefi = requirements_config.getboolean(UNNAMED_SECTION, "uefi")
+
+            if requirements_config.has_option(UNNAMED_SECTION, "secureboot"):
+                secureboot = requirements_config.getboolean(UNNAMED_SECTION, "secureboot")
+
+        if require_uefi is None:
+            require_uefi = "_usi" in feature_list
+
+        if secureboot is None:
+            secureboot = "_trustedboot" in feature_list
 
         metadata = {
             "platform": cname_object.platform,
