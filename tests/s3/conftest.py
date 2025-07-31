@@ -1,19 +1,15 @@
-import pytest
+# -*- coding: utf-8 -*-
+
 from dataclasses import dataclass
 from moto import mock_aws
 from hashlib import md5, sha256
 import boto3
+import pytest
 
 from gardenlinux.features.cname import CName as RealCName
 
 BUCKET_NAME = "test-bucket"
 REGION = "us-east-1"
-
-
-# Dummy CName replacement
-class DummyCName(RealCName):
-    def __init__(self, cname: str):  # pylint: disable=unused-argument
-        super().__init__(cname)
 
 
 @dataclass(frozen=True)
@@ -61,7 +57,6 @@ def s3_setup(tmp_path, monkeypatch):
         s3 = boto3.resource("s3", region_name=REGION)
         s3.create_bucket(Bucket=BUCKET_NAME)
 
-        monkeypatch.setattr("gardenlinux.s3.s3_artifacts.CName", DummyCName)
         monkeypatch.setattr("gardenlinux.s3.s3_artifacts.file_digest", dummy_digest)
 
         cname = make_cname()

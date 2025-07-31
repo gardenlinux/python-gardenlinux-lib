@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Test the `Bucket` class in `src/gardenlinux/s3/bucket.py` by using
 mock AWS interactions provided by the `moto` module.
@@ -5,9 +7,9 @@ mock AWS interactions provided by the `moto` module.
 A mock AWS environment is provided by the `s3_setup` fixture found in `conftest.py`.
 """
 
+from pathlib import Path
 import io
 import pytest
-from pathlib import Path
 
 from gardenlinux.s3.bucket import Bucket
 

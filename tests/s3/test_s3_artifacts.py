@@ -1,6 +1,8 @@
-import pytest
+# -*- coding: utf-8 -*-
+
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import pytest
 
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 
