@@ -6,6 +6,7 @@ gl-features-parse main entrypoint
 """
 
 import argparse
+import logging
 import os
 import re
 import sys
@@ -81,7 +82,13 @@ def main() -> None:
         try:
             version_data = get_version_and_commit_id_from_files(gardenlinux_root)
             version = f"{version_data[0]}-{version_data[1]}"
-        except:
+        except RuntimeError as exc:
+            logging.debug(
+                "Failed to parse version information for GL root '{0}': {1}".format(
+                    gardenlinux_root, exc
+                )
+            )
+
             version = args.default_version
 
     if args.cname:
