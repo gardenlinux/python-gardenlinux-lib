@@ -5,6 +5,12 @@ from tempfile import TemporaryDirectory
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 
 CNAME = "testcname"
+RELEASE_DATA = """
+    GARDENLINUX_VERSION = 1234.1
+    GARDENLINUX_COMMIT_ID = abc123
+    GARDENLINUX_COMMIT_ID_LONG = abc123long
+    GARDENLINUX_FEATURES = _usi,_trustedboot
+    """
 
 
 def test_s3artifacts_init_success(s3_setup):
@@ -68,15 +74,9 @@ def test_upload_from_directory_success(s3_setup):
     """
     # Arrange
     s3, bucket_name, tmp_path = s3_setup
-    release_data = """
-    GARDENLINUX_VERSION = 1234.1
-    GARDENLINUX_COMMIT_ID = abc123
-    GARDENLINUX_COMMIT_ID_LONG = abc123long
-    GARDENLINUX_FEATURES = _usi,_trustedboot
-    """
 
     release_path = tmp_path / f"{CNAME}.release"
-    release_path.write_text(release_data)
+    release_path.write_text(RELEASE_DATA)
 
     for filename in [f"{CNAME}-file1", f"{CNAME}-file2"]:
         (tmp_path / filename).write_bytes(b"dummy content")
@@ -103,12 +103,7 @@ def test_upload_from_directory_with_delete(s3_setup):
 
     # Arrange: create release and artifact files locally
     release = tmp_path / f"{CNAME}.release"
-    release.write_text(
-        "GARDENLINUX_VERSION = 1234.1\n"
-        "GARDENLINUX_COMMIT_ID = abc123\n"
-        "GARDENLINUX_COMMIT_ID_LONG = abc123long\n"
-        "GARDENLINUX_FEATURES = _usi,_trustedboot\n"
-    )
+    release.write_text(RELEASE_DATA)
 
     artifact = tmp_path / f"{CNAME}.kernel"
     artifact.write_bytes(b"fake")
