@@ -1,17 +1,39 @@
 import pytest
-from pathlib import Path
+from dataclasses import dataclass
 from moto import mock_aws
 from hashlib import md5, sha256
 import boto3
 
+from gardenlinux.features.cname import CName as RealCName
+
+BUCKET_NAME = "test-bucket"
+REGION = "us-east-1"
+
 
 # Dummy CName replacement
-class DummyCName:
-    def __init__(self, cname):  # pylint: disable=unused-argument
-        self.platform = "aws"
-        self.arch = "amd64"
-        self.version = "1234.1"
-        self.commit_id = "abc123"
+class DummyCName(RealCName):
+    def __init__(self, cname: str):  # pylint: disable=unused-argument
+        super().__init__(cname)
+
+
+@dataclass(frozen=True)
+class S3Env:
+    s3: object
+    bucket_name: str
+    tmp_path: str
+    cname: str
+
+
+def make_cname(
+    flavor: str = "testcname",
+    arch: str = "amd64",
+    version: str = "1234.1",
+    commit: str = "abc123",
+) -> str:
+    """
+    Helper function to build cname. Can be used to customized the cname.
+    """
+    return f"{flavor}-{arch}-{version}-{commit}"
 
 
 # Helpers to compute digests for fake files
@@ -36,11 +58,11 @@ def s3_setup(tmp_path, monkeypatch):
     Provides a clean S3 setup for each test.
     """
     with mock_aws():
-        s3 = boto3.resource("s3", region_name="us-east-1")
-        bucket_name = "test-bucket"
-        s3.create_bucket(Bucket=bucket_name)
+        s3 = boto3.resource("s3", region_name=REGION)
+        s3.create_bucket(Bucket=BUCKET_NAME)
 
         monkeypatch.setattr("gardenlinux.s3.s3_artifacts.CName", DummyCName)
         monkeypatch.setattr("gardenlinux.s3.s3_artifacts.file_digest", dummy_digest)
 
-        yield s3, bucket_name, tmp_path
+        cname = make_cname()
+        yield S3Env(s3, BUCKET_NAME, tmp_path, cname)
