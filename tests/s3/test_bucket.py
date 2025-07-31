@@ -2,8 +2,7 @@
 Test the `Bucket` class in `src/gardenlinux/s3/bucket.py` by using
 mock AWS interactions provided by the `moto` module.
 
-The `@mock_aws` decorator `moto` provides ensures a fresh
-but fake AWS-like environment.
+A mock AWS environment is provided by the `s3_setup` fixture found in `conftest.py`.
 """
 
 import io
