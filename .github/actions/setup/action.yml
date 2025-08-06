@@ -13,11 +13,32 @@ runs:
             if [ ! -f "requirements.txt" ]; then
                 echo "python-gardenlinux-lib @ git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}" | tee -a requirements.txt
             fi
+        - name: Check for Python
+          id: python-check
+          run: |
+            if command -v python &/dev/null; then
+              echo "python_installed=true" >> $GITHUB_OUTPUT
+            else
+              echo "python_installed=false" >> $GITHUB_OUTPUT
+            fi
+        - name: Activate caching based on lockfile
+          id: lockfile
+          run: |
+            if [ -f poetry.lock ]; then
+              echo "cache_type=poetry" >> $GITHUB_OUTPUT
+            elif [ -f requirements.txt ]; then
+              echo "cache_type=pip" >> $GITHUB_OUTPUT
+            else
+            # no lockfile present: create empty requirements.txt and use pip caching
+            touch requirements.txt
+            echo "cache_type=pip" >> $GITHUB_OUTPUT
+            fi
         - name: Set up Python 3.13
+          if: steps.python-check.outputs.python_installed == 'false'
           uses: actions/setup-python@v5
           with:
               python-version: "3.13"
-              cache: 'pip'
+              cache: ${{ steps.lockfile.outputs.cache_type }}
         - name: Install GardenLinux Python library
           shell: bash
           run: |
