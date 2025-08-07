@@ -25,13 +25,6 @@ runs:
       id: env-check
       shell: bash
       run: |
-        # Check if python is installed
-        if command -v python &> /dev/null; then
-          echo "python_installed=true" >> $GITHUB_OUTPUT
-        else
-          echo "python_installed=false" >> $GITHUB_OUTPUT
-        fi
-
         # Determine cache type based on available lockfile
         if [ -f poetry.lock ]; then
           echo "cache_type=poetry" >> $GITHUB_OUTPUT
@@ -44,7 +37,6 @@ runs:
         fi
 
     - name: Set up Python 3.13
-      if: steps.env-check.outputs.python_installed == 'false'
       uses: actions/setup-python@v5
       with:
         python-version: "3.13"
