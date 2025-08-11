@@ -6,14 +6,27 @@ gl-flavors-parse main entrypoint
 """
 
 from argparse import ArgumentParser
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import json
 import os
 import sys
 
-from ..git import Git
-from ..github import GitHub
+from git import Repo
+from git.exc import GitError
 
 from .parser import Parser
+from ..constants import GL_REPOSITORY_URL
+from ..git import Git
+
+
+def _get_flavors_file_data(flavors_file):
+    if not flavors_file.exists():
+        raise RuntimeError(f"Error: {flavors_file} does not exist.")
+
+    # Load and validate the flavors.yaml
+    with flavors_file.open("r") as fp:
+        return fp.read()
 
 
 def generate_markdown_table(combinations, no_arch):
@@ -52,7 +65,7 @@ def parse_args():
     parser.add_argument(
         "--commit",
         default=None,
-        help="Commit hash to fetch flavors.yaml from GitHub (if not specified, uses local file).",
+        help="Commit hash to fetch flavors.yaml from GitHub. An existing 'flavors.yaml' file will be preferred.",
     )
     parser.add_argument(
         "--no-arch",
@@ -126,44 +139,33 @@ def main():
 
     args = parse_args()
 
-    if args.commit:
-        # Use GitHub API to fetch flavors.yaml
-        github = GitHub()
-        flavors_content = github.get_flavors_yaml(commit=args.commit)
+    try:
+        flavors_data = _get_flavors_file_data(Path(Git().root, "flavors.yaml"))
+    except (GitError, RuntimeError):
+        with TemporaryDirectory() as git_directory:
+            repo = Repo.clone_from(
+                GL_REPOSITORY_URL, git_directory, no_origin=True, sparse=True
+            )
 
-        parser = Parser(data=flavors_content)
+            ref = repo.heads.main
 
-        combinations = parser.filter(
-            include_only_patterns=args.include_only,
-            wildcard_excludes=args.exclude,
-            only_build=args.build,
-            only_test=args.test,
-            only_test_platform=args.test_platform,
-            only_publish=args.publish,
-            filter_categories=args.category,
-            exclude_categories=args.exclude_category,
-        )
-    else:
-        # Use local file
-        flavors_file = os.path.join(Git().root, "flavors.yaml")
+            if args.commit is not None:
+                ref = ref.set_commit(args.commit)
 
-        if not os.path.isfile(flavors_file):
-            sys.exit(f"Error: {flavors_file} does not exist.")
+            flavors_data = _get_flavors_file_data(
+                Path(repo.working_dir, "flavors.yaml")
+            )
 
-        # Load and validate the flavors.yaml
-        with open(flavors_file, "r") as file:
-            flavors_data = file.read()
-
-        combinations = Parser(flavors_data).filter(
-            include_only_patterns=args.include_only,
-            wildcard_excludes=args.exclude,
-            only_build=args.build,
-            only_test=args.test,
-            only_test_platform=args.test_platform,
-            only_publish=args.publish,
-            filter_categories=args.category,
-            exclude_categories=args.exclude_category,
-        )
+    combinations = Parser(flavors_data).filter(
+        include_only_patterns=args.include_only,
+        wildcard_excludes=args.exclude,
+        only_build=args.build,
+        only_test=args.test,
+        only_test_platform=args.test_platform,
+        only_publish=args.publish,
+        filter_categories=args.category,
+        exclude_categories=args.exclude_category,
+    )
 
     if args.json_by_arch:
         grouped_combinations = Parser.group_by_arch(combinations)

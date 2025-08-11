@@ -10,7 +10,6 @@ import yaml
 
 from ..constants import GL_FLAVORS_SCHEMA
 from ..logger import LoggerSetup
-from ..github import GitHub
 
 
 class Parser(object):

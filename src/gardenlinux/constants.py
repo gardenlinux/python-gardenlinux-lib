@@ -140,6 +140,8 @@ GL_MEDIA_TYPE_LOOKUP = {
     "secureboot.aws-efivars": "application/io.gardenlinux.cert.secureboot.aws-efivars",
 }
 
+GL_REPOSITORY_URL = "https://github.com/gardenlinux/gardenlinux"
+
 OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
 OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"
 OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
