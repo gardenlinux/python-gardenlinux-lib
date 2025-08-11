@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import sys
-from git import Repo
-from git import Git as _Git
 from os import PathLike
 from pathlib import Path
+import sys
+
+from git import Repo
+from git import Git as _Git
 
 from ..logger import LoggerSetup
 

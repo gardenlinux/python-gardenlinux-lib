@@ -2,7 +2,8 @@ import json
 import sys
 import pytest
 
-import gardenlinux.flavors.__main__ as fm
+from gardenlinux.flavors import __main__ as fm
+from gardenlinux.git import Git
 
 
 def test_generate_markdown_table():
@@ -98,22 +99,17 @@ def _make_parser_class(filter_result, group_result=None, remove_result=None):
     return DummyParser
 
 
-def test_main_exits_when_flavors_missing(tmp_path, monkeypatch):
-    # Arrange
-    # make Git().root point to a tmp dir that does NOT contain flavors.yaml
+def _make_git_class(tmp_path):
+    """
+    Factory to create a fake Parser class
+    Instances ignore the favors_data passed to __init__.
+    """
+
     class DummyGit:
         def __init__(self):
-            self.root = str(tmp_path)
+            self.root = tmp_path
 
-    monkeypatch.setattr(fm, "Git", DummyGit)
-
-    # ensure no flavors.yaml
-    monkeypatch.setattr(sys, "argv", ["prog"])
-
-    # Act / Assert
-    with pytest.raises(SystemExit) as excinfo:
-        fm.main()
-    assert "does not exist" in str(excinfo.value)
+    return DummyGit
 
 
 def test_main_json_by_arch_prints_json(tmp_path, monkeypatch, capsys):
@@ -122,14 +118,11 @@ def test_main_json_by_arch_prints_json(tmp_path, monkeypatch, capsys):
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
 
-    class DummyGit:
-        def __init__(self):
-            self.root = str(tmp_path)
-
     # define combinations and expected grouped mapping
     combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
     grouped = {"x86": ["linux-x86"], "arm": ["android-arm"]}
 
+    DummyGit = _make_git_class(str(tmp_path))
     DummyParser = _make_parser_class(filter_result=combinations, group_result=grouped)
     monkeypatch.setattr(fm, "Git", DummyGit)
     monkeypatch.setattr(fm, "Parser", DummyParser)
@@ -151,13 +144,11 @@ def test_main_json_by_arch_with_no_arch_strips_arch_suffix(
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
 
-    class DummyGit:
-        def __init__(self):
-            self.root = str(tmp_path)
-
     combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
     # group_by_arch returns items that include architecture suffixes
     grouped = {"x86": ["linux-x86"], "arm": ["android-arm"]}
+
+    DummyGit = _make_git_class(str(tmp_path))
     DummyParser = _make_parser_class(filter_result=combinations, group_result=grouped)
 
     monkeypatch.setattr(fm, "Git", DummyGit)
@@ -179,11 +170,9 @@ def test_main_markdown_table_branch(tmp_path, monkeypatch, capsys):
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
 
-    class DummyGit:
-        def __init__(self):
-            self.root = str(tmp_path)
-
     combinations = [("x86_64", "linux-x86_64"), ("armv7", "android-armv7")]
+
+    DummyGit = _make_git_class(str(tmp_path))
     DummyParser = _make_parser_class(filter_result=combinations)
 
     monkeypatch.setattr(fm, "Git", DummyGit)
@@ -205,15 +194,35 @@ def test_main_default_prints_flavors_list(tmp_path, monkeypatch, capsys):
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
 
-    class DummyGit:
-        def __init__(self):
-            self.root = str(tmp_path)
-
     # filter returns tuples; main's default branch prints comb[1] values, sorted unique
     combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
+
+    DummyGit = _make_git_class(str(tmp_path))
     DummyParser = _make_parser_class(filter_result=combinations)
 
     monkeypatch.setattr(fm, "Git", DummyGit)
+    monkeypatch.setattr(fm, "Parser", DummyParser)
+    monkeypatch.setattr(sys, "argv", ["prog"])
+
+    # Act
+    fm.main()
+    out = capsys.readouterr().out
+    lines = out.strip().splitlines()
+
+    # Assert
+    assert sorted(lines) == sorted(["linux-x86", "android-arm"])
+
+
+def test_main_default_prints_git_flavors_list(tmp_path, monkeypatch, capsys):
+    # Arrange
+    flavors_file = tmp_path / "flavors.yaml"
+    flavors_file.write_text("dummy: content")
+
+    # filter returns tuples; main's default branch prints comb[1] values, sorted unique
+    combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
+
+    DummyParser = _make_parser_class(filter_result=combinations)
+
     monkeypatch.setattr(fm, "Parser", DummyParser)
     monkeypatch.setattr(sys, "argv", ["prog"])
 
