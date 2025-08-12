@@ -4,9 +4,14 @@
 S3 bucket
 """
 
-import boto3
+import json
 import logging
+from os import PathLike
+from pathlib import Path
+from time import time
 from typing import Any, Optional
+
+import boto3
 
 from ..logger import LoggerSetup
 
@@ -110,6 +115,35 @@ class Bucket(object):
         self._bucket.download_fileobj(key, fp, *args, **kwargs)
 
         self._logger.info(f"Downloaded {key} from S3 as binary data")
+
+    def read_cache_file_or_filter(self, cache_file, cache_ttl: int = 3600, **kwargs):
+        """
+        Read S3 object keys from cache if valid or filter for S3 object keys.
+
+        :param cache_file: Path to cache file
+        :param cache_ttl:  Cache time-to-live in seconds
+
+        :returns: S3 object keys read or filtered
+
+        :since: 0.9.0
+        """
+
+        if not isinstance(cache_file, PathLike):
+            cache_file = Path(cache_file)
+
+        if cache_file.exists() and (time() - cache_file.stat().st_mtime) < cache_ttl:
+            with cache_file.open("r") as fp:
+                return json.loads(fp.read())
+
+        artifacts = [
+            s3_object.key for s3_object in self._bucket.objects.filter(**kwargs).all()
+        ]
+
+        if cache_file is not None:
+            with cache_file.open("w") as fp:
+                fp.write(json.dumps(artifacts))
+
+        return artifacts
 
     def upload_file(self, file_name, key, *args, **kwargs):
         """

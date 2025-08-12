@@ -69,6 +69,29 @@ def test_download_file(s3_setup):
     assert target_path.read_text() == "some data"
 
 
+def test_read_cache_file_or_filter(s3_setup):
+    """
+    Try to read with cache
+    """
+
+    env = s3_setup
+    env.s3.Object(env.bucket_name, "file.txt").put(Body=b"some data")
+
+    bucket = Bucket(env.bucket_name, s3_resource_config={"region_name": REGION})
+    cache_file = env.tmp_path / "s3.cache.json"
+
+    result = bucket.read_cache_file_or_filter(cache_file, 1, Prefix="file")
+    assert result == ["file.txt"]
+
+    env.s3.Object(env.bucket_name, "file2.txt").put(Body=b"some data")
+
+    result = bucket.read_cache_file_or_filter(cache_file, 3600, Prefix="file")
+    assert result == ["file.txt"]
+
+    result = bucket.read_cache_file_or_filter(cache_file, 0, Prefix="file")
+    assert result == ["file.txt", "file2.txt"]
+
+
 def test_upload_fileobj(s3_setup):
     """
     Upload a file-like in-memory object to the bucket
