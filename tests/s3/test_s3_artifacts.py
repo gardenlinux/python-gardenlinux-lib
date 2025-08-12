@@ -22,7 +22,7 @@ def test_s3artifacts_init_success(s3_setup):
     s3_artifacts = S3Artifacts(env.bucket_name)
 
     # Assert
-    assert s3_artifacts._bucket.name == env.bucket_name
+    assert s3_artifacts.bucket.name == env.bucket_name
 
 
 def tets_s3artifacts_invalid_bucket():
