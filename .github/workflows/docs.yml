@@ -9,7 +9,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
       - run: make docs
       - name: Deploy to GitHub Pages
