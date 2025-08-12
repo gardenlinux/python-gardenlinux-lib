@@ -16,10 +16,9 @@ from tempfile import TemporaryFile
 from typing import Any, Optional
 from urllib.parse import urlencode
 
+from .bucket import Bucket
 from ..features.cname import CName
 from ..logger import LoggerSetup
-
-from .bucket import Bucket
 
 
 class S3Artifacts(object):
@@ -54,6 +53,17 @@ class S3Artifacts(object):
         """
 
         self._bucket = Bucket(bucket_name, endpoint_url, s3_resource_config)
+
+    @property
+    def bucket(self):
+        """
+        Returns the underlying S3 bucket.
+
+        :return: (boto3.Bucket) S3 bucket
+        :since:  0.9.0
+        """
+
+        return self._bucket
 
     def download_to_directory(
         self,
