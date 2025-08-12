@@ -1,13 +1,15 @@
 import sys
 import types
 import logging
-import builtins
 import pytest
 
 import gardenlinux.features.cname_main as cname_main
 
 
 def test_main_happy(monkeypatch, capsys):
+    """
+    Test the "Happy Path" of the main() function.
+    """
     # Arrange
     argv = ["prog", "--arch", "amd64", "--version", "1.0-abc123", "flav-amd64"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -47,6 +49,9 @@ def test_main_happy(monkeypatch, capsys):
 
 
 def test_main_version_from_file(monkeypatch, capsys):
+    """
+    "Happy Path" test for grabbing the version and commit id from file in main().
+    """
     # Arrange
     argv = ["prog", "--arch", "amd64", "flav-amd64"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -139,7 +144,7 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
     assert "Failed to parse version information" in caplog.text
 
 
-def test_cname_main_invalid_cname(monkeypatch):
+def test_cname_main_invalid_cname_raises(monkeypatch):
     """
     Test if AssertionError is raised with an invalid or malformed cname.
     """
@@ -152,7 +157,7 @@ def test_cname_main_invalid_cname(monkeypatch):
         cname_main.main()
 
 
-def test_cname_main_missing_arch_in_cname(monkeypatch):
+def test_cname_main_missing_arch_in_cname_raises(monkeypatch):
     """
     Test if an assertion error is raised when the arch argument is missing.
     """

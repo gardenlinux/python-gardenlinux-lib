@@ -1,5 +1,3 @@
-import builtins
-import io
 import sys
 import types
 import pytest
