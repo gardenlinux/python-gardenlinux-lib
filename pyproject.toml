@@ -28,6 +28,8 @@ black = "^25.1.0"
 moto = "^5.1.9"
 pytest = "^8.4.1"
 pytest-cov = "^6.2.1"
+isort = "^6.0.1"
+pyright = "^1.1.403"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
@@ -42,6 +44,17 @@ gl-s3 = "gardenlinux.s3.__main__:main"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 norecursedirs = "test-data"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["gardenlinux"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+exclude = ["test-data", "docs", "hack", ".venv", ".pytest-cache", "**/__pycache"]
 
 [build-system]
 requires = ["poetry-core"]
