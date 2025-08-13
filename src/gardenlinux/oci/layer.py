@@ -91,10 +91,10 @@ class Layer(_Layer, Mapping):
 
         if key == "annotations":
             return self._annotations
-
-        raise KeyError(
-            f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
-        )
+        else:
+            raise KeyError(
+                f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
+            )
 
     def __iter__(self):
         """
@@ -104,7 +104,7 @@ class Layer(_Layer, Mapping):
         :since:  0.7.0
         """
 
-        iter(_SUPPORTED_MAPPING_KEYS)
+        return iter(_SUPPORTED_MAPPING_KEYS)
 
     def __len__(self):
         """
@@ -128,10 +128,10 @@ class Layer(_Layer, Mapping):
 
         if key == "annotations":
             self._annotations = value
-
-        raise KeyError(
-            f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
-        )
+        else:
+            raise KeyError(
+                f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
+            )
 
     @staticmethod
     def generate_metadata_from_file_name(file_name: PathLike | str, arch: str) -> dict:
