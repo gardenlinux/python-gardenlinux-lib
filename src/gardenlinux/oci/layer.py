@@ -74,10 +74,10 @@ class Layer(_Layer, Mapping):
 
         if key == "annotations":
             self._annotations.clear()
-
-        raise KeyError(
-            f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
-        )
+        else:
+            raise KeyError(
+                f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
+            )
 
     def __getitem__(self, key):
         """
@@ -91,10 +91,10 @@ class Layer(_Layer, Mapping):
 
         if key == "annotations":
             return self._annotations
-        else:
-            raise KeyError(
-                f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
-            )
+
+        raise KeyError(
+            f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
+        )
 
     def __iter__(self):
         """
