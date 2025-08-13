@@ -1,0 +1,27 @@
+{
+    // Pyright is configured in 'strict' mode in pyproject.toml
+    // This file overrides some reports and tones them down to warnings, if they are not critical.
+    // It also turns some up to become warnings or errors.
+    "reportShadowedImports": "warning",
+    "reportImportCycles": "error",
+    "reportOptionalMemberAccess": "warning",
+    "reportOptionalSubscript": "warning",
+    "reportOptionalContextManager": "warning",
+    "reportOptionalCall": "warning",
+    "reportUnusedVariable": "warning",
+    "reportUnusedImport": "warning",
+    "reportUnusedFunction": "warning",
+    "reportUnusedCallResult": "none",
+    "reportUnusedClass": "warning",
+    "reportUnnecessaryCast": "warning",
+    "reportUnnecessaryComparison": "warning",
+    "reportUnnecessaryIsInstance": "warning",
+    "reportUnnecessaryContains": "warning",
+    // Becomes useful after introduction of type annotations
+    // "reportUnknownMemberType": "warning",
+    // "reportUnknownParameterType": "warning",
+    // "reportUnknownArgumentType": "warning",
+    // "reportUnknownVariableType": "warning",
+    "reportTypedDictNotRequiredAccess": "error",
+    "reportDeprecated": "warning",
+}
