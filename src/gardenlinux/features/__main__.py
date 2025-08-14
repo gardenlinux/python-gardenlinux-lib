@@ -21,12 +21,14 @@ from .parser import Parser
 _ARGS_TYPE_ALLOWED = [
     "cname",
     "cname_base",
+    "commit_id",
     "features",
     "platforms",
     "flags",
     "elements",
     "arch",
     "version",
+    "version_and_commit_id",
     "graph",
 ]
 
@@ -41,10 +43,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--arch", dest="arch")
+    parser.add_argument("--cname", dest="cname")
+    parser.add_argument("--commit", dest="commit")
     parser.add_argument("--feature-dir", default="features")
-    parser.add_argument("--cname")
-    parser.add_argument("--default-arch")
-    parser.add_argument("--default-version")
+    parser.add_argument("--default-arch", dest="default_arch")
+    parser.add_argument("--default-version", dest="default_version")
     parser.add_argument("--version", dest="version")
 
     parser.add_argument(
@@ -68,7 +71,7 @@ def main() -> None:
 
     arch = args.arch
     flavor = None
-    commit_id = None
+    commit_id = args.commit
     gardenlinux_root = path.dirname(args.feature_dir)
     version = args.version
 
@@ -80,8 +83,7 @@ def main() -> None:
 
     if version is None or version == "":
         try:
-            version_data = get_version_and_commit_id_from_files(gardenlinux_root)
-            version = f"{version_data[0]}-{version_data[1]}"
+            version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
         except RuntimeError as exc:
             logging.debug(
                 "Failed to parse version information for GL root '{0}': {1}".format(
@@ -92,7 +94,7 @@ def main() -> None:
             version = args.default_version
 
     if args.cname:
-        cname = CName(args.cname, arch=arch, version=version)
+        cname = CName(args.cname, arch=arch, commit_id=commit_id, version=version)
 
         arch = cname.arch
         flavor = cname.flavor
@@ -108,7 +110,11 @@ def main() -> None:
             "Architecture could not be determined and no default architecture set"
         )
 
-    if version is None or version == "" and (args.type in ("cname", "version")):
+    if (
+        version is None
+        or version == ""
+        and (args.type in ("cname", "commit_id", "version", "version_and_commit_id"))
+    ):
         raise RuntimeError("Version not specified and no default version set")
 
     feature_dir_name = path.basename(args.feature_dir)
@@ -160,7 +166,11 @@ def main() -> None:
             print(",".join(features_by_type["element"]))
         elif args.type == "flags":
             print(",".join(features_by_type["flag"]))
+    elif args.type == "commit_id":
+        print(commit_id)
     elif args.type == "version":
+        print(version)
+    elif args.type == "version_and_commit_id":
         print(f"{version}-{commit_id}")
 
 
