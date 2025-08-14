@@ -50,7 +50,7 @@ test-coverage: install-test
 	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=xml tests/
 
 test-coverage-ci: install-test
-	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=xml --cov-fail-under=50 tests/
+	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=xml --cov-fail-under=85 tests/
 
 test-debug: install-test
 	$(POETRY) run pytest -k "not kms" -vvv -s

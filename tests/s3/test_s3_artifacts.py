@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import yaml
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
@@ -69,6 +70,26 @@ def test_download_to_directory_invalid_path(s3_setup):
         artifacts.download_to_directory({env.cname}, "/invalid/path/does/not/exist")
 
 
+def test_download_to_directory_non_pathlike_raises(s3_setup):
+    """Raise RuntimeError if artifacts_dir is not a dir"""
+    env = s3_setup
+    artifacts = S3Artifacts(env.bucket_name)
+    with pytest.raises(RuntimeError):
+        artifacts.download_to_directory(env.cname, "nopath")
+
+
+def test_download_to_directory_no_metadata_raises(s3_setup):
+    """Should raise IndexError if bucket has no matching metadata object."""
+    # Arrange
+    env = s3_setup
+    artifacts = S3Artifacts(env.bucket_name)
+
+    # Act / Assert
+    with TemporaryDirectory() as tmpdir:
+        with pytest.raises(IndexError):
+            artifacts.download_to_directory(env.cname, tmpdir)
+
+
 def test_upload_from_directory_success(s3_setup):
     """
     Test upload of multiple artifacts from disk to bucket
@@ -125,3 +146,89 @@ def test_upload_from_directory_with_delete(s3_setup):
     # but the new upload file key should exist (artifact uploaded)
     assert f"objects/{env.cname}/{artifact.name}" in keys
     assert f"meta/singles/{env.cname}" in keys
+
+
+def test_upload_from_directory_arch_none_raises(monkeypatch, s3_setup):
+    """Raise RuntimeError when CName has no arch"""
+    # Arrange
+    env = s3_setup
+    release_path = env.tmp_path / f"{env.cname}.release"
+    release_path.write_text(RELEASE_DATA)
+
+    # Monkeypatch CName to simulate missing architecture
+    import gardenlinux.s3.s3_artifacts as s3art
+
+    class DummyCName:
+        arch = None
+
+        def __init__(self, cname):
+            pass
+
+    monkeypatch.setattr(s3art, "CName", DummyCName)
+
+    # Act / Assert
+    artifacts = S3Artifacts(env.bucket_name)
+    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
+        artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
+def test_upload_from_directory_invalid_dir_raises(s3_setup):
+    """Raise RuntimeError if artifacts_dir is invalid"""
+    env = s3_setup
+    artifacts = S3Artifacts(env.bucket_name)
+    with pytest.raises(RuntimeError, match="invalid"):
+        artifacts.upload_from_directory(env.cname, "/invalid/path")
+
+
+def test_upload_from_directory_version_mismatch_raises(s3_setup):
+    """
+    RuntimeError if version in release file does not match cname.
+    """
+    # Arrange
+    env = s3_setup
+    release_path = env.tmp_path / f"{env.cname}.release"
+    bad_data = RELEASE_DATA.replace("1234.1", "9999.9")
+    release_path.write_text(bad_data)
+    artifacts = S3Artifacts(env.bucket_name)
+
+    # Act / Assert
+    with pytest.raises(RuntimeError, match="Version"):
+        artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
+def test_upload_from_directory_commit_mismatch_raises(s3_setup):
+    """Raise RuntimeError when commit ID is not matching with cname."""
+    # Arrange
+    env = s3_setup
+    release_path = env.tmp_path / f"{env.cname}.release"
+    bad_data = RELEASE_DATA.replace("abc123", "wrong")
+    release_path.write_text(bad_data)
+    artifacts = S3Artifacts(env.bucket_name)
+    with pytest.raises(RuntimeError, match="Commit ID"):
+        artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
+def test_upload_directory_with_requirements_override(s3_setup):
+    """Ensure .requirements file values overide feature flag defaults."""
+    # Arrange
+    env = s3_setup
+    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+    (env.tmp_path / f"{env.cname}.requirements").write_text(
+        "uefi = false\nsecureboot = true\n"
+    )
+    artifact_file = env.tmp_path / f"{env.cname}-artifact"
+    artifact_file.write_bytes(b"abc")
+
+    # Act
+    artifacts = S3Artifacts(env.bucket_name)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    meta_obj = next(
+        o for o in bucket.objects.all() if o.key == f"meta/singles/{env.cname}"
+    )
+    body = meta_obj.get()["Body"].read().decode()
+    metadata = yaml.safe_load(body)
+    assert metadata["require_uefi"] is False
+    assert metadata["secureboot"] is True

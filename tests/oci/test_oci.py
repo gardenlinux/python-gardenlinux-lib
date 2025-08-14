@@ -2,8 +2,6 @@ import pytest
 from click.testing import CliRunner
 import sys
 import json
-import os
-import logging
 
 # Import reggie library correctly
 from oras.provider import Registry
@@ -12,7 +10,7 @@ sys.path.append("src")
 
 from gardenlinux.oci.__main__ import cli as gl_oci
 
-from .constants import (
+from ..constants import (
     CONTAINER_NAME_ZOT_EXAMPLE,
     GARDENLINUX_ROOT_DIR_EXAMPLE,
     REGISTRY,
