@@ -32,6 +32,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--arch", dest="arch")
+    parser.add_argument("--commit", dest="commit")
     parser.add_argument("--feature-dir", default="features")
     parser.add_argument("--version", dest="version")
     parser.add_argument("cname")
@@ -46,6 +47,7 @@ def main():
     assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
 
     arch = args.arch
+    commit_id = args.commit
     gardenlinux_root = dirname(args.feature_dir)
     version = args.version
 
@@ -54,8 +56,7 @@ def main():
 
     if not version:
         try:
-            version_data = get_version_and_commit_id_from_files(gardenlinux_root)
-            version = f"{version_data[0]}-{version_data[1]}"
+            version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
         except RuntimeError as exc:
             logging.warning(
                 "Failed to parse version information for GL root '{0}': {1}".format(
@@ -63,7 +64,7 @@ def main():
                 )
             )
 
-    cname = CName(args.cname, arch=arch, version=version)
+    cname = CName(args.cname, arch=arch, commit_id=commit_id, version=version)
 
     assert cname.arch, "Architecture could not be determined"
 

@@ -25,13 +25,14 @@ class CName(object):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, cname, arch=None, version=None):
+    def __init__(self, cname, arch=None, commit_id=None, version=None):
         """
         Constructor __init__(CName)
 
-        :param cname:   Canonical name to represent
-        :param arch:    Architecture if not part of cname
-        :param version: Version if not part of cname
+        :param cname:     Canonical name to represent
+        :param arch:      Architecture if not part of cname
+        :param commit_id: Commit ID if not part of cname
+        :param version:   Version if not part of cname
 
         :since: 0.7.0
         """
@@ -64,11 +65,16 @@ class CName(object):
             self._arch = arch
 
         if self._version is None and version is not None:
-            re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", version)
-            assert re_match, f"Not a valid version {version}"
+            # Support version values formatted as <version>-<commit_id>
+            if commit_id is None:
+                re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", version)
+                assert re_match, f"Not a valid version {version}"
 
-            self._commit_id = re_match[3]
-            self._version = re_match[1]
+                self._commit_id = re_match[3]
+                self._version = re_match[1]
+            else:
+                self._commit_id = commit_id
+                self._version = version
 
     @property
     def arch(self) -> Optional[str]:
