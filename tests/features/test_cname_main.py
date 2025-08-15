@@ -1,9 +1,10 @@
-import sys
-import types
 import logging
 import pytest
+import sys
+import types
 
 import gardenlinux.features.cname_main as cname_main
+from gardenlinux.features import CName
 
 
 def test_main_happy(monkeypatch, capsys):
@@ -13,14 +14,6 @@ def test_main_happy(monkeypatch, capsys):
     # Arrange
     argv = ["prog", "--arch", "amd64", "--version", "1.0-abc123", "flav-amd64"]
     monkeypatch.setattr(sys, "argv", argv)
-
-    class FakeCName:
-        def __init__(self, cname, arch=None, version=None):
-            self.arch = arch
-            self.flavor = "flav"
-            self.version_and_commit_id = "1.0-abc123"
-
-    monkeypatch.setattr(cname_main, "CName", FakeCName)
 
     class FakeGraph:
         in_degree = lambda self: [("f1", 0)]
@@ -62,14 +55,6 @@ def test_main_version_from_file(monkeypatch, capsys):
         lambda root: ("2.0", "abcdef12"),
     )
 
-    class FakeCName:
-        def __init__(self, cname, arch=None, version=None):
-            self.arch = arch
-            self.flavor = "flav"
-            self.version_and_commit_id = version
-
-    monkeypatch.setattr(cname_main, "CName", FakeCName)
-
     class FakeParser:
         def __init__(self, *a, **k):
             pass
@@ -109,15 +94,6 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
     monkeypatch.setattr(
         cname_main, "get_version_and_commit_id_from_files", raise_runtime
     )
-
-    # Patch CName to control attributes
-    class FakeCName:
-        def __init__(self, cname, arch=None, version=None):
-            self.arch = arch
-            self.flavor = "flav"
-            self.version_and_commit_id = version
-
-    monkeypatch.setattr(cname_main, "CName", FakeCName)
 
     # Patch Parser for minimal valid graph
     class FakeParser:
@@ -164,14 +140,6 @@ def test_cname_main_missing_arch_in_cname_raises(monkeypatch):
     # Arrange
     argv = ["prog", "--version", "1.0", "flav"]
     monkeypatch.setattr(sys, "argv", argv)
-
-    class FakeCName:
-        def __init__(self, cname, arch=None, version=None):
-            self.arch = None  # Force missing arch
-            self.flavor = "flav"
-            self.version_and_commit_id = "1.0-abc"
-
-    monkeypatch.setattr(cname_main, "CName", FakeCName)
 
     # Act / Assert
     with pytest.raises(AssertionError):

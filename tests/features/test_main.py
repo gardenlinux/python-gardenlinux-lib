@@ -132,6 +132,27 @@ def test_main_prints_arch(monkeypatch, capsys):
     assert "amd64" in out
 
 
+def test_main_prints_commit_id(monkeypatch, capsys):
+    # Arrange
+    argv = ["prog", "--arch", "amd64", "--features", "f1", "commit_id"]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        fema,
+        "Parser",
+        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
+    )
+    # Patch get_version_and_commit_id_from_files
+    monkeypatch.setattr(
+        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+    )
+
+    # Act
+    fema.main()
+
+    captured = capsys.readouterr()
+    assert "abcdef12" == captured.out.strip()
+
+
 def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
     # Arrange
     argv = [
@@ -186,7 +207,28 @@ def test_main_prints_version(monkeypatch, capsys):
     fema.main()
 
     captured = capsys.readouterr()
-    assert "1.2.3-abcdef12" in captured.out
+    assert "1.2.3" == captured.out.strip()
+
+
+def test_main_prints_version_and_commit_id(monkeypatch, capsys):
+    # Arrange
+    argv = ["prog", "--arch", "amd64", "--features", "f1", "version_and_commit_id"]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        fema,
+        "Parser",
+        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
+    )
+    # Patch get_version_and_commit_id_from_files
+    monkeypatch.setattr(
+        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+    )
+
+    # Act
+    fema.main()
+
+    captured = capsys.readouterr()
+    assert "1.2.3-abcdef12" == captured.out.strip()
 
 
 def test_main_arch_raises_missing_verison(monkeypatch, capsys):
@@ -202,15 +244,6 @@ def test_main_arch_raises_missing_verison(monkeypatch, capsys):
 
 def test_main_with_cname_print_cname(monkeypatch, capsys):
     # Arrange
-    class FakeCName:
-        def __init__(self, cname, arch=None, version=None):
-            self.arch = arch
-            self.flavor = "flav"
-            self.commit_id = "abc123"
-            self.version = version
-
-    monkeypatch.setattr(fema, "CName", FakeCName)
-
     class FakeGraph:
         def in_degree(self):
             # Simulate a graph where one feature has no dependencies
