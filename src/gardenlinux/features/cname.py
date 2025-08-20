@@ -4,8 +4,11 @@
 Canonical name (cname)
 """
 
+from configparser import ConfigParser, UNNAMED_SECTION
+from pathlib import Path
+from typing import List, Optional
+from os import PathLike
 import re
-from typing import Optional
 
 from ..constants import ARCHS
 from .parser import Parser
@@ -37,9 +40,11 @@ class CName(object):
         """
 
         self._arch = None
-        self._flavor = None
         self._commit_id = None
+        self._feature_set_cached = None
+        self._flavor = None
         self._version = None
+        self._platforms_cached = None
 
         re_match = re.match(
             "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
@@ -81,6 +86,7 @@ class CName(object):
         Returns the architecture for the cname parsed.
 
         :return: (str) CName architecture
+        :since:  0.7.0
         """
 
         return self._arch
@@ -91,6 +97,7 @@ class CName(object):
         Returns the cname parsed.
 
         :return: (str) CName
+        :since:  0.7.0
         """
         assert self._flavor is not None, "CName flavor is not set!"
         cname = self._flavor
@@ -109,6 +116,7 @@ class CName(object):
         Returns the commit ID if part of the cname parsed.
 
         :return: (str) Commit ID
+        :since:  0.7.0
         """
 
         return self._commit_id
@@ -119,6 +127,7 @@ class CName(object):
         Returns the flavor for the cname parsed.
 
         :return: (str) Flavor
+        :since:  0.7.0
         """
 
         return self._flavor
@@ -129,7 +138,11 @@ class CName(object):
         Returns the feature set for the cname parsed.
 
         :return: (str) Feature set of the cname
+        :since:  0.7.0
         """
+
+        if self._feature_set_cached is not None:
+            return self._feature_set_cached
 
         return Parser().filter_as_string(self.flavor)
 
@@ -139,10 +152,28 @@ class CName(object):
         Returns the platform for the cname parsed.
 
         :return: (str) Flavor
+        :since:  0.7.0
         """
         assert self._flavor is not None, "Flavor not set!"
 
-        return re.split("[_-]", self._flavor, maxsplit=1)[0]
+        if self._platforms_cached is not None:
+            return ",".join(self._platforms_cached)
+
+        return ",".join(Parser().filter_as_dict(self.flavor)["platform"])
+
+    @property
+    def platforms(self) -> List[str]:
+        """
+        Returns the platforms for the cname parsed.
+
+        :return: (str) Flavor
+        :since:  0.9.2
+        """
+
+        if self._platforms_cached is not None:
+            return self._platforms_cached
+
+        return Parser().filter_as_dict(self.flavor)["platform"]
 
     @property
     def version(self) -> Optional[str]:
@@ -150,6 +181,7 @@ class CName(object):
         Returns the version if part of the cname parsed.
 
         :return: (str) Version
+        :since:  0.7.0
         """
 
         return self._version
@@ -160,9 +192,117 @@ class CName(object):
         Returns the version and commit ID if part of the cname parsed.
 
         :return: (str) Version and commit ID
+        :since:  0.7.0
         """
 
         if self._commit_id is None:
             return None
 
         return f"{self._version}-{self._commit_id}"
+
+    def load_from_metadata_file(self, metadata_file: PathLike | str) -> None:
+        """
+        Loads and parses a metadata file.
+
+        :param metadata_file: Metadata file containing information about the CName instance.
+
+        :since: 0.9.2
+        """
+
+        if not isinstance(metadata_file, PathLike):
+            metadata_file = Path(metadata_file)
+
+        if not metadata_file.exists():
+            raise RuntimeError(f"Metadata file given is invalid: {metadata_file}")
+
+        metadata_config = ConfigParser(allow_unnamed_section=True)
+        metadata_config.read(metadata_file)
+
+        for metadata_field in (
+            "GARDENLINUX_CNAME",
+            "GARDENLINUX_FEATURES",
+            "GARDENLINUX_FEATURES_PLATFORMS",
+            "GARDENLINUX_VERSION",
+        ):
+            if not metadata_config.has_option(UNNAMED_SECTION, metadata_field):
+                raise RuntimeError(
+                    f"Metadata file given is invalid: {metadata_file} misses {metadata_field}"
+                )
+
+        loaded_cname_instance = CName(
+            metadata_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME")
+        )
+
+        commit_id = metadata_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID")
+        version = metadata_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION")
+
+        if (
+            loaded_cname_instance.flavor != self.flavor
+            or loaded_cname_instance.commit_id != commit_id
+            or (self._commit_id is not None and self._commit_id != commit_id)
+            or loaded_cname_instance.version != version
+            or (self._version is not None and self._version != version)
+        ):
+            raise RuntimeError(
+                f"Metadata file given is invalid: {metadata_file} failed consistency check - {self.cname} != {loaded_cname_instance.cname}"
+            )
+
+        self._arch = loaded_cname_instance.arch
+        self._flavor = loaded_cname_instance.flavor
+        self._commit_id = commit_id
+        self._version = version
+
+        self._feature_set_cached = metadata_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_FEATURES"
+        )
+
+        self._platforms_cached = metadata_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS"
+        ).split(",")
+
+    def save_to_metadata_file(
+        self, metadata_file: PathLike | str, overwrite: Optional[bool] = False
+    ) -> None:
+        """
+        Saves the metadata file.
+
+        :param metadata_file: Metadata file containing information about the CName instance.
+
+        :since: 0.9.2
+        """
+
+        if not isinstance(metadata_file, PathLike):
+            metadata_file = Path(metadata_file)
+
+        if not overwrite and metadata_file.exists():
+            raise RuntimeError(
+                f"Refused to overwrite existing metadata file: {metadata_file}"
+            )
+
+        features = Parser().filter_as_dict(self.flavor)
+
+        elements = ",".join(features["element"])
+        flags = ",".join(features["flag"])
+        platforms = ",".join(features["platform"])
+
+        metadata = f"""
+ID=gardenlinux
+NAME="Garden Linux"
+PRETTY_NAME="Garden Linux {self.version}"
+IMAGE_VERSION={self.version}
+VARIANT_ID="{self.flavor}-{self.arch}"
+HOME_URL="https://gardenlinux.io"
+SUPPORT_URL="https://github.com/gardenlinux/gardenlinux"
+BUG_REPORT_URL="https://github.com/gardenlinux/gardenlinux/issues"
+GARDENLINUX_CNAME="{self.cname}"
+GARDENLINUX_FEATURES="{self.feature_set}"
+GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
+GARDENLINUX_FEATURES_ELEMENTS="{elements}"
+GARDENLINUX_FEATURES_FLAGS="{flags}"
+GARDENLINUX_VERSION="{self.version}"
+GARDENLINUX_COMMIT_ID="{self.commit_id}"
+GARDENLINUX_COMMIT_ID_LONG=$BUILDER_COMMIT
+        """.strip()
+
+        with metadata_file.open("w") as fp:
+            fp.write(metadata)
