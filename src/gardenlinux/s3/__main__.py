@@ -15,7 +15,6 @@ from typing import Any, List, Set
 
 from .s3_artifacts import S3Artifacts
 
-
 _ARGS_ACTION_ALLOWED = [
     "download-artifacts-from-bucket",
     "upload-artifacts-to-bucket",

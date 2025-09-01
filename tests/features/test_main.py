@@ -1,5 +1,6 @@
 import sys
 import types
+
 import pytest
 
 import gardenlinux.features.__main__ as fema
