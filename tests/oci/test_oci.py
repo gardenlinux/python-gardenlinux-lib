@@ -66,6 +66,41 @@ def push_manifest(runner, version, arch, cname, additional_tags=None):
         return False
 
 
+def push_manifest_tags(runner, version, arch, cname, tags=None):
+    """Push manifest to registry and return success status"""
+    print(f"Pushing manifest for {cname} {arch}")
+
+    cmd = [
+        "push-manifest-tags",
+        "--container",
+        CONTAINER_NAME_ZOT_EXAMPLE,
+        "--version",
+        version,
+        "--arch",
+        arch,
+        "--cname",
+        cname,
+        "--insecure",
+        "True",
+    ]
+
+    if tags:
+        for tag in tags:
+            cmd.extend(["--tag", tag])
+
+    try:
+        result = runner.invoke(
+            gl_oci,
+            cmd,
+            catch_exceptions=False,
+        )
+        print(f"Push manifest tags output: {result.output}")
+        return result.exit_code == 0
+    except Exception as e:
+        print(f"Error during push manifest tags: {str(e)}")
+        return False
+
+
 def update_index(runner, version, additional_tags=None):
     """Update index in registry and return success status"""
     print("Updating index")
@@ -278,11 +313,24 @@ def test_push_manifest_and_index(
     repo_name = "gardenlinux-example"
     combined_tag = f"{version}-{cname}-{arch}"
 
+    post_push_manifest_tags = []
+
     # Push manifest and update index
+    if cname.startswith(f"{TEST_PLATFORMS[1]}-"):
+        post_push_manifest_tags = additional_tags_manifest
+        additional_tags_manifest = []
+
     push_successful = push_manifest(
         runner, version, arch, cname, additional_tags_manifest
     )
     assert push_successful, "Manifest push should succeed"
+
+    if len(post_push_manifest_tags) > 0:
+        push_successful = push_manifest_tags(
+            runner, version, arch, cname, post_push_manifest_tags
+        )
+        assert push_successful, "Manifest tags push should succeed"
+    #
 
     if push_successful:
         update_index_successful = update_index(runner, version, additional_tags_index)

@@ -31,9 +31,20 @@ def cli():
     help="Container Name",
 )
 @click.option(
-    "--version",
-    required=True,
+    "--cname", required=True, type=click.Path(), help="Canonical Name of Image"
+)
+@click.option(
+    "--arch",
+    required=False,
     type=click.Path(),
+    default=None,
+    help="Target Image CPU Architecture",
+)
+@click.option(
+    "--version",
+    required=False,
+    type=click.Path(),
+    default=None,
     help="Version of image",
 )
 @click.option(
@@ -42,15 +53,6 @@ def cli():
     type=click.Path(),
     default=None,
     help="Commit of image",
-)
-@click.option(
-    "--arch",
-    required=True,
-    type=click.Path(),
-    help="Target Image CPU Architecture",
-)
-@click.option(
-    "--cname", required=True, type=click.Path(), help="Canonical Name of Image"
 )
 @click.option("--dir", "directory", required=True, help="path to the build artifacts")
 @click.option(
@@ -76,10 +78,10 @@ def cli():
 )
 def push_manifest(
     container,
+    cname,
+    arch,
     version,
     commit,
-    arch,
-    cname,
     directory,
     cosign_file,
     manifest_file,
@@ -105,6 +107,76 @@ def push_manifest(
 
     if cosign_file:
         print(manifest.digest, file=open(cosign_file, "w"))
+
+
+@cli.command()
+@click.option(
+    "--container",
+    required=True,
+    type=click.Path(),
+    help="Container Name",
+)
+@click.option(
+    "--cname",
+    required=False,
+    type=click.Path(),
+    default=None,
+    help="Canonical Name of Image"
+)
+@click.option(
+    "--arch",
+    required=False,
+    type=click.Path(),
+    default=None,
+    help="Target Image CPU Architecture",
+)
+@click.option(
+    "--version",
+    required=False,
+    type=click.Path(),
+    default=None,
+    help="Version of image",
+)
+@click.option(
+    "--commit",
+    required=False,
+    type=click.Path(),
+    default=None,
+    help="Commit of image",
+)
+@click.option(
+    "--insecure",
+    default=False,
+    help="Use HTTP to communicate with the registry",
+)
+@click.option(
+    "--tag",
+    required=True,
+    multiple=True,
+    help="Tag to push the manifest with",
+)
+def push_manifest_tags(
+    container,
+    cname,
+    arch,
+    version,
+    commit,
+    insecure,
+    tag,
+):
+    """
+    Push artifacts and the manifest from a directory to a registry.
+
+    :since: 0.7.0
+    """
+
+    container = Container(
+        f"{container}:{version}",
+        insecure=insecure,
+    )
+
+    manifest = container.read_or_generate_manifest(cname, arch, version, commit)
+    container.push_manifest_for_tags(manifest, tag)
 
 
 @cli.command()
