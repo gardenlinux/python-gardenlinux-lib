@@ -3,13 +3,13 @@
 import json
 from copy import deepcopy
 from hashlib import sha256
-from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
-from oras.oci import EmptyManifest, Layer
 from os import PathLike
 from pathlib import Path
 
-from ..features import CName
+from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
+from oras.oci import EmptyManifest, Layer
 
+from ..features import CName
 from .platform import NewPlatform
 from .schemas import EmptyManifestMetadata
 

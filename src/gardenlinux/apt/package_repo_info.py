@@ -4,8 +4,9 @@
 APT repositories
 """
 
-from apt_repo import APTRepository
 from typing import Optional
+
+from apt_repo import APTRepository
 
 
 class GardenLinuxRepo(APTRepository):

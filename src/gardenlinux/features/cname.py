@@ -4,11 +4,10 @@
 Canonical name (cname)
 """
 
-from typing import Optional
 import re
+from typing import Optional
 
 from ..constants import ARCHS
-
 from .parser import Parser
 
 

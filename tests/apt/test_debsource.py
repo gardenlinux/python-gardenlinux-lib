@@ -1,5 +1,6 @@
-from gardenlinux.apt import DebsrcFile
 import io
+
+from gardenlinux.apt import DebsrcFile
 
 test_data = """Package: vim
 Source: vim (2:9.1.0496-1)

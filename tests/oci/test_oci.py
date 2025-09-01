@@ -1,7 +1,8 @@
+import json
+import sys
+
 import pytest
 from click.testing import CliRunner
-import sys
-import json
 
 # Import reggie library correctly
 from oras.provider import Registry
@@ -15,13 +16,13 @@ from ..constants import (
     GARDENLINUX_ROOT_DIR_EXAMPLE,
     REGISTRY,
     REGISTRY_URL,
+    TEST_ARCHITECTURES,
     TEST_COMMIT,
     TEST_FEATURE_SET,
+    TEST_FEATURE_STRINGS_SHORT,
+    TEST_PLATFORMS,
     TEST_VERSION,
     TEST_VERSION_STABLE,
-    TEST_PLATFORMS,
-    TEST_FEATURE_STRINGS_SHORT,
-    TEST_ARCHITECTURES,
 )
 
 

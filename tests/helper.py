@@ -1,7 +1,6 @@
-import subprocess
-import shlex
-
 import os
+import shlex
+import subprocess
 
 from .constants import CERT_DIR, GL_ROOT_DIR, ZOT_CONFIG_FILE
 
