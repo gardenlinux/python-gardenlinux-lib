@@ -520,14 +520,14 @@ class Container(Registry):
 
     def read_or_generate_manifest(
         self,
-        cname: str,
+        cname: Optional[str] = None,
         architecture: Optional[str] = None,
         version: Optional[str] = None,
         commit: Optional[str] = None,
         feature_set: Optional[str] = None,
     ) -> Manifest:
         """
-        Reads from registry or generates the OCI image manifest.
+        Reads from registry or generates the OCI manifest.
 
         :param cname: Canonical name of the manifest
         :param architecture: Target architecture of the manifest
@@ -539,19 +539,26 @@ class Container(Registry):
         :since:  0.7.0
         """
 
-        if architecture is None:
-            architecture = CName(cname, architecture, version).arch
+        if cname is None:
+            response = self._get_manifest_without_response_parsing(self._container_version)
+        else:
+            if architecture is None:
+                architecture = CName(cname, architecture, version).arch
 
-        response = self._get_manifest_without_response_parsing(
-            f"{self._container_version}-{cname}-{architecture}"
-        )
+            response = self._get_manifest_without_response_parsing(
+                f"{self._container_version}-{cname}-{architecture}"
+            )
+        #
 
         if response.ok:
             manifest = Manifest(**response.json())
         elif response.status_code == 404:
-            manifest = self.generate_manifest(
-                cname, architecture, version, commit, feature_set
-            )
+            if cname is None:
+                manifest = Manifest()
+            else:
+                manifest = self.generate_manifest(
+                    cname, architecture, version, commit, feature_set
+                )
         else:
             response.raise_for_status()
 
