@@ -83,11 +83,21 @@ class Container(Registry):
             self._container_version = container_data[1]
 
         container_url_data = urlsplit(self._container_url)
+        self._token = None
+
+        if token is None:
+            token = getenv("GL_CLI_REGISTRY_TOKEN")
+
+        if token is not None:
+            auth_backend = "token"
+            self._token = b64encode(token.encode("utf-8")).decode("utf-8")
+        else:
+            auth_backend = "basic"
 
         Registry.__init__(
             self,
             hostname=container_url_data.netloc,
-            auth_backend="token",
+            auth_backend=auth_backend,
             insecure=insecure,
         )
 
@@ -97,11 +107,7 @@ class Container(Registry):
         self._container_name = container_url_data.path[1:]
         self._logger = logger
 
-        if token is None:
-            token = getenv("GL_CLI_REGISTRY_TOKEN")
-
-        if token is not None:
-            self._token = b64encode(token.encode("utf-8")).decode("utf-8")
+        if self._token is not None:
             self.auth.set_token_auth(self._token)
         else:
             # Authentication credentials from environment
@@ -520,14 +526,14 @@ class Container(Registry):
 
     def read_or_generate_manifest(
         self,
-        cname: str,
+        cname: Optional[str] = None,
         architecture: Optional[str] = None,
         version: Optional[str] = None,
         commit: Optional[str] = None,
         feature_set: Optional[str] = None,
     ) -> Manifest:
         """
-        Reads from registry or generates the OCI image manifest.
+        Reads from registry or generates the OCI manifest.
 
         :param cname: Canonical name of the manifest
         :param architecture: Target architecture of the manifest
@@ -539,19 +545,26 @@ class Container(Registry):
         :since:  0.7.0
         """
 
-        if architecture is None:
-            architecture = CName(cname, architecture, version).arch
+        if cname is None:
+            response = self._get_manifest_without_response_parsing(self._container_version)
+        else:
+            if architecture is None:
+                architecture = CName(cname, architecture, version).arch
 
-        response = self._get_manifest_without_response_parsing(
-            f"{self._container_version}-{cname}-{architecture}"
-        )
+            response = self._get_manifest_without_response_parsing(
+                f"{self._container_version}-{cname}-{architecture}"
+            )
+        #
 
         if response.ok:
             manifest = Manifest(**response.json())
         elif response.status_code == 404:
-            manifest = self.generate_manifest(
-                cname, architecture, version, commit, feature_set
-            )
+            if cname is None:
+                manifest = Manifest()
+            else:
+                manifest = self.generate_manifest(
+                    cname, architecture, version, commit, feature_set
+                )
         else:
             response.raise_for_status()
 
