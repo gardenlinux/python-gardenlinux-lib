@@ -5,7 +5,7 @@ description = "Contains tools to work with the features directory of gardenlinux
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "gardenlinux", from="src"}]
+packages = [{ include = "gardenlinux", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -48,12 +48,20 @@ norecursedirs = "test-data"
 profile = "black"
 line_length = 120
 known_first_party = ["gardenlinux"]
+skip = ["test-data", ".venv", "**/__pycache", ".pytest-cache", "hack"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
 venvPath = "."
 venv = ".venv"
-exclude = ["test-data", "docs", "hack", ".venv", ".pytest-cache", "**/__pycache"]
+exclude = [
+    "test-data",
+    "docs",
+    "hack",
+    ".venv",
+    ".pytest-cache",
+    "**/__pycache",
+]
 
 [build-system]
 requires = ["poetry-core"]
