@@ -114,6 +114,11 @@ def test_upload_from_directory_success(s3_setup):
     assert f"objects/{env.cname}/{env.cname}-file2" in keys
     assert f"meta/singles/{env.cname}" in keys
 
+    meta_obj = list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))[0]
+    metadata = yaml.safe_load(meta_obj.get()["Body"].read())
+    assert metadata["require_uefi"] is True
+    assert metadata["secureboot"] is True
+
 
 def test_upload_from_directory_with_delete(s3_setup):
     """
@@ -228,7 +233,6 @@ def test_upload_directory_with_requirements_override(s3_setup):
     meta_obj = next(
         o for o in bucket.objects.all() if o.key == f"meta/singles/{env.cname}"
     )
-    body = meta_obj.get()["Body"].read().decode()
-    metadata = yaml.safe_load(body)
+    metadata = yaml.safe_load(meta_obj.get()["Body"].read())
     assert metadata["require_uefi"] is False
     assert metadata["secureboot"] is True
