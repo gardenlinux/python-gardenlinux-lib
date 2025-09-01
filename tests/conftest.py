@@ -1,16 +1,16 @@
+from datetime import datetime, timedelta
+from tempfile import mkstemp
 import json
 import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import pytest
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from gardenlinux.features import Parser
 
@@ -26,6 +26,7 @@ from .constants import (
     TEST_FEATURE_STRINGS_SHORT,
     TEST_ARCHITECTURES,
 )
+
 from .helper import call_command, spawn_background_process
 
 
@@ -80,11 +81,6 @@ def generate_test_certificates():
     print(f"Generated test certificates in {CERT_DIR}")
 
 
-def write_zot_config(config_dict, file_path):
-    with open(file_path, "w") as config_file:
-        json.dump(config_dict, config_file, indent=4)
-
-
 def create_test_data():
     """Generate test data for OCI registry tests (replaces build-test-data.sh)"""
     print("Creating fake artifacts...")
@@ -127,20 +123,38 @@ def create_test_data():
                         f.write(f"dummy content for {file_path}")
 
 
+def write_zot_config(config_dict, fd):
+    with os.fdopen(fd, "w") as fp:
+        json.dump(config_dict, fp, indent=4)
+
+
 @pytest.fixture(autouse=False, scope="function")
 def zot_session():
     load_dotenv()
     print("start zot session")
+
+    fd, htpasswd_file = mkstemp(dir=TEST_DATA_DIR, suffix=".htpasswd")
+    os.close(fd)
+
     zot_config = {
         "distSpecVersion": "1.1.0",
         "storage": {"rootDirectory": "output/registry/zot"},
-        "http": {"address": "127.0.0.1", "port": "18081"},
+        "http": {
+            "address": "127.0.0.1",
+            "port": "18081",
+            "auth": {"htpasswd": {"path": f"{htpasswd_file}"}},
+            "accessControl": {
+                "repositories": {
+                    "**": {"anonymousPolicy": ["read", "create", "update", "delete"]},
+                    "protected/**": {"anonymousPolicy": []},
+                }
+            },
+        },
         "log": {"level": "warn"},
     }
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_config_file:
-        write_zot_config(zot_config, temp_config_file.name)
-        zot_config_file_path = temp_config_file.name
+    fd, zot_config_file_path = mkstemp(text=True, dir=TEST_DATA_DIR, suffix=".json")
+    write_zot_config(zot_config, fd)
 
     print(f"Spawning zot registry with config {zot_config_file_path}")
     zot_process = spawn_background_process(
@@ -156,6 +170,8 @@ def zot_session():
 
     if os.path.isdir("./output"):
         shutil.rmtree("./output")
+    if os.path.isfile(htpasswd_file):
+        os.remove(htpasswd_file)
     if os.path.isfile(zot_config_file_path):
         os.remove(zot_config_file_path)
 
