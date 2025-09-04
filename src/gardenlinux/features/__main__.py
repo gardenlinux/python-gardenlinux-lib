@@ -68,7 +68,7 @@ def main() -> None:
 
     arch = args.arch
     flavor = None
-    commit_id = args.commit
+    commit_id_or_hash = args.commit
     gardenlinux_root = path.dirname(args.feature_dir)
     version = args.version
 
@@ -80,7 +80,9 @@ def main() -> None:
 
     if version is None or version == "":
         try:
-            version, commit_id = get_version_and_commit_id_from_files(gardenlinux_root)
+            version, commit_id_or_hash = get_version_and_commit_id_from_files(
+                gardenlinux_root
+            )
         except RuntimeError as exc:
             logging.debug(
                 "Failed to parse version information for GL root '{0}': {1}".format(
@@ -91,11 +93,13 @@ def main() -> None:
             version = args.default_version
 
     if args.cname:
-        cname = CName(args.cname, arch=arch, commit_id=commit_id, version=version)
+        cname = CName(
+            args.cname, arch=arch, commit_hash=commit_id_or_hash, version=version
+        )
 
         arch = cname.arch
         flavor = cname.flavor
-        commit_id = cname.commit_id
+        commit_id_or_hash = cname.commit_id
         version = cname.version
 
         _ = Parser.get_cname_as_feature_set(flavor)
@@ -140,8 +144,8 @@ def main() -> None:
             if arch is not None:
                 cname += f"-{arch}"  # type: ignore - None check is carried out.
 
-            if commit_id is not None:
-                cname += f"-{version}-{commit_id}"  # type: ignore - None check is carried out.
+            if commit_id_or_hash is not None:
+                cname += f"-{version}-{commit_id_or_hash[:8]}"  # type: ignore - None check is carried out.
 
             print(cname)
         elif args.type == "graph":
@@ -164,11 +168,11 @@ def main() -> None:
         elif args.type == "flags":
             print(",".join(features_by_type["flag"]))
     elif args.type == "commit_id":
-        print(commit_id)
+        print(commit_id_or_hash[:8])
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit_id":
-        print(f"{version}-{commit_id}")
+        print(f"{version}-{commit_id_or_hash[:8]}")
 
 
 def get_cname_base(sorted_features: List[str]):
@@ -196,21 +200,21 @@ def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, st
     :since:  0.7.0
     """
 
-    commit_id = None
+    commit_hash = None
     version = None
 
     if os.access(path.join(gardenlinux_root, "COMMIT"), os.R_OK):
         with open(path.join(gardenlinux_root, "COMMIT"), "r") as fp:
-            commit_id = fp.read().strip()[:8]
+            commit_hash = fp.read().strip()[:8]
 
     if os.access(path.join(gardenlinux_root, "VERSION"), os.R_OK):
         with open(path.join(gardenlinux_root, "VERSION"), "r") as fp:
             version = fp.read().strip()
 
-    if commit_id is None or version is None:
+    if commit_hash is None or version is None:
         raise RuntimeError("Failed to read version or commit ID from files")
 
-    return (version, commit_id)
+    return (version, commit_hash)
 
 
 def get_minimal_feature_set(graph: Any) -> Set[str]:
