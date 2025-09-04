@@ -141,7 +141,13 @@ GL_MEDIA_TYPE_LOOKUP = {
     "secureboot.aws-efivars": "application/io.gardenlinux.cert.secureboot.aws-efivars",
 }
 
+GL_BUG_REPORT_URL = "https://github.com/gardenlinux/gardenlinux/issues"
+GL_COMMIT_SPECIAL_VALUES = ("local",)
+GL_DISTRIBUTION_NAME = "Garden Linux"
+GL_HOME_URL = "https://gardenlinux.io"
+GL_RELEASE_ID = "gardenlinux"
 GL_REPOSITORY_URL = "https://github.com/gardenlinux/gardenlinux"
+GL_SUPPORT_URL = "https://github.com/gardenlinux/gardenlinux"
 
 OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
 OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"
