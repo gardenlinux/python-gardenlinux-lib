@@ -1,5 +1,6 @@
 import io
 import json
+
 import pytest
 
 from gardenlinux.oci.index import Index

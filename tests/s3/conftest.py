@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass
-from moto import mock_aws
 from hashlib import md5, sha256
+
 import boto3
 import pytest
+from moto import mock_aws
 
 from gardenlinux.features.cname import CName as RealCName
 

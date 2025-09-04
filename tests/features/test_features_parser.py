@@ -1,6 +1,7 @@
 import pytest
 
 from gardenlinux.features import Parser
+
 from ..constants import GL_ROOT_DIR
 
 
