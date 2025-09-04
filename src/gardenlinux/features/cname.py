@@ -10,7 +10,16 @@ from typing import List, Optional
 from os import PathLike
 import re
 
-from ..constants import ARCHS
+from ..constants import (
+    ARCHS,
+    GL_BUG_REPORT_URL,
+    GL_COMMIT_SPECIAL_VALUES,
+    GL_DISTRIBUTION_NAME,
+    GL_HOME_URL,
+    GL_RELEASE_ID,
+    GL_SUPPORT_URL,
+)
+
 from .parser import Parser
 
 
@@ -86,7 +95,7 @@ class CName(object):
         if commit_id_or_hash is not None:
             self._commit_id = commit_id_or_hash[:8]
 
-            if len(commit_id_or_hash) == 40: # sha1 hex
+            if len(commit_id_or_hash) == 40:  # sha1 hex
                 self._commit_hash = commit_id_or_hash
 
     @property
@@ -129,7 +138,9 @@ class CName(object):
         """
 
         if self._commit_hash is None:
-            raise RuntimeError("GardenLinux canonical name given does not contain the commit hash")
+            raise RuntimeError(
+                "GardenLinux canonical name given does not contain the commit hash"
+            )
 
         return self._commit_hash
 
@@ -184,6 +195,42 @@ class CName(object):
             return self._feature_set_cached
 
         return Parser().filter_as_string(self.flavor)
+
+    @property
+    def metadata_string(self) -> str:
+        """
+        Returns the metadata describing the given CName instance.
+
+        :return: (str) Metadata describing the given CName instance
+        :since:  0.9.2
+        """
+
+        features = Parser().filter_as_dict(self.flavor)
+
+        elements = ",".join(features["element"])
+        flags = ",".join(features["flag"])
+        platforms = ",".join(features["platform"])
+
+        metadata = f"""
+ID={GL_RELEASE_ID}
+NAME="{GL_DISTRIBUTION_NAME}"
+PRETTY_NAME="{GL_DISTRIBUTION_NAME} {self.version}"
+IMAGE_VERSION={self.version}
+VARIANT_ID="{self.flavor}-{self.arch}"
+HOME_URL="{GL_HOME_URL}"
+SUPPORT_URL="{GL_SUPPORT_URL}"
+BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
+GARDENLINUX_CNAME="{self.cname}"
+GARDENLINUX_FEATURES="{self.feature_set}"
+GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
+GARDENLINUX_FEATURES_ELEMENTS="{elements}"
+GARDENLINUX_FEATURES_FLAGS="{flags}"
+GARDENLINUX_VERSION="{self.version}"
+GARDENLINUX_COMMIT_ID="{self.commit_id}"
+GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
+        """.strip()
+
+        return metadata
 
     @property
     def platform(self) -> str:
@@ -320,30 +367,5 @@ class CName(object):
                 f"Refused to overwrite existing metadata file: {metadata_file}"
             )
 
-        features = Parser().filter_as_dict(self.flavor)
-
-        elements = ",".join(features["element"])
-        flags = ",".join(features["flag"])
-        platforms = ",".join(features["platform"])
-
-        metadata = f"""
-ID=gardenlinux
-NAME="Garden Linux"
-PRETTY_NAME="Garden Linux {self.version}"
-IMAGE_VERSION={self.version}
-VARIANT_ID="{self.flavor}-{self.arch}"
-HOME_URL="https://gardenlinux.io"
-SUPPORT_URL="https://github.com/gardenlinux/gardenlinux"
-BUG_REPORT_URL="https://github.com/gardenlinux/gardenlinux/issues"
-GARDENLINUX_CNAME="{self.cname}"
-GARDENLINUX_FEATURES="{self.feature_set}"
-GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
-GARDENLINUX_FEATURES_ELEMENTS="{elements}"
-GARDENLINUX_FEATURES_FLAGS="{flags}"
-GARDENLINUX_VERSION="{self.version}"
-GARDENLINUX_COMMIT_ID="{self.commit_id}"
-GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
-        """.strip()
-
         with metadata_file.open("w") as fp:
-            fp.write(metadata)
+            fp.write(self.metadata_string)
