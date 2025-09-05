@@ -121,7 +121,7 @@ def push_manifest(
     required=False,
     type=click.Path(),
     default=None,
-    help="Canonical Name of Image"
+    help="Canonical Name of Image",
 )
 @click.option(
     "--arch",
