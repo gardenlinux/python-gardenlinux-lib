@@ -28,6 +28,7 @@ from ..logger import LoggerSetup
 
 from .index import Index
 from .layer import Layer
+from .image_manifest import ImageManifest
 from .manifest import Manifest
 from .schemas import index as IndexSchema
 
@@ -123,17 +124,7 @@ class Container(Registry):
                 except Exception as login_error:
                     self._logger.error(f"Login error: {str(login_error)}")
 
-    def generate_index(self):
-        """
-        Generates an OCI image index
-
-        :return: (object) OCI image index
-        :since:  0.7.0
-        """
-
-        return Index()
-
-    def generate_manifest(
+    def generate_image_manifest(
         self,
         cname: str,
         architecture: Optional[str] = None,
@@ -151,7 +142,7 @@ class Container(Registry):
         :param feature_set: The expanded list of the included features of this manifest
 
         :return: (object) OCI image manifest
-        :since:  0.7.0
+        :since:  0.10.0
         """
 
         cname_object = CName(cname, architecture, version)
@@ -168,15 +159,13 @@ class Container(Registry):
         if commit is None:
             commit = ""
 
-        manifest = Manifest()
+        manifest = ImageManifest()
 
-        manifest["annotations"] = {}
-        manifest["annotations"]["version"] = version
-        manifest["annotations"]["cname"] = cname
-        manifest["annotations"]["architecture"] = architecture
-        manifest["annotations"]["feature_set"] = feature_set
-        manifest["annotations"]["flavor"] = f"{cname_object.flavor}-{architecture}"
-        manifest["annotations"]["commit"] = commit
+        manifest.version = version
+        manifest.cname = cname
+        manifest.arch = architecture
+        manifest.feature_set = feature_set
+        manifest.commit = commit
 
         description = (
             f"Image: {cname} "
@@ -192,6 +181,43 @@ class Container(Registry):
             {},
             {"cname": cname, "architecture": architecture},
         )
+
+        return manifest
+
+    def generate_index(self):
+        """
+        Generates an OCI image index
+
+        :return: (object) OCI image index
+        :since:  0.7.0
+        """
+
+        return Index()
+
+    def generate_manifest(
+        self,
+        version: Optional[str] = None,
+        commit: Optional[str] = None,
+    ):
+        """
+        Generates an OCI manifest
+
+        :param cname: Canonical name of the manifest
+        :param architecture: Target architecture of the manifest
+        :param version: Artifacts version of the manifest
+        :param commit: The commit hash of the manifest
+        :param feature_set: The expanded list of the included features of this manifest
+
+        :return: (object) OCI manifest
+        :since:  0.9.2
+        """
+
+        manifest = Manifest()
+
+        manifest.version = version
+        manifest.commit = commit
+
+        manifest.config_from_dict({}, {})
 
         return manifest
 
@@ -546,23 +572,28 @@ class Container(Registry):
         """
 
         if cname is None:
-            response = self._get_manifest_without_response_parsing(self._container_version)
+            manifest_type = Manifest
+
+            response = self._get_manifest_without_response_parsing(
+                self._container_version
+            )
         else:
+            manifest_type = ImageManifest
+
             if architecture is None:
                 architecture = CName(cname, architecture, version).arch
 
             response = self._get_manifest_without_response_parsing(
                 f"{self._container_version}-{cname}-{architecture}"
             )
-        #
 
         if response.ok:
-            manifest = Manifest(**response.json())
+            manifest = manifest_type(**response.json())
         elif response.status_code == 404:
             if cname is None:
-                manifest = Manifest()
+                manifest = self.generate_manifest(version, commit)
             else:
-                manifest = self.generate_manifest(
+                manifest = self.generate_image_manifest(
                     cname, architecture, version, commit, feature_set
                 )
         else:
