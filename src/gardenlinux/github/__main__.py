@@ -21,7 +21,7 @@ import urllib.request
 import difflib
 
 
-GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
+GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = os.environ['GITHUB_RELEASE_BUCKET_NAME']
 
 arches = [
     'amd64',
