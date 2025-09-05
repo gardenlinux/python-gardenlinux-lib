@@ -14,7 +14,6 @@ import json
 import os
 import re
 import requests
-import subprocess
 import sys
 import textwrap
 import yaml
@@ -133,7 +132,7 @@ def download_all_singles(version, commitish):
     flavors = FlavorsParser(flavors_data).filter(only_publish=True)
 
     local_dest_path = Path("s3_downloads")
-    local_dest_path.makedir(mode=0o755, exist_ok=True)
+    local_dest_path.mkdir(mode=0o755, exist_ok=True)
 
     for flavor in flavors:
         cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
