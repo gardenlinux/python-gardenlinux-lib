@@ -19,6 +19,7 @@ import sys
 import textwrap
 import yaml
 import urllib.request
+import difflib
 
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
@@ -254,8 +255,22 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
 
                 output += f"## Changes in Package Versions Compared to {previous_version}\n"
                 output += "```diff\n"
-                output += subprocess.check_output(['/bin/bash', './hack/compare-apt-repo-versions.sh',
-                                                  previous_version, gardenlinux_version]).decode("utf-8")
+                try:
+                    prev_pkg_list = _get_package_list(previous_version)
+                    current_pkg_lines = []
+                    for entry in package_list.values():
+                        current_pkg_lines.append(repr(entry))
+                    prev_pkg_lines = []
+                    for entry in prev_pkg_list.values():
+                        prev_pkg_lines.append(repr(entry))
+                    diff = difflib.unified_diff(prev_pkg_lines, current_pkg_lines,
+                                                fromfile=f"{previous_version}",
+                                                tofile=f"{gardenlinux_version}",
+                                                lineterm="")
+                    diff_text = "\n".join(list(diff))
+                    output += diff_text
+                except Exception as e:
+                    output += f"Error generating diff: {e}"
                 output += "```\n\n"
             elif patch == 0:
                 output += f"## Full List of Packages in Garden Linux version {major}\n"
