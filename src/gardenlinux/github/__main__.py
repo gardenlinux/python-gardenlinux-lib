@@ -4,6 +4,7 @@ from gardenlinux.apt import DebsrcFile
 from gardenlinux.features import CName
 from gardenlinux.flavors import Parser as FlavorsParser
 from gardenlinux.s3 import S3Artifacts
+from gardenlinux.sources.kernel import get_kernel_urls
 from pathlib import Path
 from yaml.loader import SafeLoader
 import argparse
@@ -18,8 +19,6 @@ import sys
 import textwrap
 import yaml
 import urllib.request
-
-from .get_kernelurls import get_kernel_urls
 
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
