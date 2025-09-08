@@ -135,7 +135,7 @@ def download_all_singles(version, commitish):
     local_dest_path.mkdir(mode=0o755, exist_ok=True)
 
     for flavor in flavors:
-        cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
+        cname = CName(cname=flavor[1], arch=flavor[0], version=version, commit_id=commitish)
         print(f'YTDBG // {flavor=} | {version=} | {commitish=} | {cname.cname=}')
         S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME).download_to_directory(cname.cname, local_dest_path)
 
