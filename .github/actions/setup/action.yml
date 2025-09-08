@@ -50,5 +50,7 @@ runs:
 
     - name: Install GardenLinux Python library
       shell: bash
+      with:
+        version: ${{ inputs.version }}
       run: |
         pip install git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}
