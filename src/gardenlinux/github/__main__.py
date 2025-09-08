@@ -136,6 +136,7 @@ def download_all_singles(version, commitish):
 
     for flavor in flavors:
         cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
+        print(f'YTDBG // {cname=}')
         S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME).download_to_directory(cname.cname, local_dest_path)
 
     return [str(artifact) for artifact in local_dest_path.iterdir()]
