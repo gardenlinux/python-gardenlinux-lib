@@ -6,6 +6,9 @@ inputs:
     required: true
   flavors_matrix:
     description: "Generated GitHub workflow flavors matrix"
+  version:
+    description: GardenLinux Python library version
+    default: "0.10.0"
 outputs:
   matrix:
     description: "Flavors matrix"
@@ -16,6 +19,8 @@ runs:
     - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@3054-move-github-workflows-py-to-python-gardenlinux-lib
     - id: matrix
       shell: bash
+      with:
+        version: ${{ inputs.version }}
       run: |
         MATRIX='${{ inputs.flavors_matrix }}'
 
