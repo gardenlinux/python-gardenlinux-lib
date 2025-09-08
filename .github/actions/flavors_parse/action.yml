@@ -17,10 +17,10 @@ runs:
   using: composite
   steps:
     - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@3054-move-github-workflows-py-to-python-gardenlinux-lib
-    - id: matrix
-      shell: bash
       with:
         version: ${{ inputs.version }}
+    - id: matrix
+      shell: bash
       run: |
         MATRIX='${{ inputs.flavors_matrix }}'
 
