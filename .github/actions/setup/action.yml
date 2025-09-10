@@ -48,6 +48,11 @@ runs:
         python-version: ${{ inputs.python_version }}
         cache: ${{ steps.env-check.outputs.package_tool }}
 
+    - name: Install python apt library
+      shell: bash
+      run: |
+        sudo apt install -y python3-apt
+
     - name: Install GardenLinux Python library
       shell: bash
       run: |

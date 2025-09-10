@@ -1,7 +1,5 @@
 import re
-import requests
-import lzma
-import gzip
+import apt
 import yaml
 import itertools
 
@@ -34,22 +32,26 @@ def get_package_list(repositories, architecture):
     '''Get Packages lists from repository and return it as dictionary.
     '''
     packages_dict = {}
+    cache = apt.Cache()
     for repo in repositories:
         repo_entries = repo.split(' ')
         uri = repo_entries[0]
         suite = repo_entries[1]
-        for component, arch, compression in itertools.product(repo_entries[2:], ['all'] + architecture, ['.gz', '.xz', '']):
-            packages_url = f'{uri}/dists/{suite}/{component}/binary-{arch}/Packages{compression}'
-            response = requests.get(packages_url)
-            if response.status_code == 200:
-                if compression == '.xz':
-                    packages = lzma.decompress(response.content).decode("UTF-8")
-                elif compression == '.gz':
-                    packages = gzip.decompress(response.content).decode("UTF-8")
-                else:
-                    packages = response.content.decode("UTF-8")
-
-                packages_dict.update({f'{uri}-{suite}-{component}-{arch}': packages})
+        components = repo_entries[2:]
+        for component in components:
+            for arch in ['all'] + architecture:
+                pkg_info = ""
+                for pkg in cache:
+                    if not pkg.candidate:
+                        continue
+                    for origin in pkg.candidate.origins:
+                        if origin.site == uri and origin.archive == suite and origin.component == component:
+                            # Only add package if its candidate’s architecture exactly matches OR we allow 'all'
+                            if pkg.candidate.architecture == arch or arch == 'all':
+                                pkg_info += f"Package: {pkg.name}\nVersion: {pkg.candidate.version}\nArchitecture: {pkg.candidate.architecture}\n\n"
+                                break  # Break from origins loop once matched
+                if pkg_info:
+                    packages_dict[f"{uri}-{suite}-{component}-{arch}"] = pkg_info
 
     assert len(packages_dict) != 0, "Expected to find packages"
     return packages_dict
