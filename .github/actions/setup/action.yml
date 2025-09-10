@@ -48,6 +48,11 @@ runs:
         python-version: ${{ inputs.python_version }}
         cache: ${{ steps.env-check.outputs.package_tool }}
 
+    - name: Install dependency for python-apt
+      shell: bash
+      run: |
+        sudo apt install -y libapt-pkg-dev
+
     - name: Install GardenLinux Python library
       shell: bash
       run: |
