@@ -505,8 +505,10 @@ def download_all_metadata_files(version, commitish):
 
     s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
 
+    commitish_short = commitish[:8]
+
     for flavor in flavors:
-        cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
+        cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish_short))
         print(f'YTDBG // {flavor=} {version=} {commitish=}')
         # Filter by image variants - only download if the flavor matches one of the variants
         flavor_matches_variant = False
@@ -645,8 +647,6 @@ def _get_package_list(gardenlinux_version):
 
 
 def create_github_release_notes(gardenlinux_version, commitish):
-    commitish_short = commitish[:8]
-
     package_list = _get_package_list(gardenlinux_version)
 
     output = ""
@@ -657,7 +657,7 @@ def create_github_release_notes(gardenlinux_version, commitish):
 
     output += release_notes_compare_package_versions_section(gardenlinux_version, package_list)
 
-    metadata_files = download_all_metadata_files(gardenlinux_version, commitish_short)
+    metadata_files = download_all_metadata_files(gardenlinux_version, commitish)
 
     output += generate_release_note_image_ids(metadata_files)
 
