@@ -507,6 +507,7 @@ def download_all_metadata_files(version, commitish):
 
     for flavor in flavors:
         cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
+        print(f'YTDBG // {flavor=} {version=} {commitish=}')
         # Filter by image variants - only download if the flavor matches one of the variants
         flavor_matches_variant = False
         for variant_suffix in IMAGE_VARIANTS:
