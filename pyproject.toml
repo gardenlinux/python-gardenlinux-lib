@@ -19,7 +19,6 @@ networkx = "^3.5"
 oras = "^0.2.37"
 pygments = "^2.19.2"
 PyYAML = "^6.0.2"
-python-apt = { git = "https://salsa.debian.org/apt-team/python-apt", tag = "2.9.9" }
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.6"
