@@ -21,11 +21,6 @@ import yaml
 import urllib.request
 import difflib
 
-from gardenlinux.sources.kernel import get_kernel_urls
-from ..logger import LoggerSetup
-
-LOGGER = LoggerSetup.get_logger("gardenlinux.github")
-
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = os.environ['GITHUB_RELEASE_BUCKET_NAME']
 
 arches = [
@@ -342,10 +337,6 @@ def create_github_release_notes(gardenlinux_version, commitish, dry_run=False):
     output += generate_release_note_image_ids(metadata_files)
 
     output += "\n"
-    output += "## Kernel Package direct download links\n"
-    output += get_kernel_urls(gardenlinux_version)
-    output += "\n"
-
     output += generate_image_download_section(metadata_files, gardenlinux_version, commitish_short)
 
     output += "\n"
@@ -432,12 +423,6 @@ def main():
     elif args.command == 'upload':
         # Implementation for 'upload' command
         pass
-    elif args.command == 'kernelurls':
-        # Implementation for 'upload' command
-        output = ""
-        output += "## Kernel Package direct download links\n"
-        output += get_kernel_urls(args.version)
-        print(output)
     else:
         parser.print_help()
 
