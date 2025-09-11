@@ -2,18 +2,23 @@ name: flavors_parse
 description: Parses the given GardenLinux flavors parameters
 inputs:
   flags:
-    description: 'Flags passed to `gl-flavors-parse`'
+    description: "Flags passed to `gl-flavors-parse`"
     required: true
   flavors_matrix:
-    description: 'Generated GitHub workflow flavors matrix'
+    description: "Generated GitHub workflow flavors matrix"
+  version:
+    description: GardenLinux Python library version
+    default: "0.10.0"
 outputs:
   matrix:
-    description: 'Flavors matrix'
+    description: "Flavors matrix"
     value: ${{ steps.matrix.outputs.matrix }}
 runs:
   using: composite
   steps:
-    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@0.9.0
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@3054-move-github-workflows-py-to-python-gardenlinux-lib
+      with:
+        version: ${{ inputs.version }}
     - id: matrix
       shell: bash
       run: |
