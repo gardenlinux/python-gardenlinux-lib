@@ -153,7 +153,6 @@ def download_all_metadata_files(version, commitish):
 
     for flavor in flavors:
         cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish))
-        LOGGER.info(f'YTDBG // {flavor=} | {version=} | {commitish=} | {cname.cname=}')
         try:
             download_metadata_file(s3_artifacts, cname.cname, local_dest_path)
         except IndexError:
