@@ -25,7 +25,7 @@ runs:
         MATRIX='${{ inputs.flavors_matrix }}'
 
         if [[ $(echo "${MATRIX}" | jq -r 'type') != 'object' ]]; then
-          FLAVORS=$(gl-flavors-parse ${{ inputs.flags }})
+          FLAVORS=$(poetry run gl-flavors-parse ${{ inputs.flags }})
           MATRIX=$(jq -nc \
             --argjson flavors "$(echo $FLAVORS)" \
             '{
