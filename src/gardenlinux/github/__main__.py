@@ -18,11 +18,14 @@ import textwrap
 import yaml
 import urllib.request
 
+from ..logger import LoggerSetup
+
+LOGGER = LoggerSetup.get_logger("gardenlinux.github")
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
 
-cloud_fullname_dict = {
+CLOUD_FULLNAME_DICT = {
     'ali': 'Alibaba Cloud',
     'aws': 'Amazon Web Services',
     'gcp': 'Google Cloud Platform',
@@ -118,7 +121,7 @@ def get_platform_display_name(platform):
     """
     match platform:
         case 'ali' | 'openstackbaremetal' | 'openstack' | 'azure' | 'gcp' | 'aws':
-            return cloud_fullname_dict[platform]
+            return CLOUD_FULLNAME_DICT[platform]
         case _:
             return platform.upper()
 
@@ -414,7 +417,7 @@ def generate_detailed_format(grouped_data):
         output += f"### Variant - {VARIANT_NAMES[variant]}\n\n"
 
         for platform in sorted(grouped_data[variant].keys()):
-            platform_long_name = cloud_fullname_dict.get(platform, platform)
+            platform_long_name = CLOUD_FULLNAME_DICT.get(platform, platform)
             output += f"<details>\n<summary>{platform.upper()} - {platform_long_name}</summary>\n\n"
             output += f"#### {platform.upper()} - {platform_long_name}\n\n"
 
@@ -484,15 +487,15 @@ def download_metadata_file(s3_artifacts, cname, version, commitish_short, artifa
     """
     Download metadata file (s3_metadata.yaml)
     """
-    print(f'YTDBG // {s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}')
+    LOGGER.debug(f'{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}')
     _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     for o in _release_objects:
-        print(f'YTDBG // {o.bucket_name=} | {o.key=}')
+        LOGGER.debug(f'{o.bucket_name=} | {o.key=}')
     release_object = list(
         s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     )[0]
     print(f'YTBDG // {release_object.bucket_name=} | {release_object.key=}')
-    print(f'YTDBG // {release_object =}')
+    LOGGER.debug(f'{release_object =}')
     s3_artifacts._bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
     )
@@ -515,7 +518,7 @@ def download_all_metadata_files(version, commitish):
 
     for flavor in flavors:
         cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish_short))
-        print(f'YTDBG // {flavor=} {version=} {commitish=}')
+        LOGGER.debug(f'{flavor=} {version=} {commitish=}')
         # Filter by image variants - only download if the flavor matches one of the variants
         flavor_matches_variant = False
         for variant_suffix in IMAGE_VARIANTS:
