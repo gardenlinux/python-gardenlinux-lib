@@ -484,7 +484,7 @@ def download_metadata_file(s3_artifacts, cname, version, commitish_short, artifa
     """
     Download metadata file (s3_metadata.yaml)
     """
-    print(f'YTDBG // {s3_artifacts=} | {cname=} | {artifacts_dir=}')
+    print(f'YTDBG // {s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}')
     _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     for o in _release_objects:
         print(f'YTDBG // {o.bucket_name=} | {o.key=}')
