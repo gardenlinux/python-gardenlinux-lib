@@ -19,7 +19,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: ./.github/actions/setup
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@3054-move-github-workflows-py-to-python-gardenlinux-lib
       with:
         version: ${{ inputs.version }}
 
