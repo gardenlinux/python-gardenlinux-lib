@@ -94,7 +94,7 @@ def get_platform_release_note_data(metadata, platform):
         case 'openstackbaremetal':
             return _openstackbaremetal_release_note(metadata)
         case _:
-            print(f"unknown platform {platform}")
+            LOGGER.error(f"unknown platform {platform}")
             return None
 
 
@@ -532,7 +532,7 @@ def download_all_metadata_files(version, commitish):
                 break
 
         if not flavor_matches_variant:
-            print(f"INFO: Skipping flavor {cname.cname} - not matching image variants filter")
+            LOGGER.info(f"Skipping flavor {cname.cname} - not matching image variants filter")
             continue
 
         try:
@@ -542,7 +542,7 @@ def download_all_metadata_files(version, commitish):
                                    commitish_short,
                                    local_dest_path)
         except IndexError:
-            print(f"WARNING: No artifacts found for flavor {cname.cname}, skipping...")
+            LOGGER.warn(f"No artifacts found for flavor {cname.cname}, skipping...")
             continue
 
     return [str(artifact) for artifact in local_dest_path.iterdir()]
@@ -640,9 +640,9 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
                 output += "\n</details>\n\n"
 
         except ValueError:
-            print(f"Could not parse {gardenlinux_version} as the Garden Linux version, skipping version compare section")
+            LOGGER.error(f"Could not parse {gardenlinux_version} as the Garden Linux version, skipping version compare section")
     else:
-        print(f"Unexpected version number format {gardenlinux_version}, expected format (major is int).(patch is int)")
+        LOGGER.error(f"Unexpected version number format {gardenlinux_version}, expected format (major is int).(patch is int)")
     return output
 
 
@@ -699,9 +699,9 @@ def write_to_release_id_file(release_id):
     try:
         with open('.github_release_id', 'w') as file:
             file.write(release_id)
-        print("Created .github_release_id successfully.")
+        LOGGER.info("Created .github_release_id successfully.")
     except IOError as e:
-        print(f"Could not create .github_release_id file: {e}")
+        LOGGER.error(f"Could not create .github_release_id file: {e}")
         sys.exit(1)
 
 
@@ -728,12 +728,44 @@ def create_github_release(owner, repo, tag, commitish, body):
     response = requests.post(f'https://api.github.com/repos/{owner}/{repo}/releases', headers=headers, data=json.dumps(data))
 
     if response.status_code == 201:
-        print("Release created successfully")
+        LOGGER.info("Release created successfully")
         response_json = response.json()
         return response_json.get('id')
     else:
-        print("Failed to create release")
-        print(response.json())
+        LOGGER.error("Failed to create release")
+        LOGGER.debug(response.json())
+        response.raise_for_status()
+
+
+def upload_to_github_release_page(github_owner, github_repo, gardenlinux_release_id, file_to_upload, dry_run):
+    if dry_run:
+        LOGGER.info(
+            f"Dry run: would upload {file_to_upload} to release {gardenlinux_release_id} in repo {github_owner}/{github_repo}")
+        return
+
+    token = os.environ.get('GITHUB_TOKEN')
+    if not token:
+        raise ValueError("GITHUB_TOKEN environment variable not set")
+
+    headers = {
+        'Authorization': f'token {token}',
+        'Content-Type': 'application/octet-stream'
+    }
+
+    upload_url = f"https://uploads.github.com/repos/{github_owner}/{github_repo}/releases/{gardenlinux_release_id}/assets?name={os.path.basename(file_to_upload)}"
+
+    try:
+        with open(file_to_upload, 'rb') as f:
+            file_contents = f.read()
+    except IOError as e:
+        LOGGER.error(f"Error reading file {file_to_upload}: {e}")
+        return
+
+    response = requests.post(upload_url, headers=headers, data=file_contents)
+    if response.status_code == 201:
+        LOGGER.info("Upload successful")
+    else:
+        LOGGER.error(f"Upload failed with status code {response.status_code}: {response.text}")
         response.raise_for_status()
 
 
@@ -747,16 +779,30 @@ def main():
     create_parser.add_argument('--tag', required=True)
     create_parser.add_argument('--commit', required=True)
     create_parser.add_argument('--dry-run', action='store_true', default=False)
+
+    upload_parser = subparsers.add_parser('upload')
+    upload_parser.add_argument('--owner', default="gardenlinux")
+    upload_parser.add_argument('--repo', default="gardenlinux")
+    upload_parser.add_argument('--release_id', required=True)
+    upload_parser.add_argument('--file_path', required=True)
+    upload_parser.add_argument('--dry-run', action='store_true', default=False)
+
     args = parser.parse_args()
 
     if args.command == 'create':
         body = create_github_release_notes(args.tag, args.commit)
-        if not args.dry_run:
+        if args.dry_run:
+            print(body)
+        else:
             release_id = create_github_release(args.owner, args.repo, args.tag, args.commit, body)
             write_to_release_id_file(f"{release_id}")
-            print(f"Release created with ID: {release_id}")
-        else:
-            print(body)
+            LOGGER.info(f"Release created with ID: {release_id}")
+    elif args.command == 'upload':
+        upload_to_github_release_page(args.owner,
+                                      args.repo,
+                                      args.release_id,
+                                      args.file_path,
+                                      args.dry_run)
     else:
         parser.print_help()
 
