@@ -18,5 +18,4 @@ runs:
     - id: result
       shell: bash
       run: |
-        which gl-features-parse
         echo "result=$(gl-features-parse ${{ inputs.flags }})" | tee -a $GITHUB_OUTPUT

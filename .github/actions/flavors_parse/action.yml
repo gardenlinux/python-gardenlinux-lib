@@ -29,7 +29,6 @@ runs:
         MATRIX='${{ inputs.flavors_matrix }}'
 
         if [[ $(echo "${MATRIX}" | jq -r 'type') != 'object' ]]; then
-          which gl-flavors-parse
           FLAVORS=$(gl-flavors-parse ${{ inputs.flags }})
           MATRIX=$(jq -nc \
             --argjson flavors "$(echo $FLAVORS)" \
