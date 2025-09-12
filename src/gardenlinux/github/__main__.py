@@ -480,12 +480,12 @@ def generate_detailed_format(grouped_data):
     return output
 
 
-def download_metadata_file(s3_artifacts, cname, artifacts_dir):
+def download_metadata_file(s3_artifacts, cname, version, commitish_short, artifacts_dir):
     """
     Download metadata file (s3_metadata.yaml)
     """
     print(f'YTDBG // {s3_artifacts=} | {cname=} | {artifacts_dir=}')
-    _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
+    _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     for o in _release_objects:
         print(f'YTDBG // {o.bucket_name=} | {o.key=}')
     print(f'YTDBG // {_release_objects=}')
@@ -535,7 +535,11 @@ def download_all_metadata_files(version, commitish):
             continue
 
         try:
-            download_metadata_file(s3_artifacts, cname.cname, local_dest_path)
+            download_metadata_file(s3_artifacts,
+                                   cname.cname,
+                                   version,
+                                   commitish_short,
+                                   local_dest_path)
         except IndexError:
             print(f"WARNING: No artifacts found for flavor {cname.cname}, skipping...")
             continue
