@@ -488,9 +488,8 @@ def download_metadata_file(s3_artifacts, cname, version, commitish_short, artifa
     _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     for o in _release_objects:
         print(f'YTDBG // {o.bucket_name=} | {o.key=}')
-    print(f'YTDBG // {_release_objects=}')
     release_object = list(
-        s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
+        s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}-{version}-{commitish_short}")
     )[0]
     print(f'YTBDG // {release_object.bucket_name=} | {release_object.key=}')
     print(f'YTDBG // {release_object =}')
