@@ -486,10 +486,13 @@ def download_metadata_file(s3_artifacts, cname, artifacts_dir):
     """
     print(f'YTDBG // {s3_artifacts=} | {cname=} | {artifacts_dir=}')
     _release_objects = s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
+    for o in _release_objects:
+        print(f'YTDBG // {o.bucket_name=} | {o.key=}')
     print(f'YTDBG // {_release_objects=}')
     release_object = list(
         s3_artifacts._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
     )[0]
+    print(f'YTBDG // {release_object.bucket_name=} | {release_object.key=}')
     print(f'YTDBG // {release_object =}')
     s3_artifacts._bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
