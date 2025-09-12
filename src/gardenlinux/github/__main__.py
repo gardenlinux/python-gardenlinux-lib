@@ -488,15 +488,13 @@ def download_metadata_file(s3_artifacts, cname, version, commitish_short, artifa
     Download metadata file (s3_metadata.yaml)
     """
     LOGGER.debug(f'{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}')
-    release_object = next(
+    release_object = list(
         s3_artifacts._bucket.objects.filter(
             Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
         )
-    )
-    # for o in _release_objects:
-    #     LOGGER.debug(f'{o.bucket_name=} | {o.key=}')
-    # release_object = list(_release_objects)[0]
+    )[0]
     LOGGER.debug(f'{release_object.bucket_name=} | {release_object.key=}')
+
     s3_artifacts._bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
     )
