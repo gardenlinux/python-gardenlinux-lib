@@ -18,4 +18,5 @@ runs:
     - id: result
       shell: bash
       run: |
-        echo "result=$(poetry run gl-features-parse ${{ inputs.flags }})" | tee -a $GITHUB_OUTPUT
+        which gl-features-parse
+        echo "result=$(gl-features-parse ${{ inputs.flags }})" | tee -a $GITHUB_OUTPUT
