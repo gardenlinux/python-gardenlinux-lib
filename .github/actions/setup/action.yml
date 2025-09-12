@@ -28,7 +28,9 @@ runs:
       shell: bash
       run: |
         # Determine cache type based on available lockfile
-        if [ -f poetry.lock ]; then
+        if [ "x${{ env.ACT }}" != "x" ]; then
+          echo "Local GHA testing environment detected, disabling python cache"
+        elif [ -f poetry.lock ]; then
           echo "package_tool=poetry" >> $GITHUB_OUTPUT
         elif [ -f requirements.txt ]; then
           echo "package_tool=pip" >> $GITHUB_OUTPUT
