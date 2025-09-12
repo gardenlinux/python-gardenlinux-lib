@@ -628,9 +628,7 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
                 previous_version = f"{major}.{patch - 1}"
 
                 output += f"## Changes in Package Versions Compared to {previous_version}\n"
-                output += "```diff\n"
                 output += compare_apt_repo_versions(previous_version, gardenlinux_version)
-                output += "```\n\n"
             elif patch == 0:
                 output += f"## Full List of Packages in Garden Linux version {major}\n"
                 output += "<details><summary>Expand to see full list</summary>\n"
