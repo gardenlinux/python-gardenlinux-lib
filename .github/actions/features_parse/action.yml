@@ -11,7 +11,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@3054-move-github-workflows-py-to-python-gardenlinux-lib
+    - uses: .github/actions/setup
     - id: result
       shell: bash
       run: |
