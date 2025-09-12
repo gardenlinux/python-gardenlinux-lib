@@ -1,4 +1,5 @@
 from gardenlinux.apt import DebsrcFile
+from gardenlinux.apt.package_repo_info import GardenLinuxRepo, compare_repo
 from gardenlinux.features import CName
 from gardenlinux.flavors import Parser as FlavorsParser
 from gardenlinux.s3 import S3Artifacts
@@ -11,7 +12,6 @@ import os
 import re
 import requests
 import shutil
-import subprocess
 import sys
 from git import Repo
 import textwrap
@@ -629,8 +629,7 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
 
                 output += f"## Changes in Package Versions Compared to {previous_version}\n"
                 output += "```diff\n"
-                output += subprocess.check_output(['/usr/bin/env', 'bash', './hack/compare-apt-repo-versions.sh',
-                                                  previous_version, gardenlinux_version]).decode("utf-8")
+                output += compare_apt_repo_versions(previous_version, gardenlinux_version)
                 output += "```\n\n"
             elif patch == 0:
                 output += f"## Full List of Packages in Garden Linux version {major}\n"
@@ -646,6 +645,19 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
             print(f"Could not parse {gardenlinux_version} as the Garden Linux version, skipping version compare section")
     else:
         print(f"Unexpected version number format {gardenlinux_version}, expected format (major is int).(patch is int)")
+    return output
+
+
+def compare_apt_repo_versions(previous_version, current_version):
+    previous_repo = GardenLinuxRepo(previous_version)
+    current_repo = GardenLinuxRepo(current_version)
+    pkg_diffs = sorted(compare_repo(previous_repo, current_repo), key=lambda t: t[0])
+
+    output = f"| Package | {previous_version} | {current_version} |\n"
+    output += "|---------|--------------------|-------------------|\n"
+
+    for pkg in pkg_diffs:
+        output += f"|{pkg[0]} | {pkg[1] if pkg[1] is not None else '-'} | {pkg[2] if pkg[2] is not None else '-'} |\n"
     return output
 
 
