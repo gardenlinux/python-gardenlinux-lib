@@ -4,6 +4,6 @@
 Git module
 """
 
-from .git import Git
+from .repository import Repository
 
-__all__ = ["Git"]
+__all__ = ["Repository"]
