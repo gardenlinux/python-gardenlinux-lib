@@ -11,7 +11,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@0.9.0
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@0.10.0
     - id: result
       shell: bash
       run: |
