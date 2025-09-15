@@ -549,19 +549,6 @@ def download_all_metadata_files(version, commitish):
     return [str(artifact) for artifact in local_dest_path.iterdir()]
 
 
-def _parse_match_section(pkg_list: list):
-    output = ""
-    for pkg in pkg_list:
-        # If is dict, the package has additional information relevant for release notes
-        if isinstance(pkg, dict):
-            pkg_string = next(iter(pkg))
-            output += f"\n{pkg_string}:\n"
-            for item in pkg[pkg_string]:
-                for k, v in item.items():
-                    output += f"  * {k}: {v}\n"
-    return output
-
-
 def release_notes_changes_section(gardenlinux_version):
     """
     Get list of fixed CVEs, grouped by upgraded package.
