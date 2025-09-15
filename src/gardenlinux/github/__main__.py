@@ -25,6 +25,8 @@ LOGGER = LoggerSetup.get_logger("gardenlinux.github")
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
+RELEASE_ID_FILE = ".github_release_id"
+
 REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
 CLOUD_FULLNAME_DICT = {
@@ -704,11 +706,11 @@ def create_github_release_notes(gardenlinux_version, commitish):
 
 def write_to_release_id_file(release_id):
     try:
-        with open(".github_release_id", "w") as file:
+        with open(RELEASE_ID_FILE, "w") as file:
             file.write(release_id)
-        LOGGER.info("Created .github_release_id successfully.")
+        LOGGER.info(f"Created {RELEASE_ID_FILE} successfully.")
     except IOError as e:
-        LOGGER.error(f"Could not create .github_release_id file: {e}")
+        LOGGER.error(f"Could not create {RELEASE_ID_FILE} file: {e}")
         sys.exit(1)
 
 
