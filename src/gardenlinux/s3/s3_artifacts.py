@@ -202,7 +202,7 @@ class S3Artifacts(object):
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
             if artifact.name.startswith(cname):
-                suffix = artifact.name[len(cname):]
+                suffix = artifact.name[len(cname) :]
             else:
                 raise RuntimeError(
                     f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
