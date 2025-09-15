@@ -28,6 +28,7 @@ python-dotenv = "^1.1.1"
 pytest = "^8.4.1"
 pytest-cov = "^6.3.0"
 isort = "^6.0.1"
+ptpython = "^3.0.31"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
@@ -45,7 +46,7 @@ pythonpath = ["src"]
 norecursedirs = "test-data"
 
 [tool.bandit]
-skips = ["B101", "B404", "B310"] # allow asserts, subprocesses, urlopen
+skips = ["B101", "B404"] # allow asserts, subprocesses
 exclude_dirs = ["tests"]
 
 [build-system]
