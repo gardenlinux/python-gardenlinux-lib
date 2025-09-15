@@ -1,12 +1,12 @@
 import argparse
 import gzip
+import io
 import json
 import os
 import re
 import shutil
 import sys
 import textwrap
-import urllib.request
 from pathlib import Path
 
 import requests
@@ -673,13 +673,17 @@ def compare_apt_repo_versions(previous_version, current_version):
 
 
 def _get_package_list(gardenlinux_version):
-    (path, headers) = urllib.request.urlretrieve(
-        f"https://packages.gardenlinux.io/gardenlinux/dists/{gardenlinux_version}/main/binary-amd64/Packages.gz"
-    )
-    with gzip.open(path, "rt") as f:
-        d = DebsrcFile()
-        d.read(f)
-        return d
+    url = f"https://packages.gardenlinux.io/gardenlinux/dists/{gardenlinux_version}/main/binary-amd64/Packages.gz"
+    response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
+    response.raise_for_status()
+
+    d = DebsrcFile()
+
+    with io.BytesIO(response.content) as buf:
+        with gzip.open(buf, "rt") as f:
+            d.read(f)
+
+    return d
 
 
 def create_github_release_notes(gardenlinux_version, commitish):
