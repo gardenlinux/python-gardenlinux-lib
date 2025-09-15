@@ -62,7 +62,7 @@ format: install-dev
 	$(POETRY) run black --extend-exclude test-data/gardenlinux .
 
 lint: install-dev
-	$(POETRY) run black --check --extend-exclude test-data/gardenlinux .
+	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \
