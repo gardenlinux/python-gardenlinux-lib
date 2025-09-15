@@ -1,24 +1,25 @@
-from gardenlinux.apt import DebsrcFile
-from gardenlinux.apt.package_repo_info import GardenLinuxRepo, compare_repo
-from gardenlinux.features import CName
-from gardenlinux.flavors import Parser as FlavorsParser
-from gardenlinux.s3 import S3Artifacts
-from pathlib import Path
-from yaml.loader import SafeLoader
 import argparse
 import gzip
 import json
 import os
 import re
-import requests
 import shutil
 import sys
-from git import Repo
 import textwrap
-import yaml
 import urllib.request
+from pathlib import Path
 
+import requests
+import yaml
+from git import Repo
+from yaml.loader import SafeLoader
+
+from ..apt import DebsrcFile, GardenLinuxRepo
+from ..apt.package_repo_info import compare_repo
+from ..features import CName
+from ..flavors import Parser as FlavorsParser
 from ..logger import LoggerSetup
+from ..s3 import S3Artifacts
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github")
 
