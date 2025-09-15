@@ -43,6 +43,10 @@ gl-gh = "gardenlinux.github.__main__:main"
 pythonpath = ["src"]
 norecursedirs = "test-data"
 
+[tool.bandit]
+skips = ["B101", "B404", "B310"] # allow asserts, subprocesses, urlopen
+exclude_dirs = ["tests"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

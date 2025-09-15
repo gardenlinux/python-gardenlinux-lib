@@ -24,6 +24,7 @@ LOGGER = LoggerSetup.get_logger("gardenlinux.github")
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
+REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
 CLOUD_FULLNAME_DICT = {
     "ali": "Alibaba Cloud",
@@ -568,7 +569,7 @@ def release_notes_changes_section(gardenlinux_version):
     """
     try:
         url = f"https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1/patchReleaseNotes/{gardenlinux_version}"
-        response = requests.get(url)
+        response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
         response.raise_for_status()  # Will raise an error for bad responses
         data = response.json()
 
@@ -743,6 +744,7 @@ def create_github_release(owner, repo, tag, commitish, body):
         f"https://api.github.com/repos/{owner}/{repo}/releases",
         headers=headers,
         data=json.dumps(data),
+        timeout=REQUESTS_TIMEOUTS
     )
 
     if response.status_code == 201:
@@ -782,7 +784,7 @@ def upload_to_github_release_page(
         LOGGER.error(f"Error reading file {file_to_upload}: {e}")
         return
 
-    response = requests.post(upload_url, headers=headers, data=file_contents)
+    response = requests.post(upload_url, headers=headers, data=file_contents, timeout=REQUESTS_TIMEOUTS)
     if response.status_code == 201:
         LOGGER.info("Upload successful")
     else:

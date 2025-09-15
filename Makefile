@@ -66,9 +66,9 @@ lint: install-dev
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \
-		$(POETRY) run bandit -ll -ii -r . -f json -o bandit-report.json ; \
+		$(POETRY) run bandit -c pyproject.toml -ll -ii -r . -f json -o bandit-report.json ; \
 	else \
-		$(POETRY) run bandit -r . ; \
+		$(POETRY) run bandit -c pyproject.toml -r . ; \
 	fi
 
 docs: install-docs
