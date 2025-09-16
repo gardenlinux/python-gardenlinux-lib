@@ -3,7 +3,14 @@ import os
 from pathlib import Path
 
 import git
+import requests_mock
 from git import Repo
+
+GARDENLINUX_RELEASE = "1877.3"
+GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
+GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
+
+TEST_DATA_DIR = Path(os.path.dirname(__file__)) / ".." / ".." / "test-data" / "release_notes"
 
 
 class SubmoduleAsRepo(Repo):
@@ -28,11 +35,21 @@ def test_github_release_page(monkeypatch):
     import gardenlinux.github
     importlib.reload(gardenlinux.github)
 
-    generated_release_notes = gardenlinux.github.create_github_release_notes(
-        "1877.3",
-        "75df9f401a842914563f312899ec3ce34b24515c"
-    )
-    fixture_path = Path(os.path.dirname(__file__)) / ".." / ".." / "test-data" / "github_release_notes_1877.3.md"
-    with open(fixture_path) as md:
-        release_notes_fixture = md.read()
-        assert generated_release_notes == release_notes_fixture
+    release_fixture_path = TEST_DATA_DIR / f"github_release_notes_{GARDENLINUX_RELEASE}.md"
+    glvd_response_fixture_path = TEST_DATA_DIR / f"glvd_{GARDENLINUX_RELEASE}.json"
+
+    with requests_mock.Mocker(real_http=True) as m:
+        with open(glvd_response_fixture_path) as resp_json:
+            m.get(
+                f"{GLVD_BASE_URL}/patchReleaseNotes/{GARDENLINUX_RELEASE}",
+                text=resp_json.read(),
+                status_code=200
+            )
+            generated_release_notes = gardenlinux.github.create_github_release_notes(
+                GARDENLINUX_RELEASE,
+                GARDENLINUX_COMMIT
+            )
+
+            with open(release_fixture_path) as md:
+                release_notes_fixture = md.read()
+                assert f"x{generated_release_notes}" == f"x{release_notes_fixture}"

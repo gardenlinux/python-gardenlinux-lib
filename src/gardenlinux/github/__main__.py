@@ -582,9 +582,10 @@ def release_notes_changes_section(gardenlinux_version):
                     output.append(f"  - {fixedCve}")
 
         return "\n".join(output) + "\n\n"
-    except:
+    except Exception as exn:
         # There are expected error cases, for example with versions not supported by glvd (1443.x) or when the api is not available
         # Fail gracefully by adding the placeholder we previously used, so that the release note generation does not fail.
+        LOGGER.error(f"Failed to process GLVD API output: {exn}")
         return textwrap.dedent(
             """
         ## Changes
@@ -693,7 +694,7 @@ def create_github_release_notes(gardenlinux_version, commitish):
     output += generate_release_note_image_ids(metadata_files)
 
     output += "\n"
-    output += "## Kernel Module Build Container (kmodbuild) "
+    output += "## Kernel Module Build Container (kmodbuild)"
     output += "\n"
     output += "```"
     output += "\n"

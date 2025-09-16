@@ -29,6 +29,7 @@ pytest = "^8.4.1"
 pytest-cov = "^6.3.0"
 isort = "^6.0.1"
 ptpython = "^3.0.31"
+requests-mock = "^1.12.1"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
