@@ -51,6 +51,9 @@ norecursedirs = "test-data"
 skips = ["B101", "B404"] # allow asserts, subprocesses
 exclude_dirs = ["tests"]
 
+[tool.isort]
+known_first_party = "gardenlinux"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
