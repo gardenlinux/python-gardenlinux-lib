@@ -393,7 +393,7 @@ def generate_download_links(flavor, platform):
     """
     Generate download links for the flavor with correct file extension based on platform
     """
-    base_url = "https://gardenlinux-github-releases.s3.amazonaws.com/objects"
+    base_url = f"https://{GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME}.s3.amazonaws.com/objects"
     file_ext = get_file_extension_for_platform(platform)
     filename = f"{flavor}{file_ext}"
     download_url = f"{base_url}/{flavor}/{filename}"
@@ -438,7 +438,7 @@ def generate_detailed_format(grouped_data):
                     file_ext = get_file_extension_for_platform(platform)
 
                     filename = f"{data['flavor']}{file_ext}"
-                    download_url = f"https://gardenlinux-github-releases.s3.amazonaws.com/objects/{data['flavor']}/{filename}"
+                    download_url = f"https://{GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME}.s3.amazonaws.com/objects/{data['flavor']}/{filename}"
                     output += f"  download_url: {download_url}\n"
 
                     if "regions" in data:
@@ -716,7 +716,6 @@ def write_to_release_id_file(release_id):
 
 
 def create_github_release(owner, repo, tag, commitish, body):
-
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise ValueError("GITHUB_TOKEN environment variable not set")
