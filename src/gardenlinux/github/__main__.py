@@ -21,7 +21,7 @@ from ..flavors import Parser as FlavorsParser
 from ..logger import LoggerSetup
 from ..s3 import S3Artifacts
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github", "DEBUG")
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
