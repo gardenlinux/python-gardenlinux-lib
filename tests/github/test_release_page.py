@@ -52,4 +52,4 @@ def test_github_release_page(monkeypatch):
 
             with open(release_fixture_path) as md:
                 release_notes_fixture = md.read()
-                assert f"x{generated_release_notes}" == f"x{release_notes_fixture}"
+                assert generated_release_notes == release_notes_fixture
