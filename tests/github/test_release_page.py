@@ -1,18 +1,33 @@
 import os
+import shutil
 from pathlib import Path
 
+import pytest
 import requests_mock
 from git import Repo
 
 from gardenlinux.apt.debsource import DebsrcFile
-from gardenlinux.github.__main__ import _get_package_list
+from gardenlinux.features import CName
+from gardenlinux.github.__main__ import (
+    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME, _get_package_list,
+    download_metadata_file, get_variant_from_flavor)
+from gardenlinux.s3 import S3Artifacts
 
 GARDENLINUX_RELEASE = "1877.3"
 GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
+GARDENLINUX_COMMIT_SHORT = GARDENLINUX_COMMIT[:8]
+
 GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
 GL_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 
 TEST_DATA_DIR = Path(os.path.dirname(__file__)) / ".." / ".." / "test-data" / "release_notes"
+S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / ".." / "s3_downloads"
+
+TEST_FLAVORS = [("foo_bar_baz", "legacy"),
+                ("aws-gardener_prod_trustedboot_tpm2-amd64", "legacy"),
+                ("openstack-gardener_prod_tpm2_trustedboot-arm64", "tpm2_trustedboot"),
+                ("azure-gardener_prod_usi-amd64", "usi"),
+                ("", "legacy")]
 
 
 class SubmoduleAsRepo(Repo):
@@ -37,6 +52,18 @@ class SubmoduleAsRepo(Repo):
         return sr
 
 
+@pytest.fixture
+def downloads_dir():
+    os.makedirs(S3_DOWNLOADS_DIR, exist_ok=True)
+    yield
+    shutil.rmtree(S3_DOWNLOADS_DIR)
+
+
+@pytest.mark.parametrize("flavor", TEST_FLAVORS)
+def test_get_variant_from_flavor(flavor):
+    assert get_variant_from_flavor(flavor[0]) == flavor[1]
+
+
 def test_get_package_list():
     gl_packages_gz = TEST_DATA_DIR / "Packages.gz"
 
@@ -48,6 +75,17 @@ def test_get_package_list():
                 status_code=200
             )
     assert isinstance(_get_package_list(GARDENLINUX_RELEASE), DebsrcFile)
+
+
+def test_download_metadata_file(downloads_dir):
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(GARDENLINUX_RELEASE, GARDENLINUX_COMMIT_SHORT))
+    download_metadata_file(s3_artifacts,
+                           cname.cname,
+                           GARDENLINUX_RELEASE,
+                           GARDENLINUX_COMMIT_SHORT,
+                           S3_DOWNLOADS_DIR)
+    os.path.isfile(S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml")
 
 
 def test_github_release_page(monkeypatch):
