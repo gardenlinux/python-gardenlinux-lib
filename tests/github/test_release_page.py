@@ -9,8 +9,10 @@ from git import Repo
 from gardenlinux.apt.debsource import DebsrcFile
 from gardenlinux.features import CName
 from gardenlinux.github.__main__ import (
-    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME, _get_package_list,
-    download_metadata_file, get_variant_from_flavor)
+    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME, RELEASE_ID_FILE, _get_package_list,
+    download_metadata_file, get_file_extension_for_platform,
+    get_platform_display_name, get_platform_release_note_data,
+    get_variant_from_flavor, write_to_release_id_file)
 from gardenlinux.s3 import S3Artifacts
 
 GARDENLINUX_RELEASE = "1877.3"
@@ -59,6 +61,15 @@ def downloads_dir():
     shutil.rmtree(S3_DOWNLOADS_DIR)
 
 
+@pytest.fixture
+def release_id_file():
+    with open(RELEASE_ID_FILE, "w"):
+        pass
+    os.chmod(RELEASE_ID_FILE, 0)
+    yield
+    os.remove(RELEASE_ID_FILE)
+
+
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
 def test_get_variant_from_flavor(flavor):
     assert get_variant_from_flavor(flavor[0]) == flavor[1]
@@ -75,6 +86,23 @@ def test_get_package_list():
                 status_code=200
             )
     assert isinstance(_get_package_list(GARDENLINUX_RELEASE), DebsrcFile)
+
+
+def test_get_platform_release_note_data_invalid_platform():
+    assert get_platform_release_note_data("_", "foo") is None
+
+
+def test_get_file_extension_for_platform_invalid_platform():
+    assert get_file_extension_for_platform("foo") == ".raw"
+
+
+def test_get_platform_display_name_invalid_platform():
+    assert get_platform_display_name("foo") == "FOO"
+
+
+def test_write_to_release_id_file_broken_file_permissions(release_id_file):
+    with pytest.raises(SystemExit):
+        write_to_release_id_file(GARDENLINUX_RELEASE)
 
 
 def test_download_metadata_file(downloads_dir):
@@ -152,3 +180,7 @@ def test_github_release_page(monkeypatch, downloads_dir):
             with open(release_fixture_path) as md:
                 release_notes_fixture = md.read()
                 assert generated_release_notes == release_notes_fixture
+
+
+def test_upload_to_github_release_page():
+    pass
