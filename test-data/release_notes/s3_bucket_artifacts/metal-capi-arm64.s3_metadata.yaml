@@ -1,0 +1,101 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:40.619990'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _ignite
+- _legacy
+- _pxe
+- _slim
+- base
+- server
+- metal
+- chost
+- khost
+- capi
+paths:
+- md5sum: 59ef097cf48f6091bdac652c15363663
+  name: metal-capi-arm64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 900d92fa8e557a8c6c982f1c8eed7d32
+  name: metal-capi-arm64-1877.3-75df9f40.pxe.tar.gz
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.pxe.tar.gz
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .pxe.tar.gz
+- md5sum: 4a1277f094d681d27894838579bbb90f
+  name: metal-capi-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 4a1277f094d681d27894838579bbb90f
+  name: metal-capi-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 30744d7edff17b810a57ce046386a63f
+  name: metal-capi-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: da3f23ae087e91535d414e17aae6c49e
+  name: metal-capi-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: ebe40d9d33607ccbd9991a2e31237644
+  name: metal-capi-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 4a1277f094d681d27894838579bbb90f
+  name: metal-capi-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: e4c57dd02a893a49609d787622d95eae
+  name: metal-capi-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 4a1277f094d681d27894838579bbb90f
+  name: metal-capi-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: c3b679562682936478b8654e825bedef
+  name: metal-capi-arm64-1877.3-75df9f40.pxe.tar.gz.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.pxe.tar.gz.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .pxe.tar.gz.log
+- md5sum: b516fe67bf0117c4dcdfe1b21f77d2db
+  name: metal-capi-arm64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-capi-arm64-1877.3-75df9f40/metal-capi-arm64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+platform: metal
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/metal-capi-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

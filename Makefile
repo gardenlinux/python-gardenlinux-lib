@@ -46,6 +46,9 @@ install-test: install-dev
 test: install-test
 	$(POETRY) run pytest -k "not kms"
 
+coverage:
+	$(POETRY) run coverage report -m
+
 test-coverage: install-test
 	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=html tests/
 

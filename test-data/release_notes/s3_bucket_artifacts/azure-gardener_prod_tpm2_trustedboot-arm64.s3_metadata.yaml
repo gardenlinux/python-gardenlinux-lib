@@ -1,0 +1,227 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:32.005497'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- azure
+- multipath
+- iscsi
+- nvme
+- gardener
+- _tpm2
+- _usi
+- _trustedboot
+paths:
+- md5sum: 35971b178dce3a2df0b569dbcdd74814
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 64f4582f19902eaf85d33a4fae85dc4a
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: dd083fb6e5161375ebbdd09be72046be
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.auth
+- md5sum: 71cd1e0927785984303bf045d06d5a00
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.auth
+- md5sum: d00a88a05460802c94211cdd7e8cc8e5
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.der
+- md5sum: 18aa7019ca44d54fb791b253d9ac52be
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.vhd.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.vhd.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vhd.log
+- md5sum: 35971b178dce3a2df0b569dbcdd74814
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: deb3e30bbbd0bc8b11b41fde73eef3dc
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.conf
+- md5sum: d41d8cd98f00b204e9800998ecf8427e
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.arn
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.arn
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.arn
+- md5sum: 79ffa1228382c7c5d7adf3578a209bd0
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.aws-efivars
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.aws-efivars
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.aws-efivars
+- md5sum: b0c40c161050025a8a9383b2f5cc9013
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 64f4582f19902eaf85d33a4fae85dc4a
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 866015eea9749a3b01b07bf385706676
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.der
+- md5sum: 00c6a209a251e559c491dc747eaef1bd
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.crt
+- md5sum: c186ed1f06ea27eb516e3db49cfee700
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.der
+- md5sum: 52a08859dd78bc3ec1d971e6e3896213
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.auth
+- md5sum: 632b0541a3c185ca584067d4ee2314a8
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 8c0534751f3fb0998157e9c6a3d810b5
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 64f4582f19902eaf85d33a4fae85dc4a
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: e4d493a5048426ba1472861560f47338
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.vhd
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.vhd
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vhd
+- md5sum: 94494df8e01481b52238a09206e0e3a2
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.crt
+- md5sum: 03d78f357e62eb5051bd5e04a69dc805
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.conf
+- md5sum: b40728f89d28b6581b506b3f0cf01e6b
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 32d06b0baf4e3027766ee19f0722ff40
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.null.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.null.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.null.pk.auth
+- md5sum: 592a7621dc5788f94bc365b4b29c072f
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 8a5567a95b1ad692aadf5f595706f312
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 4474c294b76e3f65574a013f6f8e89b1
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.crt
+- md5sum: 55b26949aaeb59e9699cebc4bbdcca3e
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.conf
+- md5sum: 58eec0a875c8d55c0a3cd4c736ce39ac
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 4edeed2585378c930b546c65d322d3fa
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 64f4582f19902eaf85d33a4fae85dc4a
+  name: azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+platform: azure
+published_image_metadata:
+  published_gallery_images:
+  - azure_cloud: public
+    community_gallery_image_id: /CommunityGalleries/gardenlinux-13e998fe-534d-4b0a-8a27-f16a73aef620/Images/gardenlinux-nvme-arm64-gen2-usi-secureboot/Versions/1877.3.0
+    hyper_v_generation: V2
+  - azure_cloud: china
+    community_gallery_image_id: /CommunityGalleries/gardenlinux-8e6518fb-9ae0-4f66-abfd-9a06997e2492/Images/gardenlinux-nvme-arm64-gen2-usi-secureboot/Versions/1877.3.0
+    hyper_v_generation: V2
+  published_marketplace_images: []
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/azure-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+secureboot: true
+test_result: null
+version: '1877.3'

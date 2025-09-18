@@ -1,0 +1,277 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:29.267582'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- aws
+- multipath
+- iscsi
+- nvme
+- gardener
+- _tpm2
+- _usi
+- _trustedboot
+paths:
+- md5sum: 8243543bb4ed8d495662ef218aed9d9b
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 866015eea9749a3b01b07bf385706676
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.der
+- md5sum: 03d78f357e62eb5051bd5e04a69dc805
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.conf
+- md5sum: 8c0534751f3fb0998157e9c6a3d810b5
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 40eb7202cb8049721aaa1ba637469309
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 0cfe4815af000fcdea7d7e5b8515cebc
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: d390574c13df3e49ce200bbeba5e0e08
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: ba9b31f1a9ec7dd34bd578e47fac7b5d
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 79ffa1228382c7c5d7adf3578a209bd0
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.aws-efivars
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.aws-efivars
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.aws-efivars
+- md5sum: 4dc4878451eec3317655cfbaaec8118e
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 00c6a209a251e559c491dc747eaef1bd
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.crt
+- md5sum: e5aff4397d06065fb77719a7f939c45b
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 94494df8e01481b52238a09206e0e3a2
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.crt
+- md5sum: dd083fb6e5161375ebbdd09be72046be
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.auth
+- md5sum: d2e949b4238b341baadc4e0d8f35f7d0
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: deb3e30bbbd0bc8b11b41fde73eef3dc
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.conf
+- md5sum: ba9ffe8f691424c5a44d15b30a0e1191
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 55b26949aaeb59e9699cebc4bbdcca3e
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.conf
+- md5sum: 71cd1e0927785984303bf045d06d5a00
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.auth
+- md5sum: 4474c294b76e3f65574a013f6f8e89b1
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.crt
+- md5sum: 32d06b0baf4e3027766ee19f0722ff40
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.null.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.null.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.null.pk.auth
+- md5sum: 52a08859dd78bc3ec1d971e6e3896213
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.auth
+- md5sum: 527afa118ccd8e1265dc45e29efa58fe
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: ba9b31f1a9ec7dd34bd578e47fac7b5d
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: c186ed1f06ea27eb516e3db49cfee700
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.der
+- md5sum: 40eb7202cb8049721aaa1ba637469309
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 45f4004d7f4bd20ff985e151664910b0
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: d00a88a05460802c94211cdd7e8cc8e5
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.kek.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.der
+- md5sum: ba9b31f1a9ec7dd34bd578e47fac7b5d
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: ba9b31f1a9ec7dd34bd578e47fac7b5d
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: d41d8cd98f00b204e9800998ecf8427e
+  name: aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.arn
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40.secureboot.db.arn
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.arn
+platform: aws
+published_image_metadata:
+  published_aws_images:
+  - ami_id: ami-035b751a08f528e47
+    aws_region_id: ap-south-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-04c60d1feb092d00f
+    aws_region_id: eu-north-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0443172a73fe4fb27
+    aws_region_id: eu-west-3
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-02f8a867d02227542
+    aws_region_id: eu-south-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-06a900dd59c84620d
+    aws_region_id: eu-west-2
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-056a9d8447a991bff
+    aws_region_id: eu-west-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0769caf50f7b7fb6f
+    aws_region_id: ap-northeast-3
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-06ad8c60e1093b543
+    aws_region_id: ap-northeast-2
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0b8313d62dfeec78b
+    aws_region_id: ap-northeast-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0fa388dcaca7b3baf
+    aws_region_id: me-central-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-02e7a07f60a5e0411
+    aws_region_id: ca-central-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-000ca39b22f2a695c
+    aws_region_id: sa-east-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-04f521cff21b58f50
+    aws_region_id: ap-southeast-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-02f5afcce42276457
+    aws_region_id: ap-southeast-2
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0a25256d5aaf8fdd7
+    aws_region_id: us-east-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-07bcfed39a329b612
+    aws_region_id: us-east-2
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0b2e93f36b5a8bff2
+    aws_region_id: us-west-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-063f4f34958917b5c
+    aws_region_id: us-west-2
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+  - ami_id: ami-0b15b442dd5e90d50
+    aws_region_id: eu-central-1
+    image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/aws-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40
+secureboot: true
+test_result: null
+version: '1877.3'

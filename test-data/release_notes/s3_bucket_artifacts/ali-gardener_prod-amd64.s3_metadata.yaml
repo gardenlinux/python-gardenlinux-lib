@@ -1,0 +1,188 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:14.341330'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _legacy
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- ali
+- multipath
+- iscsi
+- nvme
+- gardener
+paths:
+- md5sum: 509c00f64279214b2b2da852eff090a5
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: ad6ef2a783c3ff41121c4b737676e856
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: ed2508739ef125509598fd59501cfab1
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 1f4b5a08ab62b46d129ca5d50687b0d8
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.qcow2
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.qcow2
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2
+- md5sum: 6fc647efdb84e2510c30eff2741a573c
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 99ffb5ea74e0799faca2737dc3bf8d89
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.qcow2.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.qcow2.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2.log
+- md5sum: 6fc647efdb84e2510c30eff2741a573c
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 6fc647efdb84e2510c30eff2741a573c
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: d2dab0252d2b9b7542a8255a1e7e4aa7
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 008002e0d4cf9a832756ae303b597e56
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 6fc647efdb84e2510c30eff2741a573c
+  name: ali-gardener_prod-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/ali-gardener_prod-amd64-1877.3-75df9f40/ali-gardener_prod-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+platform: ali
+published_image_metadata:
+  published_alicloud_images:
+  - image_id: m-m5efm8l2bltkbloui235
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-qingdao
+  - image_id: m-2zee5ebi20ltzy5et7in
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-beijing
+  - image_id: m-8vbddy2wfex9nb29afcy
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-zhangjiakou
+  - image_id: m-hp3bx14og6cw9thujw1d
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-huhehaote
+  - image_id: m-0jlh1iq2f3bryb5okjdk
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-wulanchabu
+  - image_id: m-bp13aseh5a2wn0s5rdz6
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-hangzhou
+  - image_id: m-uf61jbe9n8a9291h4u21
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-shanghai
+  - image_id: m-gc77bfbctuzphl2bpk0o
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-nanjing
+  - image_id: m-wz9gio8m5ey0foj0g4xx
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-shenzhen
+  - image_id: m-f8zdn54v0blnsafxb1t5
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-heyuan
+  - image_id: m-7xv0q5feffsxxyttxdy9
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-guangzhou
+  - image_id: m-gw07bfbctuzphl2bpk0p
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-fuzhou
+  - image_id: m-n4a1u2avlb9pq0u5bdms
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-wuhan-lr
+  - image_id: m-2vc5saul2saa2z57h216
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-chengdu
+  - image_id: m-j6c4zk6mwb2673iq5wrz
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: cn-hongkong
+  - image_id: m-6weibwo3vrt7ar7nelc9
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-northeast-1
+  - image_id: m-mj73oldn06th2vy0ymhv
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-northeast-2
+  - image_id: m-t4ngrf81d0fohwq493pw
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-southeast-1
+  - image_id: m-8psd64gzc1eru0qld7cc
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-southeast-3
+  - image_id: m-5tsdd6k3z1vvdyyio7zn
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-southeast-6
+  - image_id: m-k1aj4usnhqcssa2fpy0c
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-southeast-5
+  - image_id: m-0jo6uwekvn0gnwhwnq3s
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: ap-southeast-7
+  - image_id: m-0xi8netpfc2fdwfstz3c
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: us-east-1
+  - image_id: m-rj9gwpx907qv6p6x8w45
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: us-west-1
+  - image_id: m-4hfi34x77oaeznwuulq6
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: na-south-1
+  - image_id: m-d7o2ny5xc0m3kacxjbem
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: eu-west-1
+  - image_id: m-eb39mgohcec6gaynet9l
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: me-east-1
+  - image_id: m-gw86dlqmpaugljiykx91
+    image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
+    region_id: eu-central-1
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/ali-gardener_prod-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
