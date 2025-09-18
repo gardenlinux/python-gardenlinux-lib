@@ -85,10 +85,52 @@ def test_download_metadata_file(downloads_dir):
                            GARDENLINUX_RELEASE,
                            GARDENLINUX_COMMIT_SHORT,
                            S3_DOWNLOADS_DIR)
-    os.path.isfile(S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml")
+    assert (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
-def test_github_release_page(monkeypatch):
+def test_download_metadata_file_no_such_release(downloads_dir):
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = "0000.0"
+    commit = GARDENLINUX_COMMIT_SHORT
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+
+
+def test_download_metadata_file_no_such_commit(downloads_dir):
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = GARDENLINUX_RELEASE
+    commit = "deadbeef"
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+
+
+def test_download_metadata_file_no_such_release_and_commit(downloads_dir):
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = "0000.0"
+    commit = "deadbeef"
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+
+
+def test_github_release_page(monkeypatch, downloads_dir):
     monkeypatch.setattr("gardenlinux.github.__main__.Repo", SubmoduleAsRepo)
     import gardenlinux.github
 
