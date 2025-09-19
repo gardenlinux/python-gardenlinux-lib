@@ -73,8 +73,7 @@ def downloads_dir():
 @pytest.fixture
 def release_id_file():
     f = Path(RELEASE_ID_FILE)
-    f.touch(0)  # this will make the file unwritable
-    yield
+    yield f
     f.unlink()
 
 
@@ -133,9 +132,17 @@ def test_get_platform_display_name_invalid_platform():
     assert get_platform_display_name("foo") == "FOO"
 
 
-def test_write_to_release_id_file_broken_file_permissions(release_id_file):
+def test_write_to_release_id_file(release_id_file):
+    write_to_release_id_file(GARDENLINUX_RELEASE)
+    assert release_id_file.read_text() == GARDENLINUX_RELEASE
+
+
+def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplog):
+    release_id_file.touch(0)  # this will make the file unwritable
+
     with pytest.raises(SystemExit):
         write_to_release_id_file(GARDENLINUX_RELEASE)
+    assert any("Could not create" in record.message for record in caplog.records), "Expected a failure log record"
 
 
 def test_download_metadata_file(downloads_dir, release_s3_bucket):
@@ -348,6 +355,19 @@ def test_upload_to_github_release_page(downloads_dir, caplog, github_token, arti
             dry_run=False)
         assert any("Upload successful" in record.message for record in caplog.records), \
             "Expected an upload confirmation log entry"
+
+
+def test_upload_to_github_release_page_unreadable_artifact(downloads_dir, caplog, github_token, artifact_for_upload):
+    artifact_for_upload.chmod(0)
+
+    upload_to_github_release_page(
+        "gardenlinux",
+        "gardenlinux",
+        GARDENLINUX_RELEASE,
+        artifact_for_upload,
+        dry_run=False)
+    assert any("Error reading file" in record.message for record in caplog.records), \
+        "Expected an error message log entry"
 
 
 def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_token, artifact_for_upload):
