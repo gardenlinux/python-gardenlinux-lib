@@ -9,6 +9,7 @@ import requests_mock
 from git import Repo
 from moto import mock_aws
 
+import gardenlinux
 import gardenlinux.github.__main__ as gh
 from gardenlinux.apt.debsource import DebsrcFile
 from gardenlinux.features import CName
@@ -421,3 +422,43 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
 
     assert "the following arguments are required: --release_id, --file_path" in captured.err, \
         "Expected help message on missing arguments for 'upload' command"
+
+
+def test_script_create_dry_run(monkeypatch, capfd):
+
+    monkeypatch.setattr(sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo",
+                        "gardenlinux", "--tag", GARDENLINUX_RELEASE, "--commit", GARDENLINUX_COMMIT, "--dry-run"])
+    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release_notes",
+                        lambda tag, commit: f"{tag} {commit}")
+
+    gh.main()
+    captured = capfd.readouterr()
+
+    assert captured.out == f"{GARDENLINUX_RELEASE} {GARDENLINUX_COMMIT}\n", \
+        "Expected dry-run create to return generated release notes text"
+
+
+def test_script_create(monkeypatch, caplog):
+    monkeypatch.setattr(sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo",
+                        "gardenlinux", "--tag", GARDENLINUX_RELEASE, "--commit", GARDENLINUX_COMMIT])
+    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release_notes",
+                        lambda tag, commit: f"{tag} {commit}")
+    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release",
+                        lambda a1, a2, a3, a4, a5: GARDENLINUX_RELEASE)
+
+    gh.main()
+
+    assert any(f"Release created with ID: {GARDENLINUX_RELEASE}" in record.message for record in caplog.records), \
+        "Expected a release creation confirmation log entry"
+
+
+def test_script_upload_dry_run(monkeypatch, capfd):
+    monkeypatch.setattr(sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo",
+                        "gardenlinux", "--release_id", GARDENLINUX_RELEASE, "--file_path", "foo", "--dry-run"])
+    monkeypatch.setattr("gardenlinux.github.__main__.upload_to_github_release_page",
+                        lambda a1, a2, a3, a4, dry_run: print(f"dry-run: {dry_run}"))
+
+    gh.main()
+    captured = capfd.readouterr()
+
+    assert captured.out == "dry-run: True\n"
