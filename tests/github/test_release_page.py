@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ import requests_mock
 from git import Repo
 from moto import mock_aws
 
+import gardenlinux.github.__main__ as gh
 from gardenlinux.apt.debsource import DebsrcFile
 from gardenlinux.features import CName
 from gardenlinux.github.__main__ import (
@@ -387,3 +389,35 @@ def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_toke
                 dry_run=False)
         assert any("Upload failed with status code 503:" in record.message for record in caplog.records), \
             "Expected an error HTTP status code to be logged"
+
+
+def test_script_parse_args_wrong_command(monkeypatch, capfd):
+    monkeypatch.setattr(sys, "argv", ["gh", "rejoice"])
+
+    with pytest.raises(SystemExit):
+        gh.main()
+    captured = capfd.readouterr()
+
+    assert "argument command: invalid choice: 'rejoice'" in captured.err, "Expected help message printed"
+
+
+def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
+    monkeypatch.setattr(sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo", "gardenlinux"])
+
+    with pytest.raises(SystemExit):
+        gh.main()
+    captured = capfd.readouterr()
+
+    assert "the following arguments are required: --tag, --commit" in captured.err, \
+        "Expected help message on missing arguments for 'create' command"
+
+
+def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
+    monkeypatch.setattr(sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo", "gardenlinux"])
+
+    with pytest.raises(SystemExit):
+        gh.main()
+    captured = capfd.readouterr()
+
+    assert "the following arguments are required: --release_id, --file_path" in captured.err, \
+        "Expected help message on missing arguments for 'upload' command"
