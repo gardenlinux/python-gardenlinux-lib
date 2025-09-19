@@ -12,9 +12,10 @@ from gardenlinux.apt.debsource import DebsrcFile
 from gardenlinux.features import CName
 from gardenlinux.github.__main__ import (
     GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME, RELEASE_ID_FILE, _get_package_list,
-    download_metadata_file, get_file_extension_for_platform,
-    get_platform_display_name, get_platform_release_note_data,
-    get_variant_from_flavor, release_notes_changes_section,
+    create_github_release, download_metadata_file,
+    get_file_extension_for_platform, get_platform_display_name,
+    get_platform_release_note_data, get_variant_from_flavor,
+    release_notes_changes_section,
     release_notes_compare_package_versions_section,
     upload_to_github_release_page, write_to_release_id_file)
 from gardenlinux.s3 import S3Artifacts
@@ -77,6 +78,13 @@ def release_id_file():
     os.chmod(RELEASE_ID_FILE, 0)
     yield
     os.remove(RELEASE_ID_FILE)
+
+
+@pytest.fixture
+def github_token():
+    os.environ["GITHUB_TOKEN"] = "foobarbazquux"
+    yield
+    del os.environ["GITHUB_TOKEN"]
 
 
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
@@ -197,6 +205,52 @@ def test_release_notes_compare_package_versions_section_unrecognizable_version()
     assert release_notes_compare_package_versions_section("garden.linux", []) == ""
 
 
+def test_create_github_release_needs_github_token():
+    with requests_mock.Mocker():
+        with pytest.raises(ValueError) as exn:
+            create_github_release(
+                "gardenlinux",
+                "gardenlinux",
+                GARDENLINUX_RELEASE,
+                GARDENLINUX_COMMIT,
+                "")
+            assert str(exn.value) == "GITHUB_TOKEN environment variable not set", \
+                "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+
+
+def test_create_github_release_raise_on_failure(caplog, github_token):
+    with requests_mock.Mocker() as m:
+        with pytest.raises(requests.exceptions.HTTPError):
+            m.post(
+                "https://api.github.com/repos/gardenlinux/gardenlinux/releases",
+                text="{}",
+                status_code=503
+            )
+            create_github_release(
+                "gardenlinux",
+                "gardenlinux",
+                GARDENLINUX_RELEASE,
+                GARDENLINUX_COMMIT,
+                "")
+        assert any("Failed to create release" in record.message for record in caplog.records), "Expected a failure log record"
+
+
+def test_create_github_release(caplog, github_token):
+    with requests_mock.Mocker() as m:
+        m.post(
+            "https://api.github.com/repos/gardenlinux/gardenlinux/releases",
+            text='{"id": 101}',
+            status_code=201
+        )
+        assert create_github_release(
+            "gardenlinux",
+            "gardenlinux",
+            GARDENLINUX_RELEASE,
+            GARDENLINUX_COMMIT,
+            "") == 101
+        assert any("Release created successfully" in record.message for record in caplog.records), "Expected a success log record"
+
+
 @mock_aws
 def test_github_release_page(monkeypatch, downloads_dir):
     monkeypatch.setattr("gardenlinux.github.__main__.Repo", SubmoduleAsRepo)
@@ -244,8 +298,10 @@ def test_upload_to_github_release_page_dryrun(caplog):
         assert any("Dry run: would upload" in record.message for record in caplog.records), "Expected a dry‑run log entry"
 
 
-def test_upload_to_github_release_page_needs_github_token():
+def test_upload_to_github_release_page_needs_github_token(downloads_dir):
     with requests_mock.Mocker():
+        with open(S3_DOWNLOADS_DIR / "artifact.log", "w") as f:
+            f.write("AllThePrettyLittleHorses")
         with pytest.raises(ValueError) as exn:
             upload_to_github_release_page(
                 "gardenlinux",
@@ -257,8 +313,7 @@ def test_upload_to_github_release_page_needs_github_token():
                 "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
 
 
-def test_upload_to_github_release_page(downloads_dir, caplog):
-    os.environ["GITHUB_TOKEN"] = "foobarbazquux"
+def test_upload_to_github_release_page(downloads_dir, caplog, github_token):
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{GARDENLINUX_RELEASE}/assets?name=artifact.log",
@@ -278,8 +333,7 @@ def test_upload_to_github_release_page(downloads_dir, caplog):
             "Expected an upload confirmation log entry"
 
 
-def test_upload_to_github_release_page_failed(downloads_dir, caplog):
-    os.environ["GITHUB_TOKEN"] = "foobarbazquux"
+def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_token):
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{GARDENLINUX_RELEASE}/assets?name=artifact.log",
