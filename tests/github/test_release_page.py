@@ -72,12 +72,10 @@ def downloads_dir():
 
 @pytest.fixture
 def release_id_file():
-    # this will make the file unwritable
-    with open(RELEASE_ID_FILE, "w"):
-        pass
-    os.chmod(RELEASE_ID_FILE, 0)
+    f = Path(RELEASE_ID_FILE)
+    f.touch(0)  # this will make the file unwritable
     yield
-    os.remove(RELEASE_ID_FILE)
+    f.unlink()
 
 
 @pytest.fixture
@@ -95,6 +93,14 @@ def release_s3_bucket():
                          CreateBucketConfiguration={
                              'LocationConstraint': 'eu-central-1'})
         yield s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+
+
+@pytest.fixture
+def artifact_for_upload(downloads_dir):
+    artifact = S3_DOWNLOADS_DIR / "artifact.log"
+    artifact.touch()
+    yield artifact
+    artifact.unlink()
 
 
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
@@ -132,24 +138,18 @@ def test_write_to_release_id_file_broken_file_permissions(release_id_file):
         write_to_release_id_file(GARDENLINUX_RELEASE)
 
 
-def test_download_metadata_file(downloads_dir):
-    with mock_aws():
-        s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-                         CreateBucketConfiguration={
-                             'LocationConstraint': 'eu-central-1'})
-        bucket = s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                           f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
+def test_download_metadata_file(downloads_dir, release_s3_bucket):
+    release_s3_bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
+                                  f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
 
-        s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(GARDENLINUX_RELEASE, GARDENLINUX_COMMIT_SHORT))
-        download_metadata_file(s3_artifacts,
-                               cname.cname,
-                               GARDENLINUX_RELEASE,
-                               GARDENLINUX_COMMIT_SHORT,
-                               S3_DOWNLOADS_DIR)
-        assert (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(GARDENLINUX_RELEASE, GARDENLINUX_COMMIT_SHORT))
+    download_metadata_file(s3_artifacts,
+                           cname.cname,
+                           GARDENLINUX_RELEASE,
+                           GARDENLINUX_COMMIT_SHORT,
+                           S3_DOWNLOADS_DIR)
+    assert (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
 def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
@@ -203,7 +203,7 @@ def test_download_metadata_file_no_such_release_and_commit(downloads_dir, releas
 
 
 def test_release_notes_changes_section_empty_packagelist():
-    with requests_mock.Mocker(real_http=True) as m:
+    with requests_mock.Mocker() as m:
         m.get(
             f"{GLVD_BASE_URL}/patchReleaseNotes/{GARDENLINUX_RELEASE}",
             text='{"packageList": []}',
@@ -214,7 +214,7 @@ def test_release_notes_changes_section_empty_packagelist():
 
 
 def test_release_notes_changes_section_broken_glvd_response():
-    with requests_mock.Mocker(real_http=True) as m:
+    with requests_mock.Mocker() as m:
         m.get(
             f"{GLVD_BASE_URL}/patchReleaseNotes/{GARDENLINUX_RELEASE}",
             text="<html><body><h1>Personal Home Page</h1></body></html>",
@@ -279,7 +279,7 @@ def test_create_github_release(caplog, github_token):
 
 
 @mock_aws
-def test_github_release_page(monkeypatch, downloads_dir):
+def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
     monkeypatch.setattr("gardenlinux.github.__main__.Repo", SubmoduleAsRepo)
     import gardenlinux.github
 
@@ -287,60 +287,52 @@ def test_github_release_page(monkeypatch, downloads_dir):
     glvd_response_fixture_path = TEST_DATA_DIR / f"glvd_{GARDENLINUX_RELEASE}.json"
 
     with requests_mock.Mocker(real_http=True) as m:
-        with mock_aws():
-            s3 = boto3.resource("s3", region_name="eu-central-1")
-            s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-                             CreateBucketConfiguration={
-                                 'LocationConstraint': 'eu-central-1'})
-            bucket = s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-            for yaml_file in S3_ARTIFACTS.glob("*.yaml"):
-                filename = yaml_file.name
-                base = filename[:-len(".s3_metadata.yaml")]
-                key = f"meta/singles/{base}-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}"
-                bucket.upload_file(str(yaml_file), key)
+        for yaml_file in S3_ARTIFACTS.glob("*.yaml"):
+            filename = yaml_file.name
+            base = filename[:-len(".s3_metadata.yaml")]
+            key = f"meta/singles/{base}-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}"
+            release_s3_bucket.upload_file(str(yaml_file), key)
 
-            resp_json = glvd_response_fixture_path.read_text()
-            m.get(
-                f"{GLVD_BASE_URL}/patchReleaseNotes/{GARDENLINUX_RELEASE}",
-                text=resp_json,
-                status_code=200
-            )
-            generated_release_notes = gardenlinux.github.create_github_release_notes(
-                GARDENLINUX_RELEASE,
-                GARDENLINUX_COMMIT
-            )
+        resp_json = glvd_response_fixture_path.read_text()
+        m.get(
+            f"{GLVD_BASE_URL}/patchReleaseNotes/{GARDENLINUX_RELEASE}",
+            text=resp_json,
+            status_code=200
+        )
+        generated_release_notes = gardenlinux.github.create_github_release_notes(
+            GARDENLINUX_RELEASE,
+            GARDENLINUX_COMMIT
+        )
 
-            release_notes_fixture = release_fixture_path.read_text()
-            assert generated_release_notes == release_notes_fixture
+        release_notes_fixture = release_fixture_path.read_text()
+        assert generated_release_notes == release_notes_fixture
 
 
-def test_upload_to_github_release_page_dryrun(caplog):
+def test_upload_to_github_release_page_dryrun(caplog, artifact_for_upload):
     with requests_mock.Mocker():
         assert upload_to_github_release_page(
             "gardenlinux",
             "gardenlinux",
             GARDENLINUX_RELEASE,
-            S3_DOWNLOADS_DIR / "artifact.log",
+            artifact_for_upload,
             dry_run=True) is None
         assert any("Dry run: would upload" in record.message for record in caplog.records), "Expected a dry‑run log entry"
 
 
-def test_upload_to_github_release_page_needs_github_token(downloads_dir):
+def test_upload_to_github_release_page_needs_github_token(downloads_dir, artifact_for_upload):
     with requests_mock.Mocker():
-        with open(S3_DOWNLOADS_DIR / "artifact.log", "w") as f:
-            f.write("AllThePrettyLittleHorses")
         with pytest.raises(ValueError) as exn:
             upload_to_github_release_page(
                 "gardenlinux",
                 "gardenlinux",
                 GARDENLINUX_RELEASE,
-                S3_DOWNLOADS_DIR / "artifact.log",
+                artifact_for_upload,
                 dry_run=False)
             assert str(exn.value) == "GITHUB_TOKEN environment variable not set", \
                 "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
 
 
-def test_upload_to_github_release_page(downloads_dir, caplog, github_token):
+def test_upload_to_github_release_page(downloads_dir, caplog, github_token, artifact_for_upload):
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{GARDENLINUX_RELEASE}/assets?name=artifact.log",
@@ -348,19 +340,17 @@ def test_upload_to_github_release_page(downloads_dir, caplog, github_token):
             status_code=201
         )
 
-        with open(S3_DOWNLOADS_DIR / "artifact.log", "w") as f:
-            f.write("AllThePrettyLittleHorses")
         upload_to_github_release_page(
             "gardenlinux",
             "gardenlinux",
             GARDENLINUX_RELEASE,
-            S3_DOWNLOADS_DIR / "artifact.log",
+            artifact_for_upload,
             dry_run=False)
         assert any("Upload successful" in record.message for record in caplog.records), \
             "Expected an upload confirmation log entry"
 
 
-def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_token):
+def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_token, artifact_for_upload):
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{GARDENLINUX_RELEASE}/assets?name=artifact.log",
@@ -368,14 +358,12 @@ def test_upload_to_github_release_page_failed(downloads_dir, caplog, github_toke
             status_code=503
         )
 
-        with open(S3_DOWNLOADS_DIR / "artifact.log", "w") as f:
-            f.write("AllThePrettyLittleHorses")
         with pytest.raises(requests.exceptions.HTTPError):
             upload_to_github_release_page(
                 "gardenlinux",
                 "gardenlinux",
                 GARDENLINUX_RELEASE,
-                S3_DOWNLOADS_DIR / "artifact.log",
+                artifact_for_upload,
                 dry_run=False)
         assert any("Upload failed with status code 503:" in record.message for record in caplog.records), \
             "Expected an error HTTP status code to be logged"
