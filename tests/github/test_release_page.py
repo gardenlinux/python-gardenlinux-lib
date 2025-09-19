@@ -87,6 +87,16 @@ def github_token():
     del os.environ["GITHUB_TOKEN"]
 
 
+@pytest.fixture
+def release_s3_bucket():
+    with mock_aws():
+        s3 = boto3.resource("s3", region_name="eu-central-1")
+        s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
+                         CreateBucketConfiguration={
+                             'LocationConstraint': 'eu-central-1'})
+        yield s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+
+
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
 def test_get_variant_from_flavor(flavor):
     assert get_variant_from_flavor(flavor[0]) == flavor[1]
@@ -142,72 +152,54 @@ def test_download_metadata_file(downloads_dir):
         assert (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
-def test_download_metadata_file_no_such_release(downloads_dir):
-    with mock_aws():
-        s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-                         CreateBucketConfiguration={
-                             'LocationConstraint': 'eu-central-1'})
-        bucket = s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                           f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
-        s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        release = "0000.0"
-        commit = GARDENLINUX_COMMIT_SHORT
-        cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
-        with pytest.raises(IndexError):
-            download_metadata_file(s3_artifacts,
-                                   cname.cname,
-                                   release,
-                                   commit,
-                                   S3_DOWNLOADS_DIR)
-        assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
+    release_s3_bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
+                                  f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = "0000.0"
+    commit = GARDENLINUX_COMMIT_SHORT
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
-def test_download_metadata_file_no_such_commit(downloads_dir):
-    with mock_aws():
-        s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-                         CreateBucketConfiguration={
-                             'LocationConstraint': 'eu-central-1'})
-        bucket = s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                           f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
+def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket):
+    release_s3_bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
+                                  f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
 
-        s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        release = GARDENLINUX_RELEASE
-        commit = "deadbeef"
-        cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
-        with pytest.raises(IndexError):
-            download_metadata_file(s3_artifacts,
-                                   cname.cname,
-                                   release,
-                                   commit,
-                                   S3_DOWNLOADS_DIR)
-        assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = GARDENLINUX_RELEASE
+    commit = "deadbeef"
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
-def test_download_metadata_file_no_such_release_and_commit(downloads_dir):
-    with mock_aws():
-        s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(Bucket=GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-                         CreateBucketConfiguration={
-                             'LocationConstraint': 'eu-central-1'})
-        bucket = s3.Bucket(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                           f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
+def test_download_metadata_file_no_such_release_and_commit(downloads_dir, release_s3_bucket):
+    release_s3_bucket.upload_file(S3_ARTIFACTS / "aws-gardener_prod-amd64.s3_metadata.yaml",
+                                  f"meta/singles/aws-gardener_prod-amd64-{GARDENLINUX_RELEASE}-{GARDENLINUX_COMMIT}")
 
-        s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-        release = "0000.0"
-        commit = "deadbeef"
-        cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
-        with pytest.raises(IndexError):
-            download_metadata_file(s3_artifacts,
-                                   cname.cname,
-                                   release,
-                                   commit,
-                                   S3_DOWNLOADS_DIR)
-        assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    release = "0000.0"
+    commit = "deadbeef"
+    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    with pytest.raises(IndexError):
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               release,
+                               commit,
+                               S3_DOWNLOADS_DIR)
+    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
 def test_release_notes_changes_section_empty_packagelist():
