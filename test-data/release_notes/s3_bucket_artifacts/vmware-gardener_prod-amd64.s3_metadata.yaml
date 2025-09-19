@@ -1,0 +1,104 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:21.851181'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _ignite
+- _legacy
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- vmware
+- multipath
+- iscsi
+- nvme
+- gardener
+paths:
+- md5sum: ce07506e44032e09075df344ff8630a9
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: ce07506e44032e09075df344ff8630a9
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: a22aceb6877ad306e416c8f8554c7e73
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 1c14e3ae9722cf7144285b286d7e7d54
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: c3c14afa2a16569d414916847f504c97
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: b0713bb33d29fbb27e697f5bb5666f94
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.ova.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.ova.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .ova.log
+- md5sum: d5cf741f5a44079a12d8c9bd4eca1305
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.ova
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.ova
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .ova
+- md5sum: ce07506e44032e09075df344ff8630a9
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 8d5e1d0bf64b49bf209b001c0f71c25f
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: ce07506e44032e09075df344ff8630a9
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: bdd11d636a3bd8aa95e07ab045b8dcd9
+  name: vmware-gardener_prod-amd64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/vmware-gardener_prod-amd64-1877.3-75df9f40/vmware-gardener_prod-amd64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+platform: vmware
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/vmware-gardener_prod-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

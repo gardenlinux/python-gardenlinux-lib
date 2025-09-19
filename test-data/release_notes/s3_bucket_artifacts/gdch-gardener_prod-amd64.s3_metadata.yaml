@@ -1,0 +1,91 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:57.116500'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _legacy
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- gdch
+- multipath
+- iscsi
+- nvme
+- gardener
+paths:
+- md5sum: 84156c6e6b4f41ff32b3b7777ced804d
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: be2aed9b412affcfc4e57d33538e1512
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 84156c6e6b4f41ff32b3b7777ced804d
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 4a12425f7755b3b1ed4800116ad4f14b
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz.log
+- md5sum: 2093de29ce392701214b88c249d187f2
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 84156c6e6b4f41ff32b3b7777ced804d
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 84156c6e6b4f41ff32b3b7777ced804d
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 15a03ca5802626c9b39ea3ecd0f48b17
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz
+- md5sum: 14d6befc6e0c9a0dbd605d097b68b495
+  name: gdch-gardener_prod-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gdch-gardener_prod-amd64-1877.3-75df9f40/gdch-gardener_prod-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+platform: gdch
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/gdch-gardener_prod-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

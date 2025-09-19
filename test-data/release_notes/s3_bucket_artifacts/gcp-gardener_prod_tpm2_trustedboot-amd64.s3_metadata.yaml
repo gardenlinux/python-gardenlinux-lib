@@ -1,0 +1,233 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:40.646191'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- gcp
+- multipath
+- iscsi
+- nvme
+- gardener
+- _tpm2
+- _usi
+- _trustedboot
+paths:
+- md5sum: ba37a1d2773bdbc8e9d7aebb94d3b59b
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: d86a4370f351d9b71c652b409b204254
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 55b26949aaeb59e9699cebc4bbdcca3e
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.conf
+- md5sum: e7ad8774649d057197b2230e14434885
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: d86a4370f351d9b71c652b409b204254
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz.log
+- md5sum: 79ffa1228382c7c5d7adf3578a209bd0
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.aws-efivars
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.aws-efivars
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.aws-efivars
+- md5sum: deb3e30bbbd0bc8b11b41fde73eef3dc
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.conf
+- md5sum: 1b5e1cb570e94a03f0850743d2a370e5
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 1b5e1cb570e94a03f0850743d2a370e5
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 03d78f357e62eb5051bd5e04a69dc805
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.conf
+- md5sum: d41d8cd98f00b204e9800998ecf8427e
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.arn
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.arn
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.arn
+- md5sum: fbc72aae422d96c75f75c79448de5c43
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz
+- md5sum: cd83834ee317da43cdb433afbbaf342d
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 00c6a209a251e559c491dc747eaef1bd
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.crt
+- md5sum: 8a0cedc292b826d5380089a10de1513f
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 71cd1e0927785984303bf045d06d5a00
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.auth
+- md5sum: 8e5ff70911ccf86a270f2df8df437fb9
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 827e26a3694eba7901d0a3308c4afc3b
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 32d06b0baf4e3027766ee19f0722ff40
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.null.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.null.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.null.pk.auth
+- md5sum: f4dfe8a5dd7c912408fa59f761e8840b
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 1b5e1cb570e94a03f0850743d2a370e5
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 866015eea9749a3b01b07bf385706676
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.der
+- md5sum: 52a08859dd78bc3ec1d971e6e3896213
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.auth
+- md5sum: 4474c294b76e3f65574a013f6f8e89b1
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.crt
+- md5sum: 09a7ce267143459536cb1f17f4774c04
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 94494df8e01481b52238a09206e0e3a2
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.crt
+- md5sum: d00a88a05460802c94211cdd7e8cc8e5
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.der
+- md5sum: c186ed1f06ea27eb516e3db49cfee700
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.der
+- md5sum: 35b97420a1f743c4444cd15fa52c7e1e
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 3b2028168a2fa5232cbf549a84acf3f1
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: dd083fb6e5161375ebbdd09be72046be
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.auth
+- md5sum: 1b5e1cb570e94a03f0850743d2a370e5
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: ba37a1d2773bdbc8e9d7aebb94d3b59b
+  name: gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+platform: gcp
+published_image_metadata:
+  gcp_image_name: gardenlinux-gcp-b4636aa3660a8d166531aab9-1877-3-75df9f40
+  gcp_project_name: sap-se-gcp-gardenlinux
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/gcp-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40
+secureboot: true
+test_result: null
+version: '1877.3'

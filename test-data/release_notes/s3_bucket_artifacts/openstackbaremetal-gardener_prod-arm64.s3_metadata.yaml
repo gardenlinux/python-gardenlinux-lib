@@ -1,0 +1,103 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:15.543918'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _legacy
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- metal
+- openstackbaremetal
+- multipath
+- iscsi
+- nvme
+- gardener
+paths:
+- md5sum: 4c15b91586f2a4c123c7627a8be711b6
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.vmdk
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.vmdk
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vmdk
+- md5sum: f57c5c6e8835f07fc267c1cc28af19ca
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: ebe40d9d33607ccbd9991a2e31237644
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 8ed6aa12bba6718cbf9b3b2944c2c927
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.qcow2
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.qcow2
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2
+- md5sum: 8eab4412b0993d5de157803a1340f825
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.vmdk.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.vmdk.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vmdk.log
+- md5sum: d8b567e70758cfb0641f960724f3b727
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: f9efa0960fd92f224b7b1169cd8c6e5b
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: fa61b7fb9dcf96b859c5f3645c002fc0
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 174417199fb77d6cdfa6f88e84653b6e
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.qcow2.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.qcow2.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2.log
+- md5sum: 07efb74726196db2d2c14a86f10345e3
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 6673374a016b29564778ffae08161e99
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 696beebcdb753921c8d8a2926581b67d
+  name: openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+platform: openstackbaremetal
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/openstackbaremetal-gardener_prod-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
