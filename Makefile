@@ -47,7 +47,7 @@ test: install-test
 	$(POETRY) run pytest -k "not kms"
 
 test-coverage: install-test
-	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=xml tests/
+	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=html tests/
 
 test-coverage-ci: install-test
 	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=xml --cov-fail-under=85 tests/
@@ -62,13 +62,13 @@ format: install-dev
 	$(POETRY) run black --extend-exclude test-data/gardenlinux .
 
 lint: install-dev
-	$(POETRY) run black --check --extend-exclude test-data/gardenlinux .
+	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \
-		$(POETRY) run bandit -ll -ii -r . -f json -o bandit-report.json ; \
+		$(POETRY) run bandit -c pyproject.toml -ll -ii -r . -f json -o bandit-report.json ; \
 	else \
-		$(POETRY) run bandit -r . ; \
+		$(POETRY) run bandit -c pyproject.toml -r . ; \
 	fi
 
 docs: install-docs
