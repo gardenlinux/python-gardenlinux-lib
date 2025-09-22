@@ -19,8 +19,9 @@ from gardenlinux.github.__main__ import (
     upload_to_github_release_page, write_to_release_id_file)
 from gardenlinux.s3 import S3Artifacts
 
-from ..constants import (GL_REPO_BASE_URL, GLVD_BASE_URL, S3_ARTIFACTS_DIR,
-                         S3_DOWNLOADS_DIR, TEST_DATA_DIR,
+from ..constants import (GL_REPO_BASE_URL, GLVD_BASE_URL,
+                         RELEASE_NOTES_S3_ARTIFACTS_DIR,
+                         RELEASE_NOTES_TEST_DATA_DIR, S3_DOWNLOADS_DIR,
                          TEST_GARDENLINUX_COMMIT,
                          TEST_GARDENLINUX_COMMIT_SHORT,
                          TEST_GARDENLINUX_RELEASE)
@@ -60,7 +61,7 @@ def test_get_variant_from_flavor(flavor):
 
 
 def test_get_package_list():
-    gl_packages_gz = TEST_DATA_DIR / "Packages.gz"
+    gl_packages_gz = RELEASE_NOTES_TEST_DATA_DIR / "Packages.gz"
 
     with requests_mock.Mocker(real_http=True) as m:
         with open(gl_packages_gz, 'rb') as pgz:
@@ -98,7 +99,7 @@ def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplo
 
 
 def test_download_metadata_file(downloads_dir, release_s3_bucket):
-    release_s3_bucket.upload_file(S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+    release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
                                   f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
     s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
@@ -112,7 +113,7 @@ def test_download_metadata_file(downloads_dir, release_s3_bucket):
 
 
 def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
-    release_s3_bucket.upload_file(S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+    release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
                                   f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
     s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
     release = "0000.0"
@@ -128,7 +129,7 @@ def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket
 
 
 def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket):
-    release_s3_bucket.upload_file(S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+    release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
                                   f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
     s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
@@ -145,7 +146,7 @@ def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket)
 
 
 def test_download_metadata_file_no_such_release_and_commit(downloads_dir, release_s3_bucket):
-    release_s3_bucket.upload_file(S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+    release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
                                   f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
     s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
@@ -242,11 +243,11 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
     monkeypatch.setattr("gardenlinux.github.__main__.Repo", SubmoduleAsRepo)
     import gardenlinux.github
 
-    release_fixture_path = TEST_DATA_DIR / f"github_release_notes_{TEST_GARDENLINUX_RELEASE}.md"
-    glvd_response_fixture_path = TEST_DATA_DIR / f"glvd_{TEST_GARDENLINUX_RELEASE}.json"
+    release_fixture_path = RELEASE_NOTES_TEST_DATA_DIR / f"github_release_notes_{TEST_GARDENLINUX_RELEASE}.md"
+    glvd_response_fixture_path = RELEASE_NOTES_TEST_DATA_DIR / f"glvd_{TEST_GARDENLINUX_RELEASE}.json"
 
     with requests_mock.Mocker(real_http=True) as m:
-        for yaml_file in S3_ARTIFACTS_DIR.glob("*.yaml"):
+        for yaml_file in RELEASE_NOTES_S3_ARTIFACTS_DIR.glob("*.yaml"):
             filename = yaml_file.name
             base = filename[:-len(".s3_metadata.yaml")]
             key = f"meta/singles/{base}-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}"

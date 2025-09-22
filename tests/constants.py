@@ -30,6 +30,7 @@ TEST_GARDENLINUX_RELEASE = "1877.3"
 TEST_GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
 TEST_GARDENLINUX_COMMIT_SHORT = TEST_GARDENLINUX_COMMIT[:8]
 
-TEST_DATA_DIR = Path(os.path.dirname(__file__)) / ".." / "test-data" / "release_notes"
-S3_ARTIFACTS_DIR = TEST_DATA_DIR / "s3_bucket_artifacts"
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
+
+RELEASE_NOTES_TEST_DATA_DIR = Path(os.path.dirname(__file__)) / ".." / "test-data" / "release_notes"
+RELEASE_NOTES_S3_ARTIFACTS_DIR = RELEASE_NOTES_TEST_DATA_DIR / "s3_bucket_artifacts"
