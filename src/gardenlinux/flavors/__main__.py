@@ -12,12 +12,9 @@ import json
 import os
 import sys
 
-from git import Repo
-from git.exc import GitError
-
 from .parser import Parser
 from ..constants import GL_REPOSITORY_URL
-from ..git import Git
+from ..git import Repository
 
 
 def _get_flavors_file_data(flavors_file):
@@ -140,21 +137,17 @@ def main():
     args = parse_args()
 
     try:
-        flavors_data = _get_flavors_file_data(Path(Git().root, "flavors.yaml"))
-    except (GitError, RuntimeError):
+        flavors_data = _get_flavors_file_data(Path(Repository().root, "flavors.yaml"))
+    except RuntimeError:
         with TemporaryDirectory() as git_directory:
-            repo = Repo.clone_from(
-                GL_REPOSITORY_URL, git_directory, no_origin=True, sparse=True
+            repo = Repository.checkout_repo_sparse(
+                git_directory,
+                ["flavors.yaml"],
+                repo_url=GL_REPOSITORY_URL,
+                commit=args.commit,
             )
 
-            ref = repo.heads.main
-
-            if args.commit is not None:
-                ref = ref.set_commit(args.commit)
-
-            flavors_data = _get_flavors_file_data(
-                Path(repo.working_dir, "flavors.yaml")
-            )
+            flavors_data = _get_flavors_file_data(Path(repo.root, "flavors.yaml"))
 
     combinations = Parser(flavors_data).filter(
         include_only_patterns=args.include_only,
