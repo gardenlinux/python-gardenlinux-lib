@@ -715,7 +715,7 @@ def write_to_release_id_file(release_id):
         sys.exit(1)
 
 
-def create_github_release(owner, repo, tag, commitish, body):
+def create_github_release(owner, repo, tag, commitish, latest, body):
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise ValueError("GITHUB_TOKEN environment variable not set")
@@ -732,6 +732,7 @@ def create_github_release(owner, repo, tag, commitish, body):
         "body": body,
         "draft": False,
         "prerelease": False,
+        "make_latest": latest
     }
 
     response = requests.post(
@@ -797,6 +798,7 @@ def main():
     create_parser.add_argument("--repo", default="gardenlinux")
     create_parser.add_argument("--tag", required=True)
     create_parser.add_argument("--commit", required=True)
+    create_parser.add_argument('--latest', action='store_true', default=False)
     create_parser.add_argument("--dry-run", action="store_true", default=False)
 
     upload_parser = subparsers.add_parser("upload")
@@ -811,10 +813,12 @@ def main():
     if args.command == "create":
         body = create_github_release_notes(args.tag, args.commit)
         if args.dry_run:
+            print("Dry Run ...")
+            print("This release would be created:")
             print(body)
         else:
             release_id = create_github_release(
-                args.owner, args.repo, args.tag, args.commit, body
+                args.owner, args.repo, args.tag, args.commit, args.latest, body
             )
             write_to_release_id_file(f"{release_id}")
             LOGGER.info(f"Release created with ID: {release_id}")

@@ -200,6 +200,7 @@ def test_create_github_release_needs_github_token():
                 "gardenlinux",
                 TEST_GARDENLINUX_RELEASE,
                 TEST_GARDENLINUX_COMMIT,
+                False,
                 "")
             assert str(exn.value) == "GITHUB_TOKEN environment variable not set", \
                 "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
@@ -218,6 +219,7 @@ def test_create_github_release_raise_on_failure(caplog, github_token):
                 "gardenlinux",
                 TEST_GARDENLINUX_RELEASE,
                 TEST_GARDENLINUX_COMMIT,
+                False,
                 "")
         assert any("Failed to create release" in record.message for record in caplog.records), "Expected a failure log record"
 
@@ -234,6 +236,7 @@ def test_create_github_release(caplog, github_token):
             "gardenlinux",
             TEST_GARDENLINUX_RELEASE,
             TEST_GARDENLINUX_COMMIT,
+            False,
             "") == 101
         assert any("Release created successfully" in record.message for record in caplog.records), "Expected a success log record"
 
@@ -384,7 +387,7 @@ def test_script_create_dry_run(monkeypatch, capfd):
     gh.main()
     captured = capfd.readouterr()
 
-    assert captured.out == f"{TEST_GARDENLINUX_RELEASE} {TEST_GARDENLINUX_COMMIT}\n", \
+    assert captured.out == f"Dry Run ...\nThis release would be created:\n{TEST_GARDENLINUX_RELEASE} {TEST_GARDENLINUX_COMMIT}\n", \
         "Expected dry-run create to return generated release notes text"
 
 
@@ -394,7 +397,7 @@ def test_script_create(monkeypatch, caplog):
     monkeypatch.setattr("gardenlinux.github.__main__.create_github_release_notes",
                         lambda tag, commit: f"{tag} {commit}")
     monkeypatch.setattr("gardenlinux.github.__main__.create_github_release",
-                        lambda a1, a2, a3, a4, a5: TEST_GARDENLINUX_RELEASE)
+                        lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE)
 
     gh.main()
 
