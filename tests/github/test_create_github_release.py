@@ -2,7 +2,7 @@ import pytest
 import requests
 import requests_mock
 
-from gardenlinux.github.release import create_github_release
+from gardenlinux.github.release import create_github_release, write_to_release_id_file
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
 
@@ -54,3 +54,16 @@ def test_create_github_release(caplog, github_token):
             False,
             "") == 101
         assert any("Release created successfully" in record.message for record in caplog.records), "Expected a success log record"
+
+
+def test_write_to_release_id_file(release_id_file):
+    write_to_release_id_file(TEST_GARDENLINUX_RELEASE)
+    assert release_id_file.read_text() == TEST_GARDENLINUX_RELEASE
+
+
+def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplog):
+    release_id_file.touch(0)  # this will make the file unwritable
+
+    with pytest.raises(SystemExit):
+        write_to_release_id_file(TEST_GARDENLINUX_RELEASE)
+    assert any("Could not create" in record.message for record in caplog.records), "Expected a failure log record"

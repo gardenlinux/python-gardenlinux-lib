@@ -1,9 +1,10 @@
 import os
 import shutil
+from pathlib import Path
 
 import pytest
 
-from ..constants import S3_DOWNLOADS_DIR
+from ..constants import RELEASE_ID_FILE, S3_DOWNLOADS_DIR
 
 
 @pytest.fixture
@@ -26,3 +27,10 @@ def artifact_for_upload(downloads_dir):
     artifact.touch()
     yield artifact
     artifact.unlink()
+
+
+@pytest.fixture
+def release_id_file():
+    f = Path(RELEASE_ID_FILE)
+    yield f
+    f.unlink()
