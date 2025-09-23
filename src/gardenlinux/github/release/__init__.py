@@ -1,8 +1,10 @@
 import json
 import os
+import sys
 
 import requests
 
+from gardenlinux.constants import RELEASE_ID_FILE
 from gardenlinux.logger import LoggerSetup
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", "INFO")
@@ -45,6 +47,16 @@ def create_github_release(owner, repo, tag, commitish, latest, body):
         LOGGER.error("Failed to create release")
         LOGGER.debug(response.json())
         response.raise_for_status()
+
+
+def write_to_release_id_file(release_id):
+    try:
+        with open(RELEASE_ID_FILE, "w") as file:
+            file.write(release_id)
+        LOGGER.info(f"Created {RELEASE_ID_FILE} successfully.")
+    except IOError as e:
+        LOGGER.error(f"Could not create {RELEASE_ID_FILE} file: {e}")
+        sys.exit(1)
 
 
 def upload_to_github_release_page(
