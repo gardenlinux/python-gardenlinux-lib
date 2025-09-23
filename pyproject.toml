@@ -29,7 +29,6 @@ pytest = "^8.4.1"
 pytest-cov = "^7.0.0"
 isort = "^6.0.1"
 requests-mock = "^1.12.1"
-isort = "^6.0.1"
 pyright = "^1.1.403"
 
 [tool.poetry.group.docs.dependencies]
@@ -68,9 +67,6 @@ exclude = [
 [tool.bandit]
 skips = ["B101", "B404"] # allow asserts, subprocesses
 exclude_dirs = ["tests"]
-
-[tool.isort]
-known_first_party = "gardenlinux"
 
 [build-system]
 requires = ["poetry-core"]
