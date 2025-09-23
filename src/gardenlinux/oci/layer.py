@@ -2,10 +2,11 @@
 
 from collections.abc import Mapping
 from os import PathLike
-from oras.defaults import annotation_title as ANNOTATION_TITLE
-from oras.oci import Layer as _Layer
 from pathlib import Path
 from typing import Optional
+
+from oras.defaults import annotation_title as ANNOTATION_TITLE
+from oras.oci import Layer as _Layer
 
 from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
 

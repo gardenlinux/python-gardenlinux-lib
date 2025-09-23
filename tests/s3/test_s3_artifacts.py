@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import yaml
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
 import pytest
+import yaml
 
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 

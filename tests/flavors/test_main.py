@@ -1,5 +1,6 @@
 import json
 import sys
+
 import pytest
 
 from gardenlinux.flavors import __main__ as fm

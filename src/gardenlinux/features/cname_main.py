@@ -5,14 +5,11 @@
 gl-cname main entrypoint
 """
 
-from functools import reduce
-from os.path import basename, dirname
 import argparse
 import logging
 import re
-
-from .cname import CName
-from .parser import Parser
+from functools import reduce
+from os.path import basename, dirname
 
 from .__main__ import (
     get_cname_base,
@@ -20,6 +17,8 @@ from .__main__ import (
     get_version_and_commit_id_from_files,
     sort_subset,
 )
+from .cname import CName
+from .parser import Parser
 
 
 def main():

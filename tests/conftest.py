@@ -1,32 +1,32 @@
-from datetime import datetime, timedelta
-from tempfile import mkstemp
 import json
 import os
 import shutil
 import subprocess
 import sys
-import pytest
+from datetime import datetime, timedelta
+from tempfile import mkstemp
 
+import pytest
 from cryptography import x509
-from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import NameOID
 from dotenv import load_dotenv
+
 from gardenlinux.features import Parser
 
 from .constants import (
-    TEST_DATA_DIR,
-    GL_ROOT_DIR,
     CERT_DIR,
     GARDENLINUX_ROOT_DIR_EXAMPLE,
+    GL_ROOT_DIR,
+    TEST_ARCHITECTURES,
     TEST_COMMIT,
-    TEST_VERSION,
-    TEST_PLATFORMS,
+    TEST_DATA_DIR,
     TEST_FEATURE_SET,
     TEST_FEATURE_STRINGS_SHORT,
-    TEST_ARCHITECTURES,
+    TEST_PLATFORMS,
+    TEST_VERSION,
 )
-
 from .helper import call_command, spawn_background_process
 
 
