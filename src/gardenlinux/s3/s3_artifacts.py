@@ -5,8 +5,7 @@ S3 GardenLinux artifacts
 """
 
 import logging
-import yaml
-from configparser import ConfigParser, UNNAMED_SECTION
+from configparser import UNNAMED_SECTION, ConfigParser
 from datetime import datetime
 from hashlib import file_digest
 from os import PathLike, stat
@@ -16,9 +15,11 @@ from tempfile import TemporaryFile
 from typing import Any, Optional
 from urllib.parse import urlencode
 
-from .bucket import Bucket
+import yaml
+
 from ..features.cname import CName
 from ..logger import LoggerSetup
+from .bucket import Bucket
 
 
 class S3Artifacts(object):

@@ -17,7 +17,6 @@ from typing import Any, List, Set
 from .cname import CName
 from .parser import Parser
 
-
 _ARGS_TYPE_ALLOWED = [
     "cname",
     "cname_base",

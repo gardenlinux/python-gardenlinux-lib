@@ -5,8 +5,8 @@ gl-oci main entrypoint
 """
 
 import os
-import click
 
+import click
 from pygments.lexer import default
 
 from .container import Container

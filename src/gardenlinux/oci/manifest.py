@@ -3,6 +3,7 @@
 import json
 from copy import deepcopy
 from hashlib import sha256
+
 from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.oci import EmptyManifest
 

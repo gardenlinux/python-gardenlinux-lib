@@ -63,6 +63,8 @@ format: install-dev
 
 lint: install-dev
 	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
+	$(POETRY) run isort --check-only .
+	$(POETRY) run pyright
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \

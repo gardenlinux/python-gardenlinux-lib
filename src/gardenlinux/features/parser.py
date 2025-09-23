@@ -4,13 +4,14 @@
 Features parser based on networkx.Digraph
 """
 
-from glob import glob
-from typing import Callable, Optional
 import logging
-import networkx
 import os
 import re
 import subprocess
+from glob import glob
+from typing import Callable, Optional
+
+import networkx
 import yaml
 
 from ..constants import (
@@ -18,7 +19,6 @@ from ..constants import (
     BARE_FLAVOR_FEATURE_CONTENT,
     BARE_FLAVOR_LIBC_FEATURE_CONTENT,
 )
-
 from ..logger import LoggerSetup
 
 
