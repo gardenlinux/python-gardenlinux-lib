@@ -4,7 +4,7 @@ import requests
 
 from gardenlinux.logger import LoggerSetup
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github", "DEBUG")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github", "INFO")
 
 REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
