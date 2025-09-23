@@ -2,12 +2,12 @@
 
 import json
 from copy import deepcopy
-from oras.oci import Layer
 from os import PathLike
 from pathlib import Path
 
-from ..features import CName
+from oras.oci import Layer
 
+from ..features import CName
 from .manifest import Manifest
 from .platform import NewPlatform
 from .schemas import EmptyManifestMetadata

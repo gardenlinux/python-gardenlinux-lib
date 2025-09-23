@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from os import PathLike
 from pathlib import Path
-import sys
 
-from pygit2 import init_repository, Oid
+from pygit2 import Oid
 from pygit2 import Repository as _Repository
+from pygit2 import init_repository
 
 from ..constants import GL_REPOSITORY_URL
 from ..logger import LoggerSetup

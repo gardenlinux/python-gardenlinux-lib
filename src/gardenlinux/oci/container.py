@@ -26,9 +26,9 @@ from requests import Response
 from ..constants import GL_MEDIA_TYPE_LOOKUP, OCI_IMAGE_INDEX_MEDIA_TYPE
 from ..features.cname import CName
 from ..logger import LoggerSetup
+from .image_manifest import ImageManifest
 from .index import Index
 from .layer import Layer
-from .image_manifest import ImageManifest
 from .manifest import Manifest
 from .schemas import index as IndexSchema
 
