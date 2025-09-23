@@ -28,6 +28,7 @@ python-dotenv = "^1.1.1"
 pytest = "^8.4.1"
 pytest-cov = "^6.2.1"
 isort = "^6.0.1"
+requests-mock = "^1.12.1"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
