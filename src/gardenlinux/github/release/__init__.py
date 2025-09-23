@@ -1,3 +1,4 @@
+import json
 import os
 
 import requests
@@ -7,6 +8,43 @@ from gardenlinux.logger import LoggerSetup
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", "INFO")
 
 REQUESTS_TIMEOUTS = (5, 30)  # connect, read
+
+
+def create_github_release(owner, repo, tag, commitish, latest, body):
+    token = os.environ.get("GITHUB_TOKEN")
+    if not token:
+        raise ValueError("GITHUB_TOKEN environment variable not set")
+
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
+    data = {
+        "tag_name": tag,
+        "target_commitish": commitish,
+        "name": tag,
+        "body": body,
+        "draft": False,
+        "prerelease": False,
+        "make_latest": latest
+    }
+
+    response = requests.post(
+        f"https://api.github.com/repos/{owner}/{repo}/releases",
+        headers=headers,
+        data=json.dumps(data),
+        timeout=REQUESTS_TIMEOUTS
+    )
+
+    if response.status_code == 201:
+        LOGGER.info("Release created successfully")
+        response_json = response.json()
+        return response_json.get("id")
+    else:
+        LOGGER.error("Failed to create release")
+        LOGGER.debug(response.json())
+        response.raise_for_status()
 
 
 def upload_to_github_release_page(
