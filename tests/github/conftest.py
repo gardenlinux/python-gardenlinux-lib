@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from ..constants import RELEASE_ID_FILE, S3_DOWNLOADS_DIR
+from gardenlinux.constants import RELEASE_ID_FILE, S3_DOWNLOADS_DIR
 
 
 @pytest.fixture

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+import os
+from pathlib import Path
 
 ARCHS = ["amd64", "arm64"]
 
@@ -149,3 +150,7 @@ OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
 RELEASE_ID_FILE = ".github_release_id"
 
 REQUESTS_TIMEOUTS = (5, 30)  # connect, read
+
+S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
+
+GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"

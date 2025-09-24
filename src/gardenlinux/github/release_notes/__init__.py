@@ -19,6 +19,8 @@ def create_github_release_notes(gardenlinux_version, commitish):
         gardenlinux_version, package_list
     )
 
+    # TODO: image ids
+
     output += "\n"
     output += "## Kernel Module Build Container (kmodbuild)"
     output += "\n"

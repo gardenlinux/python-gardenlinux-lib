@@ -3,7 +3,7 @@ import textwrap
 
 import requests
 
-from gardenlinux.constants import REQUESTS_TIMEOUTS
+from gardenlinux.constants import GLVD_BASE_URL, REQUESTS_TIMEOUTS
 from gardenlinux.logger import LoggerSetup
 
 from .helpers import compare_apt_repo_versions
@@ -18,7 +18,7 @@ def release_notes_changes_section(gardenlinux_version):
     file issues in glvd for improvement suggestions https://github.com/gardenlinux/glvd/issues
     """
     try:
-        url = f"https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1/patchReleaseNotes/{gardenlinux_version}"
+        url = f"{GLVD_BASE_URL}/patchReleaseNotes/{gardenlinux_version}"
         response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
         response.raise_for_status()
         data = response.json()
@@ -43,8 +43,11 @@ def release_notes_changes_section(gardenlinux_version):
 
         return "\n".join(output) + "\n\n"
     except Exception as exn:
-        # There are expected error cases, for example with versions not supported by glvd (1443.x) or when the api is not available
-        # Fail gracefully by adding the placeholder we previously used, so that the release note generation does not fail.
+        # There are expected error cases,
+        # for example with versions not supported by glvd (1443.x)
+        # or when the api is not available
+        # Fail gracefully by adding the placeholder we previously used,
+        # so that the release note generation does not fail.
         LOGGER.error(f"Failed to process GLVD API output: {exn}")
         return textwrap.dedent(
             """

@@ -27,6 +27,4 @@ TEST_VERSION_STABLE = "1000"
 TEST_GARDENLINUX_RELEASE = "1877.3"
 TEST_GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
 
-RELEASE_ID_FILE = ".github_release_id"
-
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
