@@ -106,7 +106,7 @@ class DebsrcFile(dict[str, Debsrc]):
 
         self._set_source(parsed_source, parsed_version)
 
-    def _set_source(self, source: str, version: str) -> None:
+    def _set_source(self, source: str | None, version: str | None) -> None:
         """
         Sets the dict value based on the given source key.
 

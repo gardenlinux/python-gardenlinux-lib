@@ -71,7 +71,7 @@ class GardenLinuxRepo(APTRepository):
 
 def compare_gardenlinux_repo_version(
     version_a: str, version_b: str
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str | None, str | None]]:
     """
     Compares differences between repository versions given.
 
@@ -89,7 +89,7 @@ def compare_gardenlinux_repo_version(
 
 def compare_repo(
     a: GardenLinuxRepo, b: GardenLinuxRepo, available_in_both: Optional[bool] = False
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str | None, str | None]]:
     """
     Compares differences between repositories given.
 
