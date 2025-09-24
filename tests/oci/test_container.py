@@ -1,12 +1,13 @@
-from base64 import b64encode
 import io
 import json
-import pytest
 import logging
+from base64 import b64encode
 
-from gardenlinux.oci import Container
+import pytest
 from requests import Response
 from requests.exceptions import HTTPError
+
+from gardenlinux.oci import Container
 
 from ..constants import (
     CONTAINER_NAME_ZOT_EXAMPLE,

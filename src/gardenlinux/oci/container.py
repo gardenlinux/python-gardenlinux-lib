@@ -5,30 +5,30 @@ OCI container
 """
 
 import json
-import jsonschema
 import logging
 from base64 import b64encode
-from configparser import ConfigParser, UNNAMED_SECTION
 from collections.abc import Sequence
+from configparser import UNNAMED_SECTION, ConfigParser
 from hashlib import sha256
-from oras.container import Container as OrasContainer
-from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
-from oras.provider import Registry
-from oras.utils import make_targz, extract_targz
-from os import fdopen, getenv, PathLike
+from os import PathLike, fdopen, getenv
 from pathlib import Path
-from requests import Response
 from tempfile import mkstemp
 from typing import Optional
 from urllib.parse import urlsplit
 
+import jsonschema
+from oras.container import Container as OrasContainer
+from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
+from oras.provider import Registry
+from oras.utils import extract_targz, make_targz
+from requests import Response
+
 from ..constants import GL_MEDIA_TYPE_LOOKUP, OCI_IMAGE_INDEX_MEDIA_TYPE
 from ..features.cname import CName
 from ..logger import LoggerSetup
-
+from .image_manifest import ImageManifest
 from .index import Index
 from .layer import Layer
-from .image_manifest import ImageManifest
 from .manifest import Manifest
 from .schemas import index as IndexSchema
 

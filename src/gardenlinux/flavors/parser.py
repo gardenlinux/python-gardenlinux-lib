@@ -4,9 +4,10 @@
 Flavors parser
 """
 
-from jsonschema import validate as jsonschema_validate
 import fnmatch
+
 import yaml
+from jsonschema import validate as jsonschema_validate
 
 from ..constants import GL_FLAVORS_SCHEMA
 from ..logger import LoggerSetup

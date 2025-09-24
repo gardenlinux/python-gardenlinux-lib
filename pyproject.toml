@@ -5,21 +5,20 @@ description = "Contains tools to work with the features directory of gardenlinux
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "gardenlinux", from="src"}]
+packages = [{ include = "gardenlinux", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.13"
 apt-repo = "^0.5"
 boto3 = "^1.40.30"
 click = "^8.2.1"
-cryptography = "^45.0.6"
+cryptography = "^46.0.1"
 jsonschema = "^4.25.1"
 networkx = "^3.5"
 oras = "^0.2.38"
 pygit2 = "^1.18.2"
 pygments = "^2.19.2"
 PyYAML = "^6.0.2"
-gitpython = "^3.1.45"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.6"
@@ -27,10 +26,10 @@ black = "^25.1.0"
 moto = "^5.1.12"
 python-dotenv = "^1.1.1"
 pytest = "^8.4.1"
-pytest-cov = "^6.3.0"
+pytest-cov = "^7.0.0"
 isort = "^6.0.1"
-ptpython = "^3.0.31"
 requests-mock = "^1.12.1"
+pyright = "^1.1.403"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
@@ -41,18 +40,33 @@ gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-oci = "gardenlinux.oci.__main__:main"
 gl-s3 = "gardenlinux.s3.__main__:main"
-gl-gh = "gardenlinux.github.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 norecursedirs = "test-data"
 
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["gardenlinux"]
+skip = ["test-data", ".venv", "**/__pycache", ".pytest-cache", "hack"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+exclude = [
+    "test-data",
+    "docs",
+    "hack",
+    ".venv",
+    ".pytest-cache",
+    "**/__pycache",
+]
+
 [tool.bandit]
 skips = ["B101", "B404"] # allow asserts, subprocesses
 exclude_dirs = ["tests"]
-
-[tool.isort]
-known_first_party = "gardenlinux"
 
 [build-system]
 requires = ["poetry-core"]

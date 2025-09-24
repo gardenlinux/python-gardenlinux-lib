@@ -46,9 +46,6 @@ install-test: install-dev
 test: install-test
 	$(POETRY) run pytest -k "not kms"
 
-coverage:
-	$(POETRY) run coverage report -m
-
 test-coverage: install-test
 	$(POETRY) run pytest -k "not kms" --cov=gardenlinux --cov-report=html tests/
 
@@ -66,6 +63,8 @@ format: install-dev
 
 lint: install-dev
 	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
+	$(POETRY) run isort --check-only .
+	$(POETRY) run pyright
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \

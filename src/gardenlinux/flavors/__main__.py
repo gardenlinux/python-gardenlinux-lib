@@ -5,16 +5,16 @@
 gl-flavors-parse main entrypoint
 """
 
-from argparse import ArgumentParser
-from pathlib import Path
-from tempfile import TemporaryDirectory
 import json
 import os
 import sys
+from argparse import ArgumentParser
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from .parser import Parser
 from ..constants import GL_REPOSITORY_URL
 from ..git import Repository
+from .parser import Parser
 
 
 def _get_flavors_file_data(flavors_file):
