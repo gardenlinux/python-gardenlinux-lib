@@ -147,3 +147,5 @@ OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"
 OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
 
 RELEASE_ID_FILE = ".github_release_id"
+
+REQUESTS_TIMEOUTS = (5, 30)  # connect, read
