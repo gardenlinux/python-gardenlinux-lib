@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-import os
-from pathlib import Path
-
 from gardenlinux.git import Repository
 
 TEST_DATA_DIR = "test-data"
@@ -26,5 +21,3 @@ TEST_VERSION_STABLE = "1000"
 
 TEST_GARDENLINUX_RELEASE = "1877.3"
 TEST_GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
-
-S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
