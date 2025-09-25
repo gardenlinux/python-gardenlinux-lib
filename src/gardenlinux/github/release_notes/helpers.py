@@ -5,11 +5,11 @@ import requests
 
 from gardenlinux.apt import DebsrcFile, GardenLinuxRepo
 from gardenlinux.apt.package_repo_info import compare_repo
-from gardenlinux.constants import REQUESTS_TIMEOUTS
+from gardenlinux.constants import GL_DEB_REPO_BASE_URL, REQUESTS_TIMEOUTS
 
 
 def get_package_list(gardenlinux_version):
-    url = f"https://packages.gardenlinux.io/gardenlinux/dists/{gardenlinux_version}/main/binary-amd64/Packages.gz"
+    url = f"{GL_DEB_REPO_BASE_URL}/dists/{gardenlinux_version}/main/binary-amd64/Packages.gz"
     response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
     response.raise_for_status()
 
