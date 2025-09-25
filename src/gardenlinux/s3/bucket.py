@@ -56,7 +56,7 @@ class Bucket(object):
         if endpoint_url is not None:
             s3_resource_config["endpoint_url"] = endpoint_url
 
-        self._s3_resource = boto3.resource("s3", **s3_resource_config)
+        self._s3_resource: Any = boto3.resource("s3", **s3_resource_config)
 
         self._bucket = self._s3_resource.Bucket(bucket_name)
         self._logger = logger
@@ -116,7 +116,9 @@ class Bucket(object):
 
         self._logger.info(f"Downloaded {key} from S3 as binary data")
 
-    def read_cache_file_or_filter(self, cache_file, cache_ttl: int = 3600, **kwargs):
+    def read_cache_file_or_filter(
+        self, cache_file: str | PathLike[str] | None, cache_ttl: int = 3600, **kwargs
+    ):
         """
         Read S3 object keys from cache if valid or filter for S3 object keys.
 
@@ -128,19 +130,24 @@ class Bucket(object):
         :since: 0.9.0
         """
 
-        if not isinstance(cache_file, PathLike):
-            cache_file = Path(cache_file)
+        if cache_file is not None:
+            cache_path = Path(cache_file)
 
-        if cache_file.exists() and (time() - cache_file.stat().st_mtime) < cache_ttl:
-            with cache_file.open("r") as fp:
-                return json.loads(fp.read())
+            if (
+                cache_path.exists()
+                and (time() - cache_path.stat().st_mtime) < cache_ttl
+            ):
+                with cache_path.open("r") as fp:
+                    return json.loads(fp.read())
+        else:
+            cache_path = None
 
         artifacts = [
             s3_object.key for s3_object in self._bucket.objects.filter(**kwargs).all()
         ]
 
-        if cache_file is not None:
-            with cache_file.open("w") as fp:
+        if cache_path is not None:
+            with cache_path.open("w") as fp:
                 fp.write(json.dumps(artifacts))
 
         return artifacts
