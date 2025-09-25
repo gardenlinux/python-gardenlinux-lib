@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from os import PathLike
 from pathlib import Path
 
@@ -25,7 +24,7 @@ class Repository(_Repository):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, git_directory=".", logger=None, **kwargs):
+    def __init__(self, git_directory: str | PathLike[str] = ".", logger=None, **kwargs):
         """
         Constructor __init__(Repository)
 
@@ -38,8 +37,7 @@ class Repository(_Repository):
         if logger is None or not logger.hasHandlers():
             logger = LoggerSetup.get_logger("gardenlinux.git")
 
-        if not isinstance(git_directory, PathLike):
-            git_directory = Path(git_directory)
+        git_directory = Path(git_directory)
 
         if not git_directory.exists():
             raise RuntimeError(f"Git directory given is invalid: {git_directory}")
@@ -107,11 +105,11 @@ class Repository(_Repository):
 
     @staticmethod
     def checkout_repo(
-        git_directory,
+        git_directory: str | PathLike[str],
         repo_url=GL_REPOSITORY_URL,
-        branch="main",
-        commit=None,
-        pathspecs=None,
+        branch: str = "main",
+        commit: str | None = None,
+        pathspecs: list[str] | None = None,
         logger=None,
         **kwargs,
     ):
@@ -122,8 +120,7 @@ class Repository(_Repository):
         :since:  0.10.0
         """
 
-        if not isinstance(git_directory, PathLike):
-            git_directory = Path(git_directory)
+        git_directory = Path(git_directory)
 
         if not git_directory.is_dir() or git_directory.match("/*"):
             raise RuntimeError(
