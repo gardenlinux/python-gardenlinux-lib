@@ -192,6 +192,18 @@ class S3Artifacts(object):
             "paths": [],
         }
 
+        # Catch any invalid artifacts
+        bad_files = [
+            f
+            for f in artifacts_dir.iterdir()
+            if not f.name.startswith(cname)
+            and f.suffix not in [".release", ".requirements"]
+        ]
+        if bad_files:
+            raise RuntimeError(
+                f"Artifact name '{bad_files[0].name}' does not start with cname '{cname}'"
+            )
+
         for artifact in artifacts_dir.iterdir():
             if not artifact.match(f"{cname}*"):
                 continue

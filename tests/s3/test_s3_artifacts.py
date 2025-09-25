@@ -260,6 +260,8 @@ def test_upload_from_directory_commit_mismatch_raises(s3_setup):
     bad_data = RELEASE_DATA.replace("abc123", "wrong")
     release_path.write_text(bad_data)
     artifacts = S3Artifacts(env.bucket_name)
+
+    # Act / Assert
     with pytest.raises(RuntimeError, match="Commit ID"):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
 
