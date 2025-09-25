@@ -196,18 +196,18 @@ class S3Artifacts(object):
             if not artifact.match(f"{cname}*"):
                 continue
 
+            if not artifact.name.startswith(cname):
+                raise RuntimeError(
+                    f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
+                )
+
             s3_key = f"objects/{cname}/{artifact.name}"
 
             with artifact.open("rb") as fp:
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
-            if artifact.name.startswith(cname):
-                suffix = artifact.name[len(cname) :]
-            else:
-                raise RuntimeError(
-                    f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
-                )
+            suffix = artifact.name[len(cname) :]
 
             artifact_metadata = {
                 "name": artifact.name,
