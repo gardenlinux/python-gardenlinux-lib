@@ -143,9 +143,6 @@ class S3Artifacts(object):
                 f"Release file data and given cname conflict detected: Commit ID {cname_object.commit_id}"
             )
 
-        if cname_object.version is None:
-            raise RuntimeError("CName version could not be determined!")
-
         commit_hash = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG")
 
         feature_set = release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES")

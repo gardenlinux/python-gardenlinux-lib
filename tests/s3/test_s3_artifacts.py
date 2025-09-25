@@ -212,6 +212,8 @@ def test_upload_from_directory_none_version_raises(monkeypatch, s3_setup):
 
     import gardenlinux.s3.s3_artifacts as s3art
 
+    # Monkeypatch CName to force Cname.version to be None and avoid
+    # class internal error checks
     class DummyCName:
         arch = "amd64"
         version = None
