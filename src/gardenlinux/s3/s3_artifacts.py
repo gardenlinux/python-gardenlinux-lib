@@ -18,7 +18,6 @@ from urllib.parse import urlencode
 import yaml
 
 from ..features.cname import CName
-from ..logger import LoggerSetup
 from .bucket import Bucket
 
 
@@ -53,7 +52,7 @@ class S3Artifacts(object):
         :since: 0.8.0
         """
 
-        self._bucket = Bucket(bucket_name, endpoint_url, s3_resource_config)
+        self._bucket = Bucket(bucket_name, endpoint_url, s3_resource_config, logger)
 
     @property
     def bucket(self):
@@ -68,8 +67,8 @@ class S3Artifacts(object):
 
     def download_to_directory(
         self,
-        cname,
-        artifacts_dir,
+        cname: str,
+        artifacts_dir: str | PathLike[str],
     ):
         """
         Download S3 artifacts to a given directory.
@@ -80,8 +79,7 @@ class S3Artifacts(object):
         :since: 0.8.0
         """
 
-        if not isinstance(artifacts_dir, PathLike):
-            artifacts_dir = Path(artifacts_dir)
+        artifacts_dir = Path(artifacts_dir)
 
         if not artifacts_dir.is_dir():
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
@@ -101,8 +99,8 @@ class S3Artifacts(object):
 
     def upload_from_directory(
         self,
-        cname,
-        artifacts_dir,
+        cname: str,
+        artifacts_dir: str | PathLike[str],
         delete_before_push=False,
     ):
         """
@@ -115,8 +113,7 @@ class S3Artifacts(object):
         :since: 0.8.0
         """
 
-        if not isinstance(artifacts_dir, PathLike):
-            artifacts_dir = Path(artifacts_dir)
+        artifacts_dir = Path(artifacts_dir)
 
         cname_object = CName(cname)
 
@@ -192,9 +189,26 @@ class S3Artifacts(object):
             "paths": [],
         }
 
+        # Catch any invalid artifacts
+        bad_files = [
+            f
+            for f in artifacts_dir.iterdir()
+            if not f.name.startswith(cname)
+            and f.suffix not in [".release", ".requirements"]
+        ]
+        if bad_files:
+            raise RuntimeError(
+                f"Artifact name '{bad_files[0].name}' does not start with cname '{cname}'"
+            )
+
         for artifact in artifacts_dir.iterdir():
             if not artifact.match(f"{cname}*"):
                 continue
+
+            if not artifact.name.startswith(cname):
+                raise RuntimeError(
+                    f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
+                )
 
             s3_key = f"objects/{cname}/{artifact.name}"
 
@@ -202,12 +216,7 @@ class S3Artifacts(object):
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
-            if artifact.name.startswith(cname):
-                suffix = artifact.name[len(cname) :]
-            else:
-                raise RuntimeError(
-                    f"Artifact name '{artifact.name}' does not start with cname '{cname}'"
-                )
+            suffix = artifact.name[len(cname) :]
 
             artifact_metadata = {
                 "name": artifact.name,

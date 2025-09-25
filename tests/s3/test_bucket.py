@@ -8,13 +8,19 @@ A mock AWS environment is provided by the `s3_setup` fixture found in `conftest.
 """
 
 import io
-from pathlib import Path
-
-import pytest
 
 from gardenlinux.s3.bucket import Bucket
 
 REGION = "us-east-1"
+
+
+def test_bucket_minimal(s3_setup):
+    """
+    Ensure Bucket initializes correctly.
+    """
+    env = s3_setup
+    bucket = Bucket(env.bucket_name)
+    assert bucket.name == env.bucket_name
 
 
 def test_objects_empty(s3_setup):
