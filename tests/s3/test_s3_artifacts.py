@@ -202,6 +202,56 @@ def test_upload_from_directory_version_mismatch_raises(s3_setup):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
+def test_upload_from_directory_none_version_raises(monkeypatch, s3_setup):
+    """
+    Raise RuntimeError if CName.version is None.
+    """
+    # Arrange
+    env = s3_setup
+    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+
+    import gardenlinux.s3.s3_artifacts as s3art
+
+    class DummyCName:
+        arch = "amd64"
+        version = None
+        commit_id = "abc123"
+        platform = "aws"
+
+        def __init__(self, cname):
+            pass
+
+    monkeypatch.setattr(s3art, "CName", DummyCName)
+
+    artifacts = s3art.S3Artifacts(env.bucket_name)
+
+    # Act / Assert
+    with pytest.raises(
+        RuntimeError,
+        match="Release file data and given cname conflict detected: Version None",
+    ):
+        artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
+def test_upload_from_directory_invalid_artifact_name(s3_setup):
+    """
+    Raise RuntimeError if artifact file does not start with cname.
+    """
+    # Arrange
+    env = s3_setup
+    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+
+    # Create "bad" artifact that does not start with cname
+    bad_file = env.tmp_path / "no_match"
+    bad_file.write_bytes(b"oops")
+
+    artifacts = S3Artifacts(env.bucket_name)
+
+    # Act / Assert
+    with pytest.raises(RuntimeError, match="does not start with cname"):
+        artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
 def test_upload_from_directory_commit_mismatch_raises(s3_setup):
     """Raise RuntimeError when commit ID is not matching with cname."""
     # Arrange
