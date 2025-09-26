@@ -1,0 +1,131 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:58.408180'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- gcp
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: cb09648e0e1421f2fd2261c2c066f7ec
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 4e76b47fca7d6012a009d6d67336ca2e
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: ae4baf8f51980fc4bf33fdec039caaac
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 8d81de64a908f10b5f2319c5ee3e6e33
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.gcpimage.tar.gz
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz
+- md5sum: ddae4e9dbb1589ed52c09dc0053e7d16
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 4e76b47fca7d6012a009d6d67336ca2e
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: cb09648e0e1421f2fd2261c2c066f7ec
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: a2fe91c463595db6b0e9b94e9bf2d0c2
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: f41174f3a7a59886a037af08647ed606
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: a2fe91c463595db6b0e9b94e9bf2d0c2
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.gcpimage.tar.gz.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .gcpimage.tar.gz.log
+- md5sum: ec2b76785fb3271509464840bb67b451
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 4e76b47fca7d6012a009d6d67336ca2e
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: b4973d065a9283b7edc96e4de5850af0
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 4e76b47fca7d6012a009d6d67336ca2e
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 28ce5927bb5e59290300190a30167ee3
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 35b97420a1f743c4444cd15fa52c7e1e
+  name: gcp-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/gcp-gardener_prod_usi-amd64-1877.3-75df9f40/gcp-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+platform: gcp
+published_image_metadata:
+  gcp_image_name: gardenlinux-gcp-51db8a4be084c3b640095f4b-1877-3-75df9f40
+  gcp_project_name: sap-se-gcp-gardenlinux
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/gcp-gardener_prod_usi-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
