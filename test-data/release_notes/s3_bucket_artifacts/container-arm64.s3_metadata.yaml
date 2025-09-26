@@ -1,0 +1,91 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:43.552027'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- _slim
+- base
+- container
+paths:
+- md5sum: dda0cefff5025e1218e2b6907fcba82d
+  name: container-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 7a358c7e8b8d1d8b11c7ec174e3379c5
+  name: container-arm64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 02e6eb8964615af9652e5d6d20e442d1
+  name: container-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 1f404338302d063d30bf3324618341f9
+  name: container-arm64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: dda0cefff5025e1218e2b6907fcba82d
+  name: container-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: dda0cefff5025e1218e2b6907fcba82d
+  name: container-arm64-1877.3-75df9f40.oci.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.oci.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .oci.log
+- md5sum: df4b835d7ff84350eaaa9532455f9259
+  name: container-arm64-1877.3-75df9f40.oci
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.oci
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .oci
+- md5sum: dda0cefff5025e1218e2b6907fcba82d
+  name: container-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: dda0cefff5025e1218e2b6907fcba82d
+  name: container-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: ebe40d9d33607ccbd9991a2e31237644
+  name: container-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 9c05146a504955c43115850f59b4cd04
+  name: container-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 945bb16fdfaf1967558d244513799ac5
+  name: container-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-arm64-1877.3-75df9f40/container-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+platform: container
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/container-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

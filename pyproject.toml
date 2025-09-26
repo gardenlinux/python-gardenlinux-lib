@@ -19,6 +19,7 @@ oras = "^0.2.38"
 pygit2 = "^1.18.2"
 pygments = "^2.19.2"
 PyYAML = "^6.0.2"
+gitpython = "^3.1.45"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.6"

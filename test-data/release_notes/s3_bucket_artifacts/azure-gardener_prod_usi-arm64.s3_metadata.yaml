@@ -1,0 +1,149 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:38.898139'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- azure
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: aca092887336c9d7e3cf1b3241286ca4
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 889d02738f5d4bf55bb445c6024e410d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 95a82961df9dc2ac2655ae91a1e655c2
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 889d02738f5d4bf55bb445c6024e410d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 2e75ca5c271e8b0a3581cbc3a43e8685
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 96a83797df1371396633d406ca04dd7d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 96a83797df1371396633d406ca04dd7d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 889d02738f5d4bf55bb445c6024e410d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 58eec0a875c8d55c0a3cd4c736ce39ac
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 43c96e37776dd3c267922c50c11ca1f8
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 889d02738f5d4bf55bb445c6024e410d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 7e5479c3747cf1713e295c16fafc76f8
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 2ca35638b2dec1c9518290ef7b43f5ec
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: cd68658b26ecf843686518c049f8391d
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.vhd.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.vhd.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vhd.log
+- md5sum: 4d34300f68afe452acc9c1cb394330e6
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 88b56ce5309de6d5ab3ee0f99013d34a
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 7427baeb7d874a6fd45241019fff9b5c
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: a3dc665ee70a611e5e5376b93d587808
+  name: azure-gardener_prod_usi-arm64-1877.3-75df9f40.vhd
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/azure-gardener_prod_usi-arm64-1877.3-75df9f40/azure-gardener_prod_usi-arm64-1877.3-75df9f40.vhd
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vhd
+platform: azure
+published_image_metadata:
+  published_gallery_images:
+  - azure_cloud: public
+    community_gallery_image_id: /CommunityGalleries/gardenlinux-13e998fe-534d-4b0a-8a27-f16a73aef620/Images/gardenlinux-nvme-arm64-gen2-usi/Versions/1877.3.0
+    hyper_v_generation: V2
+  - azure_cloud: china
+    community_gallery_image_id: /CommunityGalleries/gardenlinux-8e6518fb-9ae0-4f66-abfd-9a06997e2492/Images/gardenlinux-nvme-arm64-gen2-usi/Versions/1877.3.0
+    hyper_v_generation: V2
+  published_marketplace_images: []
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/azure-gardener_prod_usi-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

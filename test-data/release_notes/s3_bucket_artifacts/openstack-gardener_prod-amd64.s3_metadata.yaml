@@ -1,0 +1,149 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:19.108412'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _legacy
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- openstack
+- multipath
+- iscsi
+- nvme
+- gardener
+paths:
+- md5sum: 6e868a97c15168b6967d4a3a34a978d0
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 725b8bb7957d6ae699146aa35b2132b6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 725b8bb7957d6ae699146aa35b2132b6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 158ae4ef6747480206eee34d74480b74
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: c8a215c7fd206dd7b05b4ccc2f83ce95
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.vmdk
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.vmdk
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vmdk
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 725b8bb7957d6ae699146aa35b2132b6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: af305715135330de9f1ae16b39ee52a6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.vmdk.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.vmdk.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .vmdk.log
+- md5sum: ee1f88373cbf7b7f2ce719a5d1d39d9c
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.qcow2
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.qcow2
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2
+- md5sum: 725b8bb7957d6ae699146aa35b2132b6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 3f34988aa83007f61167060218c7b88d
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: af305715135330de9f1ae16b39ee52a6
+  name: openstack-gardener_prod-amd64-1877.3-75df9f40.qcow2.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/openstack-gardener_prod-amd64-1877.3-75df9f40/openstack-gardener_prod-amd64-1877.3-75df9f40.qcow2.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .qcow2.log
+platform: openstack
+published_image_metadata:
+  published_openstack_images:
+  - image_id: ed3b4c3d-941f-456a-a551-bd52b8397443
+    image_name: gardenlinux-1877.3
+    region_name: eu-de-1
+  - image_id: 5ea6fb4f-20fc-43b8-8ffe-af8da6d61d6a
+    image_name: gardenlinux-1877.3
+    region_name: eu-de-2
+  - image_id: ac9b5d43-ff53-494d-8adf-2249c324a9db
+    image_name: gardenlinux-1877.3
+    region_name: eu-nl-1
+  - image_id: 404f22a3-9822-4696-a60f-8566eedb93e3
+    image_name: gardenlinux-1877.3
+    region_name: la-br-1
+  - image_id: b69b72f3-574a-4f76-b4eb-ac9185ea2681
+    image_name: gardenlinux-1877.3
+    region_name: na-ca-1
+  - image_id: 40e99366-f13b-402a-a264-e7e4773ab8ba
+    image_name: gardenlinux-1877.3
+    region_name: na-us-1
+  - image_id: c50200c6-95fd-4a97-bef2-90b2d6afa3d3
+    image_name: gardenlinux-1877.3
+    region_name: na-us-2
+  - image_id: d5b1d8c0-3420-4a82-931d-0506a6b8f166
+    image_name: gardenlinux-1877.3
+    region_name: na-us-3
+  - image_id: 81c26cb7-c515-4610-949a-92c275640325
+    image_name: gardenlinux-1877.3
+    region_name: ap-ae-1
+  - image_id: 2d6e3edd-5596-41e6-a640-4b1b8e7310e7
+    image_name: gardenlinux-1877.3
+    region_name: ap-au-1
+  - image_id: 3564b5ef-9b37-4926-bb23-5655cf90de69
+    image_name: gardenlinux-1877.3
+    region_name: ap-cn-1
+  - image_id: 2ff61187-f004-4317-bd4c-a17d93b475bc
+    image_name: gardenlinux-1877.3
+    region_name: ap-jp-1
+  - image_id: 2bc58951-9bf7-445b-a6e4-f634c7522d9b
+    image_name: gardenlinux-1877.3
+    region_name: ap-jp-2
+  - image_id: e4a4aa92-335a-454b-83bb-643cb918cf6a
+    image_name: gardenlinux-1877.3
+    region_name: ap-sa-1
+  - image_id: d3ac5df8-ce38-4a23-b611-dfef6b7a0db9
+    image_name: gardenlinux-1877.3
+    region_name: ap-sa-2
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/openstack-gardener_prod-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
