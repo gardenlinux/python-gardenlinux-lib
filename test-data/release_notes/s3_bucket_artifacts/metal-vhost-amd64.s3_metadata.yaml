@@ -1,0 +1,87 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:18.724519'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- firewall
+- log
+- sap
+- ssh
+- _legacy
+- _selinux
+- _slim
+- base
+- server
+- metal
+- vhost
+paths:
+- md5sum: 0768ba382b56c22ad3a00a1d6c81f489
+  name: metal-vhost-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 8dedde16285e8c726c4ba2fa2f4f68be
+  name: metal-vhost-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 41305cfe513b5fc35ebef6dd35ad804e
+  name: metal-vhost-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 53ef902117ec56b73aedc6c9a4a269f5
+  name: metal-vhost-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 5f7e9d063b0e3ed27c80aeea84fe3f5a
+  name: metal-vhost-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 41305cfe513b5fc35ebef6dd35ad804e
+  name: metal-vhost-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: metal-vhost-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 41305cfe513b5fc35ebef6dd35ad804e
+  name: metal-vhost-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 3822f82c8a753c8123e49d4974c2b8b5
+  name: metal-vhost-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 41305cfe513b5fc35ebef6dd35ad804e
+  name: metal-vhost-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-vhost-amd64-1877.3-75df9f40/metal-vhost-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+platform: metal
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/metal-vhost-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

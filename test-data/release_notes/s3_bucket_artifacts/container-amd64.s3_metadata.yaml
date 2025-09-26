@@ -1,0 +1,91 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:42.317474'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- _slim
+- base
+- container
+paths:
+- md5sum: 8e4ee6a504aa9ce452dac12073961ce8
+  name: container-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 8e4ee6a504aa9ce452dac12073961ce8
+  name: container-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 8e4ee6a504aa9ce452dac12073961ce8
+  name: container-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 8f487029575e920bc99d007c9e3cbefc
+  name: container-amd64-1877.3-75df9f40.oci
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.oci
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .oci
+- md5sum: b021f9179ac07ad8c377ced543e658d2
+  name: container-amd64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 490837be70b14a43e4ee39aaee00f63d
+  name: container-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 8e4ee6a504aa9ce452dac12073961ce8
+  name: container-amd64-1877.3-75df9f40.oci.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.oci.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .oci.log
+- md5sum: c2ba014b03ebc0b84d67f48caf440dcc
+  name: container-amd64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 230d47a057967dfb38bb4d214cc3cffa
+  name: container-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: eb142022f761e9f7f2ba2768fb653e6e
+  name: container-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 8e4ee6a504aa9ce452dac12073961ce8
+  name: container-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 82fa064efdb35805324dbd2ddb44798b
+  name: container-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/container-amd64-1877.3-75df9f40/container-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+platform: container
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/container-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

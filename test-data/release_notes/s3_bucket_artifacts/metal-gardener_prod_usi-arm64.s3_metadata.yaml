@@ -1,0 +1,128 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:00.830359'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- metal
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: f8e60934e1259799853ca480a8c6770a
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 4682b5c3e83384cec51614e629cbe9a9
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 2993b00f82127a198029835ee6c0f060
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 3c86a2f4eb09deac1cc9e54410e34152
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: d31ca3c9e93ece476d64b9407710782a
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 3e2b4b366ee158d604131ce761f14af0
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: f8e60934e1259799853ca480a8c6770a
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 89fd215fd3aa42ce2cc9ec49786611ea
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 4682b5c3e83384cec51614e629cbe9a9
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 4da3c7d9927f81d21e137a40633ed008
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: ef54030b27ae795d9374beb5bba2dd08
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: f8e60934e1259799853ca480a8c6770a
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 2e75ca5c271e8b0a3581cbc3a43e8685
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: f8e60934e1259799853ca480a8c6770a
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: c0402b05eaead236d19e91979690e664
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: cd3aefc26cba379dd0f6bcbfc8137f3e
+  name: metal-gardener_prod_usi-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-arm64-1877.3-75df9f40/metal-gardener_prod_usi-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+platform: metal
+published_image_metadata: null
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/metal-gardener_prod_usi-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
