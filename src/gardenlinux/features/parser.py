@@ -132,7 +132,10 @@ class Parser(object):
         """
 
         feature_set = Parser.get_cname_as_feature_set(cname)
-        return self.filter_based_on_feature_set(feature_set, ignore_excludes, additional_filter_func)
+
+        return self.filter_based_on_feature_set(
+            feature_set, ignore_excludes, additional_filter_func
+        )
 
     def filter_as_dict(
         self,

@@ -40,16 +40,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--arch", dest="arch")
-    parser.add_argument("--cname", dest="cname")
+    parser.add_argument("--cname", dest="cname", required=True)
     parser.add_argument("--commit", dest="commit")
     parser.add_argument("--feature-dir", default="features")
+    parser.add_argument("--release-file", dest="release_file")
     parser.add_argument("--default-arch", dest="default_arch")
     parser.add_argument("--default-version", dest="default_version")
     parser.add_argument("--version", dest="version")
-
-    parser.add_argument(
-        "--features", type=lambda arg: set([f for f in arg.split(",") if f])
-    )
 
     parser.add_argument(
         "--ignore",
@@ -62,9 +59,9 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    assert bool(args.features) or bool(
-        args.cname
-    ), "Please provide either `--features` or `--cname` argument"
+    assert bool(args.feature_dir) or bool(
+        args.release_file
+    ), "Please provide either `--feature_dir` or `--release_file` argument"
 
     arch = args.arch
     flavor = None
@@ -97,14 +94,13 @@ def main() -> None:
             args.cname, arch=arch, commit_hash=commit_id_or_hash, version=version
         )
 
+        if args.release_file is not None:
+            cname.load_from_release_file(args.release_file)
+
         arch = cname.arch
         flavor = cname.flavor
         commit_id_or_hash = cname.commit_id
         version = cname.version
-
-        _ = Parser.get_cname_as_feature_set(flavor)
-    else:
-        _ = args.features
 
     if arch is None or arch == "" and (args.type in ("cname", "arch")):
         raise RuntimeError(
@@ -120,53 +116,25 @@ def main() -> None:
 
     feature_dir_name = path.basename(args.feature_dir)
 
-    additional_filter_func = lambda node: node not in args.ignore
-
     if args.type == "arch":
         print(arch)
-    elif args.type in ("cname_base", "cname", "graph"):
-        graph = Parser(gardenlinux_root, feature_dir_name).filter(
-            flavor, additional_filter_func=additional_filter_func
-        )
+    elif args.type in (
+        "cname_base",
+        "cname",
+        "elements",
+        "features",
+        "flags",
+        "graph",
+        "platforms",
+    ):
+        if args.type == "graph" or len(args.ignore) > 1:
+            features_parser = Parser(gardenlinux_root, feature_dir_name)
 
-        sorted_features = Parser.sort_graph_nodes(graph)
-        minimal_feature_set = get_minimal_feature_set(graph)
-
-        sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
-
-        cname_base = get_cname_base(sorted_minimal_features)
-
-        if args.type == "cname_base":
-            print(cname_base)
-        elif args.type == "cname":
-            cname = flavor
-
-            if arch is not None:
-                cname += f"-{arch}"  # type: ignore - None check is carried out.
-
-            if commit_id_or_hash is not None:
-                cname += f"-{version}-{commit_id_or_hash[:8]}"  # type: ignore - None check is carried out.
-
-            print(cname)
-        elif args.type == "graph":
-            print(graph_as_mermaid_markup(flavor, graph))
-    elif args.type == "features":
-        print(
-            Parser(gardenlinux_root, feature_dir_name).filter_as_string(
-                flavor, additional_filter_func=additional_filter_func
+            print_output_from_features_parser(
+                args.type, features_parser, flavor, args.ignore
             )
-        )
-    elif args.type in ("flags", "elements", "platforms"):
-        features_by_type = Parser(gardenlinux_root, feature_dir_name).filter_as_dict(
-            flavor, additional_filter_func=additional_filter_func
-        )
-
-        if args.type == "platforms":
-            print(",".join(features_by_type["platform"]))
-        elif args.type == "elements":
-            print(",".join(features_by_type["element"]))
-        elif args.type == "flags":
-            print(",".join(features_by_type["flag"]))
+        else:
+            print_output_from_cname(args.type, cname)
     elif args.type == "commit_id":
         print(commit_id_or_hash[:8])
     elif args.type == "version":
@@ -254,6 +222,95 @@ def graph_as_mermaid_markup(flavor: str | None, graph: Any) -> str:
         markup += f"    {u}-->{v};\n"
 
     return markup
+
+
+def print_output_from_features_parser(
+    output_type: str, parser: Parser, flavor: str, ignores_list: set
+) -> None:
+    """
+    Prints output to stdout based on the given features parser and parameters.
+
+    :param output_type: Output type
+    :param parser: Features parser
+    :param flavor: Flavor
+    :param ignores_list: Features to ignore
+
+    :since: 0.11.0
+    """
+
+    additional_filter_func = lambda node: node not in ignores_list
+
+    if output_type == "features":
+        print(
+            parser.filter_as_string(
+                flavor, additional_filter_func=additional_filter_func
+            )
+        )
+    elif (output_type in "platforms", "elements", "flags"):
+        features_by_type = parser.filter_as_dict(
+            flavor, additional_filter_func=additional_filter_func
+        )
+
+        if output_type == "platforms":
+            print(",".join(features_by_type["platform"]))
+        elif output_type == "elements":
+            print(",".join(features_by_type["element"]))
+        elif output_type == "flags":
+            print(",".join(features_by_type["flag"]))
+    else:
+        graph = parser.filter(flavor, additional_filter_func=additional_filter_func)
+
+        sorted_features = Parser.sort_graph_nodes(graph)
+        minimal_feature_set = get_minimal_feature_set(graph)
+
+        sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
+
+        cname_base = get_cname_base(sorted_minimal_features)
+
+        if output_type == "cname_base":
+            print(cname_base)
+        elif output_type == "cname":
+            cname = flavor
+
+            if arch is not None:
+                cname += f"-{arch}"
+
+            if commit_id_or_hash is not None:
+                cname += f"-{version}-{commit_id_or_hash[:8]}"
+
+            print(cname)
+        if output_type == "platforms":
+            print(",".join(features_by_type["platform"]))
+        elif output_type == "elements":
+            print(",".join(features_by_type["element"]))
+        elif output_type == "flags":
+            print(",".join(features_by_type["flag"]))
+        elif output_type == "graph":
+            print(graph_as_mermaid_markup(flavor, graph))
+
+
+def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
+    """
+    Prints output to stdout based on the given CName instance.
+
+    :param output_type: Output type
+    :param cname_instance: CName instance
+
+    :since: 0.11.0
+    """
+
+    if output_type == "cname_base":
+        print(cname_instance.flavor)
+    elif output_type == "cname":
+        print(cname_instance.cname)
+    elif output_type == "platforms":
+        print(cname_instance.feature_set_platform)
+    elif output_type == "elements":
+        print(cname_instance.feature_set_element)
+    elif output_type == "features":
+        print(cname_instance.feature_set)
+    elif output_type == "flags":
+        print(cname_instance.feature_set_flag)
 
 
 def sort_subset(input_set: Set[str], order_list: List[str]) -> List[str]:

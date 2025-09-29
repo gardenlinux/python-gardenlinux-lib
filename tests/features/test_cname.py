@@ -34,3 +34,15 @@ def test_cname_flavor(input_cname: str, expected_output: dict):
     """
     cname = CName(input_cname)
     assert cname.flavor == expected_output
+
+
+def test_cname_commit_id_setter():
+    """
+    Tests cname setter for `commit_id` to verify a given ID before overwriting.
+    """
+
+    cname = CName("container", arch="amd64", version="today", commit_hash="local")
+
+    # Act / Assert
+    with pytest.raises(RuntimeError, match="Commit hash given differs from commit ID already set"):
+        cname.commit_hash = "broken"
