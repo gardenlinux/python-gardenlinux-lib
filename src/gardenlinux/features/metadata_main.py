@@ -5,14 +5,11 @@
 gl-metadata main entrypoint
 """
 
-from functools import reduce
-from os.path import basename, dirname
 import argparse
 import logging
 import re
-
-from .cname import CName
-from .parser import Parser
+from functools import reduce
+from os.path import basename, dirname
 
 from .__main__ import (
     get_cname_base,
@@ -20,10 +17,11 @@ from .__main__ import (
     get_version_and_commit_id_from_files,
     sort_subset,
 )
-
+from .cname import CName
+from .parser import Parser
 
 _ARGS_ACTION_ALLOWED = [
-    "output-as-json",
+    "output-release-metadata",
     "write",
 ]
 
@@ -45,7 +43,10 @@ def main():
     parser.add_argument("--version", dest="version")
 
     parser.add_argument(
-        "action", nargs="?", choices=_ARGS_ACTION_ALLOWED, default="output-as-json"
+        "action",
+        nargs="?",
+        choices=_ARGS_ACTION_ALLOWED,
+        default="output-release-metadata",
     )
 
     args = parser.parse_args()
@@ -58,10 +59,12 @@ def main():
         cname.commit_hash = args.commit_hash
 
     if args.action == "write":
-        cname.save_to_metadata_file(args.release_file, args.overwrite_file)
+        cname.save_to_release_file(args.release_file, args.overwrite_file)
     else:
-        cname.load_from_metadata_file(args.release_file)
-        print(cname.metadata_string)
+        if args.release_file is not None:
+            cname.load_from_release_file(args.release_file)
+
+        print(cname.release_metadata_string)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import types
 import pytest
 
 import gardenlinux.features.__main__ as fema
+from gardenlinux.features import CName
 
 # -------------------------------
 # Helper function tests
@@ -133,7 +134,7 @@ def test_get_version_missing_file_raises(tmp_path):
 # -------------------------------
 def test_main_prints_arch(monkeypatch, capsys):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--features", "f1", "--version", "1.0", "arch"]
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "arch"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
@@ -147,7 +148,7 @@ def test_main_prints_arch(monkeypatch, capsys):
 
 def test_main_prints_commit_id(monkeypatch, capsys):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--features", "f1", "commit_id"]
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
         fema,
@@ -172,27 +173,20 @@ def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
         "prog",
         "--arch",
         "amd64",
-        "--features",
-        "flag1,element1,platform1",
+        "--cname",
+        "flav",
         "--version",
         "1.0",
         "flags",
     ]
     monkeypatch.setattr(sys, "argv", argv)
 
-    class FakeParser:
+    class FakeCName(CName):
         def __init__(self, *a, **k):
-            pass
+            CName.__init__(self, *a, **k)
+            self._feature_flags_cached = ["flag1"]
 
-        @staticmethod
-        def filter_as_dict(*a, **k):
-            return {
-                "flag": ["flag1"],
-                "element": ["element1"],
-                "platform": ["platform1"],
-            }
-
-    monkeypatch.setattr(fema, "Parser", FakeParser)
+    monkeypatch.setattr(fema, "CName", FakeCName)
 
     # Act
     fema.main()
@@ -204,7 +198,7 @@ def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
 
 def test_main_prints_version(monkeypatch, capsys):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--features", "f1", "version"]
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "version"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
         fema,
@@ -225,7 +219,7 @@ def test_main_prints_version(monkeypatch, capsys):
 
 def test_main_prints_version_and_commit_id(monkeypatch, capsys):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--features", "f1", "version_and_commit_id"]
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "version_and_commit_id"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
         fema,
@@ -246,7 +240,7 @@ def test_main_prints_version_and_commit_id(monkeypatch, capsys):
 
 def test_main_arch_raises_missing_verison(monkeypatch, capsys):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--features", "f1", "arch"]
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "arch"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
@@ -294,27 +288,26 @@ def test_main_with_cname_print_cname(monkeypatch, capsys):
     assert "flav" in captured.out
 
 
-def test_main_requires_feature_or_cname(monkeypatch):
+def test_main_requires_cname(monkeypatch):
     # Arrange
     monkeypatch.setattr(sys, "argv", ["prog", "arch"])
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(AssertionError):
+    with pytest.raises(SystemExit):
         fema.main()
 
 
 def test_main_raises_no_arch_no_default(monkeypatch):
     # Arrange
     # args.type == 'cname, arch is None and no default_arch set
-    argv = ["prog", "--features", "f1", "cname"]
+    argv = ["prog", "--cname", "flav", "cname"]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
         fema,
         "Parser",
-        lambda *a, **kw: types.SimpleNamesapce(filter=lambda *a, **k: None),
+        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
     )
-    monkeypatch.setattr(fema, "CName", lambda *a, **kw: None)
 
     # Act / Assert
     with pytest.raises(RuntimeError, match="Architecture could not be determined"):
