@@ -1,0 +1,193 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:53.197872'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- aws
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: 815a4c98a92ee4ad440f6a7f74242d6d
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 527d1f663b89bc956983b6f1929c1b07
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.chroot.test.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.chroot.test.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.log
+- md5sum: 5c220b0737ceae8ad853c6945270182a
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 5c220b0737ceae8ad853c6945270182a
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: eeb4ca6a8459a7ff0bfeb6854560584f
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.chroot.test.xml
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.chroot.test.xml
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .chroot.test.xml
+- md5sum: 073689d27f237067015538a6119910c6
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 5c220b0737ceae8ad853c6945270182a
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: ce6c8e943cbff94b2c110b077136a218
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: fb92799df8fc891ece13f427e3bfab5c
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 6220ff01d80283095b3ed3b611cd183a
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 815a4c98a92ee4ad440f6a7f74242d6d
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 90506fc70b6ee2b8ac8c2fd849c27608
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 5c220b0737ceae8ad853c6945270182a
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 3ba526c627631bc4934dc4c1ccabd6b8
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 28ce5927bb5e59290300190a30167ee3
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 28e7a0143e01e71dc347758d7e5ef7b4
+  name: aws-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/aws-gardener_prod_usi-amd64-1877.3-75df9f40/aws-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+platform: aws
+published_image_metadata:
+  published_aws_images:
+  - ami_id: ami-0e904b4c264dbe923
+    aws_region_id: ap-south-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-016f506d46abb5c06
+    aws_region_id: eu-north-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-052404d8a97e9ec57
+    aws_region_id: eu-west-3
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-002193c185fb2d939
+    aws_region_id: eu-south-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0225bc62c7d291107
+    aws_region_id: eu-west-2
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0f737c34ae9ccfe10
+    aws_region_id: eu-west-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0ecf19a78a7259c02
+    aws_region_id: ap-northeast-3
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-029152bf0a15cf306
+    aws_region_id: ap-northeast-2
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0bf003b58ed636124
+    aws_region_id: ap-northeast-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0546ca7d7c2e00077
+    aws_region_id: me-central-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0a0081cbd4b479d33
+    aws_region_id: ca-central-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-086d3b7282338bcd1
+    aws_region_id: sa-east-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-04973efd023e5883f
+    aws_region_id: ap-southeast-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-00389783d0b7ef01b
+    aws_region_id: ap-southeast-2
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0f5c28bbc45608e9b
+    aws_region_id: us-east-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-08c7494a2a00b74e5
+    aws_region_id: us-east-2
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0e2290963849dba62
+    aws_region_id: us-west-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0fb86d519a38da40f
+    aws_region_id: us-west-2
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0c6394e4fdbefe8c0
+    aws_region_id: eu-central-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0b4c979b27a0a7714
+    aws_region_id: cn-north-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+  - ami_id: ami-0cab977e76e274599
+    aws_region_id: cn-northwest-1
+    image_name: gardenlinux-aws-gardener_prod_usi-amd64-1877.3-75df9f40
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/aws-gardener_prod_usi-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

@@ -10,6 +10,8 @@ REGISTRY_URL = f"http://{REGISTRY}"
 REPO_NAME = "gardenlinux-example"
 CONTAINER_NAME_ZOT_EXAMPLE = f"{REGISTRY}/{REPO_NAME}"
 GARDENLINUX_ROOT_DIR_EXAMPLE = f"{TEST_DATA_DIR}/gardenlinux/.build"
+GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
+GL_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 
 TEST_PLATFORMS = ["aws", "azure", "gcp", "openstack", "openstackbaremetal", "metal"]
 TEST_ARCHITECTURES = ["arm64", "amd64"]

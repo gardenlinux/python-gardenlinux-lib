@@ -1,0 +1,208 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:12:57.638166'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _ignite
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- kvm
+- multipath
+- iscsi
+- nvme
+- gardener
+- _tpm2
+- _usi
+- _trustedboot
+paths:
+- md5sum: b84926c8b080d45415fea7d083c630ff
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: c186ed1f06ea27eb516e3db49cfee700
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.der
+- md5sum: 582840abe3f76ac3499f1af2bd4efd78
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: f4dfe8a5dd7c912408fa59f761e8840b
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 866015eea9749a3b01b07bf385706676
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.der
+- md5sum: a23c33048089865ab1884180dfa4f920
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: d41d8cd98f00b204e9800998ecf8427e
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.arn
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.arn
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.arn
+- md5sum: b84926c8b080d45415fea7d083c630ff
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: 85ba780b6dca9f016f17b5befd369c70
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 582840abe3f76ac3499f1af2bd4efd78
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 79ffa1228382c7c5d7adf3578a209bd0
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.aws-efivars
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.aws-efivars
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.aws-efivars
+- md5sum: deb3e30bbbd0bc8b11b41fde73eef3dc
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.conf
+- md5sum: 32d06b0baf4e3027766ee19f0722ff40
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.null.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.null.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.null.pk.auth
+- md5sum: 52a08859dd78bc3ec1d971e6e3896213
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.auth
+- md5sum: 55b26949aaeb59e9699cebc4bbdcca3e
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.conf
+- md5sum: 94494df8e01481b52238a09206e0e3a2
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.crt
+- md5sum: 00c6a209a251e559c491dc747eaef1bd
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.crt
+- md5sum: f69597cbdf3fa2ea827a1ad1456a5506
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: dd083fb6e5161375ebbdd09be72046be
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.auth
+- md5sum: 80b01cdcbb8417c54e937f6718175462
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: d00a88a05460802c94211cdd7e8cc8e5
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.der
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.der
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.der
+- md5sum: 03d78f357e62eb5051bd5e04a69dc805
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.conf
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.pk.conf
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.pk.conf
+- md5sum: 582840abe3f76ac3499f1af2bd4efd78
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: a0b2a017b98a756d525d82678ec35afc
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 3d57cbafe8c76401e972e6d937a34f24
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 582840abe3f76ac3499f1af2bd4efd78
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 4474c294b76e3f65574a013f6f8e89b1
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.crt
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.kek.crt
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.kek.crt
+- md5sum: 71cd1e0927785984303bf045d06d5a00
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.auth
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.secureboot.db.auth
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .secureboot.db.auth
+- md5sum: c097978dd4c58b42f161f6b6cd58eb9e
+  name: kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+platform: kvm
+published_image_metadata: null
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/kvm-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40
+secureboot: true
+test_result: null
+version: '1877.3'
