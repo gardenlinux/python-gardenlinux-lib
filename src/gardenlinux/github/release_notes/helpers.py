@@ -113,6 +113,6 @@ def download_metadata_file(
     )[0]
     LOGGER.debug(f"{release_object.bucket_name=} | {release_object.key=}")
 
-    s3_artifacts._bucket.download_file(
+    s3_artifacts.bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
     )

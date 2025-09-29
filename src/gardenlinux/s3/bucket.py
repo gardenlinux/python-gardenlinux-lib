@@ -12,6 +12,7 @@ from time import time
 from typing import Any, Optional
 
 import boto3
+from retrying import retry
 
 from ..logger import LoggerSetup
 
@@ -88,6 +89,7 @@ class Bucket(object):
 
         return getattr(self._bucket, name)
 
+    @retry(stop_max_attempt_number=5, wait_exponential_multiplier=1000, wait_exponential_max=16000)
     def download_file(self, key, file_name, *args, **kwargs):
         """
         boto3: Download an S3 object to a file.

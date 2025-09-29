@@ -20,6 +20,7 @@ pygit2 = "^1.18.2"
 pygments = "^2.19.2"
 PyYAML = "^6.0.2"
 gitpython = "^3.1.45"
+retrying = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.8.6"
