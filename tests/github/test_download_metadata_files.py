@@ -1,9 +1,6 @@
 import pytest
 
-from gardenlinux.constants import (
-    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
-    S3_DOWNLOADS_DIR,
-)
+from gardenlinux.constants import RETRYING_MAX_ATTEMPTS, S3_DOWNLOADS_DIR
 from gardenlinux.features import CName
 from gardenlinux.github.release_notes.helpers import download_metadata_file
 from gardenlinux.s3 import S3Artifacts
@@ -13,68 +10,95 @@ from ..constants import (
     TEST_GARDENLINUX_COMMIT,
     TEST_GARDENLINUX_COMMIT_SHORT,
     TEST_GARDENLINUX_RELEASE,
+    TEST_GARDENLINUX_RELEASE_BUCKET_NAME,
 )
 
 
 def test_download_metadata_file(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                                  f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
+                                  f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
-    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(TEST_GARDENLINUX_RELEASE, TEST_GARDENLINUX_COMMIT_SHORT))
+    s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+    s3_artifacts._bucket = release_s3_bucket
+
+    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format(TEST_GARDENLINUX_RELEASE, TEST_GARDENLINUX_COMMIT_SHORT))
     download_metadata_file(s3_artifacts,
                            cname.cname,
                            TEST_GARDENLINUX_RELEASE,
                            TEST_GARDENLINUX_COMMIT_SHORT,
                            S3_DOWNLOADS_DIR)
-    assert (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    assert (S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
 def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                                  f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+                                  f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
+    s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+    s3_artifacts._bucket = release_s3_bucket
+
     release = "0000.0"
     commit = TEST_GARDENLINUX_COMMIT_SHORT
     cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+
     with pytest.raises(IndexError):
         download_metadata_file(s3_artifacts,
                                cname.cname,
                                release,
                                commit,
                                S3_DOWNLOADS_DIR)
-    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    assert not (S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
 def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                                  f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
+                                  f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+    s3_artifacts._bucket = release_s3_bucket
+
     release = TEST_GARDENLINUX_RELEASE
     commit = "deadbeef"
-    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+
     with pytest.raises(IndexError):
         download_metadata_file(s3_artifacts,
                                cname.cname,
                                release,
                                commit,
                                S3_DOWNLOADS_DIR)
-    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    assert not (S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
 def test_download_metadata_file_no_such_release_and_commit(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-                                  f"meta/singles/aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
+                                  f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}")
 
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+    s3_artifacts._bucket = release_s3_bucket
+
     release = "0000.0"
     commit = "deadbeef"
-    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+
     with pytest.raises(IndexError):
         download_metadata_file(s3_artifacts,
                                cname.cname,
                                release,
                                commit,
                                S3_DOWNLOADS_DIR)
-    assert not (S3_DOWNLOADS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+    assert not (S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml").exists()
+
+
+def test_download_metadata_uses_retrying_strategy(downloads_dir, blackhole_s3_bucket):
+    s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+    s3_artifacts._bucket._bucket = blackhole_s3_bucket
+
+    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format("foo", "bar"))
+
+    with pytest.raises(IOError) as exn:
+        download_metadata_file(s3_artifacts,
+                               cname.cname,
+                               "foo",
+                               "bar",
+                               S3_DOWNLOADS_DIR)
+        assert str(exn.value) == f"Download attempt # {RETRYING_MAX_ATTEMPTS} failed"
