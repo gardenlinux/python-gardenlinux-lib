@@ -1,0 +1,88 @@
+architecture: arm64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:14:04.480446'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- firewall
+- log
+- sap
+- ssh
+- _ignite
+- _legacy
+- _pxe
+- _selinux
+- _slim
+- base
+- server
+- metal
+paths:
+- md5sum: ebe40d9d33607ccbd9991a2e31237644
+  name: metal_pxe-arm64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: f2a44ed60b462803472bac55a21286e1
+  name: metal_pxe-arm64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 35af88fafde836ea260212af9206a3ed
+  name: metal_pxe-arm64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: 30de5a1996b2dad46c24116686ef8619
+  name: metal_pxe-arm64-1877.3-75df9f40.pxe.tar.gz
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.pxe.tar.gz
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .pxe.tar.gz
+- md5sum: 35af88fafde836ea260212af9206a3ed
+  name: metal_pxe-arm64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: cf413a844c5a9b6dd4c6410c8df407d5
+  name: metal_pxe-arm64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 0aab5b61dc981037c9d6105d13dddfe5
+  name: metal_pxe-arm64-1877.3-75df9f40.pxe.tar.gz.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.pxe.tar.gz.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .pxe.tar.gz.log
+- md5sum: 35af88fafde836ea260212af9206a3ed
+  name: metal_pxe-arm64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: c8c770381fb43a8fc93b2a6a72c1fd4c
+  name: metal_pxe-arm64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 35af88fafde836ea260212af9206a3ed
+  name: metal_pxe-arm64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal_pxe-arm64-1877.3-75df9f40/metal_pxe-arm64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+platform: metal
+published_image_metadata: null
+require_uefi: false
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/metal_pxe-arm64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

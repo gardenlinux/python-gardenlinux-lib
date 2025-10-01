@@ -1,0 +1,118 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:26.644945'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _ignite
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- cloud
+- kvm
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: c48aa67af7ba1ca5476642075fab60d4
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: d5dbaab293ba1efcc94d2759a7b9dffd
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: 6ea462b43680be993efe560c48337e6b
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: a25552ebe21a2694d4ba91c2321c7e30
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 28ce5927bb5e59290300190a30167ee3
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 28e6788d49ca1fc125f713867a617b52
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+- md5sum: c48aa67af7ba1ca5476642075fab60d4
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 8ce00d484725770c0ed07bd3a8399dbc
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 2157bb822434ed74b67a8f2dbbb20070
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: ee21f1409e54902b05e2f028df40269f
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 28e6788d49ca1fc125f713867a617b52
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: f69597cbdf3fa2ea827a1ad1456a5506
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: c48aa67af7ba1ca5476642075fab60d4
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: c48aa67af7ba1ca5476642075fab60d4
+  name: kvm-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/kvm-gardener_prod_usi-amd64-1877.3-75df9f40/kvm-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+platform: kvm
+published_image_metadata: null
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/kvm-gardener_prod_usi-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'

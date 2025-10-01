@@ -155,3 +155,14 @@ S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 
 GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
 GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
+
+GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
+
+# https://github.com/gardenlinux/gardenlinux/issues/3044
+# Empty string is the 'legacy' variant with traditional root fs and still needed/supported
+IMAGE_VARIANTS = ["", "_usi", "_tpm2_trustedboot"]
+
+# configuration for https://github.com/groodt/retrying
+RETRYING_MAX_ATTEMPTS = 5
+RETRYING_WAIT_EXPONENTIAL_MULTIPLIER = 1000
+RETRYING_WAIT_EXPONENTIAL_MAX = 16000

@@ -1,0 +1,116 @@
+architecture: amd64
+base_image: null
+build_committish: 75df9f401a842914563f312899ec3ce34b24515c
+build_timestamp: '2025-09-08T11:13:02.531494'
+gardenlinux_epoch: 1877
+logs: null
+modifiers:
+- log
+- sap
+- ssh
+- _nocrypt
+- _nopkg
+- _prod
+- _slim
+- base
+- server
+- metal
+- multipath
+- iscsi
+- nvme
+- gardener
+- _unsigned
+- _usi
+paths:
+- md5sum: 4092064f7314f3da9a830974ed880625
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.uki
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki
+- md5sum: 2a7196181bb0187b20b6c7c4bbac6934
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.uki.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .uki.log
+- md5sum: 0bac7c56c80c9c918c6d581adaeda25a
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.raw.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw.log
+- md5sum: 4626c43c896e7e36efd4d047b76f7428
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.raw
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .raw
+- md5sum: 1e8fad6f61af2b3ea5893b1eb9092c33
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar
+- md5sum: 759611fbd0df90d904c3af49f88d9b47
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.tar
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar
+- md5sum: 4f1b97af8c60f26c0e049d10c0f12f42
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.release.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release.log
+- md5sum: a5e7210e2771f2c420fa4ff7c2ac91d4
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.release
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .release
+- md5sum: c4495a6b640ffef700997c73c5d9c48f
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.manifest
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest
+- md5sum: 4f1b97af8c60f26c0e049d10c0f12f42
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.requirements.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements.log
+- md5sum: 4f1b97af8c60f26c0e049d10c0f12f42
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .tar.log
+- md5sum: 28ce5927bb5e59290300190a30167ee3
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.requirements
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .requirements
+- md5sum: 4f1b97af8c60f26c0e049d10c0f12f42
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.manifest.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .manifest.log
+- md5sum: 2a7196181bb0187b20b6c7c4bbac6934
+  name: metal-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  s3_bucket_name: gardenlinux-github-releases
+  s3_key: objects/metal-gardener_prod_usi-amd64-1877.3-75df9f40/metal-gardener_prod_usi-amd64-1877.3-75df9f40.esp.tar.log
+  sha256sum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  suffix: .esp.tar.log
+platform: metal
+published_image_metadata: null
+require_uefi: true
+s3_bucket: gardenlinux-github-releases
+s3_key: meta/singles/metal-gardener_prod_usi-amd64-1877.3-75df9f40
+secureboot: false
+test_result: null
+version: '1877.3'
