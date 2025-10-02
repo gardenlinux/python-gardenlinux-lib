@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import gardenlinux.github.__main__ as gh
+import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
@@ -44,7 +44,7 @@ def test_script_create_dry_run(monkeypatch, capfd):
 
     monkeypatch.setattr(sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo",
                         "gardenlinux", "--tag", TEST_GARDENLINUX_RELEASE, "--commit", TEST_GARDENLINUX_COMMIT, "--dry-run"])
-    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release_notes",
+    monkeypatch.setattr("gardenlinux.github.release.__main__.create_github_release_notes",
                         lambda tag, commit, bucket: f"{tag} {commit} {bucket}")
 
     gh.main()
@@ -57,9 +57,9 @@ def test_script_create_dry_run(monkeypatch, capfd):
 def test_script_create(monkeypatch, caplog):
     monkeypatch.setattr(sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo",
                         "gardenlinux", "--tag", TEST_GARDENLINUX_RELEASE, "--commit", TEST_GARDENLINUX_COMMIT])
-    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release_notes",
+    monkeypatch.setattr("gardenlinux.github.release.__main__.create_github_release_notes",
                         lambda tag, commit, bucket: f"{tag} {commit} {bucket}")
-    monkeypatch.setattr("gardenlinux.github.__main__.create_github_release",
+    monkeypatch.setattr("gardenlinux.github.release.__main__.create_github_release",
                         lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE)
 
     gh.main()
@@ -71,7 +71,7 @@ def test_script_create(monkeypatch, caplog):
 def test_script_upload_dry_run(monkeypatch, capfd):
     monkeypatch.setattr(sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo",
                         "gardenlinux", "--release_id", TEST_GARDENLINUX_RELEASE, "--file_path", "foo", "--dry-run"])
-    monkeypatch.setattr("gardenlinux.github.__main__.upload_to_github_release_page",
+    monkeypatch.setattr("gardenlinux.github.release.__main__.upload_to_github_release_page",
                         lambda a1, a2, a3, a4, dry_run: print(f"dry-run: {dry_run}"))
 
     gh.main()
