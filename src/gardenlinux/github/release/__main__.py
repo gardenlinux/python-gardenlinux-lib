@@ -3,12 +3,12 @@ import argparse
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
 
-from .release import (
+from . import (
     create_github_release,
     upload_to_github_release_page,
     write_to_release_id_file,
 )
-from .release_notes import create_github_release_notes
+from ..release_notes import create_github_release_notes
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", "INFO")
 
