@@ -161,12 +161,14 @@ REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 
+GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 GLVD_BASE_URL = (
     "https://security.gardenlinux.org/v1"
 )
-GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
+
+PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
 
 # https://github.com/gardenlinux/gardenlinux/issues/3044
 # Empty string is the 'legacy' variant with traditional root fs and still needed/supported
