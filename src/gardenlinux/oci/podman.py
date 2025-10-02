@@ -183,7 +183,7 @@ class Podman(object):
         podman: PodmanContext,
         platform: Optional[str] = None,
         oci_tag: Optional[str] = None,
-    ) -> None:
+    ) -> str:
         """
         Pulls a given OCI container.
 
