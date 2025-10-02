@@ -161,8 +161,3 @@ GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 # https://github.com/gardenlinux/gardenlinux/issues/3044
 # Empty string is the 'legacy' variant with traditional root fs and still needed/supported
 IMAGE_VARIANTS = ["", "_usi", "_tpm2_trustedboot"]
-
-# configuration for https://github.com/groodt/retrying
-RETRYING_MAX_ATTEMPTS = 5
-RETRYING_WAIT_EXPONENTIAL_MULTIPLIER = 1000
-RETRYING_WAIT_EXPONENTIAL_MAX = 16000

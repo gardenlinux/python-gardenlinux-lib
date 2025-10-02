@@ -14,7 +14,6 @@ from typing import Any, Optional
 import boto3
 from retrying import retry
 
-from ..constants import RETRYING_MAX_ATTEMPTS, RETRYING_WAIT_EXPONENTIAL_MAX, RETRYING_WAIT_EXPONENTIAL_MULTIPLIER
 from ..logger import LoggerSetup
 
 
@@ -90,9 +89,7 @@ class Bucket(object):
 
         return getattr(self._bucket, name)
 
-    @retry(stop_max_attempt_number=RETRYING_MAX_ATTEMPTS,
-           wait_exponential_multiplier=RETRYING_WAIT_EXPONENTIAL_MULTIPLIER,
-           wait_exponential_max=RETRYING_WAIT_EXPONENTIAL_MAX)
+    @retry(stop_max_attempt_number=5, wait_exponential_multiplier=1000, wait_exponential_max=16000)
     def download_file(self, key, file_name, *args, **kwargs):
         """
         boto3: Download an S3 object to a file.
