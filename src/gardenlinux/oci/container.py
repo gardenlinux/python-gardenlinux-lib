@@ -13,7 +13,7 @@ from hashlib import sha256
 from os import PathLike, fdopen, getenv
 from pathlib import Path
 from tempfile import mkstemp
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import urlsplit
 
 import jsonschema
@@ -21,7 +21,7 @@ from oras.container import Container as OrasContainer
 from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.provider import Registry
 from oras.utils import extract_targz, make_targz
-from requests import Response
+from requests import HTTPError, Response
 
 from ..constants import GL_MEDIA_TYPE_LOOKUP, OCI_IMAGE_INDEX_MEDIA_TYPE
 from ..features.cname import CName
@@ -251,6 +251,23 @@ class Container(Registry):
             headers={"Accept": "application/vnd.oci.image.manifest.v1+json"},
         )
 
+    def push_index(self, index: Index, tag: Optional[str] = None):
+        """
+        Replaces an old manifest entries with new ones
+
+        :param manifests_dir:   Directory where the manifest entries are read from
+        :param additional_tags: Additional tags to push the index with
+
+        :since: 0.7.0
+        """
+
+        index_kwargs = {}
+
+        if tag is not None:
+            index_kwargs["reference"] = tag
+
+        self._check_200_response(self._upload_index(index, **index_kwargs))
+
     def push_index_from_directory(
         self, manifests_dir: PathLike | str, additional_tags: list = None
     ):
@@ -298,7 +315,7 @@ class Container(Registry):
 
             new_entries += 1
 
-        self._check_200_response(self._upload_index(index))
+        self.push_index(index)
         self._logger.info(f"Index pushed with {new_entries} new entries")
 
         if isinstance(additional_tags, Sequence) and len(additional_tags) > 0:
@@ -309,7 +326,7 @@ class Container(Registry):
                 additional_tags,
             )
 
-    def push_index_for_tags(self, index, tags):
+    def push_index_for_tags(self, index: Index, tags: List[str]):
         """
         Push tags for an given OCI image index.
 
@@ -321,7 +338,7 @@ class Container(Registry):
 
         # For each additional tag, push the manifest using Registry.upload_manifest
         for tag in tags:
-            self._check_200_response(self._upload_index(index, tag))
+            self.push_index(index, tag)
 
     def push_manifest(
         self,
@@ -531,9 +548,9 @@ class Container(Registry):
 
             self._check_200_response(self.upload_manifest(manifest, manifest_container))
 
-    def read_or_generate_index(self):
+    def read_index(self):
         """
-        Reads from registry or generates the OCI image index.
+        Reads the OCI image index from registry.
 
         :return: OCI image manifest
         :since:  0.7.0
@@ -543,10 +560,66 @@ class Container(Registry):
 
         if response.ok:
             index = Index(**response.json())
-        elif response.status_code == 404:
-            index = self.generate_index()
         else:
             response.raise_for_status()
+
+        return index
+
+    def read_manifest(
+        self,
+        cname: Optional[str] = None,
+        architecture: Optional[str] = None,
+        version: Optional[str] = None,
+    ) -> Manifest:
+        """
+        Reads the OCI manifest from registry.
+
+        :param cname: Canonical name of the manifest
+        :param architecture: Target architecture of the manifest
+        :param version: Artifacts version of the manifest
+
+        :return: OCI image manifest
+        :since:  0.7.0
+        """
+
+        if cname is None:
+            manifest_type = Manifest
+
+            response = self._get_manifest_without_response_parsing(
+                self._container_version
+            )
+        else:
+            manifest_type = ImageManifest
+
+            if architecture is None:
+                architecture = CName(cname, architecture, version).arch
+
+            response = self._get_manifest_without_response_parsing(
+                f"{self._container_version}-{cname}-{architecture}"
+            )
+
+        if response.ok:
+            manifest = manifest_type(**response.json())
+        else:
+            response.raise_for_status()
+
+        return manifest
+
+    def read_or_generate_index(self):
+        """
+        Reads from registry or generates the OCI image index.
+
+        :return: OCI image manifest
+        :since:  0.7.0
+        """
+
+        try:
+            index = self.read_index()
+        except HTTPError as exc:
+            if exc.response.status_code != 404:
+                raise
+
+            index = self.generate_index()
 
         return index
 
@@ -571,33 +644,18 @@ class Container(Registry):
         :since:  0.7.0
         """
 
-        if cname is None:
-            manifest_type = Manifest
+        try:
+            manifest = self.read_manifest(cname, architecture, version)
+        except HTTPError as exc:
+            if exc.response.status_code != 404:
+                raise
 
-            response = self._get_manifest_without_response_parsing(
-                self._container_version
-            )
-        else:
-            manifest_type = ImageManifest
-
-            if architecture is None:
-                architecture = CName(cname, architecture, version).arch
-
-            response = self._get_manifest_without_response_parsing(
-                f"{self._container_version}-{cname}-{architecture}"
-            )
-
-        if response.ok:
-            manifest = manifest_type(**response.json())
-        elif response.status_code == 404:
             if cname is None:
                 manifest = self.generate_manifest(version, commit)
             else:
                 manifest = self.generate_image_manifest(
                     cname, architecture, version, commit, feature_set
                 )
-        else:
-            response.raise_for_status()
 
         return manifest
 
