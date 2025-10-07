@@ -107,7 +107,7 @@ class Parser(object):
                             "{0}/{1}/info.yaml".format(self._feature_base_dir, ref)
                         ):
                             raise ValueError(
-                                f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
+                                f"feature {node} references feature {ref}, but {self._feature_base_dir}/{ref}/info.yaml does not exist"
                             )
 
                         feature_graph.add_edge(node, ref, attr=attr)
