@@ -13,11 +13,7 @@ from typing import Callable, Optional
 import networkx
 import yaml
 
-from ..constants import (
-    ARCHS,
-    BARE_FLAVOR_FEATURE_CONTENT,
-    BARE_FLAVOR_LIBC_FEATURE_CONTENT,
-)
+from ..constants import BARE_FLAVOR_FEATURE_CONTENT, BARE_FLAVOR_LIBC_FEATURE_CONTENT
 from ..logger import LoggerSetup
 
 
