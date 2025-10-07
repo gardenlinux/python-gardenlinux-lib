@@ -8,8 +8,6 @@ gl-features-parse main entrypoint
 import argparse
 import logging
 import os
-import re
-import sys
 from functools import reduce
 from os import path
 from typing import Any, List, Set
@@ -100,9 +98,9 @@ def main() -> None:
         commit_id = cname.commit_id
         version = cname.version
 
-        input_features = Parser.get_cname_as_feature_set(flavor)
+        _ = Parser.get_cname_as_feature_set(flavor)
     else:
-        input_features = args.features
+        _ = args.features
 
     if arch is None or arch == "" and (args.type in ("cname", "arch")):
         raise RuntimeError(
@@ -124,7 +122,7 @@ def main() -> None:
         print(arch)
     elif args.type in ("cname_base", "cname", "graph"):
         graph = Parser(gardenlinux_root, feature_dir_name).filter(
-            flavor, additional_filter_func=additional_filter_func
+            flavor, additional_filter_func=additional_filter_func  # type: ignore
         )
 
         sorted_features = Parser.sort_graph_nodes(graph)
@@ -140,10 +138,10 @@ def main() -> None:
             cname = flavor
 
             if arch is not None:
-                cname += f"-{arch}"
+                cname += f"-{arch}"  # type: ignore - None check is carried out.
 
             if commit_id is not None:
-                cname += f"-{version}-{commit_id}"
+                cname += f"-{version}-{commit_id}"  # type: ignore - None check is carried out.
 
             print(cname)
         elif args.type == "graph":
@@ -173,7 +171,7 @@ def main() -> None:
         print(f"{version}-{commit_id}")
 
 
-def get_cname_base(sorted_features: Set[str]):
+def get_cname_base(sorted_features: List[str]):
     """
     Get the base cname for the feature set given.
 
@@ -228,7 +226,7 @@ def get_minimal_feature_set(graph: Any) -> Set[str]:
     return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
 
-def graph_as_mermaid_markup(flavor: str, graph: Any) -> str:
+def graph_as_mermaid_markup(flavor: str | None, graph: Any) -> str:
     """
     Generates a mermaid.js representation of the graph.
     This is helpful to identify dependencies between features.
@@ -242,6 +240,9 @@ def graph_as_mermaid_markup(flavor: str, graph: Any) -> str:
     :return: (str) mermaid.js representation
     :since:  0.7.0
     """
+
+    if flavor is None:
+        return "No flavor provided. Skipping."
 
     markup = f"---\ntitle: Dependency Graph for Feature {flavor}\n---\ngraph TD;\n"
 
