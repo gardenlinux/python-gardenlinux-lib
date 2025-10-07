@@ -80,8 +80,7 @@ def main():
 
     generated_cname = get_cname_base(sorted_minimal_features)
 
-    if cname.arch is not None:
-        generated_cname += f"-{cname.arch}"
+    generated_cname += f"-{cname.arch}"
 
     if cname.version_and_commit_id is not None:
         generated_cname += f"-{cname.version_and_commit_id}"
