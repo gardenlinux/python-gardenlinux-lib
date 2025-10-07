@@ -7,6 +7,7 @@ Features parser based on networkx.Digraph
 import logging
 import os
 from glob import glob
+from pathlib import Path
 from typing import Callable, Optional
 
 import networkx
@@ -40,8 +41,8 @@ class Parser(object):
 
     def __init__(
         self,
-        gardenlinux_root: Optional[str] = None,
-        feature_dir_name: Optional[str] = "features",
+        gardenlinux_root: str = _GARDENLINUX_ROOT,
+        feature_dir_name: str = "features",
         logger: Optional[logging.Logger] = None,
     ):
         """
@@ -54,10 +55,10 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        if gardenlinux_root is None:
-            gardenlinux_root = Parser._GARDENLINUX_ROOT
+        feature_base_dir = Path(gardenlinux_root) / feature_dir_name
 
-        feature_base_dir = os.path.join(gardenlinux_root, feature_dir_name)
+        if not feature_base_dir.is_dir():
+            raise ValueError(f"Feature direcotry is invalid: {feature_base_dir}")
 
         if not os.access(feature_base_dir, os.R_OK):
             raise ValueError(
@@ -160,7 +161,7 @@ class Parser(object):
         )
 
         if not ignore_excludes:
-            Parser._exclude_from_filter_set(graph, input_features, filter_set)
+            Parser._exclude_from_filter_set(self, graph, input_features, filter_set)
 
         return graph
 
