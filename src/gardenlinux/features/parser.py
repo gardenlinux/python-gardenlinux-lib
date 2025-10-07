@@ -123,7 +123,7 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> networkx.Graph:
         """
         Filters the features graph.
@@ -169,7 +169,7 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> dict:
         """
         Filters the features graph and returns it as a dict.
@@ -201,7 +201,7 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> list:
         """
         Filters the features graph and returns it as a list.
@@ -221,7 +221,7 @@ class Parser(object):
         self,
         cname: str,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> str:
         """
         Filters the features graph and returns it as a string.
