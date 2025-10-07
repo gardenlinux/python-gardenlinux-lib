@@ -116,3 +116,51 @@ def download_metadata_file(
     s3_artifacts.bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
     )
+
+
+def get_variant_from_flavor(flavor_name):
+    """
+    Determine the variant from a flavor name by checking for variant suffixes.
+    Returns the variant key (e.g., 'legacy', 'usi', 'tpm2_trustedboot').
+    """
+    match flavor_name:
+        case name if "_usi" in name:
+            return "usi"
+        case name if "_tpm2_trustedboot" in name:
+            return "tpm2_trustedboot"
+        case _:
+            return "legacy"
+
+
+def get_platform_display_name(platform, clouds):
+    """
+    Get the display name for a platform.
+    """
+    match platform:
+        case "ali" | "openstackbaremetal" | "openstack" | "azure" | "gcp" | "aws":
+            return clouds[platform]
+        case _:
+            return platform.upper()
+
+
+def get_platform_release_note_data(metadata, platform):
+    """
+    Get the appropriate cloud release note data based on platform.
+    Returns the structured data dictionary.
+    """
+    match platform:
+        case "ali":
+            return _ali_release_note(metadata)
+        case "aws":
+            return _aws_release_note(metadata)
+        case "gcp":
+            return _gcp_release_note(metadata)
+        case "azure":
+            return _azure_release_note(metadata)
+        case "openstack":
+            return _openstack_release_note(metadata)
+        case "openstackbaremetal":
+            return _openstackbaremetal_release_note(metadata)
+        case _:
+            LOGGER.error(f"unknown platform {platform}")
+            return None
