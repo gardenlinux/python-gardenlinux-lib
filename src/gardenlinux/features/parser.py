@@ -6,8 +6,6 @@ Features parser based on networkx.Digraph
 
 import logging
 import os
-import re
-import subprocess
 from glob import glob
 from typing import Callable, Optional
 
@@ -240,7 +238,7 @@ class Parser(object):
 
         return ",".join(features)
 
-    def _exclude_from_filter_set(graph, input_features, filter_set):
+    def _exclude_from_filter_set(self, graph, input_features, filter_set):
         """
         Removes the given `filter_set` out of `input_features`.
 
