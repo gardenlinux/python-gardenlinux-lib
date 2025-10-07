@@ -8,7 +8,7 @@ import logging
 import os
 from glob import glob
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, cast
 
 import networkx
 import yaml
@@ -245,7 +245,9 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        exclude_graph_view = Parser._get_graph_view_for_attr(graph, "exclude")
+        exclude_graph_view = cast(
+            networkx.DiGraph, Parser._get_graph_view_for_attr(graph, "exclude")
+        )
         exclude_list = []
 
         for node in networkx.lexicographical_topological_sort(graph):
