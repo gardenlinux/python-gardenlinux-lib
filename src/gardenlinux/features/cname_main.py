@@ -8,7 +8,6 @@ gl-cname main entrypoint
 import argparse
 import logging
 import re
-from functools import reduce
 from os.path import basename, dirname
 
 from .__main__ import (
