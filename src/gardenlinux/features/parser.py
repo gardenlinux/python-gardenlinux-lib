@@ -117,7 +117,7 @@ class Parser(object):
 
     def filter(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> networkx.Graph:
@@ -163,7 +163,7 @@ class Parser(object):
 
     def filter_as_dict(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> dict:
@@ -195,7 +195,7 @@ class Parser(object):
 
     def filter_as_list(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> list:
@@ -215,7 +215,7 @@ class Parser(object):
 
     def filter_as_string(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> str:
