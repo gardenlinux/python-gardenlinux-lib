@@ -2,6 +2,9 @@ from . import DeploymentPlatform
 
 
 class OpenStack(DeploymentPlatform):
+    def short_name(self):
+        return "openstack"
+
     def full_name(self):
         return "OpenStack"
 

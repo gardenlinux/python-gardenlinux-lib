@@ -1,5 +1,6 @@
 import argparse
 
+from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
 
 from .release import create_github_release, upload_to_github_release_page, write_to_release_id_file
@@ -30,7 +31,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "create":
-        body = create_github_release_notes(args.tag, args.commit)
+        body = create_github_release_notes(args.tag, args.commit, GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
         if args.dry_run:
             print("Dry Run ...")
             print("This release would be created:")

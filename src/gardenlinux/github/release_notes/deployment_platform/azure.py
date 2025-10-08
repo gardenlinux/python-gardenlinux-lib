@@ -2,6 +2,9 @@ from . import DeploymentPlatform
 
 
 class Azure(DeploymentPlatform):
+    def short_name(self):
+        return "azure"
+
     def full_name(self):
         return "Microsoft Azure"
 

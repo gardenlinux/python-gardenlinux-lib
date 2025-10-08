@@ -4,6 +4,9 @@ from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 class DeploymentPlatform():
     artifacts_bucket_name = GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
+    def short_name(self):
+        return "generic"
+
     def full_name(self):
         return "Generic Deployment Platform"
 
@@ -21,19 +24,22 @@ class DeploymentPlatform():
     def image_extension(self):
         return "raw"
 
-    def artifact_for_flavor(self, flavor):
+    def artifact_for_flavor(self, flavor, markdown_format=True):
         base_url = f"https://{self.__class__.artifacts_bucket_name}.s3.amazonaws.com/objects"
         filename = f"{flavor}.{self.image_extension()}"
         download_url = f"{base_url}/{flavor}/{filename}"
-        return f"[{filename}]({download_url})"
+        if markdown_format:
+            return f"[{filename}]({download_url})"
+        else:
+            return download_url
 
-    def region_details(self):
+    def region_details(self, image_metadata):
         """
         Generate the detailed region information for the collapsible section
         """
         details = ""
 
-        match self.published_images_by_regions():
+        match self.published_images_by_regions(image_metadata):
             case {"regions": regions}:
                 for region in regions:
                     match region:
@@ -71,11 +77,11 @@ class DeploymentPlatform():
 
         return details
 
-    def summary_text(self):
+    def summary_text(self, image_metadata):
         """
         Generate the summary text for the collapsible section
         """
-        match self.published_images_by_regions():
+        match self.published_images_by_regions(image_metadata):
             case {"regions": regions}:
                 count = len(regions)
                 return f"{count} regions"

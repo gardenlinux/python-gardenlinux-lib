@@ -49,7 +49,7 @@ def compare_apt_repo_versions(previous_version, current_version):
     return output
 
 
-def download_all_metadata_files(version, commitish):
+def download_all_metadata_files(version, commitish, s3_bucket_name):
     repo = Repo(".")
     commit = repo.commit(commitish)
     flavors_data = commit.tree["flavors.yaml"].data_stream.read().decode("utf-8")
@@ -60,7 +60,7 @@ def download_all_metadata_files(version, commitish):
         shutil.rmtree(local_dest_path)
     local_dest_path.mkdir(mode=0o755, exist_ok=False)
 
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    s3_artifacts = S3Artifacts(s3_bucket_name)
 
     commitish_short = commitish[:8]
 

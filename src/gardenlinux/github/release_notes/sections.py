@@ -154,8 +154,8 @@ def generate_table_format(grouped_data):
                     if data is None:
                         continue
 
-                    details_content = PLATFORMS[platform].region_details()
-                    summary_text = PLATFORMS[platform].summary_text()
+                    details_content = PLATFORMS[platform].region_details(metadata)
+                    summary_text = PLATFORMS[platform].summary_text(metadata)
 
                     download_link = PLATFORMS[platform].artifact_for_flavor(data['flavor'])
 
@@ -165,8 +165,86 @@ def generate_table_format(grouped_data):
                                f"| {arch} "
                                f"| `{data['flavor']}` "
                                f"| <details><summary>{summary_text}</summary><br>{details_content}</details> "
-                               f"| <details><summary> Download </summary> <br> {download_link} </details> "
+                               f"| <details><summary>Download</summary><br>{download_link}</details> "
                                "|\n")
+
+    return output
+
+
+def generate_detailed_format(grouped_data):
+    """
+    Generate the old detailed format with YAML
+    """
+    output = ""
+
+    for variant in IMAGE_IDS_VARIANT_ORDER:
+        if variant not in grouped_data:
+            continue
+
+        output += (
+            f"<details>\n<summary>Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}</summary>\n\n"
+        )
+        output += f"### Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}\n\n"
+
+        for platform in sorted(grouped_data[variant].keys()):
+            platform_long_name = PLATFORMS[platform].full_name()
+            platform_short_name = PLATFORMS[platform].short_name().upper()
+            output += f"<details>\n<summary>{platform_short_name} - {platform_long_name}</summary>\n\n"
+            output += f"#### {platform_short_name} - {platform_long_name}\n\n"
+
+            for arch in sorted(grouped_data[variant][platform].keys()):
+                output += f"<details>\n<summary>{arch}</summary>\n\n"
+                output += f"##### {arch}\n\n"
+                output += "```\n"
+
+                # Process all metadata for this variant/platform/architecture
+                for metadata in grouped_data[variant][platform][arch]:
+                    data = PLATFORMS[platform].published_images_by_regions(metadata)
+                    if data is None:
+                        continue
+
+                    output += f"- flavor: {data['flavor']}\n"
+
+                    download_url = PLATFORMS[platform].artifact_for_flavor(data['flavor'], markdown_format=False)
+                    output += f"  download_url: {download_url}\n"
+
+                    if "regions" in data:
+                        output += "  regions:\n"
+                        for region in data["regions"]:
+                            if "image_name" in region:
+                                output += f"    - region: {region['region']}\n"
+                                output += f"      image_id: {region['image_id']}\n"
+                                output += f"      image_name: {region['image_name']}\n"
+                            else:
+                                output += f"    - region: {region['region']}\n"
+                                output += f"      image_id: {region['image_id']}\n"
+                    elif "details" in data and platform != "gcp":
+                        output += "  details:\n"
+                        for key, value in data["details"].items():
+                            output += f"    {key}: {value}\n"
+                    elif platform == "gcp" and "details" in data:
+                        # For GCP, move details up to same level as flavor
+                        for key, value in data["details"].items():
+                            output += f"  {key}: {value}\n"
+                    elif "gallery_images" in data or "marketplace_images" in data:
+                        if data.get("gallery_images"):
+                            output += "  gallery_images:\n"
+                            for img in data["gallery_images"]:
+                                output += f"    - hyper_v_generation: {img['hyper_v_generation']}\n"
+                                output += f"      azure_cloud: {img['azure_cloud']}\n"
+                                output += f"      image_id: {img['image_id']}\n"
+                        if data.get("marketplace_images"):
+                            output += "  marketplace_images:\n"
+                            for img in data["marketplace_images"]:
+                                output += f"    - hyper_v_generation: {img['hyper_v_generation']}\n"
+                                output += f"      urn: {img['urn']}\n"
+
+                output += "```\n\n"
+                output += "</details>\n\n"
+
+            output += "</details>\n\n"
+
+        output += "</details>\n\n"
 
     return output
 
@@ -207,6 +285,11 @@ def release_notes_image_ids_section(metadata_files):
 
     output += "<details>\n<summary>📊 Table View</summary>\n\n"
     output += generate_table_format(grouped_data)
+    output += "\n</details>\n\n"
+
+    # Old format
+    output += "<details>\n<summary>📝 Detailed View</summary>\n\n"
+    output += generate_detailed_format(grouped_data)
     output += "\n</details>\n\n"
 
     return output

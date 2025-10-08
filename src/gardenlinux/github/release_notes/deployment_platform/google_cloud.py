@@ -2,6 +2,9 @@ from . import DeploymentPlatform
 
 
 class GoogleCloud(DeploymentPlatform):
+    def short_name(self):
+        return "gcp"
+
     def full_name(self):
         return "Google Cloud Platform"
 
