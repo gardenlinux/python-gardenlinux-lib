@@ -118,14 +118,11 @@ def main() -> None:
 
     additional_filter_func = lambda node: node not in args.ignore
 
-    if flavor is None or "":
-        raise RuntimeError("Flavor could not be determined")
-
     if args.type == "arch":
         print(arch)
     elif args.type in ("cname_base", "cname", "graph"):
         graph = Parser(gardenlinux_root, feature_dir_name).filter(
-            flavor, additional_filter_func=additional_filter_func  # type: ignore
+            flavor, additional_filter_func=additional_filter_func
         )
 
         sorted_features = Parser.sort_graph_nodes(graph)
