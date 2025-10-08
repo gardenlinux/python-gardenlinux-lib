@@ -70,22 +70,17 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
     class SubmoduleAsRepo(Repo):
         """This will fake a git submodule as a git repository object."""
         def __new__(cls, *args, **kwargs):
-            print('In SubmoduleAsRepo.__new__')
             r = super().__new__(Repo)
             r.__init__(*args, **kwargs)
-            print(f'{r=}')
 
             maybe_gl_submodule = [submodule for submodule in r.submodules if submodule.name.endswith("/gardenlinux")]
             if not maybe_gl_submodule:
                 return r
             else:
                 gl = maybe_gl_submodule[0]
-            print(f'{gl=}')
 
             sr = gl.module()
-            print(f'{sr=}')
             sr.remotes.origin.pull("main")
-            print('git pull done')
             return sr
 
     monkeypatch.setattr("gardenlinux.github.release_notes.helpers.Repo", SubmoduleAsRepo)
