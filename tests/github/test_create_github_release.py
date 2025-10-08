@@ -4,7 +4,10 @@ import requests_mock
 
 from gardenlinux.github.release import create_github_release, write_to_release_id_file
 
-from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
+from ..constants import (
+    TEST_GARDENLINUX_COMMIT,
+    TEST_GARDENLINUX_RELEASE,
+)
 
 
 def test_create_github_release_needs_github_token():

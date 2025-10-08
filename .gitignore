@@ -169,3 +169,6 @@ bandit-report.json
 
 # zot
 test-data/zot
+
+s3_downloads/
+.github_release_id
