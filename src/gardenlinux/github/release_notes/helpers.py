@@ -9,7 +9,6 @@ from git import Repo
 from gardenlinux.apt import DebsrcFile, GardenLinuxRepo
 from gardenlinux.apt.package_repo_info import compare_repo
 from gardenlinux.constants import (
-    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
     GL_DEB_REPO_BASE_URL,
     IMAGE_VARIANTS,
     REQUESTS_TIMEOUTS,
@@ -130,37 +129,3 @@ def get_variant_from_flavor(flavor_name):
             return "tpm2_trustedboot"
         case _:
             return "legacy"
-
-
-def get_platform_display_name(platform, clouds):
-    """
-    Get the display name for a platform.
-    """
-    match platform:
-        case "ali" | "openstackbaremetal" | "openstack" | "azure" | "gcp" | "aws":
-            return clouds[platform]
-        case _:
-            return platform.upper()
-
-
-def get_platform_release_note_data(metadata, platform):
-    """
-    Get the appropriate cloud release note data based on platform.
-    Returns the structured data dictionary.
-    """
-    match platform:
-        case "ali":
-            return _ali_release_note(metadata)
-        case "aws":
-            return _aws_release_note(metadata)
-        case "gcp":
-            return _gcp_release_note(metadata)
-        case "azure":
-            return _azure_release_note(metadata)
-        case "openstack":
-            return _openstack_release_note(metadata)
-        case "openstackbaremetal":
-            return _openstackbaremetal_release_note(metadata)
-        case _:
-            LOGGER.error(f"unknown platform {platform}")
-            return None
