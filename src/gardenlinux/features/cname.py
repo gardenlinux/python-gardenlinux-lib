@@ -92,13 +92,13 @@ class CName(object):
 
         :return: (str) CName
         """
-
+        assert self._flavor is not None, "CName flavor is not set!"
         cname = self._flavor
 
         if self._arch is not None:
             cname += f"-{self._arch}"
 
-        if self._commit_id is not None:
+        if self._commit_id is not None and self._version is not None:
             cname += f"-{self.version_and_commit_id}"
 
         return cname
@@ -114,7 +114,7 @@ class CName(object):
         return self._commit_id
 
     @property
-    def flavor(self) -> str:
+    def flavor(self) -> str | None:
         """
         Returns the flavor for the cname parsed.
 
@@ -140,6 +140,7 @@ class CName(object):
 
         :return: (str) Flavor
         """
+        assert self._flavor is not None, "Flavor not set!"
 
         return re.split("[_-]", self._flavor, maxsplit=1)[0]
 
