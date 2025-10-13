@@ -28,7 +28,7 @@ moto = "^5.1.12"
 python-dotenv = "^1.1.1"
 pytest = "^8.4.1"
 pytest-cov = "^7.0.0"
-isort = "^6.0.1"
+isort = "^7.0.0"
 requests-mock = "^1.12.1"
 pyright = "^1.1.403"
 
