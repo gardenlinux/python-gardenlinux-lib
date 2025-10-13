@@ -12,6 +12,7 @@ from gardenlinux.github.release_notes.deployment_platform import DeploymentPlatf
 from gardenlinux.github.release_notes.helpers import get_variant_from_flavor
 
 from ..constants import (
+    RELEASE_ARTIFACTS_METADATA_FILES,
     RELEASE_NOTES_S3_ARTIFACTS_DIR,
     RELEASE_NOTES_TEST_DATA_DIR,
     TEST_GARDENLINUX_COMMIT,
@@ -90,11 +91,11 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
     glvd_response_fixture_path = RELEASE_NOTES_TEST_DATA_DIR / f"glvd_{TEST_GARDENLINUX_RELEASE}.json"
 
     with requests_mock.Mocker(real_http=True) as m:
-        for yaml_file in RELEASE_NOTES_S3_ARTIFACTS_DIR.glob("*.yaml"):
-            filename = yaml_file.name
-            base = filename[:-len(".s3_metadata.yaml")]
+        for yaml_file in RELEASE_ARTIFACTS_METADATA_FILES:
+            filepath = f"{RELEASE_NOTES_S3_ARTIFACTS_DIR}/{yaml_file}"
+            base = yaml_file[:-len(".s3_metadata.yaml")]
             key = f"meta/singles/{base}-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}"
-            release_s3_bucket.upload_file(str(yaml_file), key)
+            release_s3_bucket.upload_file(filepath, key)
 
         m.get(
             f"{GLVD_BASE_URL}/patchReleaseNotes/{TEST_GARDENLINUX_RELEASE}",
