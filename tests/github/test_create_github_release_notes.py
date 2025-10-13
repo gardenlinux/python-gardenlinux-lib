@@ -47,12 +47,48 @@ def test_release_notes_changes_section_broken_glvd_response():
             "Expected a placeholder message to be generated if GVLD response is not valid"
 
 
-def test_release_notes_compare_package_versions_section_semver_is_not_recognized():
-    assert release_notes_compare_package_versions_section("1.2.0", []) == "", "Semver is not supported"
+def test_release_notes_compare_package_versions_section_legacy_versioning_is_recognized():
+    assert "Full List of Packages in Garden Linux version 1.0" in \
+        release_notes_compare_package_versions_section("1.0", {}), "Legacy versioning is supported"
 
 
-def test_release_notes_compare_package_versions_section_unrecognizable_version():
-    assert release_notes_compare_package_versions_section("garden.linux", []) == ""
+def test_release_notes_compare_package_versions_section_legacy_versioning_patch_release_is_recognized(monkeypatch):
+    def mock_compare_apt_repo_versions(previous_version, current_version):
+        output = f"| Package | {previous_version} | {current_version} |\n"
+        output += "|---------|--------------------|-------------------|\n"
+        output += "|containerd|1.0|1.1|\n"
+        return output
+
+    monkeypatch.setattr("gardenlinux.github.release_notes.sections.compare_apt_repo_versions",
+                        mock_compare_apt_repo_versions)
+
+    assert "|containerd|1.0|1.1|" in \
+        release_notes_compare_package_versions_section("1.1", {}), "Legacy versioning patch releases are supported"
+
+
+def test_release_notes_compare_package_versions_section_semver_is_recognized():
+    assert "Full List of Packages in Garden Linux version 1.20.0" in \
+        release_notes_compare_package_versions_section("1.20.0", {}), "Semver is supported"
+
+
+def test_release_notes_compare_package_versions_section_semver_patch_release_is_recognized(monkeypatch):
+    def mock_compare_apt_repo_versions(previous_version, current_version):
+        output = f"| Package | {previous_version} | {current_version} |\n"
+        output += "|---------|--------------------|-------------------|\n"
+        output += "|containerd|1.0|1.1|\n"
+        return output
+
+    monkeypatch.setattr("gardenlinux.github.release_notes.sections.compare_apt_repo_versions",
+                        mock_compare_apt_repo_versions)
+
+    assert "|containerd|1.0|1.1|" in \
+        release_notes_compare_package_versions_section("1.20.1", {}), "Semver patch releases are supported"
+
+
+def test_release_notes_compare_package_versions_section_unrecognizable_version(caplog):
+    assert release_notes_compare_package_versions_section("garden.linux", {}) is None
+    assert any("Unexpected version number format garden.linux" in
+               record.message for record in caplog.records), "Expected an error log message"
 
 
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)

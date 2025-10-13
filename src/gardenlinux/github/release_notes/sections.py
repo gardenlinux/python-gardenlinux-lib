@@ -98,41 +98,48 @@ def release_notes_software_components_section(package_list):
 
 
 def release_notes_compare_package_versions_section(gardenlinux_version, package_list):
-    output = ""
     version_components = gardenlinux_version.split(".")
-    # Assumes we always have version numbers like 1443.2
-    if len(version_components) == 2:
-        try:
-            major = int(version_components[0])
-            patch = int(version_components[1])
-
-            if patch > 0:
-                previous_version = f"{major}.{patch - 1}"
-
-                output += (
-                    f"## Changes in Package Versions Compared to {previous_version}\n"
-                )
-                output += compare_apt_repo_versions(
-                    previous_version, gardenlinux_version
-                )
-            elif patch == 0:
-                output += f"## Full List of Packages in Garden Linux version {major}\n"
-                output += "<details><summary>Expand to see full list</summary>\n"
-                output += "<pre>"
-                output += "\n"
-                for entry in package_list.values():
-                    output += f"{entry!r}\n"
-                output += "</pre>"
-                output += "\n</details>\n\n"
-
-        except ValueError:
-            LOGGER.error(
-                f"Could not parse {gardenlinux_version} as the Garden Linux version, skipping version compare section"
-            )
-    else:
+    if len(version_components) > 3 or len(version_components) < 2:
         LOGGER.error(
-            f"Unexpected version number format {gardenlinux_version}, expected format (major is int).(patch is int)"
+            f"Unexpected version number format {gardenlinux_version}"
         )
+        return
+    if not all(map(lambda x: x.isdigit(), version_components)):
+        LOGGER.error(
+            f"Unexpected version number format {gardenlinux_version}"
+        )
+        return
+
+    if len(version_components) == 2:
+        major = int(version_components[0])
+        minor = None
+        patch = int(version_components[1])
+    if len(version_components) == 3:
+        major = int(version_components[0])
+        minor = int(version_components[1])
+        patch = int(version_components[2])
+
+    output = ""
+
+    if patch > 0:
+        previous_version = f"{major}.{minor}.{patch - 1}" if minor else f"{major}.{patch - 1}"
+
+        output += (
+            f"## Changes in Package Versions Compared to {previous_version}\n"
+        )
+        output += compare_apt_repo_versions(
+            previous_version, gardenlinux_version
+        )
+    elif patch == 0:
+        output += f"## Full List of Packages in Garden Linux version {gardenlinux_version}\n"
+        output += "<details><summary>Expand to see full list</summary>\n"
+        output += "<pre>"
+        output += "\n"
+        for entry in package_list.values():
+            output += f"{entry!r}\n"
+        output += "</pre>"
+        output += "\n</details>\n\n"
+
     return output
 
 
