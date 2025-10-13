@@ -37,7 +37,7 @@ class Parser(object):
 
     def __init__(
         self,
-        gardenlinux_root: str = _GARDENLINUX_ROOT,
+        gardenlinux_root: str | None = None,
         feature_dir_name: str = "features",
         logger: Optional[logging.Logger] = None,
     ):
@@ -51,10 +51,10 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        feature_base_dir = Path(gardenlinux_root) / feature_dir_name
+        if gardenlinux_root is None:
+            gardenlinux_root = Parser._GARDENLINUX_ROOT
 
-        if not feature_base_dir.is_dir():
-            raise ValueError(f"Feature direcotry is invalid: {feature_base_dir}")
+        feature_base_dir = Path(gardenlinux_root).resolve() / feature_dir_name
 
         if not os.access(feature_base_dir, os.R_OK):
             raise ValueError(
@@ -65,7 +65,6 @@ class Parser(object):
             logger = LoggerSetup.get_logger("gardenlinux.features")
 
         self._feature_base_dir = feature_base_dir
-
         self._graph = None
         self._logger = logger
 
