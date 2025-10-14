@@ -77,6 +77,18 @@ def test_graph_mermaid():
     assert "b-->c" in markup
 
 
+def test_graph_mermaid_raises_no_flavor():
+    # Arrange
+    class MockGraph:
+        edges = [("x", "y"), ("y", "z")]
+
+    # Act / Assert
+    with pytest.raises(
+        RuntimeError, match="Error while generating graph: Flavor is None!"
+    ):
+        fema.graph_as_mermaid_markup(None, MockGraph())
+
+
 def test_get_minimal_feature_set_filters():
     # Arrange
     class FakeGraph:
