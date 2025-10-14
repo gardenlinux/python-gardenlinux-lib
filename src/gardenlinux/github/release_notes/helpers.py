@@ -9,7 +9,6 @@ from git import Repo
 from gardenlinux.apt import DebsrcFile, GardenLinuxRepo
 from gardenlinux.apt.package_repo_info import compare_repo
 from gardenlinux.constants import (
-    GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME,
     GL_DEB_REPO_BASE_URL,
     IMAGE_VARIANTS,
     REQUESTS_TIMEOUTS,
@@ -49,7 +48,7 @@ def compare_apt_repo_versions(previous_version, current_version):
     return output
 
 
-def download_all_metadata_files(version, commitish):
+def download_all_metadata_files(version, commitish, s3_bucket_name):
     repo = Repo(".")
     commit = repo.commit(commitish)
     flavors_data = commit.tree["flavors.yaml"].data_stream.read().decode("utf-8")
@@ -60,7 +59,7 @@ def download_all_metadata_files(version, commitish):
         shutil.rmtree(local_dest_path)
     local_dest_path.mkdir(mode=0o755, exist_ok=False)
 
-    s3_artifacts = S3Artifacts(GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
+    s3_artifacts = S3Artifacts(s3_bucket_name)
 
     commitish_short = commitish[:8]
 
@@ -116,3 +115,17 @@ def download_metadata_file(
     s3_artifacts.bucket.download_file(
         release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
     )
+
+
+def get_variant_from_flavor(flavor_name):
+    """
+    Determine the variant from a flavor name by checking for variant suffixes.
+    Returns the variant key (e.g., 'legacy', 'usi', 'tpm2_trustedboot').
+    """
+    match flavor_name:
+        case name if "_usi" in name:
+            return "usi"
+        case name if "_tpm2_trustedboot" in name:
+            return "tpm2_trustedboot"
+        case _:
+            return "legacy"
