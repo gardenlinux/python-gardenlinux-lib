@@ -242,7 +242,7 @@ def graph_as_mermaid_markup(flavor: str | None, graph: Any) -> str:
     """
 
     if flavor is None:
-        return "No flavor provided. Skipping."
+        raise RuntimeError("Error while generating graph: Flavor is None!")
 
     markup = f"---\ntitle: Dependency Graph for Feature {flavor}\n---\ngraph TD;\n"
 
