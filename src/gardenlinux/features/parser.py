@@ -6,19 +6,14 @@ Features parser based on networkx.Digraph
 
 import logging
 import os
-import re
-import subprocess
 from glob import glob
-from typing import Callable, Optional
+from pathlib import Path
+from typing import Callable, Optional, cast
 
 import networkx
 import yaml
 
-from ..constants import (
-    ARCHS,
-    BARE_FLAVOR_FEATURE_CONTENT,
-    BARE_FLAVOR_LIBC_FEATURE_CONTENT,
-)
+from ..constants import BARE_FLAVOR_FEATURE_CONTENT, BARE_FLAVOR_LIBC_FEATURE_CONTENT
 from ..logger import LoggerSetup
 
 
@@ -42,8 +37,8 @@ class Parser(object):
 
     def __init__(
         self,
-        gardenlinux_root: Optional[str] = None,
-        feature_dir_name: Optional[str] = "features",
+        gardenlinux_root: str | None = None,
+        feature_dir_name: str = "features",
         logger: Optional[logging.Logger] = None,
     ):
         """
@@ -59,7 +54,7 @@ class Parser(object):
         if gardenlinux_root is None:
             gardenlinux_root = Parser._GARDENLINUX_ROOT
 
-        feature_base_dir = os.path.join(gardenlinux_root, feature_dir_name)
+        feature_base_dir = Path(gardenlinux_root).resolve() / feature_dir_name
 
         if not os.access(feature_base_dir, os.R_OK):
             raise ValueError(
@@ -70,7 +65,6 @@ class Parser(object):
             logger = LoggerSetup.get_logger("gardenlinux.features")
 
         self._feature_base_dir = feature_base_dir
-
         self._graph = None
         self._logger = logger
 
@@ -108,7 +102,7 @@ class Parser(object):
                             "{0}/{1}/info.yaml".format(self._feature_base_dir, ref)
                         ):
                             raise ValueError(
-                                f"feature {node} references feature {ref}, but {feature_dir}/{ref}/info.yaml does not exist"
+                                f"feature {node} references feature {ref}, but {self._feature_base_dir}/{ref}/info.yaml does not exist"
                             )
 
                         feature_graph.add_edge(node, ref, attr=attr)
@@ -122,9 +116,9 @@ class Parser(object):
 
     def filter(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> networkx.Graph:
         """
         Filters the features graph.
@@ -162,15 +156,15 @@ class Parser(object):
         )
 
         if not ignore_excludes:
-            Parser._exclude_from_filter_set(graph, input_features, filter_set)
+            Parser._exclude_from_filter_set(self, graph, input_features, filter_set)
 
         return graph
 
     def filter_as_dict(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> dict:
         """
         Filters the features graph and returns it as a dict.
@@ -200,9 +194,9 @@ class Parser(object):
 
     def filter_as_list(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> list:
         """
         Filters the features graph and returns it as a list.
@@ -220,9 +214,9 @@ class Parser(object):
 
     def filter_as_string(
         self,
-        cname: str,
+        cname: str | None,
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> str:
         """
         Filters the features graph and returns it as a string.
@@ -240,7 +234,7 @@ class Parser(object):
 
         return ",".join(features)
 
-    def _exclude_from_filter_set(graph, input_features, filter_set):
+    def _exclude_from_filter_set(self, graph, input_features, filter_set):
         """
         Removes the given `filter_set` out of `input_features`.
 
@@ -250,7 +244,9 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        exclude_graph_view = Parser._get_graph_view_for_attr(graph, "exclude")
+        exclude_graph_view = cast(
+            networkx.DiGraph, Parser._get_graph_view_for_attr(graph, "exclude")
+        )
         exclude_list = []
 
         for node in networkx.lexicographical_topological_sort(graph):
