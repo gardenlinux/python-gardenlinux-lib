@@ -27,7 +27,7 @@ def create_github_release(owner, repo, tag, commitish, latest, body):
         "body": body,
         "draft": False,
         "prerelease": False,
-        "make_latest": latest
+        "make_latest": "true" if latest else "false"
     }
 
     response = requests.post(
