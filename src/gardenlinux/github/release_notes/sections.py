@@ -111,9 +111,10 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
         return ""
 
     major = int(version_components[0])
+    minor = None
+    patch = None
 
     if len(version_components) == 2:
-        minor = None
         patch = int(version_components[1])
     if len(version_components) == 3:
         minor = int(version_components[1])
