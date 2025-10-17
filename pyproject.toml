@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "0.10.0"
+version = "0.10.1"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -41,6 +41,7 @@ gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-oci = "gardenlinux.oci.__main__:main"
 gl-s3 = "gardenlinux.s3.__main__:main"
+gl-gh = "gardenlinux.github.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
