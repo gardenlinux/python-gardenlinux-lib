@@ -105,7 +105,7 @@ def test_release_notes_compare_package_versions_section_semver_patch_release_is_
 
 
 def test_release_notes_compare_package_versions_section_unrecognizable_version(caplog):
-    assert release_notes_compare_package_versions_section("garden.linux", {}) is None
+    assert release_notes_compare_package_versions_section("garden.linux", {}) == ""
     assert any(
         "Unexpected version number format garden.linux" in record.message
         for record in caplog.records
