@@ -62,8 +62,11 @@ format: install-dev
 	$(POETRY) run black --extend-exclude test-data/gardenlinux .
 
 lint: install-dev
+	@echo "--// BLACK //-------------------------------------------------------------------"
 	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
+	@echo "--// ISORT //-------------------------------------------------------------------"
 	$(POETRY) run isort --check-only .
+	@echo "--// PYRIGHT //-----------------------------------------------------------------"
 	$(POETRY) run pyright
 
 security: install-dev
