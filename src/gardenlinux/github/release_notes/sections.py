@@ -6,6 +6,7 @@ import yaml
 from yaml import SafeLoader
 
 from gardenlinux.constants import GLVD_BASE_URL, REQUESTS_TIMEOUTS
+from gardenlinux.distro_version import DistroVersion
 from gardenlinux.logger import LoggerSetup
 
 from .deployment_platform.ali_cloud import AliCloud
@@ -102,34 +103,15 @@ def release_notes_software_components_section(package_list):
 
 
 def release_notes_compare_package_versions_section(gardenlinux_version, package_list):
-    version_components = gardenlinux_version.split(".")
-    if len(version_components) > 3 or len(version_components) < 2:
-        LOGGER.error(f"Unexpected version number format {gardenlinux_version}")
-        return ""
-    if not all(map(lambda x: x.isdigit(), version_components)):
-        LOGGER.error(f"Unexpected version number format {gardenlinux_version}")
-        return ""
-
-    major = int(version_components[0])
-    minor = None
-    patch = None
-
-    if len(version_components) == 2:
-        patch = int(version_components[1])
-    if len(version_components) == 3:
-        minor = int(version_components[1])
-        patch = int(version_components[2])
-
+    version = DistroVersion(gardenlinux_version)
     output = ""
 
-    if patch > 0:
-        previous_version = (
-            f"{major}.{minor}.{patch - 1}" if minor else f"{major}.{patch - 1}"
-        )
+    if version.is_patch_release():
+        previous_version = version.previous_patch_release()
 
         output += f"## Changes in Package Versions Compared to {previous_version}\n"
         output += compare_apt_repo_versions(previous_version, gardenlinux_version)
-    elif patch == 0:
+    else:
         output += (
             f"## Full List of Packages in Garden Linux version {gardenlinux_version}\n"
         )
@@ -138,8 +120,8 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
         output += "\n"
         for entry in package_list.values():
             output += f"{entry!r}\n"
-        output += "</pre>"
-        output += "\n</details>\n\n"
+            output += "</pre>"
+            output += "\n</details>\n\n"
 
     return output
 

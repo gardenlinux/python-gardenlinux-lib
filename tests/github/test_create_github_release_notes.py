@@ -4,6 +4,7 @@ from git import Repo
 from moto import mock_aws
 
 from gardenlinux.constants import GLVD_BASE_URL
+from gardenlinux.distro_version import UnsupportedDistroVersion
 from gardenlinux.github.release_notes import (
     release_notes_changes_section,
     release_notes_compare_package_versions_section,
@@ -104,12 +105,9 @@ def test_release_notes_compare_package_versions_section_semver_patch_release_is_
     ), "Semver patch releases are supported"
 
 
-def test_release_notes_compare_package_versions_section_unrecognizable_version(caplog):
-    assert release_notes_compare_package_versions_section("garden.linux", {}) == ""
-    assert any(
-        "Unexpected version number format garden.linux" in record.message
-        for record in caplog.records
-    ), "Expected an error log message"
+def test_release_notes_compare_package_versions_section_unrecognizable_version():
+    with pytest.raises(UnsupportedDistroVersion):
+        release_notes_compare_package_versions_section("garden.linux", {})
 
 
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
