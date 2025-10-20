@@ -141,7 +141,13 @@ GL_MEDIA_TYPE_LOOKUP = {
     "secureboot.aws-efivars": "application/io.gardenlinux.cert.secureboot.aws-efivars",
 }
 
+GL_BUG_REPORT_URL = "https://github.com/gardenlinux/gardenlinux/issues"
+GL_COMMIT_SPECIAL_VALUES = ("local",)
+GL_DISTRIBUTION_NAME = "Garden Linux"
+GL_HOME_URL = "https://gardenlinux.io"
+GL_RELEASE_ID = "gardenlinux"
 GL_REPOSITORY_URL = "https://github.com/gardenlinux/gardenlinux"
+GL_SUPPORT_URL = "https://github.com/gardenlinux/gardenlinux"
 
 OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
 OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"
@@ -153,7 +159,9 @@ REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 
-GLVD_BASE_URL = "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
+GLVD_BASE_URL = (
+    "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
+)
 GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
