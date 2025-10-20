@@ -107,7 +107,7 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
     output = ""
 
     if version.is_patch_release():
-        previous_version = version.previous_patch_release()
+        previous_version = f"{version.previous_patch_release()}"
 
         output += f"## Changes in Package Versions Compared to {previous_version}\n"
         output += compare_apt_repo_versions(previous_version, gardenlinux_version)
