@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class UnsupportedDistroVersion(Exception):
     pass
 
@@ -28,6 +25,10 @@ def DistroVersion(maybe_distro_version):
 
 
 class BaseDistroVersion:
+    major = None
+    minor = None
+    patch = None
+
     def is_patch_release(self):
         return self.patch and self.patch > 0
 
