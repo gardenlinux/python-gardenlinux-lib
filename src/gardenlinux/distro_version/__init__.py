@@ -20,8 +20,12 @@ def DistroVersion(maybe_distro_version):
 
     if len(version_components) == 2:
         return LegacyDistroVersion(*(int(c) for c in version_components))
-    if len(version_components) == 3:
+    elif len(version_components) == 3:
         return SemverDistroVersion(*(int(c) for c in version_components))
+    else:
+        raise UnsupportedDistroVersion(
+            f"Unexpected number of version components: {maybe_distro_version}"
+        )
 
 
 class BaseDistroVersion:
