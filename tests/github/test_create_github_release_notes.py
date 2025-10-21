@@ -32,7 +32,7 @@ TEST_FLAVORS = [
 def test_release_notes_changes_section_empty_packagelist():
     with requests_mock.Mocker() as m:
         m.get(
-            f"{GLVD_BASE_URL}/patchReleaseNotes/{TEST_GARDENLINUX_RELEASE}",
+            f"{GLVD_BASE_URL}/releaseNotes/{TEST_GARDENLINUX_RELEASE}",
             text='{"packageList": []}',
             status_code=200,
         )
@@ -44,7 +44,7 @@ def test_release_notes_changes_section_empty_packagelist():
 def test_release_notes_changes_section_broken_glvd_response():
     with requests_mock.Mocker() as m:
         m.get(
-            f"{GLVD_BASE_URL}/patchReleaseNotes/{TEST_GARDENLINUX_RELEASE}",
+            f"{GLVD_BASE_URL}/releaseNotes/{TEST_GARDENLINUX_RELEASE}",
             text="<html><body><h1>Personal Home Page</h1></body></html>",
             status_code=200,
         )
@@ -164,7 +164,7 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
             release_s3_bucket.upload_file(filepath, key)
 
         m.get(
-            f"{GLVD_BASE_URL}/patchReleaseNotes/{TEST_GARDENLINUX_RELEASE}",
+            f"{GLVD_BASE_URL}/releaseNotes/{TEST_GARDENLINUX_RELEASE}",
             text=glvd_response_fixture_path.read_text(),
             status_code=200,
         )

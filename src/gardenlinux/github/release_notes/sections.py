@@ -47,7 +47,7 @@ def release_notes_changes_section(gardenlinux_version):
     file issues in glvd for improvement suggestions https://github.com/gardenlinux/glvd/issues
     """
     try:
-        url = f"{GLVD_BASE_URL}/patchReleaseNotes/{gardenlinux_version}"
+        url = f"{GLVD_BASE_URL}/releaseNotes/{gardenlinux_version}"
         response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
         response.raise_for_status()
         data = response.json()
