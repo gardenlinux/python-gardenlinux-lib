@@ -6,6 +6,7 @@ import yaml
 from yaml import SafeLoader
 
 from gardenlinux.constants import GLVD_BASE_URL, REQUESTS_TIMEOUTS
+from gardenlinux.distro_version import DistroVersion
 from gardenlinux.logger import LoggerSetup
 
 from .deployment_platform.ali_cloud import AliCloud
@@ -19,7 +20,11 @@ from .helpers import compare_apt_repo_versions, get_variant_from_flavor
 LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes", "INFO")
 
 IMAGE_IDS_VARIANT_ORDER = ["legacy", "usi", "tpm2_trustedboot"]
-IMAGE_IDS_VARIANT_TABLE_NAMES = {"legacy": "Default", "usi": "USI", "tpm2_trustedboot": "TPM2"}
+IMAGE_IDS_VARIANT_TABLE_NAMES = {
+    "legacy": "Default",
+    "usi": "USI",
+    "tpm2_trustedboot": "TPM2",
+}
 IMAGE_IDS_VARIANT_NAMES = {
     "legacy": "Default",
     "usi": "USI (Unified System Image)",
@@ -98,41 +103,26 @@ def release_notes_software_components_section(package_list):
 
 
 def release_notes_compare_package_versions_section(gardenlinux_version, package_list):
+    version = DistroVersion(gardenlinux_version)
     output = ""
-    version_components = gardenlinux_version.split(".")
-    # Assumes we always have version numbers like 1443.2
-    if len(version_components) == 2:
-        try:
-            major = int(version_components[0])
-            patch = int(version_components[1])
 
-            if patch > 0:
-                previous_version = f"{major}.{patch - 1}"
+    if version.is_patch_release():
+        previous_version = f"{version.previous_patch_release()}"
 
-                output += (
-                    f"## Changes in Package Versions Compared to {previous_version}\n"
-                )
-                output += compare_apt_repo_versions(
-                    previous_version, gardenlinux_version
-                )
-            elif patch == 0:
-                output += f"## Full List of Packages in Garden Linux version {major}\n"
-                output += "<details><summary>Expand to see full list</summary>\n"
-                output += "<pre>"
-                output += "\n"
-                for entry in package_list.values():
-                    output += f"{entry!r}\n"
-                output += "</pre>"
-                output += "\n</details>\n\n"
-
-        except ValueError:
-            LOGGER.error(
-                f"Could not parse {gardenlinux_version} as the Garden Linux version, skipping version compare section"
-            )
+        output += f"## Changes in Package Versions Compared to {previous_version}\n"
+        output += compare_apt_repo_versions(previous_version, gardenlinux_version)
     else:
-        LOGGER.error(
-            f"Unexpected version number format {gardenlinux_version}, expected format (major is int).(patch is int)"
+        output += (
+            f"## Full List of Packages in Garden Linux version {gardenlinux_version}\n"
         )
+        output += "<details><summary>Expand to see full list</summary>\n"
+        output += "<pre>"
+        output += "\n"
+        for entry in package_list.values():
+            output += f"{entry!r}\n"
+            output += "</pre>"
+            output += "\n</details>\n\n"
+
     return output
 
 
@@ -157,16 +147,20 @@ def generate_table_format(grouped_data):
                     details_content = PLATFORMS[platform].region_details(metadata)
                     summary_text = PLATFORMS[platform].summary_text(metadata)
 
-                    download_link = PLATFORMS[platform].artifact_for_flavor(data['flavor'])
+                    download_link = PLATFORMS[platform].artifact_for_flavor(
+                        data["flavor"]
+                    )
 
                     variant_display = IMAGE_IDS_VARIANT_TABLE_NAMES[variant]
-                    output += (f"| {variant_display} "
-                               f"| {PLATFORMS[platform].full_name()} "
-                               f"| {arch} "
-                               f"| `{data['flavor']}` "
-                               f"| <details><summary>{summary_text}</summary><br>{details_content}</details> "
-                               f"| <details><summary>Download</summary><br>{download_link}</details> "
-                               "|\n")
+                    output += (
+                        f"| {variant_display} "
+                        f"| {PLATFORMS[platform].full_name()} "
+                        f"| {arch} "
+                        f"| `{data['flavor']}` "
+                        f"| <details><summary>{summary_text}</summary><br>{details_content}</details> "
+                        f"| <details><summary>Download</summary><br>{download_link}</details> "
+                        "|\n"
+                    )
 
     return output
 
@@ -181,9 +175,7 @@ def generate_detailed_format(grouped_data):
         if variant not in grouped_data:
             continue
 
-        output += (
-            f"<details>\n<summary>Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}</summary>\n\n"
-        )
+        output += f"<details>\n<summary>Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}</summary>\n\n"
         output += f"### Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}\n\n"
 
         for platform in sorted(grouped_data[variant].keys()):
@@ -205,7 +197,9 @@ def generate_detailed_format(grouped_data):
 
                     output += f"- flavor: {data['flavor']}\n"
 
-                    download_url = PLATFORMS[platform].artifact_for_flavor(data['flavor'], markdown_format=False)
+                    download_url = PLATFORMS[platform].artifact_for_flavor(
+                        data["flavor"], markdown_format=False
+                    )
                     output += f"  download_url: {download_url}\n"
 
                     if "regions" in data:
