@@ -44,7 +44,7 @@ def compare_apt_repo_versions(previous_version, current_version):
     output += "|---------|--------------------|-------------------|\n"
 
     for pkg in pkg_diffs:
-        output += f"|{pkg[0]} | {pkg[1] if pkg[1] is not None else '-'} | {pkg[2] if pkg[2] is not None else '-'} |\n"
+        output += f"|{pkg[0]} | `{pkg[1] if pkg[1] is not None else '-'}` | `{pkg[2] if pkg[2] is not None else '-'}` |\n"
     return output
 
 
