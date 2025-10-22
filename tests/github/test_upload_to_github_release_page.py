@@ -4,7 +4,7 @@ import pytest
 import requests
 import requests_mock
 
-import gardenlinux.github.__main__ as gh
+import gardenlinux.github.release.__main__ as gh
 from gardenlinux.github.release import upload_to_github_release_page
 
 from ..constants import TEST_GARDENLINUX_RELEASE
@@ -108,7 +108,7 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
 def test_script_upload_dry_run(monkeypatch, capfd):
     monkeypatch.setattr(sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo",
                         "gardenlinux", "--release_id", TEST_GARDENLINUX_RELEASE, "--file_path", "foo", "--dry-run"])
-    monkeypatch.setattr("gardenlinux.github.__main__.upload_to_github_release_page",
+    monkeypatch.setattr("gardenlinux.github.release.__main__.upload_to_github_release_page",
                         lambda a1, a2, a3, a4, dry_run: print(f"dry-run: {dry_run}"))
 
     gh.main()
