@@ -1,6 +1,3 @@
-import builtins
-from pathlib import Path
-
 import pytest
 
 import gardenlinux.oci.layer as gl_layer

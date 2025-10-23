@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-import subprocess
 import sys
 from datetime import datetime, timedelta
 from tempfile import mkstemp
@@ -27,7 +26,7 @@ from .constants import (
     TEST_PLATFORMS,
     TEST_VERSION,
 )
-from .helper import call_command, spawn_background_process
+from .helper import spawn_background_process
 
 
 def generate_test_certificates():
