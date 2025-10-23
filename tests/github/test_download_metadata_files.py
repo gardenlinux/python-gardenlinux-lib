@@ -23,11 +23,7 @@ def test_download_metadata_file(downloads_dir, release_s3_bucket):
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
     s3_artifacts._bucket = release_s3_bucket
 
-    cname = CName(
-        "test-aws-gardener_prod",
-        "amd64",
-        "{0}-{1}".format(TEST_GARDENLINUX_RELEASE, TEST_GARDENLINUX_COMMIT_SHORT),
-    )
+    cname = CName("test-aws-gardener_prod", "amd64", TEST_GARDENLINUX_COMMIT_SHORT)
     download_metadata_file(
         s3_artifacts,
         cname.cname,
@@ -48,7 +44,7 @@ def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket
 
     release = "0000.0"
     commit = TEST_GARDENLINUX_COMMIT_SHORT
-    cname = CName("aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    cname = CName("aws-gardener_prod", "amd64", commit)
 
     with pytest.raises(IndexError):
         download_metadata_file(
@@ -70,7 +66,7 @@ def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket)
 
     release = TEST_GARDENLINUX_RELEASE
     commit = "deadbeef"
-    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    cname = CName("test-aws-gardener_prod", "amd64", commit)
 
     with pytest.raises(IndexError):
         download_metadata_file(
@@ -94,7 +90,7 @@ def test_download_metadata_file_no_such_release_and_commit(
 
     release = "0000.0"
     commit = "deadbeef"
-    cname = CName("test-aws-gardener_prod", "amd64", "{0}-{1}".format(release, commit))
+    cname = CName("test-aws-gardener_prod", "amd64", commit)
 
     with pytest.raises(IndexError):
         download_metadata_file(
