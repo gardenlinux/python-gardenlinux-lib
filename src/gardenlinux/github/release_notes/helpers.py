@@ -18,7 +18,7 @@ from gardenlinux.flavors import Parser as FlavorsParser
 from gardenlinux.logger import LoggerSetup
 from gardenlinux.s3 import S3Artifacts
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes.helpers", "INFO")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes.helpers", "DEBUG")
 
 
 def get_package_list(gardenlinux_version):
@@ -53,6 +53,8 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
     commit = repo.commit(commitish)
     flavors_data = commit.tree["flavors.yaml"].data_stream.read().decode("utf-8")
     flavors = FlavorsParser(flavors_data).filter(only_publish=True)
+    LOGGER.debug(f"{flavors_data=}")
+    LOGGER.debug(f"{flavors=}")
 
     local_dest_path = Path("s3_downloads")
     if local_dest_path.exists():
