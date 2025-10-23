@@ -27,14 +27,14 @@ def create_github_release(owner, repo, tag, commitish, latest, body):
         "body": body,
         "draft": False,
         "prerelease": False,
-        "make_latest": "true" if latest else "false"
+        "make_latest": "true" if latest else "false",
     }
 
     response = requests.post(
         f"https://api.github.com/repos/{owner}/{repo}/releases",
         headers=headers,
         data=json.dumps(data),
-        timeout=REQUESTS_TIMEOUTS
+        timeout=REQUESTS_TIMEOUTS,
     )
 
     if response.status_code == 201:
@@ -84,7 +84,9 @@ def upload_to_github_release_page(
         LOGGER.error(f"Error reading file {file_to_upload}: {e}")
         return
 
-    response = requests.post(upload_url, headers=headers, data=file_contents, timeout=REQUESTS_TIMEOUTS)
+    response = requests.post(
+        upload_url, headers=headers, data=file_contents, timeout=REQUESTS_TIMEOUTS
+    )
     if response.status_code == 201:
         LOGGER.info("Upload successful")
     else:

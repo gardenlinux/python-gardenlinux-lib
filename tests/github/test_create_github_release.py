@@ -19,9 +19,11 @@ def test_create_github_release_needs_github_token():
                 TEST_GARDENLINUX_RELEASE,
                 TEST_GARDENLINUX_COMMIT,
                 False,
-                "")
-            assert str(exn.value) == "GITHUB_TOKEN environment variable not set", \
-                "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+                "",
+            )
+            assert (
+                str(exn.value) == "GITHUB_TOKEN environment variable not set"
+            ), "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
 
 
 def test_create_github_release_raise_on_failure(caplog, github_token):
@@ -30,7 +32,7 @@ def test_create_github_release_raise_on_failure(caplog, github_token):
             m.post(
                 "https://api.github.com/repos/gardenlinux/gardenlinux/releases",
                 text="{}",
-                status_code=503
+                status_code=503,
             )
             create_github_release(
                 "gardenlinux",
@@ -38,8 +40,11 @@ def test_create_github_release_raise_on_failure(caplog, github_token):
                 TEST_GARDENLINUX_RELEASE,
                 TEST_GARDENLINUX_COMMIT,
                 False,
-                "")
-        assert any("Failed to create release" in record.message for record in caplog.records), "Expected a failure log record"
+                "",
+            )
+        assert any(
+            "Failed to create release" in record.message for record in caplog.records
+        ), "Expected a failure log record"
 
 
 def test_create_github_release(caplog, github_token):
@@ -47,16 +52,23 @@ def test_create_github_release(caplog, github_token):
         m.post(
             "https://api.github.com/repos/gardenlinux/gardenlinux/releases",
             text='{"id": 101}',
-            status_code=201
+            status_code=201,
         )
-        assert create_github_release(
-            "gardenlinux",
-            "gardenlinux",
-            TEST_GARDENLINUX_RELEASE,
-            TEST_GARDENLINUX_COMMIT,
-            False,
-            "") == 101
-        assert any("Release created successfully" in record.message for record in caplog.records), "Expected a success log record"
+        assert (
+            create_github_release(
+                "gardenlinux",
+                "gardenlinux",
+                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_COMMIT,
+                False,
+                "",
+            )
+            == 101
+        )
+        assert any(
+            "Release created successfully" in record.message
+            for record in caplog.records
+        ), "Expected a success log record"
 
 
 def test_write_to_release_id_file(release_id_file):
@@ -69,4 +81,6 @@ def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplo
 
     with pytest.raises(SystemExit):
         write_to_release_id_file(TEST_GARDENLINUX_RELEASE)
-    assert any("Could not create" in record.message for record in caplog.records), "Expected a failure log record"
+    assert any(
+        "Could not create" in record.message for record in caplog.records
+    ), "Expected a failure log record"

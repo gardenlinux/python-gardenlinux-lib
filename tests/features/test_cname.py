@@ -44,5 +44,7 @@ def test_cname_commit_id_setter():
     cname = CName("container", arch="amd64", version="today", commit_hash="local")
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Commit hash given differs from commit ID already set"):
+    with pytest.raises(
+        RuntimeError, match="Commit hash given differs from commit ID already set"
+    ):
         cname.commit_hash = "broken"
