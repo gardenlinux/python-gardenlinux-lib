@@ -64,7 +64,7 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
     commitish_short = commitish[:8]
 
     for flavor in flavors:
-        cname = CName(flavor[1], flavor[0], commitish_short)
+        cname = CName(flavor[1], flavor[0], commitish)
         LOGGER.debug(f"{flavor=} {version=} {commitish=}")
         # Filter by image variants - only download if the flavor matches one of the variants
         flavor_matches_variant = False
