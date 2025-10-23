@@ -18,7 +18,7 @@ from gardenlinux.flavors import Parser as FlavorsParser
 from gardenlinux.logger import LoggerSetup
 from gardenlinux.s3 import S3Artifacts
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes.helpers", "DEBUG")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes.helpers", "INFO")
 
 
 def get_package_list(gardenlinux_version):
@@ -105,13 +105,11 @@ def download_metadata_file(
     LOGGER.debug(
         f"{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}"
     )
-    release_objects = s3_artifacts._bucket.objects.filter(
-        Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
-    )
-
-    LOGGER.debug(f"{release_objects=}")
-    LOGGER.debug(f"{list(release_objects)=}")
-    release_object = list(release_objects)[0]
+    release_object = list(
+        s3_artifacts._bucket.objects.filter(
+            Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
+        )
+    )[0]
     LOGGER.debug(f"{release_object.bucket_name=} | {release_object.key=}")
 
     s3_artifacts.bucket.download_file(
