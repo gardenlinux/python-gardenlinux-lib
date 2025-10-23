@@ -106,7 +106,7 @@ def download_metadata_file(
         f"{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}"
     )
     release_object = list(
-        s3_artifacts._bucket.objects.filter(
+        s3_artifacts.bucket.objects.filter(
             Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
         )
     )[0]
