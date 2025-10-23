@@ -53,8 +53,6 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
     commit = repo.commit(commitish)
     flavors_data = commit.tree["flavors.yaml"].data_stream.read().decode("utf-8")
     flavors = FlavorsParser(flavors_data).filter(only_publish=True)
-    LOGGER.debug(f"{flavors_data=}")
-    LOGGER.debug(f"{flavors=}")
 
     local_dest_path = Path("s3_downloads")
     if local_dest_path.exists():
@@ -107,11 +105,13 @@ def download_metadata_file(
     LOGGER.debug(
         f"{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}"
     )
-    release_object = list(
-        s3_artifacts._bucket.objects.filter(
-            Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
-        )
-    )[0]
+    release_objects = s3_artifacts._bucket.objects.filter(
+        Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
+    )
+
+    LOGGER.debug(f"{release_objects=}")
+    LOGGER.debug(f"{list(release_objects)=}")
+    release_object = list(release_objects)[0]
     LOGGER.debug(f"{release_object.bucket_name=} | {release_object.key=}")
 
     s3_artifacts.bucket.download_file(
