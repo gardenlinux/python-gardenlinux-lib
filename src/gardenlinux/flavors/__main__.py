@@ -6,8 +6,6 @@ gl-flavors-parse main entrypoint
 """
 
 import json
-import os
-import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from tempfile import TemporaryDirectory

@@ -1,6 +1,4 @@
-import logging
 import sys
-import types
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -9,13 +7,11 @@ import pytest
 import gardenlinux.features.metadata_main as metadata_main
 from gardenlinux.constants import (
     GL_BUG_REPORT_URL,
-    GL_COMMIT_SPECIAL_VALUES,
     GL_DISTRIBUTION_NAME,
     GL_HOME_URL,
     GL_RELEASE_ID,
     GL_SUPPORT_URL,
 )
-from gardenlinux.features import CName
 
 
 def get_container_amd64_release_metadata(version, commit_hash):
