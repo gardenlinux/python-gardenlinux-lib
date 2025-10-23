@@ -1,3 +1,4 @@
+# pyright: reportIncompatibleMethodOverride=false
 from . import DeploymentPlatform
 
 
