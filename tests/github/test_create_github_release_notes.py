@@ -126,7 +126,7 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
         """This will fake a git submodule as a git repository object."""
 
         def __new__(cls, *args, **kwargs):
-            r = super().__new__(Repo)
+            r = super().__new__(Repo)  # pyright: ignore[reportArgumentType]
             r.__init__(*args, **kwargs)
 
             maybe_gl_submodule = [
