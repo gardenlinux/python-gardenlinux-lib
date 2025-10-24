@@ -61,11 +61,9 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
 
     s3_artifacts = S3Artifacts(s3_bucket_name)
 
-    commitish_short = commitish[:8]
-
     for flavor in flavors:
-        cname = CName(flavor[1], flavor[0], "{0}-{1}".format(version, commitish_short))
         LOGGER.debug(f"{flavor=} {version=} {commitish=}")
+        cname = CName(flavor[1], flavor[0], commitish)
         # Filter by image variants - only download if the flavor matches one of the variants
         flavor_matches_variant = False
         for variant_suffix in IMAGE_VARIANTS:
@@ -86,8 +84,9 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
             continue
 
         try:
+            commit_short = commitish[:8]
             download_metadata_file(
-                s3_artifacts, cname.cname, version, commitish_short, local_dest_path
+                s3_artifacts, cname, version, commit_short, local_dest_path
             )
         except IndexError:
             LOGGER.warn(f"No artifacts found for flavor {cname.cname}, skipping...")
@@ -96,24 +95,23 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
     return [str(artifact) for artifact in local_dest_path.iterdir()]
 
 
-def download_metadata_file(
-    s3_artifacts, cname, version, commitish_short, artifacts_dir
-):
+def download_metadata_file(s3_artifacts, cname, version, commit_short, artifacts_dir):
     """
     Download metadata file (s3_metadata.yaml)
     """
     LOGGER.debug(
-        f"{s3_artifacts=} | {cname=} | {version=} | {commitish_short=} | {artifacts_dir=}"
+        f"{s3_artifacts=} | {cname.cname=} | {version=} | {cname.commit_id=} | {commit_short=} | {artifacts_dir=}"
     )
-    release_object = list(
-        s3_artifacts._bucket.objects.filter(
-            Prefix=f"meta/singles/{cname}-{version}-{commitish_short}"
-        )
-    )[0]
+    maybe_release_objects = s3_artifacts.bucket.objects.filter(
+        Prefix=f"meta/singles/{cname.cname}-{version}-{commit_short}"
+    )
+
+    release_object = list(maybe_release_objects)[0]
     LOGGER.debug(f"{release_object.bucket_name=} | {release_object.key=}")
 
     s3_artifacts.bucket.download_file(
-        release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
+        release_object.key,
+        artifacts_dir.joinpath(f"{cname.cname}.s3_metadata.yaml"),
     )
 
 
