@@ -44,11 +44,13 @@ def release_id_file():
 def release_s3_bucket():
     with mock_aws():
         s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(
+        s3.create_bucket(  # pyright: ignore[reportAttributeAccessIssue]
             Bucket=TEST_GARDENLINUX_RELEASE_BUCKET_NAME,
             CreateBucketConfiguration={"LocationConstraint": "eu-central-1"},
         )
-        yield s3.Bucket(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+        yield s3.Bucket(  # pyright: ignore[reportAttributeAccessIssue]
+            TEST_GARDENLINUX_RELEASE_BUCKET_NAME
+        )
 
 
 @pytest.fixture

@@ -144,7 +144,8 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
             return sr
 
     monkeypatch.setattr(
-        "gardenlinux.github.release_notes.helpers.Repo", SubmoduleAsRepo
+        "gardenlinux.github.release_notes.helpers.Repo",  # pyright: ignore[reportAttributeAccessIssue]
+        SubmoduleAsRepo,
     )
     import gardenlinux.github
 
@@ -168,12 +169,10 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
             text=glvd_response_fixture_path.read_text(),
             status_code=200,
         )
-        generated_release_notes = (
-            gardenlinux.github.release_notes.create_github_release_notes(
-                TEST_GARDENLINUX_RELEASE,
-                TEST_GARDENLINUX_COMMIT,
-                release_s3_bucket.name,
-            )
+        generated_release_notes = gardenlinux.github.release_notes.create_github_release_notes(  # pyright: ignore[reportAttributeAccessIssue]
+            TEST_GARDENLINUX_RELEASE,
+            TEST_GARDENLINUX_COMMIT,
+            release_s3_bucket.name,
         )
 
         assert generated_release_notes == release_fixture_path.read_text()
