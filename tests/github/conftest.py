@@ -44,9 +44,13 @@ def release_id_file():
 def release_s3_bucket():
     with mock_aws():
         s3 = boto3.resource("s3", region_name="eu-central-1")
-        s3.create_bucket(Bucket=TEST_GARDENLINUX_RELEASE_BUCKET_NAME,
-                         CreateBucketConfiguration={"LocationConstraint": "eu-central-1"})
-        yield s3.Bucket(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
+        s3.create_bucket(  # pyright: ignore[reportAttributeAccessIssue]
+            Bucket=TEST_GARDENLINUX_RELEASE_BUCKET_NAME,
+            CreateBucketConfiguration={"LocationConstraint": "eu-central-1"},
+        )
+        yield s3.Bucket(  # pyright: ignore[reportAttributeAccessIssue]
+            TEST_GARDENLINUX_RELEASE_BUCKET_NAME
+        )
 
 
 @pytest.fixture
@@ -55,19 +59,20 @@ def blackhole_s3_bucket():
     any object can be found, but downloading a file always raises an exception.
     This is needed to test the retry mechanism as the object also counts
     how many times an exception was raised."""
-    class BlackHoleObject():
+
+    class BlackHoleObject:
         def __init__(self, bucket_name, key):
             self.bucket_name = bucket_name
             self.key = key
 
-    class BlackHoleObjects():
+    class BlackHoleObjects:
         def __init__(self, bucket_name):
             self.bucket_name = bucket_name
 
         def filter(self, Prefix):
             return [BlackHoleObject(self.bucket_name, Prefix)]
 
-    class BlackHoleS3Bucket():
+    class BlackHoleS3Bucket:
         def __init__(self, bucket_name):
             self.objects = BlackHoleObjects(bucket_name)
             self.download_attempts = 0

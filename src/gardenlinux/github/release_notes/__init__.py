@@ -7,7 +7,9 @@ from .sections import (
 )
 
 
-def create_github_release_notes(gardenlinux_version, commitish, releases_s3_bucket_name):
+def create_github_release_notes(
+    gardenlinux_version, commitish, releases_s3_bucket_name
+):
     package_list = get_package_list(gardenlinux_version)
 
     output = ""
@@ -20,7 +22,9 @@ def create_github_release_notes(gardenlinux_version, commitish, releases_s3_buck
         gardenlinux_version, package_list
     )
 
-    metadata_files = download_all_metadata_files(gardenlinux_version, commitish, releases_s3_bucket_name)
+    metadata_files = download_all_metadata_files(
+        gardenlinux_version, commitish, releases_s3_bucket_name
+    )
 
     output += release_notes_image_ids_section(metadata_files)
 

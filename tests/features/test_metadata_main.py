@@ -1,6 +1,4 @@
-import logging
 import sys
-import types
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -9,13 +7,11 @@ import pytest
 import gardenlinux.features.metadata_main as metadata_main
 from gardenlinux.constants import (
     GL_BUG_REPORT_URL,
-    GL_COMMIT_SPECIAL_VALUES,
     GL_DISTRIBUTION_NAME,
     GL_HOME_URL,
     GL_RELEASE_ID,
     GL_SUPPORT_URL,
 )
-from gardenlinux.features import CName
 
 
 def get_container_amd64_release_metadata(version, commit_hash):
@@ -38,12 +34,22 @@ GARDENLINUX_COMMIT_ID="local"
 GARDENLINUX_COMMIT_ID_LONG="local"
 """.strip()
 
+
 def test_main_output(monkeypatch, capsys):
     """
     Test successful "output-release-metadata"
     """
     # Arrange
-    argv = ["prog", "--cname", "container-amd64", "--version", "today", "--commit", "local", "output-release-metadata"]
+    argv = [
+        "prog",
+        "--cname",
+        "container-amd64",
+        "--version",
+        "today",
+        "--commit",
+        "local",
+        "output-release-metadata",
+    ]
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act
@@ -53,6 +59,7 @@ def test_main_output(monkeypatch, capsys):
     expected = get_container_amd64_release_metadata("today", "local")
     assert expected == capsys.readouterr().out.strip()
 
+
 def test_main_write(monkeypatch, capsys):
     """
     Test successful "write"
@@ -60,7 +67,18 @@ def test_main_write(monkeypatch, capsys):
     # Arrange
     with TemporaryDirectory() as tmpdir:
         os_release_file = Path(tmpdir, "os_release")
-        argv = ["prog", "--cname", "container-amd64", "--version", "today", "--commit", "local", "--release-file", str(os_release_file), "write"]
+        argv = [
+            "prog",
+            "--cname",
+            "container-amd64",
+            "--version",
+            "today",
+            "--commit",
+            "local",
+            "--release-file",
+            str(os_release_file),
+            "write",
+        ]
         monkeypatch.setattr(sys, "argv", argv)
 
         # Act
@@ -69,6 +87,7 @@ def test_main_write(monkeypatch, capsys):
         # Assert
         expected = get_container_amd64_release_metadata("today", "local")
         assert expected == os_release_file.open("r").read()
+
 
 def test_main_validation(monkeypatch):
     """
@@ -81,7 +100,18 @@ def test_main_validation(monkeypatch):
         with os_release_file.open("w") as fp:
             fp.write(get_container_amd64_release_metadata("today", "local"))
 
-        argv = ["prog", "--cname", "base-python-amd64", "--version", "today", "--commit", "local", "--release-file", str(os_release_file), "output-release-metadata"]
+        argv = [
+            "prog",
+            "--cname",
+            "base-python-amd64",
+            "--version",
+            "today",
+            "--commit",
+            "local",
+            "--release-file",
+            str(os_release_file),
+            "output-release-metadata",
+        ]
         monkeypatch.setattr(sys, "argv", argv)
 
         # Act / Assert

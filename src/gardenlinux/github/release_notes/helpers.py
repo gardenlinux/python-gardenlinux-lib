@@ -89,7 +89,7 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
                 s3_artifacts, cname, version, commit_short, local_dest_path
             )
         except IndexError:
-            LOGGER.warn(f"No artifacts found for flavor {cname.cname}, skipping...")
+            LOGGER.warning(f"No artifacts found for flavor {cname.cname}, skipping...")
             continue
 
     return [str(artifact) for artifact in local_dest_path.iterdir()]

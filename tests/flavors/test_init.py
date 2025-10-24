@@ -1,5 +1,4 @@
 import importlib
-import types
 
 from gardenlinux import flavors
 

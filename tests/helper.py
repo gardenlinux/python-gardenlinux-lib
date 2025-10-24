@@ -1,8 +1,5 @@
-import os
 import shlex
 import subprocess
-
-from .constants import CERT_DIR, GL_ROOT_DIR, ZOT_CONFIG_FILE
 
 
 def spawn_background_process(cmd, stdout=None, stderr=None):

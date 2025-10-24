@@ -5,7 +5,6 @@ import types
 import pytest
 
 import gardenlinux.features.cname_main as cname_main
-from gardenlinux.features import CName
 
 
 def test_main_happy(monkeypatch, capsys):

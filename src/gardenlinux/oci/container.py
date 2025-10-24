@@ -9,7 +9,6 @@ import logging
 from base64 import b64encode
 from collections.abc import Sequence
 from configparser import UNNAMED_SECTION, ConfigParser
-from hashlib import sha256
 from os import PathLike, fdopen, getenv
 from pathlib import Path
 from tempfile import mkstemp
@@ -18,12 +17,11 @@ from urllib.parse import urlsplit
 
 import jsonschema
 from oras.container import Container as OrasContainer
-from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.provider import Registry
 from oras.utils import extract_targz, make_targz
 from requests import Response
 
-from ..constants import GL_MEDIA_TYPE_LOOKUP, OCI_IMAGE_INDEX_MEDIA_TYPE
+from ..constants import OCI_IMAGE_INDEX_MEDIA_TYPE
 from ..features.cname import CName
 from ..logger import LoggerSetup
 from .image_manifest import ImageManifest
@@ -117,7 +115,7 @@ class Container(Registry):
 
             # Login to registry if credentials are provided
             if username and password:
-                self._logger.debug(f"Logging in with username/password")
+                self._logger.debug("Logging in with username/password")
 
                 try:
                     self.login(username, password)

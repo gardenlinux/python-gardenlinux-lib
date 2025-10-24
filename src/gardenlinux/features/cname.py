@@ -13,7 +13,6 @@ from typing import List, Optional
 from ..constants import (
     ARCHS,
     GL_BUG_REPORT_URL,
-    GL_COMMIT_SPECIAL_VALUES,
     GL_DISTRIBUTION_NAME,
     GL_HOME_URL,
     GL_RELEASE_ID,

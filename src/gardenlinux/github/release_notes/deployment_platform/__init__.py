@@ -1,7 +1,7 @@
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 
-class DeploymentPlatform():
+class DeploymentPlatform:
     artifacts_bucket_name = GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
     def short_name(self):
@@ -25,7 +25,9 @@ class DeploymentPlatform():
         return "raw"
 
     def artifact_for_flavor(self, flavor, markdown_format=True):
-        base_url = f"https://{self.__class__.artifacts_bucket_name}.s3.amazonaws.com/objects"
+        base_url = (
+            f"https://{self.__class__.artifacts_bucket_name}.s3.amazonaws.com/objects"
+        )
         filename = f"{flavor}.{self.image_extension()}"
         download_url = f"{base_url}/{flavor}/{filename}"
         if markdown_format:
@@ -48,7 +50,9 @@ class DeploymentPlatform():
                             "image_id": image_id,
                             "image_name": image_name,
                         }:
-                            details += f"**{region_name}:** {image_id} ({image_name})<br>"
+                            details += (
+                                f"**{region_name}:** {image_id} ({image_name})<br>"
+                            )
                         case {"region": region_name, "image_id": image_id}:
                             details += f"**{region_name}:** {image_id}<br>"
             case {"details": details_dict}:
@@ -93,7 +97,9 @@ class DeploymentPlatform():
             }:
                 gallery_count = len(gallery_images)
                 marketplace_count = len(marketplace_images)
-                return f"{gallery_count} gallery + {marketplace_count} marketplace images"
+                return (
+                    f"{gallery_count} gallery + {marketplace_count} marketplace images"
+                )
             case {"gallery_images": gallery_images}:
                 gallery_count = len(gallery_images)
                 return f"{gallery_count} gallery images"
