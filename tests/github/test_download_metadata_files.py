@@ -7,7 +7,6 @@ from gardenlinux.s3 import S3Artifacts
 
 from ..constants import (
     RELEASE_NOTES_S3_ARTIFACTS_DIR,
-    TEST_GARDENLINUX_COMMIT,
     TEST_GARDENLINUX_COMMIT_SHORT,
     TEST_GARDENLINUX_RELEASE,
     TEST_GARDENLINUX_RELEASE_BUCKET_NAME,
@@ -17,7 +16,7 @@ from ..constants import (
 def test_download_metadata_file(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(
         RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}",
+        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
@@ -26,7 +25,7 @@ def test_download_metadata_file(downloads_dir, release_s3_bucket):
     cname = CName("test-aws-gardener_prod", "amd64", TEST_GARDENLINUX_COMMIT_SHORT)
     download_metadata_file(
         s3_artifacts,
-        cname.cname,
+        cname,
         TEST_GARDENLINUX_RELEASE,
         TEST_GARDENLINUX_COMMIT_SHORT,
         S3_DOWNLOADS_DIR,
@@ -37,7 +36,7 @@ def test_download_metadata_file(downloads_dir, release_s3_bucket):
 def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(
         RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}",
+        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
     s3_artifacts._bucket = release_s3_bucket
@@ -48,7 +47,11 @@ def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket
 
     with pytest.raises(IndexError):
         download_metadata_file(
-            s3_artifacts, cname.cname, release, commit, S3_DOWNLOADS_DIR
+            s3_artifacts,
+            cname,
+            release,
+            TEST_GARDENLINUX_COMMIT_SHORT,
+            S3_DOWNLOADS_DIR,
         )
     assert not (
         S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml"
@@ -58,7 +61,7 @@ def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket
 def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket):
     release_s3_bucket.upload_file(
         RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}",
+        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
@@ -70,7 +73,11 @@ def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket)
 
     with pytest.raises(IndexError):
         download_metadata_file(
-            s3_artifacts, cname.cname, release, commit, S3_DOWNLOADS_DIR
+            s3_artifacts,
+            cname,
+            release,
+            commit,
+            S3_DOWNLOADS_DIR,
         )
     assert not (
         S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml"
@@ -82,7 +89,7 @@ def test_download_metadata_file_no_such_release_and_commit(
 ):
     release_s3_bucket.upload_file(
         RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
-        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT}",
+        f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
@@ -91,10 +98,15 @@ def test_download_metadata_file_no_such_release_and_commit(
     release = "0000.0"
     commit = "deadbeef"
     cname = CName("test-aws-gardener_prod", "amd64", commit)
+    print(f"{cname.cname=}")
 
     with pytest.raises(IndexError):
         download_metadata_file(
-            s3_artifacts, cname.cname, release, commit, S3_DOWNLOADS_DIR
+            s3_artifacts,
+            cname,
+            release,
+            TEST_GARDENLINUX_COMMIT_SHORT,
+            S3_DOWNLOADS_DIR,
         )
     assert not (
         S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml"
