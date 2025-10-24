@@ -236,7 +236,7 @@ def test_upload_from_directory_none_version_raises(monkeypatch, s3_setup):
 
 
 @pytest.mark.skip(
-    reason="broken since https://github.com/gardenlinux/python-gardenlinux-lib/pull/236"
+    reason="needs fix, see  https://github.com/gardenlinux/python-gardenlinux-lib/pull/236"
 )
 def test_upload_from_directory_invalid_artifact_name(s3_setup):
     """
