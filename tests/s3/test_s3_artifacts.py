@@ -235,9 +235,6 @@ def test_upload_from_directory_none_version_raises(monkeypatch, s3_setup):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
-@pytest.mark.skip(
-    reason="needs fix, see  https://github.com/gardenlinux/python-gardenlinux-lib/pull/236"
-)
 def test_upload_from_directory_invalid_artifact_name(s3_setup):
     """
     Raise RuntimeError if artifact file does not start with cname.
@@ -252,10 +249,12 @@ def test_upload_from_directory_invalid_artifact_name(s3_setup):
 
     artifacts = S3Artifacts(env.bucket_name)
 
-    # Act / Assert
-    with pytest.raises(RuntimeError, match="does not start with cname"):
-        artifacts.upload_from_directory(env.cname, env.tmp_path)
+    # Act
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
 
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    assert len(list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))) == 1
 
 def test_upload_from_directory_commit_mismatch_raises(s3_setup):
     """Raise RuntimeError when commit ID is not matching with cname."""
