@@ -24,7 +24,7 @@ jobs:
         if: always()
         run: cat bandit-report.json
       - name: Upload Bandit Scan Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # pin@v5.0.0
         if: always()
         with:
             name: bandit-findings
