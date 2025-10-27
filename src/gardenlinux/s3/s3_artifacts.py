@@ -5,6 +5,7 @@ S3 GardenLinux artifacts
 """
 
 import logging
+import re
 from configparser import UNNAMED_SECTION, ConfigParser
 from datetime import datetime
 from hashlib import file_digest
@@ -189,6 +190,8 @@ class S3Artifacts(object):
             "paths": [],
         }
 
+        re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
+
         for artifact in artifacts_dir.iterdir():
             if not artifact.match(f"{cname}*"):
                 continue
@@ -216,9 +219,9 @@ class S3Artifacts(object):
             }
 
             s3_tags = {
-                "architecture": cname_object.arch,
-                "platform": cname_object.platform,
-                "version": cname_object.version,
+                "architecture": re_object.sub("+", cname_object.arch),
+                "platform": re_object.sub("+", cname_object.platform),
+                "version": re_object.sub("+", cname_object.version),
                 "committish": commit_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,

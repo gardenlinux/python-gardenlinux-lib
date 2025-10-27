@@ -22,7 +22,7 @@ class S3Env:
 
 
 def make_cname(
-    flavor: str = "container",
+    flavor: str = "kvm-container",
     arch: str = "amd64",
     version: str = "1234.1",
     commit: str = "abc123",
