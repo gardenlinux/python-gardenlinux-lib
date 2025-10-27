@@ -120,6 +120,10 @@ def test_upload_from_directory_success(s3_setup):
     assert metadata["require_uefi"] is True
     assert metadata["secureboot"] is True
 
+    raw_tags_response = env.s3.meta.client.get_object_tagging(Bucket=env.bucket_name, Key=f"objects/{env.cname}/{env.cname}-file1")
+    tags = { tag['Key']: tag['Value'] for tag in raw_tags_response["TagSet"] }
+    assert tags["platform"] == "container+kvm"
+
 
 def test_upload_from_directory_with_delete(s3_setup):
     """
