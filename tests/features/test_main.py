@@ -160,6 +160,20 @@ def test_main_prints_container_name(monkeypatch, capsys):
     assert "container-python-dev" in out
 
 
+def test_main_prints_container_tag(monkeypatch, capsys):
+    # Arrange
+    argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "--commit", "~post1", "container_tag"]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    # Act
+    fema.main()
+
+    # Assert
+    out = capsys.readouterr().out.strip()
+    assert "1-0-post1" == out
+
+
 def test_main_prints_commit_id(monkeypatch, capsys):
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]

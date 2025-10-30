@@ -20,6 +20,7 @@ _ARGS_TYPE_ALLOWED = [
     "cname",
     "cname_base",
     "container_name",
+    "container_tag",
     "commit_id",
     "features",
     "platforms",
@@ -117,7 +118,7 @@ def main() -> None:
     if (
         version is None
         or version == ""
-        and (args.type in ("cname", "commit_id", "version", "version_and_commit_id"))
+        and (args.type in ("cname", "container_tag", "commit_id", "version", "version_and_commit_id"))
     ):
         raise RuntimeError("Version not specified and no default version set")
 
@@ -146,6 +147,8 @@ def main() -> None:
             print_output_from_cname(args.type, cname)
     elif args.type == "commit_id":
         print(commit_id_or_hash[:8])
+    elif args.type == "container_tag":
+        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit_id":
