@@ -11,21 +11,21 @@ from gardenlinux.features import CName
 # -------------------------------
 
 
-def test_get_cname_base():
+def test_get_flavor():
     # Arrange
     sorted_features = ["base", "_hidden", "extra"]
 
     # Act
-    result = fema.get_cname_base(sorted_features)
+    result = fema.get_flavor(sorted_features)
 
     # Assert
     assert result == "base_hidden-extra"
 
 
-def test_get_cname_base_empty_raises():
-    # get_cname_base with empty iterable raises TypeError
+def test_get_flavor_empty_raises():
+    # get_flavor with empty iterable raises TypeError
     with pytest.raises(TypeError):
-        fema.get_cname_base([])
+        fema.get_flavor([])
 
 
 def test_sort_return_intersection_subset():
@@ -144,6 +144,20 @@ def test_main_prints_arch(monkeypatch, capsys):
     # Assert
     out = capsys.readouterr().out
     assert "amd64" in out
+
+
+def test_main_prints_container_name(monkeypatch, capsys):
+    # Arrange
+    argv = ["prog", "--arch", "amd64", "--cname", "container-pythonDev", "--version", "1.0", "container_name"]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    # Act
+    fema.main()
+
+    # Assert
+    out = capsys.readouterr().out
+    assert "container-python-dev" in out
 
 
 def test_main_prints_commit_id(monkeypatch, capsys):

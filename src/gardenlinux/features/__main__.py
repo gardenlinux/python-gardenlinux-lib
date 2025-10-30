@@ -8,6 +8,7 @@ gl-features-parse main entrypoint
 import argparse
 import logging
 import os
+import re
 from functools import reduce
 from os import path
 from typing import Any, List, Set
@@ -18,10 +19,12 @@ from .parser import Parser
 _ARGS_TYPE_ALLOWED = [
     "cname",
     "cname_base",
+    "container_name",
     "commit_id",
     "features",
     "platforms",
     "flags",
+    "flavor",
     "elements",
     "arch",
     "version",
@@ -29,6 +32,10 @@ _ARGS_TYPE_ALLOWED = [
     "graph",
 ]
 
+RE_CAMEL_CASE_SPLITTER = re.compile("([A-Z]+|[a-z0-9])([A-Z])(?!$)")
+"""
+CamelCase splitter RegExp
+"""
 
 def main() -> None:
     """
@@ -102,7 +109,7 @@ def main() -> None:
         commit_id_or_hash = cname.commit_id
         version = cname.version
 
-    if arch is None or arch == "" and (args.type in ("cname", "arch")):
+    if arch is None or arch == "" and (args.type in ("cname", "container_name", "arch")):
         raise RuntimeError(
             "Architecture could not be determined and no default architecture set"
         )
@@ -121,9 +128,11 @@ def main() -> None:
     elif args.type in (
         "cname_base",
         "cname",
+        "container_name",
         "elements",
         "features",
         "flags",
+        "flavor",
         "graph",
         "platforms",
     ):
@@ -143,7 +152,7 @@ def main() -> None:
         print(f"{version}-{commit_id_or_hash[:8]}")
 
 
-def get_cname_base(sorted_features: List[str]):
+def get_flavor(sorted_features: List[str]):
     """
     Get the base cname for the feature set given.
 
@@ -265,7 +274,7 @@ def print_output_from_features_parser(
 
         sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
 
-        cname_base = get_cname_base(sorted_minimal_features)
+        cname_base = get_flavor(sorted_minimal_features)
 
         if output_type == "cname_base":
             print(cname_base)
@@ -279,7 +288,9 @@ def print_output_from_features_parser(
                 cname += f"-{version}-{commit_id_or_hash[:8]}"
 
             print(cname)
-        if output_type == "platforms":
+        elif output_type == "container_name":
+            print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
+        elif output_type == "platforms":
             print(",".join(features_by_type["platform"]))
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
@@ -303,6 +314,8 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
         print(cname_instance.flavor)
     elif output_type == "cname":
         print(cname_instance.cname)
+    elif output_type == "container_name":
+        print(RE_CAMEL_CASE_SPLITTER.sub("\\1-\\2", cname_instance.flavor).lower())
     elif output_type == "platforms":
         print(cname_instance.feature_set_platform)
     elif output_type == "elements":
