@@ -120,8 +120,10 @@ def test_upload_from_directory_success(s3_setup):
     assert metadata["require_uefi"] is True
     assert metadata["secureboot"] is True
 
-    raw_tags_response = env.s3.meta.client.get_object_tagging(Bucket=env.bucket_name, Key=f"objects/{env.cname}/{env.cname}-file1")
-    tags = { tag['Key']: tag['Value'] for tag in raw_tags_response["TagSet"] }
+    raw_tags_response = env.s3.meta.client.get_object_tagging(
+        Bucket=env.bucket_name, Key=f"objects/{env.cname}/{env.cname}-file1"
+    )
+    tags = {tag["Key"]: tag["Value"] for tag in raw_tags_response["TagSet"]}
     assert tags["platform"] == "container+kvm"
 
 
@@ -259,6 +261,7 @@ def test_upload_from_directory_invalid_artifact_name(s3_setup):
     # Assert
     bucket = env.s3.Bucket(env.bucket_name)
     assert len(list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))) == 1
+
 
 def test_upload_from_directory_commit_mismatch_raises(s3_setup):
     """Raise RuntimeError when commit ID is not matching with cname."""

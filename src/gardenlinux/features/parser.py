@@ -30,15 +30,15 @@ class Parser(object):
                  Apache License, Version 2.0
     """
 
-    _GARDENLINUX_ROOT: str = "."
+    _GARDENLINUX_ROOT: str = os.getenv("GL_ROOT_DIR", ".")
     """
     Default GardenLinux root directory
     """
 
     def __init__(
         self,
-        gardenlinux_root: str | None = None,
-        feature_dir_name: str = "features",
+        gardenlinux_root: Optional[str] = None,
+        feature_dir_name: Optional[str] = "features",
         logger: Optional[logging.Logger] = None,
     ):
         """
