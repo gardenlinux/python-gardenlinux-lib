@@ -8,6 +8,7 @@ gl-features-parse main entrypoint
 import argparse
 import logging
 import os
+import re
 from functools import reduce
 from os import path
 from typing import Any, List, Set
@@ -18,16 +19,24 @@ from .parser import Parser
 _ARGS_TYPE_ALLOWED = [
     "cname",
     "cname_base",
+    "container_name",
+    "container_tag",
     "commit_id",
     "features",
     "platforms",
     "flags",
+    "flavor",
     "elements",
     "arch",
     "version",
     "version_and_commit_id",
     "graph",
 ]
+
+RE_CAMEL_CASE_SPLITTER = re.compile("([A-Z]+|[a-z0-9])([A-Z])(?!$)")
+"""
+CamelCase splitter RegExp
+"""
 
 
 def main() -> None:
@@ -102,15 +111,26 @@ def main() -> None:
         commit_id_or_hash = cname.commit_id
         version = cname.version
 
-    if arch is None or arch == "" and (args.type in ("cname", "arch")):
+    if (arch is None or arch == "") and (
+        args.type in ("cname", "container_name", "arch")
+    ):
         raise RuntimeError(
             "Architecture could not be determined and no default architecture set"
         )
 
-    if (
-        version is None
-        or version == ""
-        and (args.type in ("cname", "commit_id", "version", "version_and_commit_id"))
+    if (commit_id_or_hash is None or commit_id_or_hash == "") and (
+        args.type in ("container_tag", "commit_id", "version_and_commit_id")
+    ):
+        raise RuntimeError("Commit ID not specified")
+
+    if (version is None or version == "") and (
+        args.type
+        in (
+            "container_tag",
+            "commit_id",
+            "version",
+            "version_and_commit_id",
+        )
     ):
         raise RuntimeError("Version not specified and no default version set")
 
@@ -121,13 +141,15 @@ def main() -> None:
     elif args.type in (
         "cname_base",
         "cname",
+        "container_name",
         "elements",
         "features",
         "flags",
+        "flavor",
         "graph",
         "platforms",
     ):
-        if args.type == "graph" or len(args.ignore) > 1:
+        if args.type == "graph" or len(args.ignore) > 0:
             features_parser = Parser(gardenlinux_root, feature_dir_name)
 
             print_output_from_features_parser(
@@ -137,13 +159,15 @@ def main() -> None:
             print_output_from_cname(args.type, cname)
     elif args.type == "commit_id":
         print(commit_id_or_hash[:8])
+    elif args.type == "container_tag":
+        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit_id":
         print(f"{version}-{commit_id_or_hash[:8]}")
 
 
-def get_cname_base(sorted_features: List[str]):
+def get_flavor(sorted_features: List[str]):
     """
     Get the base cname for the feature set given.
 
@@ -265,7 +289,7 @@ def print_output_from_features_parser(
 
         sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
 
-        cname_base = get_cname_base(sorted_minimal_features)
+        cname_base = get_flavor(sorted_minimal_features)
 
         if output_type == "cname_base":
             print(cname_base)
@@ -279,7 +303,9 @@ def print_output_from_features_parser(
                 cname += f"-{version}-{commit_id_or_hash[:8]}"
 
             print(cname)
-        if output_type == "platforms":
+        elif output_type == "container_name":
+            print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
+        elif output_type == "platforms":
             print(",".join(features_by_type["platform"]))
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
@@ -303,6 +329,8 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
         print(cname_instance.flavor)
     elif output_type == "cname":
         print(cname_instance.cname)
+    elif output_type == "container_name":
+        print(RE_CAMEL_CASE_SPLITTER.sub("\\1-\\2", cname_instance.flavor).lower())
     elif output_type == "platforms":
         print(cname_instance.feature_set_platform)
     elif output_type == "elements":

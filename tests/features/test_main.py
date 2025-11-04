@@ -4,28 +4,30 @@ import types
 import pytest
 
 import gardenlinux.features.__main__ as fema
-from gardenlinux.features import CName
+from gardenlinux.features import CName, Parser
+
+from ..constants import GL_ROOT_DIR
 
 # -------------------------------
 # Helper function tests
 # -------------------------------
 
 
-def test_get_cname_base():
+def test_get_flavor():
     # Arrange
     sorted_features = ["base", "_hidden", "extra"]
 
     # Act
-    result = fema.get_cname_base(sorted_features)
+    result = fema.get_flavor(sorted_features)
 
     # Assert
     assert result == "base_hidden-extra"
 
 
-def test_get_cname_base_empty_raises():
-    # get_cname_base with empty iterable raises TypeError
+def test_get_flavor_empty_raises():
+    # get_flavor with empty iterable raises TypeError
     with pytest.raises(TypeError):
-        fema.get_cname_base([])
+        fema.get_flavor([])
 
 
 def test_sort_return_intersection_subset():
@@ -146,6 +148,54 @@ def test_main_prints_arch(monkeypatch, capsys):
     assert "amd64" in out
 
 
+def test_main_prints_container_name(monkeypatch, capsys):
+    # Arrange
+    argv = [
+        "prog",
+        "--arch",
+        "amd64",
+        "--cname",
+        "container-pythonDev",
+        "--version",
+        "1.0",
+        "container_name",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    # Act
+    fema.main()
+
+    # Assert
+    out = capsys.readouterr().out
+    assert "container-python-dev" in out
+
+
+def test_main_prints_container_tag(monkeypatch, capsys):
+    # Arrange
+    argv = [
+        "prog",
+        "--arch",
+        "amd64",
+        "--cname",
+        "flav",
+        "--version",
+        "1.0",
+        "--commit",
+        "~post1",
+        "container_tag",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    # Act
+    fema.main()
+
+    # Assert
+    out = capsys.readouterr().out.strip()
+    assert "1-0-post1" == out
+
+
 def test_main_prints_commit_id(monkeypatch, capsys):
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]
@@ -238,14 +288,49 @@ def test_main_prints_version_and_commit_id(monkeypatch, capsys):
     assert "1.2.3-abcdef12" == captured.out.strip()
 
 
-def test_main_arch_raises_missing_verison(monkeypatch, capsys):
+def test_main_requires_cname(monkeypatch):
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "arch"]
+    monkeypatch.setattr(sys, "argv", ["prog", "arch"])
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    # Act / Assert
+    with pytest.raises(SystemExit):
+        fema.main()
+
+
+def test_main_raises_no_arch_no_default(monkeypatch):
+    # Arrange
+    # args.type == 'cname, arch is None and no default_arch set
+    argv = ["prog", "--cname", "flav", "cname"]
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        fema,
+        "Parser",
+        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
+    )
+
+    # Act / Assert
+    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
+        fema.main()
+
+
+def test_main_raises_missing_commit_id(monkeypatch, capsys):
+    # Arrange
+    argv = [
+        "prog",
+        "--arch",
+        "amd64",
+        "--cname",
+        "flav",
+        "--version",
+        "1.0",
+        "version_and_commit_id",
+    ]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="Commit ID not specified"):
         fema.main()
 
 
@@ -288,27 +373,71 @@ def test_main_with_cname_print_cname(monkeypatch, capsys):
     assert "flav" in captured.out
 
 
-def test_main_requires_cname(monkeypatch):
+def test_main_with_exclude_cname_print_elements(monkeypatch, capsys):
     # Arrange
-    monkeypatch.setattr(sys, "argv", ["prog", "arch"])
-    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
-
-    # Act / Assert
-    with pytest.raises(SystemExit):
-        fema.main()
-
-
-def test_main_raises_no_arch_no_default(monkeypatch):
-    # Arrange
-    # args.type == 'cname, arch is None and no default_arch set
-    argv = ["prog", "--cname", "flav", "cname"]
-    monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
-        fema,
-        "Parser",
-        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
+        sys,
+        "argv",
+        [
+            "prog",
+            "--feature-dir",
+            f"{GL_ROOT_DIR}/features",
+            "--cname",
+            "kvm-gardener_prod",
+            "--ignore",
+            "cloud",
+            "--arch",
+            "amd64",
+            "--version",
+            "local",
+            "--commit",
+            "today",
+            "elements",
+        ],
     )
 
-    # Act / Assert
-    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
-        fema.main()
+    # Act
+    fema.main()
+
+    # Assert
+    captured = capsys.readouterr().out.strip()
+
+    assert (
+        "log,sap,ssh,base,server,gardener"
+        == captured
+    )
+
+
+def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
+    # Arrange
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "prog",
+            "--feature-dir",
+            f"{GL_ROOT_DIR}/features",
+            "--cname",
+            "kvm-gardener_prod",
+            "--ignore",
+            "cloud",
+            "--arch",
+            "amd64",
+            "--version",
+            "local",
+            "--commit",
+            "today",
+            "features",
+        ],
+    )
+
+    # Act
+    fema.main()
+
+    # Assert
+    captured = capsys.readouterr().out.strip()
+
+    assert (
+        "log,sap,ssh,_boot,_ignite,kvm,_nopkg,_prod,_slim,base,server,gardener"
+        == captured
+    )

@@ -11,7 +11,7 @@ import re
 from os.path import basename, dirname
 
 from .__main__ import (
-    get_cname_base,
+    get_flavor,
     get_minimal_feature_set,
     get_version_and_commit_id_from_files,
     sort_subset,
@@ -80,7 +80,7 @@ def main():
 
     sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
 
-    generated_cname = get_cname_base(sorted_minimal_features)
+    generated_cname = get_flavor(sorted_minimal_features)
 
     generated_cname += f"-{cname.arch}"
 
