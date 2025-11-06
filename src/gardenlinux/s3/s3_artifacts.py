@@ -18,7 +18,6 @@ from urllib.parse import urlencode
 
 import yaml
 
-from ..features.cname import CName
 from .bucket import Bucket
 
 
@@ -103,6 +102,7 @@ class S3Artifacts(object):
         cname: str,
         artifacts_dir: str | PathLike[str],
         delete_before_push=False,
+        dry_run=False,
     ):
         """
         Pushes S3 artifacts to the underlying bucket.
@@ -116,11 +116,6 @@ class S3Artifacts(object):
 
         artifacts_dir = Path(artifacts_dir)
 
-        cname_object = CName(cname)
-
-        if cname_object.arch is None:
-            raise RuntimeError("Architecture could not be determined from cname")
-
         if not artifacts_dir.is_dir():
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
 
@@ -130,18 +125,20 @@ class S3Artifacts(object):
         release_config = ConfigParser(allow_unnamed_section=True)
         release_config.read(release_file)
 
-        if cname_object.version != release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_VERSION"
-        ):
-            raise RuntimeError(
-                f"Release file data and given cname conflict detected: Version {cname_object.version}"
-            )
+        # Get architecture from the GARDENLINUX_CNAME (second to last element when split by -)
+        release_cname = release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME")
+        cname_parts = release_cname.split("-")
+        if len(cname_parts) < 2:
+            raise RuntimeError(f"Invalid GARDENLINUX_CNAME format in release file: {release_cname}")
+        arch = cname_parts[-2]  # Second to last element is the architecture
 
-        if cname_object.commit_id != release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID"
-        ):
+        commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID")
+        expected_cname = f"{release_cname}-{commit_id}"
+
+        # Verify the provided cname matches the release file
+        if cname != expected_cname:
             raise RuntimeError(
-                f"Release file data and given cname conflict detected: Commit ID {cname_object.commit_id}"
+                f"Release file cname does not match provided cname: {expected_cname} != {cname}"
             )
 
         commit_hash = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG")
@@ -171,13 +168,16 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_list
 
+        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION")
+        platform = release_config.get(UNNAMED_SECTION, "GARDENLINUX_PLATFORM")
+
         metadata = {
-            "platform": cname_object.platform,
-            "architecture": cname_object.arch,
+            "platform": platform,
+            "architecture": arch,
             "base_image": None,
             "build_committish": commit_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
-            "gardenlinux_epoch": int(cname_object.version.split(".", 1)[0]),
+            "gardenlinux_epoch": int(version.split(".", 1)[0]),
             "logs": None,
             "modifiers": feature_list,
             "require_uefi": require_uefi,
@@ -186,9 +186,14 @@ class S3Artifacts(object):
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{cname}",
             "test_result": None,
-            "version": cname_object.version,
+            "version": version,
             "paths": [],
         }
+
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
+            metadata["platform_variant"] = release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"
+            )
 
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
@@ -219,34 +224,38 @@ class S3Artifacts(object):
             }
 
             s3_tags = {
-                "architecture": re_object.sub("+", cname_object.arch),
-                "platform": re_object.sub("+", cname_object.platform),
-                "version": re_object.sub("+", cname_object.version),
+                "architecture": re_object.sub("+", arch),
+                "platform": re_object.sub("+", platform),
+                "version": re_object.sub("+", version),
                 "committish": commit_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
 
-            if delete_before_push:
-                self._bucket.delete_objects(Delete={"Objects": [{"Key": s3_key}]})
-
-            self._bucket.upload_file(
-                artifact,
-                s3_key,
-                ExtraArgs={"Tagging": urlencode(s3_tags)},
-            )
-
             metadata["paths"].append(artifact_metadata)
 
-        if delete_before_push:
-            self._bucket.delete_objects(
-                Delete={"Objects": [{"Key": f"meta/singles/{cname}"}]}
-            )
+            if not dry_run:
+                if delete_before_push:
+                    self._bucket.delete_objects(Delete={"Objects": [{"Key": s3_key}]})
 
-        with TemporaryFile(mode="wb+") as fp:
-            fp.write(yaml.dump(metadata).encode("utf-8"))
-            fp.seek(0)
+                self._bucket.upload_file(
+                    artifact,
+                    s3_key,
+                    ExtraArgs={"Tagging": urlencode(s3_tags)},
+                )
 
-            self._bucket.upload_fileobj(
-                fp, f"meta/singles/{cname}", ExtraArgs={"ContentType": "text/yaml"}
-            )
+        if dry_run:
+            print(yaml.dump(metadata, sort_keys=False))
+        else:
+            if delete_before_push:
+                self._bucket.delete_objects(
+                    Delete={"Objects": [{"Key": f"meta/singles/{cname}"}]}
+                )
+
+            with TemporaryFile(mode="wb+") as fp:
+                fp.write(yaml.dump(metadata).encode("utf-8"))
+                fp.seek(0)
+
+                self._bucket.upload_fileobj(
+                    fp, f"meta/singles/{cname}", ExtraArgs={"ContentType": "text/yaml"}
+                )

@@ -27,6 +27,7 @@ def main() -> None:
     parser.add_argument("--bucket", dest="bucket")
     parser.add_argument("--cname", required=False, dest="cname")
     parser.add_argument("--path", required=False, dest="path")
+    parser.add_argument("--dry-run", action="store_true")
 
     parser.add_argument("action", nargs="?", choices=_ARGS_ACTION_ALLOWED)
 
@@ -35,4 +36,4 @@ def main() -> None:
     if args.action == "download-artifacts-from-bucket":
         S3Artifacts(args.bucket).download_to_directory(args.cname, args.path)
     elif args.action == "upload-artifacts-to-bucket":
-        S3Artifacts(args.bucket).upload_from_directory(args.cname, args.path)
+        S3Artifacts(args.bucket).upload_from_directory(args.cname, args.path, dry_run=args.dry_run)
