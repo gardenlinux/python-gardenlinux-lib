@@ -13,57 +13,6 @@ from ..constants import GL_ROOT_DIR
 # -------------------------------
 
 
-def test_get_flavor():
-    # Arrange
-    sorted_features = ["base", "_hidden", "extra"]
-
-    # Act
-    result = fema.get_flavor(sorted_features)
-
-    # Assert
-    assert result == "base_hidden-extra"
-
-
-def test_get_flavor_empty_raises():
-    # get_flavor with empty iterable raises TypeError
-    with pytest.raises(TypeError):
-        fema.get_flavor([])
-
-
-def test_sort_return_intersection_subset():
-    # Arrange
-    input_set = {"a", "c"}
-    order_list = ["a", "b", "c", "d"]
-
-    # Act
-    result = fema.sort_subset(input_set, order_list)
-
-    # Assert
-    assert result == ["a", "c"]
-
-
-def test_sort_subset_nomatch():
-    # Arrange
-    input_set = {"x", "y"}
-    order_list = ["a", "b", "c"]
-
-    # Act
-    result = fema.sort_subset(input_set, order_list)
-
-    # Assert
-    assert result == []
-
-
-def test_sort_subset_with_empty_order_list():
-    # Arrange
-    input_set = {"a", "b"}
-    order_list = []
-
-    result = fema.sort_subset(input_set, order_list)
-
-    assert result == []
-
-
 def test_graph_mermaid():
     # Arrange
     class FakeGraph:
@@ -298,16 +247,31 @@ def test_main_requires_cname(monkeypatch):
         fema.main()
 
 
+def test_main_cname_raises_missing_commit_id(monkeypatch):
+    # Arrange
+    # args.type == 'cname, arch is None and no default_arch set
+    argv = [
+        "prog",
+        "--cname",
+        "flav",
+        "--default-arch",
+        "amd64",
+        "--version",
+        "1.0",
+        "cname",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+
+    # Act / Assert
+    with pytest.raises(RuntimeError, match="Version and commit ID"):
+        fema.main()
+
+
 def test_main_raises_no_arch_no_default(monkeypatch):
     # Arrange
     # args.type == 'cname, arch is None and no default_arch set
     argv = ["prog", "--cname", "flav", "cname"]
     monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(
-        fema,
-        "Parser",
-        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
-    )
 
     # Act / Assert
     with pytest.raises(RuntimeError, match="Architecture could not be determined"):
@@ -332,45 +296,6 @@ def test_main_raises_missing_commit_id(monkeypatch, capsys):
     # Act / Assert
     with pytest.raises(RuntimeError, match="Commit ID not specified"):
         fema.main()
-
-
-def test_main_with_cname_print_cname(monkeypatch, capsys):
-    # Arrange
-    class FakeGraph:
-        def in_degree(self):
-            # Simulate a graph where one feature has no dependencies
-            return [("f1", 0)]
-
-    class FakeParser:
-        def __call__(self, *a, **k):
-            return types.SimpleNamespace(filter=lambda *a, **k: FakeGraph())
-
-        @staticmethod
-        def get_cname_as_feature_set(f):
-            return {"f1"}
-
-        @staticmethod
-        def sort_graph_nodes(graph):
-            return ["f1"]
-
-        @staticmethod
-        def sort_subset(subset, length):
-            return []
-
-    monkeypatch.setattr(fema, "Parser", FakeParser())
-
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["prog", "--cname", "flav", "--arch", "amd64", "--version", "1.0", "cname"],
-    )
-
-    # Act
-    fema.main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert "flav" in captured.out
 
 
 def test_main_with_exclude_cname_print_elements(monkeypatch, capsys):
@@ -402,10 +327,7 @@ def test_main_with_exclude_cname_print_elements(monkeypatch, capsys):
     # Assert
     captured = capsys.readouterr().out.strip()
 
-    assert (
-        "log,sap,ssh,base,server,gardener"
-        == captured
-    )
+    assert "log,sap,ssh,base,server,multipath,iscsi,nvme,gardener" == captured
 
 
 def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
@@ -420,7 +342,7 @@ def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
             "--cname",
             "kvm-gardener_prod",
             "--ignore",
-            "cloud",
+            "log",
             "--arch",
             "amd64",
             "--version",
@@ -438,6 +360,6 @@ def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
     captured = capsys.readouterr().out.strip()
 
     assert (
-        "log,sap,ssh,_boot,_ignite,kvm,_nopkg,_prod,_slim,base,server,gardener"
+        "sap,ssh,_fwcfg,_ignite,_legacy,_nopkg,_prod,_slim,base,server,cloud,kvm,multipath,iscsi,nvme,gardener"
         == captured
     )

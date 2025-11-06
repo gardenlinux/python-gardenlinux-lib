@@ -53,7 +53,11 @@ class CName(object):
         self._feature_flags_cached = None
         self._feature_platform_cached = None
         self._feature_set_cached = None
-        self._flag_multiple_platforms = bool(environ.get("GL_ALLOW_FRANKENSTEIN", False))
+
+        self._flag_multiple_platforms = bool(
+            environ.get("GL_ALLOW_FRANKENSTEIN", False)
+        )
+
         self._flavor = None
         self._version = None
 
@@ -242,7 +246,8 @@ class CName(object):
         if self._flag_multiple_platforms:
             return ",".join(platforms)
 
-        assert len(platforms) < 2; "Only one platform is supported"
+        assert len(platforms) < 2
+        "Only one platform is supported"
         return platforms[0]
 
     @property
@@ -257,7 +262,8 @@ class CName(object):
         features = Parser().filter_as_dict(self.flavor)
 
         if not self._flag_multiple_platforms:
-            assert len(features["platform"]) < 2; "Only one platform is supported"
+            assert len(features["platform"]) < 2
+            "Only one platform is supported"
 
         elements = ",".join(features["element"])
         flags = ",".join(features["flag"])
