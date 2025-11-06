@@ -368,8 +368,8 @@ class Parser(object):
 
         :param cname: Canonical name
 
-        :return: (set) Features of the cname
-        :since:  0.7.0
+        :return: (list) Features of the cname
+        :since:  1.0.0
         """
 
         cname = cname.replace("_", "-_")
@@ -472,6 +472,20 @@ class Parser(object):
             return f"{prefix}-{node}"
 
         return list(networkx.lexicographical_topological_sort(graph, key=key_function))
+
+    @staticmethod
+    def subset(input_set: Set[str], order_list: List[str]) -> List[str]:
+        """
+        Returns items from `order_list` if given in `input_set`.
+
+        :param input_set:  Set of values for filtering
+        :param order_list: Set of values to be filtered
+
+        :return: (list) Subset
+        :since:  1.0.0
+        """
+
+        return [item for item in order_list if item in input_set]
 
     @staticmethod
     def sort_reversed_graph_nodes(graph):
