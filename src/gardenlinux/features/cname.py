@@ -6,7 +6,7 @@ Canonical name (cname)
 
 import re
 from configparser import UNNAMED_SECTION, ConfigParser
-from os import PathLike, environ
+from os import environ, PathLike
 from pathlib import Path
 from typing import Optional
 
@@ -51,14 +51,10 @@ class CName(object):
         self._commit_id = None
         self._feature_elements_cached = None
         self._feature_flags_cached = None
-        self._feature_platforms_cached = None
+        self._feature_platform_cached = None
         self._feature_set_cached = None
         self._platform_variant_cached = None
-
-        self._flag_multiple_platforms = bool(
-            environ.get("GL_ALLOW_FRANKENSTEIN", False)
-        )
-
+        self._flag_multiple_platforms = bool(environ.get("GL_ALLOW_FRANKENSTEIN", False))
         self._flavor = None
         self._version = None
 

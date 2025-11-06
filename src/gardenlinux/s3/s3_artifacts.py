@@ -20,6 +20,7 @@ import yaml
 
 from ..features import CName
 from .bucket import Bucket
+from ..features import CName
 
 
 class S3Artifacts(object):
