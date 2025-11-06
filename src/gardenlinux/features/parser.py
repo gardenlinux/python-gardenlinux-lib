@@ -6,9 +6,10 @@ Features parser based on networkx.Digraph
 
 import logging
 import os
+from functools import reduce
 from glob import glob
 from pathlib import Path
-from typing import Callable, Optional, cast
+from typing import Callable, List, Optional, Set
 
 import networkx
 import yaml
@@ -131,7 +132,7 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        feature_set = Parser.get_cname_as_feature_set(cname)
+        feature_set = Parser.get_flavor_as_feature_set(cname)
 
         return self.filter_based_on_feature_set(
             feature_set, ignore_excludes, additional_filter_func
@@ -282,11 +283,11 @@ class Parser(object):
                 self.graph.add_node("libc", content=BARE_FLAVOR_LIBC_FEATURE_CONTENT)
 
         for feature in feature_set:
-            filter_set.update(
-                networkx.descendants(
-                    Parser._get_graph_view_for_attr(self.graph, "include"), feature
-                )
-            )
+            for node in networkx.descendants(
+                Parser._get_graph_view_for_attr(self.graph, "include"), feature
+            ):
+                if node not in filter_set:
+                    filter_set.append(node)
 
         graph = networkx.subgraph_view(
             self.graph,
@@ -310,9 +311,7 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        exclude_graph_view = cast(
-            networkx.DiGraph, Parser._get_graph_view_for_attr(graph, "exclude")
-        )
+        exclude_graph_view = Parser._get_graph_view_for_attr(graph, "exclude")
         exclude_list = []
 
         for node in networkx.lexicographical_topological_sort(graph):
@@ -362,7 +361,22 @@ class Parser(object):
         return {"name": name, "content": content}
 
     @staticmethod
-    def get_cname_as_feature_set(cname):
+    def get_flavor_from_feature_set(sorted_features: List[str]):
+        """
+        Get the base cname for the feature set given.
+
+        :param sorted_features: Sorted feature set
+
+        :return: (str) Base cname
+        :since: 0.7.0
+        """
+
+        return reduce(
+            lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
+        )
+
+    @staticmethod
+    def get_flavor_as_feature_set(cname):
         """
         Returns the features of a given canonical name.
 
@@ -373,7 +387,22 @@ class Parser(object):
         """
 
         cname = cname.replace("_", "-_")
-        return set(cname.split("-"))
+
+        platform = None
+        features = []
+        flags = []
+
+        for feature in cname.split("-"):
+            if platform is None:
+                platform = feature
+                continue
+
+            if feature[:1] == "_":
+                flags.append(feature)
+            else:
+                features.append(feature)
+
+        return [platform] + sorted(features) + sorted(flags)
 
     @staticmethod
     def _get_filter_set_callable(filter_set, additional_filter_func):
