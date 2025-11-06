@@ -23,7 +23,7 @@ _ARGS_TYPE_ALLOWED = [
     "container_tag",
     "commit_id",
     "features",
-    "platforms",
+    "platform",
     "flags",
     "flavor",
     "elements",
@@ -147,7 +147,7 @@ def main() -> None:
         "flags",
         "flavor",
         "graph",
-        "platforms",
+        "platform",
     ):
         if args.type == "graph" or len(args.ignore) > 0:
             features_parser = Parser(gardenlinux_root, feature_dir_name)
@@ -259,7 +259,7 @@ def print_output_from_features_parser(
     :param flavor: Flavor
     :param ignores_list: Features to ignore
 
-    :since: 0.11.0
+    :since: 1.0.0
     """
 
     additional_filter_func = lambda node: node not in ignores_list
@@ -270,13 +270,13 @@ def print_output_from_features_parser(
                 flavor, additional_filter_func=additional_filter_func
             )
         )
-    elif (output_type in "platforms", "elements", "flags"):
+    elif (output_type in "platform", "elements", "flags"):
         features_by_type = parser.filter_as_dict(
             flavor, additional_filter_func=additional_filter_func
         )
 
-        if output_type == "platforms":
-            print(",".join(features_by_type["platform"]))
+        if output_type == "platform":
+            print(features_by_type["platform"][0])
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
         elif output_type == "flags":
@@ -305,8 +305,8 @@ def print_output_from_features_parser(
             print(cname)
         elif output_type == "container_name":
             print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
-        elif output_type == "platforms":
-            print(",".join(features_by_type["platform"]))
+        elif output_type == "platform":
+            print(features_by_type["platform"][0])
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
         elif output_type == "flags":
@@ -322,7 +322,7 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
     :param output_type: Output type
     :param cname_instance: CName instance
 
-    :since: 0.11.0
+    :since: 1.0.0
     """
 
     if output_type == "cname_base":
@@ -331,7 +331,7 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
         print(cname_instance.cname)
     elif output_type == "container_name":
         print(RE_CAMEL_CASE_SPLITTER.sub("\\1-\\2", cname_instance.flavor).lower())
-    elif output_type == "platforms":
+    elif output_type == "platform":
         print(cname_instance.feature_set_platform)
     elif output_type == "elements":
         print(cname_instance.feature_set_element)
