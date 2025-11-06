@@ -5,6 +5,7 @@ import types
 import pytest
 
 import gardenlinux.features.cname_main as cname_main
+from gardenlinux.features import Parser
 
 
 def test_main_happy(monkeypatch, capsys):
@@ -19,7 +20,7 @@ def test_main_happy(monkeypatch, capsys):
         in_degree = lambda self: [("f1", 0)]
         edges = [("f1", "f2")]
 
-    class FakeParser:
+    class FakeParser(Parser):
         def __init__(self, *a, **k):
             pass
 
@@ -55,7 +56,7 @@ def test_main_version_from_file(monkeypatch, capsys):
         lambda root: ("2.0", "abcdef12"),
     )
 
-    class FakeParser:
+    class FakeParser(Parser):
         def __init__(self, *a, **k):
             pass
 
@@ -96,7 +97,7 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
     )
 
     # Patch Parser for minimal valid graph
-    class FakeParser:
+    class FakeParser(Parser):
         def __init__(self, *a, **k):
             pass
 
