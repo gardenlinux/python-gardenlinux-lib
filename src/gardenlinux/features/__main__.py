@@ -9,7 +9,6 @@ import argparse
 import logging
 import os
 import re
-from functools import reduce
 from os import path
 from typing import Any, List, Set
 
@@ -23,7 +22,7 @@ _ARGS_TYPE_ALLOWED = [
     "container_tag",
     "commit_id",
     "features",
-    "platforms",
+    "platform",
     "flags",
     "flavor",
     "elements",
@@ -147,7 +146,7 @@ def main() -> None:
         "flags",
         "flavor",
         "graph",
-        "platforms",
+        "platform",
     ):
         if args.type == "graph" or len(args.ignore) > 0:
             features_parser = Parser(gardenlinux_root, feature_dir_name)
@@ -165,21 +164,6 @@ def main() -> None:
         print(version)
     elif args.type == "version_and_commit_id":
         print(f"{version}-{commit_id_or_hash[:8]}")
-
-
-def get_flavor(sorted_features: List[str]):
-    """
-    Get the base cname for the feature set given.
-
-    :param sorted_features: Sorted feature set
-
-    :return: (str) Base cname
-    :since: 0.7.0
-    """
-
-    return reduce(
-        lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
-    )
 
 
 def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, str]:
@@ -270,13 +254,13 @@ def print_output_from_features_parser(
                 flavor, additional_filter_func=additional_filter_func
             )
         )
-    elif (output_type in "platforms", "elements", "flags"):
+    elif (output_type in "platform", "elements", "flags"):
         features_by_type = parser.filter_as_dict(
             flavor, additional_filter_func=additional_filter_func
         )
 
-        if output_type == "platforms":
-            print(",".join(features_by_type["platform"]))
+        if output_type == "platform":
+            print(features_by_type["platform"][0])
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
         elif output_type == "flags":
@@ -287,9 +271,9 @@ def print_output_from_features_parser(
         sorted_features = Parser.sort_graph_nodes(graph)
         minimal_feature_set = get_minimal_feature_set(graph)
 
-        sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
+        sorted_minimal_features = Parser.subset(minimal_feature_set, sorted_features)
 
-        cname_base = get_flavor(sorted_minimal_features)
+        cname_base = Parser.get_flavor_from_feature_set(sorted_minimal_features)
 
         if output_type == "cname_base":
             print(cname_base)
@@ -305,8 +289,8 @@ def print_output_from_features_parser(
             print(cname)
         elif output_type == "container_name":
             print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
-        elif output_type == "platforms":
-            print(",".join(features_by_type["platform"]))
+        elif output_type == "platform":
+            print(features_by_type["platform"][0])
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
         elif output_type == "flags":
@@ -325,13 +309,24 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
     :since: 0.11.0
     """
 
-    if output_type == "cname_base":
-        print(cname_instance.flavor)
-    elif output_type == "cname":
-        print(cname_instance.cname)
+    if output_type in ("cname_base", "cname", "flavor"):
+        sorted_features = Parser.get_flavor_as_feature_set(cname_instance.flavor)
+        flavor = Parser.get_flavor_from_feature_set(sorted_features)
+
+        if output_type in ("cname_base", "flavor"):
+            print(flavor)
+        else:
+            if cname_instance.version_and_commit_id is None:
+                raise RuntimeError(
+                    "Version and commit ID can't be provided without appropriate input."
+                )
+
+            print(
+                f"{flavor}-{cname_instance.arch}-{cname_instance.version_and_commit_id}"
+            )
     elif output_type == "container_name":
         print(RE_CAMEL_CASE_SPLITTER.sub("\\1-\\2", cname_instance.flavor).lower())
-    elif output_type == "platforms":
+    elif output_type == "platform":
         print(cname_instance.feature_set_platform)
     elif output_type == "elements":
         print(cname_instance.feature_set_element)
@@ -339,20 +334,6 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
         print(cname_instance.feature_set)
     elif output_type == "flags":
         print(cname_instance.feature_set_flag)
-
-
-def sort_subset(input_set: Set[str], order_list: List[str]) -> List[str]:
-    """
-    Returns items from `order_list` if given in `input_set`.
-
-    :param input_set:  Set of values
-    :param order_list: networkx.Digraph
-
-    :return: (str) mermaid.js representation
-    :since:  0.7.0
-    """
-
-    return [item for item in order_list if item in input_set]
 
 
 if __name__ == "__main__":
