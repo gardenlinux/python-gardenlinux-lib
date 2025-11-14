@@ -1082,6 +1082,27 @@ dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
+name = "podman"
+version = "5.6.0"
+description = "Bindings for Podman RESTful API"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "podman-5.6.0-py3-none-any.whl", hash = "sha256:967ff8ad8c6b851bc5da1a9410973882d80e235a9410b7d1e931ce0c3324fbe3"},
+    {file = "podman-5.6.0.tar.gz", hash = "sha256:cc5f7aa9562e30f992fc170a48da970a7132be60d8a2e2941e6c17bd0a0b35c9"},
+]
+
+[package.dependencies]
+requests = ">=2.24"
+urllib3 = "*"
+
+[package.extras]
+docs = ["sphinx"]
+progress-bar = ["rich (>=12.5.1)"]
+test = ["coverage", "fixtures", "pytest", "requests-mock", "tox"]
+
+[[package]]
 name = "pycparser"
 version = "2.23"
 description = "C parser in Python"
@@ -1901,4 +1922,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "ea1c3fd1bb706d5202222d76cea0a99b8f1091ea3d3b25532c53f0e48276d8ed"
+content-hash = "6e82d6f1dd65804105fd7f2425b88a6190627b9d0b4eddcce6f443cb45bfe3bb"
