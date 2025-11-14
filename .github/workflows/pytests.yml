@@ -20,10 +20,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Setup Gardenlinux
-        uses: ./.github/actions/setup
-        with:
-          python_version: ${{ matrix.python_version }}
+      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/dev_setup@255-improve-caching-used-in-gh-actions
 
       - name: Install dependencies
         run: poetry install --with dev
