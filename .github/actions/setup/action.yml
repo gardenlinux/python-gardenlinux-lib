@@ -34,11 +34,13 @@ runs:
         key: pygl-${{ inputs.python_version }}-${{ inputs.version }}
 
     - name: Install GardenLinux Python library
+      shell: bash
       run: |
         pip install --user \
           https://github.com/gardenlinux/python-gardenlinux-lib/releases/download/${{ inputs.version }}/gardenlinux-${{ inputs.version }}-py3-none-any.whl
 
     - name: Debug
+      shell: bash
       run: |
         ls -l ~/.local/bin
         echo $PATH
