@@ -25,13 +25,13 @@ runs:
       with:
         python-version: ${{ inputs.python_version }}
 
-    - name: Restore python site-packages from cache
-      id: restore-python-cache
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          ~/.local/lib/python${{ inputs.python_version }}/site-packages
-        key: pygl-${{ inputs.python_version }}-${{ inputs.version }}
+    # - name: Restore python site-packages from cache
+    #   id: restore-python-cache
+    #   uses: actions/cache/restore@v4
+    #   with:
+    #     path: |
+    #       ~/.local/lib/python${{ inputs.python_version }}/site-packages
+    #     key: pygl-${{ inputs.python_version }}-${{ inputs.version }}
 
     - name: Install GardenLinux Python library
       shell: bash
@@ -45,10 +45,10 @@ runs:
         ls -l ~/.local/bin
         echo $PATH
 
-    - name: Cache python site-packages
-      id: save-python-cache
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          ~/.local/lib/python${{ inputs.python_version }}/site-packages
-        key: pygl-${{ inputs.python_version }}-${{ inputs.version }}
+    # - name: Cache python site-packages
+    #   id: save-python-cache
+    #   uses: actions/cache/save@v4
+    #   with:
+    #     path: |
+    #       ~/.local/lib/python${{ inputs.python_version }}/site-packages
+    #     key: pygl-${{ inputs.python_version }}-${{ inputs.version }}
