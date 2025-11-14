@@ -16,37 +16,18 @@ outputs:
   python_version:
     description: Python version to setup
     value: ${{ inputs.python_version }}
-  package_tool:
-    description: "Detected Python cache strategy."
-    value: ${{ steps.env-check.outputs.package_tool }}
 
 runs:
   using: composite
   steps:
-    - name: Evaluate Python environment
-      id: env-check
-      shell: bash
-      run: |
-        # Determine cache type based on available lockfile
-        if [ -f poetry.lock ]; then
-          echo "package_tool=poetry" >> $GITHUB_OUTPUT
-        elif [ -f requirements.txt ]; then
-          echo "package_tool=pip" >> $GITHUB_OUTPUT
-        else
-          # no lockfile present: create one and use pip caching
-          echo "gardenlinux @ git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}" | tee -a requirements.txt
-          echo "package_tool=pip" >> $GITHUB_OUTPUT
-        fi
-
     - name: Install Poetry
-      if: steps.env-check.outputs.package_tool == 'poetry'
       uses: snok/install-poetry@v1
 
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python_version }}
-        cache: ${{ steps.env-check.outputs.package_tool }}
+        cache: poetry
 
     - name: Install GardenLinux Python library
       shell: bash
