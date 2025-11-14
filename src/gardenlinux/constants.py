@@ -161,10 +161,10 @@ REQUESTS_TIMEOUTS = (5, 30)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 
+GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 GLVD_BASE_URL = (
     "https://glvd.ingress.glvd.gardnlinux.shoot.canary.k8s-hana.ondemand.com/v1"
 )
-GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
