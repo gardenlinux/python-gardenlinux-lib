@@ -27,9 +27,9 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python_version }}
-        cache: poetry
+        cache: pip
 
     - name: Install GardenLinux Python library
       shell: bash
       run: |
-        pip install git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}
+        pip install https://github.com/gardenlinux/python-gardenlinux-lib/releases/download/${{ inputs.version }}/gardenlinux-${{ inputs.version }}-py3-none-any.whl
