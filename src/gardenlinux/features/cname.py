@@ -6,7 +6,7 @@ Canonical name (cname)
 
 import re
 from configparser import UNNAMED_SECTION, ConfigParser
-from os import environ, PathLike
+from os import PathLike, environ
 from pathlib import Path
 from typing import List, Optional
 

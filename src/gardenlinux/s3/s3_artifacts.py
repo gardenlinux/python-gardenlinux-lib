@@ -18,8 +18,8 @@ from urllib.parse import urlencode
 
 import yaml
 
-from .bucket import Bucket
 from ..features import CName
+from .bucket import Bucket
 
 
 class S3Artifacts(object):
