@@ -2,12 +2,13 @@
 
 from dataclasses import dataclass
 from hashlib import md5, sha256
+from io import BytesIO
+from pathlib import Path
+from typing import Any, Generator
 
 import boto3
 import pytest
 from moto import mock_aws
-
-from gardenlinux.features.cname import CName as RealCName
 
 BUCKET_NAME = "test-bucket"
 REGION = "us-east-1"
@@ -15,9 +16,9 @@ REGION = "us-east-1"
 
 @dataclass(frozen=True)
 class S3Env:
-    s3: object
+    s3: boto3.client
     bucket_name: str
-    tmp_path: str
+    tmp_path: Path
     cname: str
 
 
@@ -34,7 +35,7 @@ def make_cname(
 
 
 # Helpers to compute digests for fake files
-def dummy_digest(data: bytes, algo: str) -> str:
+def dummy_digest(data: BytesIO, algo: str) -> Any:
     """
     Dummy for file_digest() to compute hashes for in-memory byte streams
     """
@@ -42,15 +43,15 @@ def dummy_digest(data: bytes, algo: str) -> str:
     data.seek(0)  # Reset byte cursor to start for multiple uses
 
     if algo == "md5":
-        return md5(content)  # nosec B324
+        return md5(content)
     elif algo == "sha256":
         return sha256(content)
     else:
         raise ValueError(f"Unsupported algo: {algo}")
 
 
-@pytest.fixture(autouse=True)
-def s3_setup(tmp_path, monkeypatch):
+@pytest.fixture(autouse=True)  # type: ignore[misc]
+def s3_setup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Generator[Any]:
     """
     Provides a clean S3 setup for each test.
     """

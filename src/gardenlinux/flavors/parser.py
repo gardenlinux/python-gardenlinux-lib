@@ -5,6 +5,8 @@ Flavors parser
 """
 
 import fnmatch
+from logging import Logger
+from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 from jsonschema import validate as jsonschema_validate
@@ -26,7 +28,7 @@ class Parser(object):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, data, logger=None):
+    def __init__(self, data: str, logger: Optional[Logger] = None):
         """
         Constructor __init__(Parser)
 
@@ -51,15 +53,15 @@ class Parser(object):
 
     def filter(
         self,
-        include_only_patterns=[],
-        wildcard_excludes=[],
-        only_build=False,
-        only_test=False,
-        only_test_platform=False,
-        only_publish=False,
-        filter_categories=[],
-        exclude_categories=[],
-    ):
+        include_only_patterns: List[str] = [],
+        wildcard_excludes: List[str] = [],
+        only_build: bool = False,
+        only_test: bool = False,
+        only_test_platform: bool = False,
+        only_publish: bool = False,
+        filter_categories: List[str] = [],
+        exclude_categories: List[str] = [],
+    ) -> List[Tuple[Any, str]]:
         """
         Filters flavors data and generates combinations.
 
@@ -128,11 +130,12 @@ class Parser(object):
                 combinations.append((arch, combination))
 
         return sorted(
-            combinations, key=lambda platform: platform[1].split("-")[0]
+            combinations,
+            key=lambda platform: platform[1].split("-")[0],
         )  # Sort by platform name
 
     @staticmethod
-    def group_by_arch(combinations):
+    def group_by_arch(combinations: List[Tuple[Any, str]]) -> Dict[str, List[str]]:
         """
         Groups combinations by architecture into a dictionary.
 
@@ -142,15 +145,18 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        arch_dict = {}
+        arch_dict: Dict[str, List[str]] = {}
+
         for arch, combination in combinations:
             arch_dict.setdefault(arch, []).append(combination)
+
         for arch in arch_dict:
-            arch_dict[arch] = sorted(set(arch_dict[arch]))  # Deduplicate and sort
+            arch_dict[arch] = sorted(set(arch_dict[arch]))
+
         return arch_dict
 
     @staticmethod
-    def remove_arch(combinations):
+    def remove_arch(combinations: List[Tuple[Any, str]]) -> List[str]:
         """
         Removes the architecture from combinations.
 
@@ -165,11 +171,13 @@ class Parser(object):
         ]
 
     @staticmethod
-    def should_exclude(combination, excludes, wildcard_excludes):
+    def should_exclude(
+        combination: str, excludes: List[str], wildcard_excludes: List[str]
+    ) -> bool:
         """
         Checks if a combination should be excluded based on exact match or wildcard patterns.
 
-        :param combinations:      Flavor combinations
+        :param combination:       Feature
         :param excludes:          List of features to exclude
         :param wildcard_excludes: List of feature wildcards to exclude
 
@@ -186,12 +194,12 @@ class Parser(object):
         )
 
     @staticmethod
-    def should_include_only(combination, include_only_patterns):
+    def should_include_only(combination: str, include_only_patterns: List[str]) -> bool:
         """
         Checks if a combination should be included based on `--include-only` wildcard patterns.
         If no patterns are provided, all combinations are included by default.
 
-        :param combinations:          Flavor combinations
+        :param combination:           Feature
         :param include_only_patterns: List of features to include
 
         :return: (bool) True if included
