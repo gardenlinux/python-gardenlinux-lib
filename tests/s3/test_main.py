@@ -1,4 +1,5 @@
 import sys
+from typing import Any, Dict, List
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -6,7 +7,7 @@ import pytest
 import gardenlinux.s3.__main__ as s3m
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "argv, expected_method, expected_args, expected_kwargs",
     [
         (
@@ -42,8 +43,11 @@ import gardenlinux.s3.__main__ as s3m
     ],
 )
 def test_main_calls_correct_artifacts(
-    argv, expected_method, expected_args, expected_kwargs
-):
+    argv: List[str],
+    expected_method: str,
+    expected_args: List[Any],
+    expected_kwargs: Dict[str, Any],
+) -> None:
     with patch.object(sys, "argv", argv):
         with patch.object(s3m, "S3Artifacts") as mock_s3_cls:
             mock_instance = MagicMock()

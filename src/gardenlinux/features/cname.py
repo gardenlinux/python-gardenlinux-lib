@@ -34,7 +34,13 @@ class CName(object):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, cname, arch=None, commit_hash=None, version=None):
+    def __init__(
+        self,
+        cname: str,
+        arch: Optional[str] = None,
+        commit_hash: Optional[str] = None,
+        version: Optional[str] = None,
+    ):
         """
         Constructor __init__(CName)
 
@@ -49,16 +55,16 @@ class CName(object):
         self._arch = None
         self._commit_hash = None
         self._commit_id = None
-        self._feature_elements_cached = None
-        self._feature_flags_cached = None
-        self._feature_platform_cached = None
-        self._feature_set_cached = None
+        self._feature_elements_cached: Optional[List[str]] = None
+        self._feature_flags_cached: Optional[List[str]] = None
+        self._feature_platform_cached: Optional[str] = None
+        self._feature_set_cached: Optional[str] = None
 
         self._flag_multiple_platforms = bool(
             environ.get("GL_ALLOW_FRANKENSTEIN", False)
         )
 
-        self._flavor = None
+        self._flavor = ""
         self._version = None
 
         commit_id_or_hash = None
@@ -150,7 +156,7 @@ class CName(object):
         return self._commit_hash
 
     @commit_hash.setter
-    def commit_hash(self, commit_hash) -> None:
+    def commit_hash(self, commit_hash: str) -> None:
         """
         Sets the commit hash
 
@@ -177,7 +183,7 @@ class CName(object):
         return self._commit_id
 
     @property
-    def flavor(self) -> str | None:
+    def flavor(self) -> str:
         """
         Returns the flavor for the cname parsed.
 
@@ -326,7 +332,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         return f"{self._version}-{self._commit_id}"
 
-    def load_from_release_file(self, release_file: PathLike | str) -> None:
+    def load_from_release_file(self, release_file: PathLike[str] | str) -> None:
         """
         Loads and parses a release metadata file.
 
@@ -338,7 +344,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         if not isinstance(release_file, PathLike):
             release_file = Path(release_file)
 
-        if not release_file.exists():
+        if not release_file.exists():  # type: ignore[attr-defined]
             raise RuntimeError(
                 f"Release metadata file given is invalid: {release_file}"
             )
@@ -401,7 +407,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         )
 
     def save_to_release_file(
-        self, release_file: PathLike | str, overwrite: Optional[bool] = False
+        self, release_file: PathLike[str] | str, overwrite: Optional[bool] = False
     ) -> None:
         """
         Saves the release metadata file.
@@ -414,10 +420,10 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         if not isinstance(release_file, PathLike):
             release_file = Path(release_file)
 
-        if not overwrite and release_file.exists():
+        if not overwrite and release_file.exists():  # type: ignore[attr-defined]
             raise RuntimeError(
                 f"Refused to overwrite existing release metadata file: {release_file}"
             )
 
-        with release_file.open("w") as fp:
+        with release_file.open("w") as fp:  # type: ignore[attr-defined]
             fp.write(self.release_metadata_string)

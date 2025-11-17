@@ -1,3 +1,5 @@
+from typing import Any, Dict, List
+
 import pytest
 
 from gardenlinux.features import Parser
@@ -5,7 +7,7 @@ from gardenlinux.features import Parser
 from ..constants import GL_ROOT_DIR
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "input_cname, expected_output",
     [
         (
@@ -103,7 +105,9 @@ from ..constants import GL_ROOT_DIR
         ),
     ],
 )
-def test_parser_filter_as_dict(input_cname: str, expected_output: dict):
+def test_parser_filter_as_dict(
+    input_cname: str, expected_output: Dict[str, Any]
+) -> None:
     """
     Tests if parser_filter_as_dict returns the dict with expected features.
 
@@ -115,7 +119,7 @@ def test_parser_filter_as_dict(input_cname: str, expected_output: dict):
     assert features_dict == expected_output
 
 
-def test_parser_return_intersection_subset():
+def test_parser_return_intersection_subset() -> None:
     # Arrange
     input_set = {"a", "c"}
     order_list = ["a", "b", "c", "d"]
@@ -127,7 +131,7 @@ def test_parser_return_intersection_subset():
     assert result == ["a", "c"]
 
 
-def test_get_flavor_from_feature_set():
+def test_get_flavor_from_feature_set() -> None:
     # Arrange
     sorted_features = ["base", "_hidden", "extra"]
 
@@ -138,13 +142,13 @@ def test_get_flavor_from_feature_set():
     assert result == "base_hidden-extra"
 
 
-def test_gget_flavor_from_feature_set_empty_raises():
+def test_gget_flavor_from_feature_set_empty_raises() -> None:
     # get_flavor with empty iterable raises TypeError
     with pytest.raises(TypeError):
         Parser.get_flavor_from_feature_set([])
 
 
-def test_parser_subset_nomatch():
+def test_parser_subset_nomatch() -> None:
     # Arrange
     input_set = {"x", "y"}
     order_list = ["a", "b", "c"]
@@ -156,10 +160,10 @@ def test_parser_subset_nomatch():
     assert result == []
 
 
-def test_parser_subset_with_empty_order_list():
+def test_parser_subset_with_empty_order_list() -> None:
     # Arrange
     input_set = {"a", "b"}
-    order_list = []
+    order_list: List[str] = []
 
     result = Parser.subset(input_set, order_list)
 

@@ -1,4 +1,5 @@
 from base64 import b64encode
+from typing import Any
 
 import pytest
 from requests import Response
@@ -14,11 +15,11 @@ from ..constants import (
 )
 
 
-@pytest.fixture(name="Container_login_403")
-def patch__Container_login_403(monkeypatch):
+@pytest.fixture(name="Container_login_403")  # type: ignore[misc]
+def patch__Container_login_403(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch `login()` to return HTTP 403. `docker.errors.APIError` extends from `requests.exceptions.HTTPError` as well."""
 
-    def login_403(*args, **kwargs):
+    def login_403(*args: Any, **kwargs: Any) -> None:
         response = Response()
         response.status_code = 403
         raise HTTPError("403 Forbidden", response=response)
@@ -26,11 +27,11 @@ def patch__Container_login_403(monkeypatch):
     monkeypatch.setattr(Container, "login", login_403)
 
 
-@pytest.fixture(name="Container_read_or_generate_403")
-def patch__Container_read_or_generate_403(monkeypatch):
+@pytest.fixture(name="Container_read_or_generate_403")  # type: ignore[misc]
+def patch__Container_read_or_generate_403(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch `read_or_generate_manifest()` to return HTTP 403."""
 
-    def read_or_generate_403(*args, **kwargs):
+    def read_or_generate_403(*args: Any, **kwargs: Any) -> None:
         response = Response()
         response.status_code = 403
         raise HTTPError("403 Forbidden", response=response)
@@ -38,8 +39,8 @@ def patch__Container_read_or_generate_403(monkeypatch):
     monkeypatch.setattr(Container, "read_or_generate_manifest", read_or_generate_403)
 
 
-@pytest.mark.usefixtures("zot_session")
-def test_manifest():
+@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+def test_manifest() -> None:
     """Verify a newly created manifest returns correct commit value."""
     # Arrange
     container = Container(f"{CONTAINER_NAME_ZOT_EXAMPLE}:{TEST_VERSION}", insecure=True)
@@ -52,9 +53,9 @@ def test_manifest():
     assert manifest.commit == TEST_COMMIT
 
 
-@pytest.mark.usefixtures("zot_session")
-@pytest.mark.usefixtures("Container_read_or_generate_403")
-def test_manifest_403():
+@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+@pytest.mark.usefixtures("Container_read_or_generate_403")  # type: ignore[misc]
+def test_manifest_403() -> None:
     """Verify container calls raises exceptions for certain errors."""
     # Arrange
     container = Container(f"{CONTAINER_NAME_ZOT_EXAMPLE}:{TEST_VERSION}", insecure=True)
@@ -63,8 +64,10 @@ def test_manifest_403():
         container.read_or_generate_manifest(version=TEST_VERSION, commit=TEST_COMMIT)
 
 
-@pytest.mark.usefixtures("zot_session")
-def test_manifest_auth_token(monkeypatch, caplog):
+@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+def test_manifest_auth_token(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
     """Verify container calls use login environment variables if defined."""
     with monkeypatch.context():
         token = "test"
@@ -79,9 +82,11 @@ def test_manifest_auth_token(monkeypatch, caplog):
         assert container.auth.token == b64encode(bytes(token, "utf-8")).decode("utf-8")
 
 
-@pytest.mark.usefixtures("zot_session")
-@pytest.mark.usefixtures("Container_login_403")
-def test_manifest_login_username_password(monkeypatch, caplog):
+@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+@pytest.mark.usefixtures("Container_login_403")  # type: ignore[misc]
+def test_manifest_login_username_password(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
     """Verify container calls use login environment variables if defined."""
     with monkeypatch.context():
         monkeypatch.setenv("GL_CLI_REGISTRY_USERNAME", "test")

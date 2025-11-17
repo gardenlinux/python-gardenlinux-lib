@@ -21,9 +21,9 @@ def test_create_github_release_needs_github_token():
                 False,
                 "",
             )
-            assert (
-                str(exn.value) == "GITHUB_TOKEN environment variable not set"
-            ), "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+            assert str(exn.value) == "GITHUB_TOKEN environment variable not set", (
+                "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+            )
 
 
 def test_create_github_release_raise_on_failure(caplog, github_token):
@@ -81,6 +81,6 @@ def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplo
 
     with pytest.raises(SystemExit):
         write_to_release_id_file(TEST_GARDENLINUX_RELEASE)
-    assert any(
-        "Could not create" in record.message for record in caplog.records
-    ), "Expected a failure log record"
+    assert any("Could not create" in record.message for record in caplog.records), (
+        "Expected a failure log record"
+    )

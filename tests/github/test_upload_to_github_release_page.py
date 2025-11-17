@@ -39,9 +39,9 @@ def test_upload_to_github_release_page_needs_github_token(
                 artifact_for_upload,
                 dry_run=False,
             )
-            assert (
-                str(exn.value) == "GITHUB_TOKEN environment variable not set"
-            ), "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+            assert str(exn.value) == "GITHUB_TOKEN environment variable not set", (
+                "Expected an exception to be raised on missing GITHUB_TOKEN environment variable"
+            )
 
 
 def test_upload_to_github_release_page(
@@ -78,9 +78,9 @@ def test_upload_to_github_release_page_unreadable_artifact(
         artifact_for_upload,
         dry_run=False,
     )
-    assert any(
-        "Error reading file" in record.message for record in caplog.records
-    ), "Expected an error message log entry"
+    assert any("Error reading file" in record.message for record in caplog.records), (
+        "Expected an error message log entry"
+    )
 
 
 def test_upload_to_github_release_page_failed(
@@ -114,9 +114,9 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "argument command: invalid choice: 'rejoice'" in captured.err
-    ), "Expected help message printed"
+    assert "argument command: invalid choice: 'rejoice'" in captured.err, (
+        "Expected help message printed"
+    )
 
 
 def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):

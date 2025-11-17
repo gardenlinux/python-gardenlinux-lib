@@ -4,13 +4,16 @@
 gl-oci main entrypoint
 """
 
+from typing import List
+
 import click
 
 from .container import Container
+from .image_manifest import ImageManifest
 
 
 @click.group()
-def cli():
+def cli() -> None:
     """
     gl-oci click argument entrypoint
 
@@ -74,17 +77,17 @@ def cli():
     help="Additional tag to push the manifest with",
 )
 def push_manifest(
-    container,
-    cname,
-    arch,
-    version,
-    commit,
-    directory,
-    cosign_file,
-    manifest_file,
-    insecure,
-    additional_tag,
-):
+    container: str,
+    cname: str,
+    arch: str,
+    version: str,
+    commit: str,
+    directory: str,
+    cosign_file: str,
+    manifest_file: str,
+    insecure: bool,
+    additional_tag: List[str],
+) -> None:
     """
     Push artifacts and the manifest from a directory to a registry.
 
@@ -97,6 +100,9 @@ def push_manifest(
     )
 
     manifest = container.read_or_generate_manifest(cname, arch, version, commit)
+
+    if not isinstance(manifest, ImageManifest):
+        raise RuntimeError("Data given for OCI image manifest is incomplete")
 
     container.push_manifest_and_artifacts_from_directory(
         manifest, directory, manifest_file, additional_tag
@@ -153,14 +159,14 @@ def push_manifest(
     help="Tag to push the manifest with",
 )
 def push_manifest_tags(
-    container,
-    cname,
-    arch,
-    version,
-    commit,
-    insecure,
-    tag,
-):
+    container: str,
+    cname: str,
+    arch: str,
+    version: str,
+    commit: str,
+    insecure: bool,
+    tag: List[str],
+) -> None:
     """
     Push artifacts and the manifest from a directory to a registry.
 
@@ -207,7 +213,13 @@ def push_manifest_tags(
     multiple=True,
     help="Additional tag to push the index with",
 )
-def update_index(container, version, manifest_folder, insecure, additional_tag):
+def update_index(
+    container: str,
+    version: str,
+    manifest_folder: str,
+    insecure: bool,
+    additional_tag: List[str],
+) -> None:
     """
     Push a list of files from the `manifest_folder` to an index.
 
@@ -222,7 +234,7 @@ def update_index(container, version, manifest_folder, insecure, additional_tag):
     container.push_index_from_directory(manifest_folder, additional_tag)
 
 
-def main():
+def main() -> None:
     """
     gl-oci main()
 

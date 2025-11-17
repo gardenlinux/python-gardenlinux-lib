@@ -153,13 +153,13 @@ def main() -> None:
         else:
             print_output_from_cname(args.type, cname)
     elif args.type == "commit_id":
-        print(commit_id_or_hash[:8])
+        print(commit_id_or_hash[:8])  # type: ignore[index]
     elif args.type == "container_tag":
-        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))
+        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))  # type: ignore[index]
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit_id":
-        print(f"{version}-{commit_id_or_hash[:8]}")
+        print(f"{version}-{commit_id_or_hash[:8]}")  # type: ignore[index]
 
 
 def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, str]:
@@ -233,7 +233,7 @@ def print_output_from_features_parser(
     cname_instance: CName,
     parser: Parser,
     flavor: str,
-    ignores_list: set,
+    ignores_list: Set[str],
 ) -> None:
     """
     Prints output to stdout based on the given features parser and parameters.
@@ -246,7 +246,7 @@ def print_output_from_features_parser(
     :since: 0.11.0
     """
 
-    def additional_filter_func(node):
+    def additional_filter_func(node: str) -> bool:
         return node not in ignores_list
 
     if output_type == "features":
@@ -290,12 +290,6 @@ def print_output_from_features_parser(
             print(cname)
         elif output_type == "container_name":
             print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
-        elif output_type == "platform":
-            print(features_by_type["platform"][0])
-        elif output_type == "elements":
-            print(",".join(features_by_type["element"]))
-        elif output_type == "flags":
-            print(",".join(features_by_type["flag"]))
         elif output_type == "graph":
             print(graph_as_mermaid_markup(flavor, graph))
 
