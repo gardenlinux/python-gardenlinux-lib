@@ -10,7 +10,7 @@ import logging
 import os
 import re
 from os import path
-from typing import Any, List, Set
+from typing import Any, Set
 
 from .cname import CName
 from .parser import Parser
@@ -67,12 +67,11 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    assert bool(args.feature_dir) or bool(
-        args.release_file
-    ), "Please provide either `--feature_dir` or `--release_file` argument"
+    assert bool(args.feature_dir) or bool(args.release_file), (
+        "Please provide either `--feature_dir` or `--release_file` argument"
+    )
 
     arch = args.arch
-    flavor = None
     commit_id_or_hash = args.commit
     gardenlinux_root = path.dirname(args.feature_dir)
     version = args.version
@@ -97,18 +96,15 @@ def main() -> None:
 
             version = args.default_version
 
-    if args.cname:
-        cname = CName(
-            args.cname, arch=arch, commit_hash=commit_id_or_hash, version=version
-        )
+    cname = CName(args.cname, arch=arch, commit_hash=commit_id_or_hash, version=version)
 
-        if args.release_file is not None:
-            cname.load_from_release_file(args.release_file)
+    if args.release_file is not None:
+        cname.load_from_release_file(args.release_file)
 
-        arch = cname.arch
-        flavor = cname.flavor
-        commit_id_or_hash = cname.commit_id
-        version = cname.version
+    arch = cname.arch
+    flavor = cname.flavor
+    commit_id_or_hash = cname.commit_id
+    version = cname.version
 
     if (arch is None or arch == "") and (
         args.type in ("cname", "container_name", "arch")
@@ -152,7 +148,7 @@ def main() -> None:
             features_parser = Parser(gardenlinux_root, feature_dir_name)
 
             print_output_from_features_parser(
-                args.type, features_parser, flavor, args.ignore
+                args.type, cname, features_parser, flavor, args.ignore
             )
         else:
             print_output_from_cname(args.type, cname)
@@ -233,7 +229,11 @@ def graph_as_mermaid_markup(flavor: str | None, graph: Any) -> str:
 
 
 def print_output_from_features_parser(
-    output_type: str, parser: Parser, flavor: str, ignores_list: set
+    output_type: str,
+    cname_instance: CName,
+    parser: Parser,
+    flavor: str,
+    ignores_list: set,
 ) -> None:
     """
     Prints output to stdout based on the given features parser and parameters.
@@ -246,7 +246,8 @@ def print_output_from_features_parser(
     :since: 1.0.0
     """
 
-    additional_filter_func = lambda node: node not in ignores_list
+    def additional_filter_func(node):
+        return node not in ignores_list
 
     if output_type == "features":
         print(
@@ -254,7 +255,7 @@ def print_output_from_features_parser(
                 flavor, additional_filter_func=additional_filter_func
             )
         )
-    elif (output_type in "platform", "elements", "flags"):
+    elif output_type in ("platform", "elements", "flags"):
         features_by_type = parser.filter_as_dict(
             flavor, additional_filter_func=additional_filter_func
         )
@@ -280,11 +281,11 @@ def print_output_from_features_parser(
         elif output_type == "cname":
             cname = flavor
 
-            if arch is not None:
-                cname += f"-{arch}"
+            if cname_instance.arch is not None:
+                cname += f"-{cname_instance.arch}"
 
-            if commit_id_or_hash is not None:
-                cname += f"-{version}-{commit_id_or_hash[:8]}"
+            if cname_instance.version_and_commit_id is not None:
+                cname += f"-{cname_instance.version_and_commit_id}"
 
             print(cname)
         elif output_type == "container_name":
