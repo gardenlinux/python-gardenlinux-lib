@@ -17,7 +17,9 @@ def test_main_happy(monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", argv)
 
     class FakeGraph:
-        in_degree = lambda self: [("f1", 0)]
+        def in_degree(self):
+            return [("f1", 0)]
+
         edges = [("f1", "f2")]
 
     class FakeParser(Parser):

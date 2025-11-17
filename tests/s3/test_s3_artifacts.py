@@ -194,7 +194,7 @@ def test_upload_from_directory_succeeds_because_of_release_file(monkeypatch, s3_
     """
     # Arrange
     env = s3_setup
-    (env.tmp_path / f"container.release").write_text(RELEASE_DATA)
+    (env.tmp_path / "container.release").write_text(RELEASE_DATA)
 
     artifacts = S3Artifacts(env.bucket_name)
     artifacts.upload_from_directory("container", env.tmp_path)

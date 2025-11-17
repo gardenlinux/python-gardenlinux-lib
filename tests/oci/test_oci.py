@@ -137,9 +137,9 @@ def get_catalog(client):
     """Get catalog from registry and return repositories list"""
     catalog_resp = client.do_request(f"{REGISTRY_URL}/v2/_catalog")
 
-    assert (
-        catalog_resp.status_code == 200
-    ), f"Failed to get catalog, status: {catalog_resp.status_code}"
+    assert catalog_resp.status_code == 200, (
+        f"Failed to get catalog, status: {catalog_resp.status_code}"
+    )
 
     catalog_json = json.loads(catalog_resp.text)
     return catalog_json.get("repositories", [])
@@ -149,9 +149,9 @@ def get_tags(client, repo):
     """Get tags for a repository"""
     tags_resp = client.do_request(f"{REGISTRY_URL}/v2/{repo}/tags/list")
 
-    assert (
-        tags_resp.status_code == 200
-    ), f"Failed to get tags for {repo}, status: {tags_resp.status_code}"
+    assert tags_resp.status_code == 200, (
+        f"Failed to get tags for {repo}, status: {tags_resp.status_code}"
+    )
 
     tags_json = json.loads(tags_resp.text)
     return tags_json.get("tags", [])
@@ -167,9 +167,9 @@ def get_manifest(client, repo, reference):
         },
     )
 
-    assert (
-        manifest_resp.status_code == 200
-    ), f"Failed to get manifest for {repo}:{reference}, status: {manifest_resp.status_code}"
+    assert manifest_resp.status_code == 200, (
+        f"Failed to get manifest for {repo}:{reference}, status: {manifest_resp.status_code}"
+    )
 
     # Get the digest and content - use headers.get() instead of header.Get()
     digest = manifest_resp.headers.get("Docker-Content-Digest")
@@ -200,23 +200,23 @@ def verify_combined_tag_manifest(manifest, arch, cname, version, feature_set, co
     assert "annotations" in manifest, "Manifest should contain annotations"
 
     annotations = manifest.get("annotations", {})
-    assert (
-        annotations.get("architecture") == arch
-    ), f"Manifest should have architecture {arch}"
+    assert annotations.get("architecture") == arch, (
+        f"Manifest should have architecture {arch}"
+    )
     assert annotations.get("cname") == cname, f"Manifest should have cname {cname}"
-    assert (
-        annotations.get("version") == version
-    ), f"Manifest should have version {version}"
+    assert annotations.get("version") == version, (
+        f"Manifest should have version {version}"
+    )
 
     if feature_set:
-        assert (
-            annotations.get("feature_set") == feature_set
-        ), f"Manifest should have feature_set {feature_set}"
+        assert annotations.get("feature_set") == feature_set, (
+            f"Manifest should have feature_set {feature_set}"
+        )
 
     if commit:
-        assert (
-            annotations.get("commit") == commit
-        ), f"Manifest should have commit {commit}"
+        assert annotations.get("commit") == commit, (
+            f"Manifest should have commit {commit}"
+        )
 
 
 def verify_additional_tags(
@@ -293,7 +293,7 @@ def verify_additional_tags(
                 f"{TEST_VERSION}-patch-{TEST_COMMIT}",
                 f"{TEST_VERSION_STABLE}",
                 f"{TEST_VERSION_STABLE}-stable",
-                f"latest",
+                "latest",
             ],
             [
                 f"{TEST_VERSION}-patch-{platform}-{feature_string}-{arch}",

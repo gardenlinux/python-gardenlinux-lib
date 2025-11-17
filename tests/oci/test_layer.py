@@ -27,8 +27,8 @@ def test_dict_property_returns_with_annotations(tmp_path):
     blob.write_text("data")
 
     # Act
-    l = gl_layer.Layer(blob)
-    result = l.dict
+    layer = gl_layer.Layer(blob)
+    result = layer.dict
 
     # Assert
     assert result["dummy"] is True
@@ -41,16 +41,16 @@ def test_getitem_and_delitem_annotations(tmp_path):
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert (__getitem__)
-    ann = l["annotations"]
+    ann = layer["annotations"]
     assert isinstance(ann, dict)
     assert "org.opencontainers.image.title" in ann
 
     # Act / Assert (__delitem__)
-    l.__delitem__("annotations")
-    assert l._annotations == {}
+    layer.__delitem__("annotations")
+    assert layer._annotations == {}
 
 
 def test_getitem_invalid_key_raises(tmp_path):
@@ -58,11 +58,11 @@ def test_getitem_invalid_key_raises(tmp_path):
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert
     with pytest.raises(KeyError):
-        _ = l["invalid"]
+        _ = layer["invalid"]
 
 
 def test_setitem_annotations(tmp_path):
@@ -70,35 +70,35 @@ def test_setitem_annotations(tmp_path):
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act
     new_ann = {"x": "y"}
-    l.__setitem__("annotations", new_ann)
+    layer.__setitem__("annotations", new_ann)
 
     # Assert
-    assert l._annotations == new_ann
+    assert layer._annotations == new_ann
 
 
 def test_setitem_annotations_invalid_raises(tmp_path):
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert
     with pytest.raises(KeyError):
-        _ = l["invalid"]
+        _ = layer["invalid"]
 
 
 def test_len_iter(tmp_path):
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act
-    keys = list(iter(l))
+    keys = list(iter(layer))
 
     # Assert
     assert keys == ["annotations"]
@@ -109,7 +109,6 @@ def test_gen_metadata_from_file(tmp_path):
     # Arrange
     blob = tmp_path / "blob.tar"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
 
     # Act
     arch = "amd64"

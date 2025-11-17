@@ -15,9 +15,9 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "argument command: invalid choice: 'rejoice'" in captured.err
-    ), "Expected help message printed"
+    assert "argument command: invalid choice: 'rejoice'" in captured.err, (
+        "Expected help message printed"
+    )
 
 
 def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
@@ -29,9 +29,9 @@ def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "the following arguments are required: --tag, --commit" in captured.err
-    ), "Expected help message on missing arguments for 'create' command"
+    assert "the following arguments are required: --tag, --commit" in captured.err, (
+        "Expected help message on missing arguments for 'create' command"
+    )
 
 
 def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
@@ -50,7 +50,6 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
 
 
 def test_script_create_dry_run(monkeypatch, capfd):
-
     monkeypatch.setattr(
         sys,
         "argv",

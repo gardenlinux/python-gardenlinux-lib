@@ -283,7 +283,7 @@ class Container(Registry):
 
                 if manifest["digest"] == existing_manifest["digest"]:
                     self._logger.debug(
-                        f"Skipping manifest with digest {manifest["digest"]} - already exists"
+                        f"Skipping manifest with digest {manifest['digest']} - already exists"
                     )
 
                     continue
@@ -291,7 +291,7 @@ class Container(Registry):
             index.append_manifest(manifest)
 
             self._logger.info(
-                f"Index appended locally {manifest["annotations"]["cname"]}"
+                f"Index appended locally {manifest['annotations']['cname']}"
             )
 
             new_entries += 1
@@ -440,7 +440,7 @@ class Container(Registry):
                 )
 
                 self._logger.info(
-                    f"Pushed {artifact["file_name"]}: {layer_dict["digest"]}"
+                    f"Pushed {artifact['file_name']}: {layer_dict['digest']}"
                 )
             finally:
                 if cleanup_blob and file_path_name.exists():
