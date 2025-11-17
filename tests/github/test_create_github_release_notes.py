@@ -36,9 +36,9 @@ def test_release_notes_changes_section_empty_packagelist():
             text='{"packageList": []}',
             status_code=200,
         )
-        assert (
-            release_notes_changes_section(TEST_GARDENLINUX_RELEASE) == ""
-        ), "Expected an empty result if GLVD returns an empty package list"
+        assert release_notes_changes_section(TEST_GARDENLINUX_RELEASE) == "", (
+            "Expected an empty result if GLVD returns an empty package list"
+        )
 
 
 def test_release_notes_changes_section_broken_glvd_response():
@@ -50,7 +50,9 @@ def test_release_notes_changes_section_broken_glvd_response():
         )
         assert "fill this in" in release_notes_changes_section(
             TEST_GARDENLINUX_RELEASE
-        ), "Expected a placeholder message to be generated if GVLD response is not valid"
+        ), (
+            "Expected a placeholder message to be generated if GVLD response is not valid"
+        )
 
 
 def test_release_notes_compare_package_versions_section_legacy_versioning_is_recognized():
@@ -121,7 +123,6 @@ def test_default_get_file_extension_for_deployment_platform():
 
 @mock_aws
 def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
-
     class SubmoduleAsRepo(Repo):
         """This will fake a git submodule as a git repository object."""
 
@@ -169,10 +170,12 @@ def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
             text=glvd_response_fixture_path.read_text(),
             status_code=200,
         )
-        generated_release_notes = gardenlinux.github.release_notes.create_github_release_notes(  # pyright: ignore[reportAttributeAccessIssue]
-            TEST_GARDENLINUX_RELEASE,
-            TEST_GARDENLINUX_COMMIT,
-            release_s3_bucket.name,
+        generated_release_notes = (
+            gardenlinux.github.release_notes.create_github_release_notes(  # pyright: ignore[reportAttributeAccessIssue]
+                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_COMMIT,
+                release_s3_bucket.name,
+            )
         )
 
         assert generated_release_notes == release_fixture_path.read_text()

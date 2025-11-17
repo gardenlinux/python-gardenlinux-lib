@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import Optional
 
 
 class LoggerSetup:
     """Handles logging configuration for the gardenlinux library."""
 
     @staticmethod
-    def get_logger(name, level=None):
+    def get_logger(name: str, level: Optional[int] = None) -> logging.Logger:
         """Create and configure a logger.
 
         Args:

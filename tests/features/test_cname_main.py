@@ -1,14 +1,18 @@
 import logging
 import sys
 import types
+from typing import Any, List, Tuple
 
+import networkx
 import pytest
 
 import gardenlinux.features.cname_main as cname_main
 from gardenlinux.features import Parser
 
 
-def test_main_happy(monkeypatch, capsys):
+def test_main_happy(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test the "Happy Path" of the main() function.
     """
@@ -17,18 +21,20 @@ def test_main_happy(monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", argv)
 
     class FakeGraph:
-        in_degree = lambda self: [("f1", 0)]
+        def in_degree(self) -> List[Tuple[str, int]]:
+            return [("f1", 0)]
+
         edges = [("f1", "f2")]
 
     class FakeParser(Parser):
-        def __init__(self, *a, **k):
+        def __init__(self, *a: Any, **k: Any):
             pass
 
-        def filter(self, *a, **k):
+        def filter(self, *a: Any, **k: Any) -> networkx.Graph:
             return FakeGraph()
 
         @staticmethod
-        def sort_graph_nodes(graph):
+        def sort_graph_nodes(graph: networkx.Graph) -> List[str]:
             return ["f1", "f2"]
 
     monkeypatch.setattr(cname_main, "Parser", FakeParser)
@@ -42,7 +48,9 @@ def test_main_happy(monkeypatch, capsys):
     assert "amd64" in out
 
 
-def test_main_version_from_file(monkeypatch, capsys):
+def test_main_version_from_file(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     "Happy Path" test for grabbing the version and commit id from file in main().
     """
@@ -57,14 +65,14 @@ def test_main_version_from_file(monkeypatch, capsys):
     )
 
     class FakeParser(Parser):
-        def __init__(self, *a, **k):
+        def __init__(self, *a: Any, **k: Any):
             pass
 
-        def filter(self, *a, **k):
+        def filter(self, *a: Any, **k: Any) -> networkx.Graph:
             return types.SimpleNamespace(in_degree=lambda: [("f1", 0)], edges=[])
 
         @staticmethod
-        def sort_graph_nodes(graph):
+        def sort_graph_nodes(graph: networkx.Graph) -> List[str]:
             return ["f1"]
 
     monkeypatch.setattr(cname_main, "Parser", FakeParser)
@@ -76,7 +84,9 @@ def test_main_version_from_file(monkeypatch, capsys):
     assert "2.0-abcdef12" in capsys.readouterr().out
 
 
-def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
+def test_cname_main_version_file_missing_warns(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
     """
     Check if a warning is logged when it fails to read version and commit id files.
 
@@ -89,7 +99,7 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
     monkeypatch.setattr(sys, "argv", argv)
 
     # Patch version fatch function to raise RuntimeError (Simulates missing files)
-    def raise_runtime(_):
+    def raise_runtime(*args: Any, **kwargs: Any) -> None:
         raise RuntimeError("missing")
 
     monkeypatch.setattr(
@@ -98,15 +108,15 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
 
     # Patch Parser for minimal valid graph
     class FakeParser(Parser):
-        def __init__(self, *a, **k):
+        def __init__(self, *a: Any, **k: Any):
             pass
 
         # Return object with in_degree method returning a node with zero dependencies
-        def filter(self, *a, **k):
+        def filter(self, *a: Any, **k: Any) -> networkx.Graph:
             return types.SimpleNamespace(in_degree=lambda: [("f1", 0)], edges=[])
 
         @staticmethod
-        def sort_graph_nodes(graph):
+        def sort_graph_nodes(graph: networkx.Graph) -> List[str]:
             return ["f1"]
 
     monkeypatch.setattr(cname_main, "Parser", FakeParser)
@@ -121,7 +131,7 @@ def test_cname_main_version_file_missing_warns(monkeypatch, caplog):
     assert "Failed to parse version information" in caplog.text
 
 
-def test_cname_main_invalid_cname_raises(monkeypatch):
+def test_cname_main_invalid_cname_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Test if AssertionError is raised with an invalid or malformed cname.
     """
@@ -134,7 +144,9 @@ def test_cname_main_invalid_cname_raises(monkeypatch):
         cname_main.main()
 
 
-def test_cname_main_missing_arch_in_cname_raises(monkeypatch):
+def test_cname_main_missing_arch_in_cname_raises(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """
     Test if an assertion error is raised when the arch argument is missing.
     """

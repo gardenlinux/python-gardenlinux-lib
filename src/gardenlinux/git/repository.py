@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from logging import Logger
 from os import PathLike
 from pathlib import Path
+from typing import Any, List, Optional
 
 from pygit2 import Oid
 from pygit2 import Repository as _Repository
@@ -11,7 +13,7 @@ from ..constants import GL_REPOSITORY_URL
 from ..logger import LoggerSetup
 
 
-class Repository(_Repository):
+class Repository(_Repository):  # type: ignore[misc]
     """
     Repository operations handler based on the given Git directory.
 
@@ -24,7 +26,12 @@ class Repository(_Repository):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, git_directory: str | PathLike[str] = ".", logger=None, **kwargs):
+    def __init__(
+        self,
+        git_directory: PathLike[str] | str = ".",
+        logger: Optional[Logger] = None,
+        **kwargs: Any,
+    ):
         """
         Constructor __init__(Repository)
 
@@ -48,7 +55,7 @@ class Repository(_Repository):
         self._logger = logger
 
     @property
-    def commit_id(self):
+    def commit_id(self) -> str:
         """
         Returns the commit ID for Git `HEAD`.
 
@@ -59,7 +66,7 @@ class Repository(_Repository):
         return str(self.root_repo.head.target)
 
     @property
-    def root(self):
+    def root(self) -> Path:
         """
         Returns the root directory of the current Git repository.
 
@@ -88,7 +95,7 @@ class Repository(_Repository):
         return Path(root_dir)
 
     @property
-    def root_repo(self):
+    def root_repo(self) -> Any:
         """
         Returns the root Git `Repository` instance.
 
@@ -105,14 +112,14 @@ class Repository(_Repository):
 
     @staticmethod
     def checkout_repo(
-        git_directory: str | PathLike[str],
-        repo_url=GL_REPOSITORY_URL,
+        git_directory: PathLike[str] | str,
+        repo_url: str = GL_REPOSITORY_URL,
         branch: str = "main",
-        commit: str | None = None,
-        pathspecs: list[str] | None = None,
-        logger=None,
-        **kwargs,
-    ):
+        commit: Optional[str] = None,
+        pathspecs: Optional[List[str]] = None,
+        logger: Optional[Logger] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         Returns the root Git `Repo` instance.
 
@@ -145,14 +152,14 @@ class Repository(_Repository):
 
     @staticmethod
     def checkout_repo_sparse(
-        git_directory,
-        pathspecs=[],
-        repo_url=GL_REPOSITORY_URL,
-        branch="main",
-        commit=None,
-        logger=None,
-        **kwargs,
-    ):
+        git_directory: PathLike[str] | str,
+        pathspecs: List[str] = [],
+        repo_url: str = GL_REPOSITORY_URL,
+        branch: str = "main",
+        commit: Optional[str] = None,
+        logger: Optional[Logger] = None,
+        **kwargs: Any,
+    ) -> Any:
         """
         Sparse checkout given Git repository and return the `Repository` instance.
 

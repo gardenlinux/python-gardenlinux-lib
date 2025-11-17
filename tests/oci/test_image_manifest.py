@@ -1,9 +1,11 @@
+from pathlib import Path
+
 import pytest
 
 from gardenlinux.oci import ImageManifest, Layer
 
 
-def test_ImageManifest_arch():
+def test_ImageManifest_arch() -> None:
     # Arrange
     empty_manifest = ImageManifest()
     manifest = ImageManifest(annotations={"architecture": "amd64"})
@@ -18,7 +20,7 @@ def test_ImageManifest_arch():
     assert manifest.arch == "amd64"
 
 
-def test_ImageManifest_cname():
+def test_ImageManifest_cname() -> None:
     # Arrange
     cname = "container-amd64-today-local"
 
@@ -35,7 +37,7 @@ def test_ImageManifest_cname():
     assert manifest.cname == cname
 
 
-def test_ImageManifest_feature_set():
+def test_ImageManifest_feature_set() -> None:
     # Arrange
     feature_set = "container"
 
@@ -52,7 +54,7 @@ def test_ImageManifest_feature_set():
     assert manifest.feature_set == feature_set
 
 
-def test_ImageManifest_flavor():
+def test_ImageManifest_flavor() -> None:
     # Arrange
     flavor = "container"
     cname = f"{flavor}-amd64-today-local"
@@ -70,7 +72,7 @@ def test_ImageManifest_flavor():
     assert manifest.flavor == flavor
 
 
-def test_ImageManifest_layer(tmp_path):
+def test_ImageManifest_layer(tmp_path: Path) -> None:
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
@@ -88,10 +90,10 @@ def test_ImageManifest_layer(tmp_path):
 
     # Assert
     with pytest.raises(RuntimeError):
-        assert manifest.append_layer({"test": "invalid"})
+        manifest.append_layer({"test": "invalid"})
 
 
-def test_ImageManifest_version():
+def test_ImageManifest_version() -> None:
     # Arrange
     version = "today"
 

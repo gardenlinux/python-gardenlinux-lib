@@ -20,7 +20,6 @@ import yaml
 
 from ..features import CName
 from .bucket import Bucket
-from ..features import CName
 
 
 class S3Artifacts(object):
@@ -57,7 +56,7 @@ class S3Artifacts(object):
         self._bucket = Bucket(bucket_name, endpoint_url, s3_resource_config, logger)
 
     @property
-    def bucket(self):
+    def bucket(self) -> Bucket:
         """
         Returns the underlying S3 bucket.
 
@@ -68,10 +67,8 @@ class S3Artifacts(object):
         return self._bucket
 
     def download_to_directory(
-        self,
-        cname: str,
-        artifacts_dir: str | PathLike[str],
-    ):
+        self, cname: str, artifacts_dir: PathLike[str] | str
+    ) -> None:
         """
         Download S3 artifacts to a given directory.
 
@@ -87,25 +84,25 @@ class S3Artifacts(object):
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
 
         release_object = list(
-            self._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
+            self._bucket.objects.filter(Prefix=f"meta/singles/{cname}")  # type: ignore[attr-defined]
         )[0]
 
         self._bucket.download_file(
-            release_object.key, artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml")
+            release_object.key, str(artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml"))
         )
 
-        for s3_object in self._bucket.objects.filter(Prefix=f"objects/{cname}").all():
+        for s3_object in self._bucket.objects.filter(Prefix=f"objects/{cname}").all():  # type: ignore[attr-defined]
             self._bucket.download_file(
-                s3_object.key, artifacts_dir.joinpath(basename(s3_object.key))
+                s3_object.key, str(artifacts_dir.joinpath(basename(s3_object.key)))
             )
 
     def upload_from_directory(
         self,
         cname: str,
-        artifacts_dir: str | PathLike[str],
-        delete_before_push=False,
-        dry_run=False,
-    ):
+        artifacts_dir: PathLike[str] | str,
+        delete_before_push: bool = False,
+        dry_run: bool = False,
+    ) -> None:
         """
         Pushes S3 artifacts to the underlying bucket.
 
@@ -129,7 +126,14 @@ class S3Artifacts(object):
         cname_object.load_from_release_file(release_file)
 
         if cname_object.arch is None:
-            raise RuntimeError("Architecture could not be determined from cname")
+            raise RuntimeError(
+                "Architecture could not be determined from GardenLinux canonical name or release file"
+            )
+
+        if cname_object.version_and_commit_id is None:
+            raise RuntimeError(
+                "Version information could not be determined from GardenLinux canonical name or release file"
+            )
 
         feature_list = cname_object.feature_set
         requirements_file = artifacts_dir.joinpath(f"{cname}.requirements")
@@ -154,7 +158,7 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_list
 
-        version_epoch = cname_object.version_epoch
+        version_epoch = str(cname_object.version_epoch)
 
         if version_epoch is None:
             version_epoch = ""
@@ -209,7 +213,7 @@ class S3Artifacts(object):
             s3_tags = {
                 "architecture": re_object.sub("+", cname_object.arch),
                 "platform": re_object.sub("+", cname_object.platform),
-                "version": re_object.sub("+", cname_object.version),
+                "version": re_object.sub("+", cname_object.version),  # type: ignore[arg-type]
                 "committish": cname_object.commit_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
@@ -220,7 +224,7 @@ class S3Artifacts(object):
                     self._bucket.delete_objects(Delete={"Objects": [{"Key": s3_key}]})
 
                 self._bucket.upload_file(
-                    artifact,
+                    str(artifact),
                     s3_key,
                     ExtraArgs={"Tagging": urlencode(s3_tags)},
                 )

@@ -9,7 +9,7 @@ from typing import Optional
 from apt_repo import APTRepository
 
 
-class GardenLinuxRepo(APTRepository):
+class GardenLinuxRepo(APTRepository):  # type: ignore[misc]
     """
     Class to reflect APT based GardenLinux repositories.
 

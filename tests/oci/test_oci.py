@@ -1,10 +1,10 @@
 import json
 import sys
+from typing import Any, List, Optional, Tuple
 
 import pytest
 from click.testing import CliRunner
-
-# Import reggie library correctly
+from oras.client import OrasClient
 from oras.provider import Registry
 
 sys.path.append("src")
@@ -26,7 +26,13 @@ from ..constants import (
 )
 
 
-def push_manifest(runner, version, arch, cname, additional_tags=None):
+def push_manifest(
+    runner: CliRunner,
+    version: str,
+    arch: str,
+    cname: str,
+    additional_tags: Optional[List[str]] = None,
+) -> bool:
     """Push manifest to registry and return success status"""
     print(f"Pushing manifest for {cname} {arch}")
 
@@ -67,7 +73,13 @@ def push_manifest(runner, version, arch, cname, additional_tags=None):
         return False
 
 
-def push_manifest_tags(runner, version, arch, cname, tags=None):
+def push_manifest_tags(
+    runner: CliRunner,
+    version: str,
+    arch: str,
+    cname: str,
+    tags: Optional[List[str]] = None,
+) -> bool:
     """Push manifest to registry and return success status"""
     print(f"Pushing manifest for {cname} {arch}")
 
@@ -102,7 +114,9 @@ def push_manifest_tags(runner, version, arch, cname, tags=None):
         return False
 
 
-def update_index(runner, version, additional_tags=None):
+def update_index(
+    runner: CliRunner, version: str, additional_tags: Optional[List[str]] = None
+) -> bool:
     """Update index in registry and return success status"""
     print("Updating index")
 
@@ -133,31 +147,31 @@ def update_index(runner, version, additional_tags=None):
         return False
 
 
-def get_catalog(client):
+def get_catalog(client: OrasClient) -> List[Any]:
     """Get catalog from registry and return repositories list"""
     catalog_resp = client.do_request(f"{REGISTRY_URL}/v2/_catalog")
 
-    assert (
-        catalog_resp.status_code == 200
-    ), f"Failed to get catalog, status: {catalog_resp.status_code}"
+    assert catalog_resp.status_code == 200, (
+        f"Failed to get catalog, status: {catalog_resp.status_code}"
+    )
 
     catalog_json = json.loads(catalog_resp.text)
-    return catalog_json.get("repositories", [])
+    return catalog_json.get("repositories", [])  # type: ignore[no-any-return]
 
 
-def get_tags(client, repo):
+def get_tags(client: OrasClient, repo: str) -> List[str]:
     """Get tags for a repository"""
     tags_resp = client.do_request(f"{REGISTRY_URL}/v2/{repo}/tags/list")
 
-    assert (
-        tags_resp.status_code == 200
-    ), f"Failed to get tags for {repo}, status: {tags_resp.status_code}"
+    assert tags_resp.status_code == 200, (
+        f"Failed to get tags for {repo}, status: {tags_resp.status_code}"
+    )
 
     tags_json = json.loads(tags_resp.text)
-    return tags_json.get("tags", [])
+    return tags_json.get("tags", [])  # type: ignore[no-any-return]
 
 
-def get_manifest(client, repo, reference):
+def get_manifest(client: OrasClient, repo: str, reference: str) -> Tuple[Any, str]:
     """Get manifest and digest for a repository reference"""
     # Create a simple request for the manifest
     manifest_resp = client.do_request(
@@ -167,9 +181,9 @@ def get_manifest(client, repo, reference):
         },
     )
 
-    assert (
-        manifest_resp.status_code == 200
-    ), f"Failed to get manifest for {repo}:{reference}, status: {manifest_resp.status_code}"
+    assert manifest_resp.status_code == 200, (
+        f"Failed to get manifest for {repo}:{reference}, status: {manifest_resp.status_code}"
+    )
 
     # Get the digest and content - use headers.get() instead of header.Get()
     digest = manifest_resp.headers.get("Docker-Content-Digest")
@@ -178,7 +192,7 @@ def get_manifest(client, repo, reference):
     return manifest_json, digest
 
 
-def verify_index_manifest(manifest, expected_arch):
+def verify_index_manifest(manifest: Any, expected_arch: str) -> None:
     """Verify the index manifest has expected content"""
     assert manifest.get("schemaVersion") == 2, "Manifest should have schema version 2"
     assert "manifests" in manifest, "Manifest should contain manifests array"
@@ -193,35 +207,46 @@ def verify_index_manifest(manifest, expected_arch):
     assert found, f"Manifest should contain an entry for architecture {expected_arch}"
 
 
-def verify_combined_tag_manifest(manifest, arch, cname, version, feature_set, commit):
+def verify_combined_tag_manifest(
+    manifest: Any,
+    arch: str,
+    cname: str,
+    version: str,
+    feature_set: str,
+    commit: str,
+) -> None:
     """Verify the combined tag manifest has expected content"""
     assert manifest.get("schemaVersion") == 2, "Manifest should have schema version 2"
     assert "layers" in manifest, "Manifest should contain layers array"
     assert "annotations" in manifest, "Manifest should contain annotations"
 
     annotations = manifest.get("annotations", {})
-    assert (
-        annotations.get("architecture") == arch
-    ), f"Manifest should have architecture {arch}"
+    assert annotations.get("architecture") == arch, (
+        f"Manifest should have architecture {arch}"
+    )
     assert annotations.get("cname") == cname, f"Manifest should have cname {cname}"
-    assert (
-        annotations.get("version") == version
-    ), f"Manifest should have version {version}"
+    assert annotations.get("version") == version, (
+        f"Manifest should have version {version}"
+    )
 
     if feature_set:
-        assert (
-            annotations.get("feature_set") == feature_set
-        ), f"Manifest should have feature_set {feature_set}"
+        assert annotations.get("feature_set") == feature_set, (
+            f"Manifest should have feature_set {feature_set}"
+        )
 
     if commit:
-        assert (
-            annotations.get("commit") == commit
-        ), f"Manifest should have commit {commit}"
+        assert annotations.get("commit") == commit, (
+            f"Manifest should have commit {commit}"
+        )
 
 
 def verify_additional_tags(
-    client, repo, additional_tags, reference_digest=None, fail_on_missing=True
-):
+    client: OrasClient,
+    repo: str,
+    additional_tags: List[str],
+    reference_digest: Optional[str] = None,
+    fail_on_missing: bool = True,
+) -> List[str]:
     """
     Verify that all additional tags exist and match the reference digest if provided.
 
@@ -280,8 +305,8 @@ def verify_additional_tags(
     return missing_tags
 
 
-@pytest.mark.usefixtures("zot_session")
-@pytest.mark.parametrize(
+@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+@pytest.mark.parametrize(  # type: ignore[misc]
     "version, cname, arch, additional_tags_index, additional_tags_manifest",
     [
         (
@@ -293,7 +318,7 @@ def verify_additional_tags(
                 f"{TEST_VERSION}-patch-{TEST_COMMIT}",
                 f"{TEST_VERSION_STABLE}",
                 f"{TEST_VERSION_STABLE}-stable",
-                f"latest",
+                "latest",
             ],
             [
                 f"{TEST_VERSION}-patch-{platform}-{feature_string}-{arch}",
@@ -307,8 +332,12 @@ def verify_additional_tags(
     ],
 )
 def test_push_manifest_and_index(
-    version, arch, cname, additional_tags_index, additional_tags_manifest
-):
+    version: str,
+    arch: str,
+    cname: str,
+    additional_tags_index: List[str],
+    additional_tags_manifest: List[str],
+) -> None:
     print(f"\n\n=== Starting test for {cname} {arch} {version} ===")
     runner = CliRunner()
     repo_name = "gardenlinux-example"

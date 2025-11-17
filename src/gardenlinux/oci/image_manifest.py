@@ -4,6 +4,7 @@ import json
 from copy import deepcopy
 from os import PathLike
 from pathlib import Path
+from typing import Any, Dict
 
 from oras.oci import Layer
 
@@ -27,7 +28,7 @@ class ImageManifest(Manifest):
     """
 
     @property
-    def arch(self):
+    def arch(self) -> str:
         """
         Returns the architecture of the OCI image manifest.
 
@@ -40,10 +41,10 @@ class ImageManifest(Manifest):
                 "Unexpected manifest with missing config annotation 'architecture' found"
             )
 
-        return self["annotations"]["architecture"]
+        return self["annotations"]["architecture"]  # type: ignore[no-any-return]
 
     @arch.setter
-    def arch(self, value):
+    def arch(self, value: str) -> None:
         """
         Sets the architecture of the OCI image manifest.
 
@@ -56,7 +57,7 @@ class ImageManifest(Manifest):
         self["annotations"]["architecture"] = value
 
     @property
-    def cname(self):
+    def cname(self) -> str:
         """
         Returns the GardenLinux canonical name of the OCI image manifest.
 
@@ -69,10 +70,10 @@ class ImageManifest(Manifest):
                 "Unexpected manifest with missing config annotation 'cname' found"
             )
 
-        return self["annotations"]["cname"]
+        return self["annotations"]["cname"]  # type: ignore[no-any-return]
 
     @cname.setter
-    def cname(self, value):
+    def cname(self, value: str) -> None:
         """
         Sets the GardenLinux canonical name of the OCI image manifest.
 
@@ -85,7 +86,7 @@ class ImageManifest(Manifest):
         self["annotations"]["cname"] = value
 
     @property
-    def feature_set(self):
+    def feature_set(self) -> str:
         """
         Returns the GardenLinux feature set of the OCI image manifest.
 
@@ -98,10 +99,10 @@ class ImageManifest(Manifest):
                 "Unexpected manifest with missing config annotation 'feature_set' found"
             )
 
-        return self["annotations"]["feature_set"]
+        return self["annotations"]["feature_set"]  # type: ignore[no-any-return]
 
     @feature_set.setter
-    def feature_set(self, value):
+    def feature_set(self, value: str) -> None:
         """
         Sets the GardenLinux feature set of the OCI image manifest.
 
@@ -114,7 +115,7 @@ class ImageManifest(Manifest):
         self["annotations"]["feature_set"] = value
 
     @property
-    def flavor(self):
+    def flavor(self) -> str:
         """
         Returns the GardenLinux flavor of the OCI image manifest.
 
@@ -125,7 +126,7 @@ class ImageManifest(Manifest):
         return CName(self.cname).flavor
 
     @property
-    def layers_as_dict(self):
+    def layers_as_dict(self) -> Dict[str, Any]:
         """
         Returns the OCI image manifest layers as a dictionary.
 
@@ -146,7 +147,7 @@ class ImageManifest(Manifest):
         return layers
 
     @property
-    def version(self):
+    def version(self) -> str:
         """
         Returns the GardenLinux version of the OCI image manifest.
 
@@ -159,10 +160,10 @@ class ImageManifest(Manifest):
                 "Unexpected manifest with missing config annotation 'version' found"
             )
 
-        return self["annotations"]["version"]
+        return self["annotations"]["version"]  # type: ignore[no-any-return]
 
     @version.setter
-    def version(self, value):
+    def version(self, value: str) -> None:
         """
         Sets the GardenLinux version of the OCI image manifest.
 
@@ -174,7 +175,7 @@ class ImageManifest(Manifest):
         self._ensure_annotations_dict()
         self["annotations"]["version"] = value
 
-    def append_layer(self, layer):
+    def append_layer(self, layer: Layer) -> None:
         """
         Appends the given OCI image manifest layer to the manifest
 
@@ -217,7 +218,15 @@ class ImageManifest(Manifest):
 
         self["layers"].append(layer_dict)
 
-    def write_metadata_file(self, manifest_file_path_name):
+    def write_metadata_file(self, manifest_file_path_name: PathLike[str] | str) -> None:
+        """
+        Create OCI image manifest metadata and write it to the file given.
+
+        :param manifest_file_path_name: OCI image manifest metadata file
+
+        :since: 0.7.0
+        """
+
         if not isinstance(manifest_file_path_name, PathLike):
             manifest_file_path_name = Path(manifest_file_path_name)
 

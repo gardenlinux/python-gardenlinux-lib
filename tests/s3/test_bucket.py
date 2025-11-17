@@ -11,10 +11,12 @@ import io
 
 from gardenlinux.s3.bucket import Bucket
 
+from .conftest import S3Env
+
 REGION = "us-east-1"
 
 
-def test_bucket_minimal(s3_setup):
+def test_bucket_minimal(s3_setup: S3Env) -> None:
     """
     Ensure Bucket initializes correctly.
     """
@@ -23,7 +25,7 @@ def test_bucket_minimal(s3_setup):
     assert bucket.name == env.bucket_name
 
 
-def test_objects_empty(s3_setup):
+def test_objects_empty(s3_setup: S3Env) -> None:
     """
     List objects from empty bucket.
     """
@@ -37,7 +39,7 @@ def test_objects_empty(s3_setup):
     assert list(bucket.objects) == []
 
 
-def test_upload_file_and_list(s3_setup):
+def test_upload_file_and_list(s3_setup: S3Env) -> None:
     """
     Create a fake file in a temporary directory, upload and try
     to list it
@@ -58,7 +60,7 @@ def test_upload_file_and_list(s3_setup):
     assert "example.txt" in all_keys
 
 
-def test_download_file(s3_setup):
+def test_download_file(s3_setup: S3Env) -> None:
     """
     Try to download a file pre-existing in the bucket
     """
@@ -75,7 +77,7 @@ def test_download_file(s3_setup):
     assert target_path.read_text() == "some data"
 
 
-def test_read_cache_file_or_filter(s3_setup):
+def test_read_cache_file_or_filter(s3_setup: S3Env) -> None:
     """
     Try to read with cache
     """
@@ -98,7 +100,7 @@ def test_read_cache_file_or_filter(s3_setup):
     assert result == ["file.txt", "file2.txt"]
 
 
-def test_upload_fileobj(s3_setup):
+def test_upload_fileobj(s3_setup: S3Env) -> None:
     """
     Upload a file-like in-memory object to the bucket
     """
@@ -117,7 +119,7 @@ def test_upload_fileobj(s3_setup):
     assert obj["Body"].read() == b"Test Data"
 
 
-def test_download_fileobj(s3_setup):
+def test_download_fileobj(s3_setup: S3Env) -> None:
     """
     Download data into a in-memory object
     """
@@ -138,7 +140,7 @@ def test_download_fileobj(s3_setup):
     assert output.read() == b"123abc"
 
 
-def test_getattr_delegates(s3_setup):
+def test_getattr_delegates(s3_setup: S3Env) -> None:
     """
     Verify that attribute access is delegated to the underlying boto3 Bucket.
 

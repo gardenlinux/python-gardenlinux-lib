@@ -3,7 +3,7 @@
 from collections.abc import Mapping
 from os import PathLike
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Iterator, Optional
 
 from oras.defaults import annotation_title as ANNOTATION_TITLE
 from oras.oci import Layer as _Layer
@@ -13,7 +13,7 @@ from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
 _SUPPORTED_MAPPING_KEYS = ("annotations",)
 
 
-class Layer(_Layer, Mapping):
+class Layer(_Layer, Mapping):  # type: ignore[misc, type-arg]
     """
     OCI image layer
 
@@ -28,7 +28,7 @@ class Layer(_Layer, Mapping):
 
     def __init__(
         self,
-        blob_path: PathLike | str,
+        blob_path: PathLike[str] | str,
         media_type: Optional[str] = None,
         is_dir: bool = False,
     ):
@@ -48,23 +48,24 @@ class Layer(_Layer, Mapping):
         _Layer.__init__(self, blob_path, media_type, is_dir)
 
         self._annotations = {
-            ANNOTATION_TITLE: blob_path.name,
+            ANNOTATION_TITLE: blob_path.name,  # type: ignore[attr-defined]
         }
 
     @property
-    def dict(self):
+    def dict(self) -> Dict[Any, Any]:
         """
         Return a dictionary representation of the layer
 
         :return: (dict) OCI manifest layer metadata dictionary
         :since:  0.7.2
         """
+
         layer = _Layer.to_dict(self)
         layer["annotations"] = self._annotations
 
-        return layer
+        return layer  # type: ignore[no-any-return]
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str) -> None:
         """
         python.org: Called to implement deletion of self[key].
 
@@ -80,7 +81,7 @@ class Layer(_Layer, Mapping):
                 f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
             )
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         """
         python.org: Called to implement evaluation of self[key].
 
@@ -97,7 +98,7 @@ class Layer(_Layer, Mapping):
             f"'{self.__class__.__name__}' object is not subscriptable except for keys: {_SUPPORTED_MAPPING_KEYS}"
         )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         """
         python.org: Return an iterator object.
 
@@ -107,7 +108,7 @@ class Layer(_Layer, Mapping):
 
         return iter(_SUPPORTED_MAPPING_KEYS)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         python.org: Called to implement the built-in function len().
 
@@ -117,7 +118,7 @@ class Layer(_Layer, Mapping):
 
         return len(_SUPPORTED_MAPPING_KEYS)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any) -> None:
         """
         python.org: Called to implement assignment to self[key].
 
@@ -135,7 +136,9 @@ class Layer(_Layer, Mapping):
             )
 
     @staticmethod
-    def generate_metadata_from_file_name(file_name: PathLike | str, arch: str) -> dict:
+    def generate_metadata_from_file_name(
+        file_name: PathLike[str] | str, arch: str
+    ) -> Dict[str, Any]:
         """
         Generates OCI manifest layer metadata for the given file path and name.
 
@@ -152,13 +155,13 @@ class Layer(_Layer, Mapping):
         media_type = Layer.lookup_media_type_for_file_name(file_name)
 
         return {
-            "file_name": file_name.name,
+            "file_name": file_name.name,  # type: ignore[attr-defined]
             "media_type": media_type,
             "annotations": {"io.gardenlinux.image.layer.architecture": arch},
         }
 
     @staticmethod
-    def lookup_media_type_for_file_name(file_name: str) -> str:
+    def lookup_media_type_for_file_name(file_name: PathLike[str] | str) -> str:
         """
         Looks up the media type based on file name or extension.
 
@@ -172,7 +175,7 @@ class Layer(_Layer, Mapping):
             file_name = Path(file_name)
 
         for lookup_name in GL_MEDIA_TYPES:
-            if file_name.match(f"*.{lookup_name}") or file_name.name == lookup_name:
+            if file_name.match(f"*.{lookup_name}") or file_name.name == lookup_name:  # type: ignore[attr-defined]
                 return GL_MEDIA_TYPE_LOOKUP[lookup_name]
 
         raise ValueError(

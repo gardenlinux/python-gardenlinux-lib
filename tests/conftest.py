@@ -1,9 +1,11 @@
 import json
 import os
 import shutil
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from tempfile import mkstemp
+from typing import Any, Dict, Generator
 
 import pytest
 from cryptography import x509
@@ -29,7 +31,7 @@ from .constants import (
 from .helper import spawn_background_process
 
 
-def generate_test_certificates():
+def generate_test_certificates() -> None:
     """Generate self-signed certificates for testing using cryptography library"""
 
     os.makedirs(CERT_DIR, exist_ok=True)
@@ -80,7 +82,7 @@ def generate_test_certificates():
     print(f"Generated test certificates in {CERT_DIR}")
 
 
-def create_test_data():
+def create_test_data() -> None:
     """Generate test data for OCI registry tests (replaces build-test-data.sh)"""
     print("Creating fake artifacts...")
 
@@ -122,13 +124,13 @@ def create_test_data():
                         f.write(f"dummy content for {file_path}")
 
 
-def write_zot_config(config_dict, fd):
+def write_zot_config(config_dict: Dict[str, Any], fd: int) -> None:
     with os.fdopen(fd, "w") as fp:
         json.dump(config_dict, fp, indent=4)
 
 
-@pytest.fixture(autouse=False, scope="function")
-def zot_session():
+@pytest.fixture(autouse=False, scope="function")  # type: ignore[misc]
+def zot_session() -> Generator[subprocess.Popen[Any]]:
     load_dotenv()
     print("start zot session")
 
@@ -175,7 +177,7 @@ def zot_session():
         os.remove(zot_config_file_path)
 
 
-def pytest_sessionstart(session):
+def pytest_sessionstart(session: pytest.Session) -> None:
     generate_test_certificates()
 
     # Replace the bash script call with our Python function
@@ -185,7 +187,7 @@ def pytest_sessionstart(session):
     Parser.set_default_gardenlinux_root_dir(GL_ROOT_DIR)
 
 
-def pytest_sessionfinish(session):
+def pytest_sessionfinish(session: pytest.Session) -> None:
     if os.path.isfile(CERT_DIR + "/oci-sign.crt"):
         os.remove(CERT_DIR + "/oci-sign.crt")
     if os.path.isfile(CERT_DIR + "/oci-sign.key"):
