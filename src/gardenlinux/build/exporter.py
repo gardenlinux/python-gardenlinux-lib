@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 from os import PathLike
+
+from elftools.elf.elffile import ELFFile
 
 from ..logger import LoggerSetup
 
@@ -41,32 +44,27 @@ def _getInterpreter(path: str, logger) -> str:
     """
 
     with open(path, "rb") as f:
-        head = f.read(19)
+        elf = ELFFile(f)
+        interp = elf.get_section_by_name(".interp")
 
-        if head[5] == 1:
-            arch = head[17:]
-        elif head[5] == 2:
-            arch = head[17:][::-1]
+        if interp:
+            return interp.data().split(b"\x00")[0].decode()
         else:
-            logger.error(
-                f"Error: Unknown endianess value for {path}: expected 1 or 2, but was {head[5]}"
-            )
-            exit(1)
-
-        if arch == b"\x00\xb7":  # 00b7: aarch64
-            return "/lib/ld-linux-aarch64.so.1"
-        elif arch == b"\x00\x3e":  # 003e: x86_64
-            return "/lib64/ld-linux-x86-64.so.2"
-        elif arch == b"\x00\x03":  # 0003: i686
-            return "/lib/ld-linux.so.2"
-        else:
-            logger.error(
-                f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}"
-            )
-            exit(1)
+            match elf.header["e_machine"]:
+                case "EM_AARCH64":
+                    return "/lib/ld-linux-aarch64.so.1"
+                case "EM_386":
+                    return "/lib/ld-linux.so.2"
+                case "EM_X86_64":
+                    return "/lib64/ld-linux-x86-64.so.2"
+                case arch:
+                    logger.error(
+                        f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}"
+                    )
+                    exit(1)
 
 
-def _get_default_package_dir() -> str:
+def _get_default_package_dir() -> PathLike[str]:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
 
@@ -79,12 +77,12 @@ def _get_default_package_dir() -> str:
         ["/bin/sh", "-c", 'python3 -c "import site; print(site.getsitepackages()[0])"'],
         stdout=subprocess.PIPE,
     )
-    return out.stdout.decode().strip()
+    return pathlib.Path(out.stdout.decode().strip())
 
 
 def export(
     output_dir: str | PathLike[str] = "/required_libs",
-    package_dir: str | PathLike[str] = None,
+    package_dir: str | PathLike[str] | None = None,
     logger=None,
 ) -> None:
     """

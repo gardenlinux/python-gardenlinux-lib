@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-gl-python-exportlibs main entrypoint
+gl-build main entrypoint
 """
 
 from argparse import ArgumentParser
@@ -10,7 +10,7 @@ from argparse import ArgumentParser
 from .exporter import _get_default_package_dir, export
 
 _ARGS_TYPE_ALLOWED = [
-    "copy",
+    "export-python-libs",
 ]
 
 
@@ -43,14 +43,18 @@ def parse_args():
 
 def main():
     """
-    gl-python-exportlibs main()
+    gl-gl-build main()
 
     :since: TODO
     """
 
     args = parse_args()
 
-    export(output_dir=args.output_dir, package_dir=args.package_dir)
+    match args.type:
+        case "export-python-libs":
+            export(output_dir=args.output_dir, package_dir=args.package_dir)
+        case _:
+            raise NotImplementedError
 
 
 if __name__ == "__main__":

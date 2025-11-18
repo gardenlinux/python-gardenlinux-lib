@@ -12,6 +12,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!/src/gardenlinux/build
 develop-eggs/
 dist/
 downloads/
