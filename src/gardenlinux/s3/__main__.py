@@ -36,6 +36,4 @@ def main() -> None:
     if args.action == "download-artifacts-from-bucket":
         S3Artifacts(args.bucket).download_to_directory(args.cname, args.path)
     elif args.action == "upload-artifacts-to-bucket":
-        S3Artifacts(args.bucket).upload_from_directory(
-            args.cname, args.path, dry_run=args.dry_run
-        )
+        S3Artifacts(args.bucket).upload_from_directory(args.cname, args.path, dry_run=args.dry_run)
