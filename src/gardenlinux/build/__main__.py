@@ -5,6 +5,7 @@
 gl-build main entrypoint
 """
 
+import pathlib
 from argparse import ArgumentParser
 
 from .exporter import _get_default_package_dir, export
@@ -52,7 +53,7 @@ def main():
 
     match args.type:
         case "export-python-libs":
-            export(output_dir=args.output_dir, package_dir=args.package_dir)
+            export(output_dir=pathlib.Path(args.output_dir), package_dir=pathlib.Path(args.package_dir))
         case _:
             raise NotImplementedError
 

@@ -19,7 +19,7 @@ remove_root = re.compile("^/")
 
 
 # Check for ELF header
-def _isElf(path: str) -> bool:
+def _isElf(path: str | PathLike[str]) -> bool:
     """
     Checks if a file is an ELF by looking for the ELF header.
 
@@ -37,7 +37,7 @@ def _isElf(path: str) -> bool:
             return False
 
 
-def _getInterpreter(path: str, logger) -> str:
+def _getInterpreter(path: str | PathLike[str], logger) -> PathLike[str]:
     """
     Returns the interpreter of an ELF. Supported architectures: x86_64, aarch64, i686.
 
@@ -53,36 +53,48 @@ def _getInterpreter(path: str, logger) -> str:
         interp = elf.get_section_by_name(".interp")
 
         if interp:
-            return interp.data().split(b"\x00")[0].decode()
+            return pathlib.Path(interp.data().split(b"\x00")[0].decode())
         else:
             match elf.header["e_machine"]:
                 case "EM_AARCH64":
-                    return "/lib/ld-linux-aarch64.so.1"
+                    return pathlib.Path("/lib/ld-linux-aarch64.so.1")
                 case "EM_386":
-                    return "/lib/ld-linux.so.2"
+                    return pathlib.Path("/lib/ld-linux.so.2")
                 case "EM_X86_64":
-                    return "/lib64/ld-linux-x86-64.so.2"
+                    return pathlib.Path("/lib64/ld-linux-x86-64.so.2")
                 case arch:
                     logger.error(
                         f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}"
                     )
                     exit(1)
 
+def _get_python_from_path() -> str | None:
+    interpreter = None
+    for dir in os.environ["PATH"].split(":"):
+        binary = os.path.join(dir, "python3")
+        if os.path.isfile(binary):
+            interpreter = binary
+            break
+    return interpreter
 
-def _get_default_package_dir() -> PathLike[str]:
+def _get_default_package_dir() -> PathLike[str] | None:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
 
     :return: (str) Path to directory
     :since:  TODO
     """
-
+    
     # Needs to escape the virtual environment python-gardenlinx-lib is running in
-    out = subprocess.run(
-        ["/bin/sh", "-c", 'python3 -c "import site; print(site.getsitepackages()[0])"'],
-        stdout=subprocess.PIPE,
-    )
-    return pathlib.Path(out.stdout.decode().strip())
+    interpreter = _get_python_from_path()
+    if interpreter:
+        out = subprocess.run(
+            [interpreter, "-c", "import site; print(site.getsitepackages()[0])"],
+            stdout=subprocess.PIPE,
+        )
+        return pathlib.Path(out.stdout.decode().strip())
+    else:
+        return None
 
 
 def export(
@@ -102,13 +114,19 @@ def export(
 
     if not package_dir:
         package_dir = _get_default_package_dir()
+        if not package_dir:
+            logger.error(
+                f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information."
+            )
+            exit(1)
+        
     if logger is None or not logger.hasHandlers():
         logger = LoggerSetup.get_logger("gardenlinux.export_libs")
     # Collect ld dependencies for installed pip packages
     dependencies = set()
     for root, dirs, files in os.walk(package_dir):
         for file in files:
-            path = f"{root}/{file}"
+            path = os.path.join(root, file)
             if not os.path.islink(path) and _isElf(path):
                 out = subprocess.run(
                     [_getInterpreter(path, logger), "--inhibit-cache", "--list", path],
