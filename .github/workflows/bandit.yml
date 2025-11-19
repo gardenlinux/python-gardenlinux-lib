@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/dev_setup@255-improve-caching-used-in-gh-actions
       - name: Simple bandit security checks
         run: make security
       - name: Show Report in Action Output
