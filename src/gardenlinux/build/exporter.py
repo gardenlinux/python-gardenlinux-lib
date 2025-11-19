@@ -7,6 +7,7 @@ import shutil
 import subprocess
 from os import PathLike
 
+from elftools.common.exceptions import ELFError
 from elftools.elf.elffile import ELFFile
 
 from ..logger import LoggerSetup
@@ -29,7 +30,11 @@ def _isElf(path: str) -> bool:
     """
 
     with open(path, "rb") as f:
-        return f.read(4) == b"\x7f\x45\x4c\x46"
+        try:
+            ELFFile(f)
+            return True
+        except ELFError:
+            return False
 
 
 def _getInterpreter(path: str, logger) -> str:
