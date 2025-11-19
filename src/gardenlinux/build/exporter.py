@@ -37,7 +37,7 @@ def _isElf(path: str | PathLike[str]) -> bool:
             return False
 
 
-def _getInterpreter(path: str | PathLike[str], logger) -> PathLike[str]:
+def _getInterpreter(path: str | PathLike[str], logger) -> pathlib.Path:
     """
     Returns the interpreter of an ELF. Supported architectures: x86_64, aarch64, i686.
 
@@ -68,16 +68,16 @@ def _getInterpreter(path: str | PathLike[str], logger) -> PathLike[str]:
                     )
                     exit(1)
 
-def _get_python_from_path() -> str | None:
+def _get_python_from_path() -> pathlib.Path | None:
     interpreter = None
     for dir in os.environ["PATH"].split(":"):
-        binary = os.path.join(dir, "python3")
-        if os.path.isfile(binary):
+        binary = pathlib.Path(dir).joinpath("python3")
+        if binary.is_file():
             interpreter = binary
             break
     return interpreter
 
-def _get_default_package_dir() -> PathLike[str] | None:
+def _get_default_package_dir() -> pathlib.Path | None:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
 
@@ -119,15 +119,18 @@ def export(
                 f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information."
             )
             exit(1)
+    else:
+        package_dir = pathlib.Path(package_dir)
+    output_dir = pathlib.Path(output_dir)
         
     if logger is None or not logger.hasHandlers():
         logger = LoggerSetup.get_logger("gardenlinux.export_libs")
     # Collect ld dependencies for installed pip packages
     dependencies = set()
-    for root, dirs, files in os.walk(package_dir):
+    for root, dirs, files in package_dir.walk():
         for file in files:
-            path = os.path.join(root, file)
-            if not os.path.islink(path) and _isElf(path):
+            path = root.joinpath(file)
+            if not path.is_symlink() and _isElf(path):
                 out = subprocess.run(
                     [_getInterpreter(path, logger), "--inhibit-cache", "--list", path],
                     stdout=subprocess.PIPE,
@@ -136,18 +139,18 @@ def export(
                     dependencies.add(os.path.realpath(dependency))
 
     # Copy dependencies into output_dir folder
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
+    if not output_dir.is_dir():
+        output_dir.mkdir()
 
     for dependency in dependencies:
-        path = os.path.join(output_dir, remove_root.sub("", dependency))
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        path = output_dir.joinpath(remove_root.sub("", dependency))
+        path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dependency, path)
 
     # Reset timestamps of the parent directories
     if len(dependencies) > 0:
         mtime = int(os.stat(dependencies.pop()).st_mtime)
         os.utime(output_dir, (mtime, mtime))
-        for root, dirs, _ in os.walk(output_dir):
+        for root, dirs, _ in output_dir.walk():
             for dir in dirs:
-                os.utime(f"{root}/{dir}", (mtime, mtime))
+                os.utime(root.joinpath(dir), (mtime, mtime))
