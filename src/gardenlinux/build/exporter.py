@@ -90,7 +90,7 @@ def _get_default_package_dir() -> pathlib.Path | None:
         )
         return pathlib.Path(out.stdout.decode().strip())
     else:
-        return None
+        raise RuntimeError(f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information.")
 
 
 def export(
@@ -108,8 +108,6 @@ def export(
 
     if not package_dir:
         package_dir = _get_default_package_dir()
-        if not package_dir:
-            raise RuntimeError(f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information.")
     else:
         package_dir = pathlib.Path(package_dir)
     output_dir = pathlib.Path(output_dir)
