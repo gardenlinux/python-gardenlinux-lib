@@ -20,7 +20,7 @@ def parse_args():
     Parses arguments used for main()
 
     :return: (object) Parsed argparse.ArgumentParser namespace
-    :since:  TODO
+    :since:  1.0.0
     """
 
     parser = ArgumentParser(
@@ -46,7 +46,7 @@ def main():
     """
     gl-gl-build main()
 
-    :since: TODO
+    :since: 1.0.0
     """
 
     args = parse_args()

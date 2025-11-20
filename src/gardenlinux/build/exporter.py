@@ -26,7 +26,7 @@ def _isElf(path: str | PathLike[str]) -> bool:
     :param path:    Path to file
 
     :return: (bool) If the file found at path is an ELF
-    :since:  TODO
+    :since:  1.0.0
     """
 
     with open(path, "rb") as f:
@@ -44,7 +44,7 @@ def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
     :param path:    Path to file
 
     :return: (str) Path of the interpreter
-    :since:  TODO
+    :since:  1.0.0
     """
 
     with open(path, "rb") as f:
@@ -78,7 +78,7 @@ def _get_default_package_dir() -> pathlib.Path | None:
     Finds the default site-packages or dist-packages directory of the default python3 environment
 
     :return: (str) Path to directory
-    :since:  TODO
+    :since:  1.0.0
     """
     
     # Needs to escape the virtual environment python-gardenlinx-lib is running in
@@ -103,7 +103,7 @@ def export(
     :param output_dir:  Path to output_dir
     :param package_dir: Path to package_dir
 
-    :since:  TODO
+    :since:  1.0.0
     """
 
     if not package_dir:
