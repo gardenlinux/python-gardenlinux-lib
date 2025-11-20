@@ -67,7 +67,7 @@ def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
 def _get_python_from_path() -> pathlib.Path | None:
     interpreter = None
     for dir in os.environ["PATH"].split(":"):
-        binary = pathlib.Path(dir, "python3").joinpath("python3")
+        binary = pathlib.Path(dir, "python3")
         if binary.is_file():
             interpreter = binary
             break
