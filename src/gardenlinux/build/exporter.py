@@ -37,12 +37,11 @@ def _isElf(path: str | PathLike[str]) -> bool:
             return False
 
 
-def _getInterpreter(path: str | PathLike[str], logger) -> pathlib.Path:
+def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
     """
     Returns the interpreter of an ELF. Supported architectures: x86_64, aarch64, i686.
 
     :param path:    Path to file
-    :param logger:  Logger to log errors
 
     :return: (str) Path of the interpreter
     :since:  TODO
@@ -63,15 +62,12 @@ def _getInterpreter(path: str | PathLike[str], logger) -> pathlib.Path:
                 case "EM_X86_64":
                     return pathlib.Path("/lib64/ld-linux-x86-64.so.2")
                 case arch:
-                    logger.error(
-                        f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}"
-                    )
-                    exit(1)
+                    raise RuntimeError(f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}")
 
 def _get_python_from_path() -> pathlib.Path | None:
     interpreter = None
     for dir in os.environ["PATH"].split(":"):
-        binary = pathlib.Path(dir).joinpath("python3")
+        binary = pathlib.Path(dir, "python3").joinpath("python3")
         if binary.is_file():
             interpreter = binary
             break
@@ -99,15 +95,13 @@ def _get_default_package_dir() -> pathlib.Path | None:
 
 def export(
     output_dir: str | PathLike[str] = "/required_libs",
-    package_dir: str | PathLike[str] | None = None,
-    logger=None,
+    package_dir: str | PathLike[str] | None = None
 ) -> None:
     """
     Identifies shared library dependencies of `package_dir` and copies them to `output_dir`.
 
     :param output_dir:  Path to output_dir
     :param package_dir: Path to package_dir
-    :param logger:      Logger to log errors
 
     :since:  TODO
     """
@@ -115,16 +109,11 @@ def export(
     if not package_dir:
         package_dir = _get_default_package_dir()
         if not package_dir:
-            logger.error(
-                f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information."
-            )
-            exit(1)
+            raise RuntimeError(f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information.")
     else:
         package_dir = pathlib.Path(package_dir)
     output_dir = pathlib.Path(output_dir)
         
-    if logger is None or not logger.hasHandlers():
-        logger = LoggerSetup.get_logger("gardenlinux.export_libs")
     # Collect ld dependencies for installed pip packages
     dependencies = set()
     for root, dirs, files in package_dir.walk():
@@ -132,7 +121,7 @@ def export(
             path = root.joinpath(file)
             if not path.is_symlink() and _isElf(path):
                 out = subprocess.run(
-                    [_getInterpreter(path, logger), "--inhibit-cache", "--list", path],
+                    [_getInterpreter(path), "--inhibit-cache", "--list", path],
                     stdout=subprocess.PIPE,
                 )
                 for dependency in parse_output.findall(out.stdout.decode()):
