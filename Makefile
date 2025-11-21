@@ -8,7 +8,7 @@ help:
 	@echo "  install      - Install the package and dependencies"
 	@echo "  install-dev  - Install the package and dev dependencies"
 	@echo "  test         - Run tests"
-	@echo "  format       - Format code with black"
+	@echo "  format       - Format code with ruff"
 	@echo "  lint         - Run linting checks"
 	@echo "  security     - Run security checks with bandit"
 	@echo "  docs         - Build the documentation"
@@ -59,14 +59,9 @@ test-trace: install-test
 	$(POETRY) run pytest -k "not kms" -vvv --log-cli-level=DEBUG
 
 format: install-dev
-	$(POETRY) run black --extend-exclude test-data/gardenlinux .
+	$(POETRY) run -c .pre-commit-config.ruff.yaml --all-files
 
 lint: install-dev
-	@echo
-	@echo "------------------------------------------------------------------------------------------------------------------------"
-	@echo "--// BLACK //-----------------------------------------------------------------------------------------------------------"
-	@echo "------------------------------------------------------------------------------------------------------------------------"
-	$(POETRY) run black --diff --extend-exclude test-data/gardenlinux .
 	@echo
 	@echo "------------------------------------------------------------------------------------------------------------------------"
 	@echo "--// ISORT //-----------------------------------------------------------------------------------------------------------"
@@ -74,9 +69,9 @@ lint: install-dev
 	$(POETRY) run isort --check-only .
 	@echo
 	@echo "------------------------------------------------------------------------------------------------------------------------"
-	@echo "--// PYRIGHT //---------------------------------------------------------------------------------------------------------"
+	@echo "--// PRE-COMMIT //------------------------------------------------------------------------------------------------------"
 	@echo "------------------------------------------------------------------------------------------------------------------------"
-	$(POETRY) run pyright
+	$(POETRY) run pre-commit run --all-files
 
 security: install-dev
 	@if [ "$(CI)" = "true" ]; then \

@@ -6,16 +6,17 @@ gl-flavors-parse main entrypoint
 """
 
 import json
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any, List, Tuple
 
 from ..constants import GL_REPOSITORY_URL
 from ..git import Repository
 from .parser import Parser
 
 
-def _get_flavors_file_data(flavors_file):
+def _get_flavors_file_data(flavors_file: Path) -> str:
     if not flavors_file.exists():
         raise RuntimeError(f"Error: {flavors_file} does not exist.")
 
@@ -24,12 +25,11 @@ def _get_flavors_file_data(flavors_file):
         return fp.read()
 
 
-def generate_markdown_table(combinations, no_arch):
+def generate_markdown_table(combinations: List[Tuple[Any, str]]) -> str:
     """
     Generate a markdown table of platforms and their flavors.
 
     :param combinations: List of tuples of architectures and flavors
-    :param no_arch: Noop
 
     :return: (str) Markdown table
     :since:  0.7.0
@@ -47,7 +47,7 @@ def generate_markdown_table(combinations, no_arch):
     return table
 
 
-def parse_args():
+def parse_args() -> Namespace:
     """
     Parses arguments used for main()
 
@@ -125,7 +125,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     """
     gl-flavors-parse main()
 
@@ -170,7 +170,7 @@ def main():
 
         print(json.dumps(grouped_combinations, indent=2))
     elif args.markdown_table_by_platform:
-        print(generate_markdown_table(combinations, args.no_arch))
+        print(generate_markdown_table(combinations))
     else:
         if args.no_arch:
             printable_combinations = sorted(set(Parser.remove_arch(combinations)))

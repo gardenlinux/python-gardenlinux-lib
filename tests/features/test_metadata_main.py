@@ -14,7 +14,7 @@ from gardenlinux.constants import (
 )
 
 
-def get_container_amd64_release_metadata(version, commit_hash):
+def get_container_amd64_release_metadata(version: str, commit_hash: str) -> str:
     return f"""
 ID={GL_RELEASE_ID}
 NAME="{GL_DISTRIBUTION_NAME}"
@@ -26,7 +26,7 @@ SUPPORT_URL="{GL_SUPPORT_URL}"
 BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
 GARDENLINUX_CNAME="container-amd64-today-local"
 GARDENLINUX_FEATURES="_slim,base,container"
-GARDENLINUX_FEATURES_PLATFORMS="container"
+GARDENLINUX_FEATURES_PLATFORM="container"
 GARDENLINUX_FEATURES_ELEMENTS="base"
 GARDENLINUX_FEATURES_FLAGS="_slim"
 GARDENLINUX_VERSION="today"
@@ -35,7 +35,9 @@ GARDENLINUX_COMMIT_ID_LONG="local"
 """.strip()
 
 
-def test_main_output(monkeypatch, capsys):
+def test_main_output(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test successful "output-release-metadata"
     """
@@ -60,7 +62,9 @@ def test_main_output(monkeypatch, capsys):
     assert expected == capsys.readouterr().out.strip()
 
 
-def test_main_write(monkeypatch, capsys):
+def test_main_write(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test successful "write"
     """
@@ -89,7 +93,7 @@ def test_main_write(monkeypatch, capsys):
         assert expected == os_release_file.open("r").read()
 
 
-def test_main_validation(monkeypatch):
+def test_main_validation(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Test validation between release metadata and arguments given
     """

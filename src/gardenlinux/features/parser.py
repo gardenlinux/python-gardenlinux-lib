@@ -6,9 +6,10 @@ Features parser based on networkx.Digraph
 
 import logging
 import os
+from functools import reduce
 from glob import glob
 from pathlib import Path
-from typing import Callable, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, Set
 
 import networkx
 import yaml
@@ -38,7 +39,7 @@ class Parser(object):
     def __init__(
         self,
         gardenlinux_root: Optional[str] = None,
-        feature_dir_name: Optional[str] = "features",
+        feature_dir_name: str = "features",
         logger: Optional[logging.Logger] = None,
     ):
         """
@@ -116,7 +117,7 @@ class Parser(object):
 
     def filter(
         self,
-        cname: str | None,
+        cname: str,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> networkx.Graph:
@@ -131,7 +132,7 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        feature_set = Parser.get_cname_as_feature_set(cname)
+        feature_set = Parser.get_flavor_as_feature_set(cname)
 
         return self.filter_based_on_feature_set(
             feature_set, ignore_excludes, additional_filter_func
@@ -139,10 +140,10 @@ class Parser(object):
 
     def filter_as_dict(
         self,
-        cname: str | None,
+        cname: str,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
-    ) -> dict:
+    ) -> Dict[str, List[str]]:
         """
         Filters the features graph and returns it as a dict.
 
@@ -159,10 +160,10 @@ class Parser(object):
 
     def filter_as_list(
         self,
-        cname: str | None,
+        cname: str,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
-    ) -> list:
+    ) -> List[str]:
         """
         Filters the features graph and returns it as a list.
 
@@ -179,7 +180,7 @@ class Parser(object):
 
     def filter_as_string(
         self,
-        cname: str | None,
+        cname: str,
         ignore_excludes: bool = False,
         additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> str:
@@ -200,7 +201,7 @@ class Parser(object):
     def filter_graph_as_dict(
         self,
         graph: networkx.Graph,
-    ) -> dict:
+    ) -> Dict[str, List[str]]:
         """
         Filters the features graph and returns it as a dict.
 
@@ -212,7 +213,7 @@ class Parser(object):
 
         features = Parser.sort_reversed_graph_nodes(graph)
 
-        features_by_type = {}
+        features_by_type: Dict[str, List[str]] = {}
 
         for feature in features:
             node_type = Parser._get_graph_node_type(graph.nodes[feature])
@@ -227,7 +228,7 @@ class Parser(object):
     def filter_graph_as_list(
         self,
         graph: networkx.Graph,
-    ) -> list:
+    ) -> List[str]:
         """
         Filters the features graph and returns it as a list.
 
@@ -257,9 +258,9 @@ class Parser(object):
 
     def filter_based_on_feature_set(
         self,
-        feature_set: (str,),
+        feature_set: List[str],
         ignore_excludes: bool = False,
-        additional_filter_func: Optional[Callable[(str,), bool]] = None,
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
     ) -> networkx.Graph:
         """
         Filters the features graph based on a feature set given.
@@ -282,11 +283,11 @@ class Parser(object):
                 self.graph.add_node("libc", content=BARE_FLAVOR_LIBC_FEATURE_CONTENT)
 
         for feature in feature_set:
-            filter_set.update(
-                networkx.descendants(
-                    Parser._get_graph_view_for_attr(self.graph, "include"), feature
-                )
-            )
+            for node in networkx.descendants(
+                Parser._get_graph_view_for_attr(self.graph, "include"), feature
+            ):
+                if node not in filter_set:
+                    filter_set.append(node)
 
         graph = networkx.subgraph_view(
             self.graph,
@@ -300,7 +301,9 @@ class Parser(object):
 
         return graph
 
-    def _exclude_from_filter_set(graph, feature_set, filter_set):
+    def _exclude_from_filter_set(
+        graph: networkx.Graph, feature_set: List[str], filter_set: List[str]
+    ) -> None:
         """
         Removes the given `filter_set` out of `feature_set`.
 
@@ -310,9 +313,7 @@ class Parser(object):
         :since: 0.7.0
         """
 
-        exclude_graph_view = cast(
-            networkx.DiGraph, Parser._get_graph_view_for_attr(graph, "exclude")
-        )
+        exclude_graph_view = Parser._get_graph_view_for_attr(graph, "exclude")
         exclude_list = []
 
         for node in networkx.lexicographical_topological_sort(graph):
@@ -332,7 +333,7 @@ class Parser(object):
         if exclude_graph_view.edges():
             raise ValueError("Including explicitly excluded feature")
 
-    def _get_node_features(self, node):
+    def _get_node_features(self, node: Dict[str, Any]) -> Dict[str, Any]:
         """
         Returns the features for a given features node.
 
@@ -342,9 +343,9 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        return node.get("content", {}).get("features", {})
+        return node.get("content", {}).get("features", {})  # type: ignore[no-any-return]
 
-    def _read_feature_yaml(self, feature_yaml_file: str):
+    def _read_feature_yaml(self, feature_yaml_file: str) -> Dict[str, Any]:
         """
         Reads and returns the content of the given features file.
 
@@ -362,21 +363,54 @@ class Parser(object):
         return {"name": name, "content": content}
 
     @staticmethod
-    def get_cname_as_feature_set(cname):
+    def get_flavor_from_feature_set(sorted_features: List[str]) -> str:
+        """
+        Get the base cname for the feature set given.
+
+        :param sorted_features: Sorted feature set
+
+        :return: (str) Base cname
+        :since: 0.7.0
+        """
+
+        return reduce(
+            lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
+        )
+
+    @staticmethod
+    def get_flavor_as_feature_set(cname: str) -> List[str]:
         """
         Returns the features of a given canonical name.
 
         :param cname: Canonical name
 
-        :return: (set) Features of the cname
-        :since:  0.7.0
+        :return: (list) Features of the cname
+        :since:  0.11.0
         """
 
         cname = cname.replace("_", "-_")
-        return set(cname.split("-"))
+
+        platform = None
+        features = []
+        flags = []
+
+        for feature in cname.split("-"):
+            if platform is None:
+                platform = feature
+                continue
+
+            if feature[:1] == "_":
+                flags.append(feature)
+            else:
+                features.append(feature)
+
+        return [platform] + sorted(features) + sorted(flags)  # type: ignore[return-value]
 
     @staticmethod
-    def _get_filter_set_callable(filter_set, additional_filter_func):
+    def _get_filter_set_callable(
+        filter_set: List[str],
+        additional_filter_func: Optional[Callable[[str], bool]] = None,
+    ) -> Callable[[str], bool]:
         """
         Returns the filter function used for the graph.
 
@@ -387,16 +421,17 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        def filter_func(node):
+        def filter_func(node: str) -> bool:
             additional_filter_result = (
                 True if additional_filter_func is None else additional_filter_func(node)
             )
+
             return node in filter_set and additional_filter_result
 
         return filter_func
 
     @staticmethod
-    def _get_graph_view_for_attr(graph, attr):
+    def _get_graph_view_for_attr(graph: networkx.Graph, attr: str) -> networkx.Graph:
         """
         Returns a graph view to return `attr` data.
 
@@ -412,7 +447,9 @@ class Parser(object):
         )
 
     @staticmethod
-    def _get_graph_view_for_attr_callable(graph, attr):
+    def _get_graph_view_for_attr_callable(
+        graph: networkx.Graph, attr: str
+    ) -> Callable[[str, str], bool]:
         """
         Returns the filter function used to filter for `attr` data.
 
@@ -423,13 +460,13 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        def filter_func(a, b):
-            return graph.get_edge_data(a, b)["attr"] == attr
+        def filter_func(a: str, b: str) -> bool:
+            return graph.get_edge_data(a, b)["attr"] == attr  # type: ignore[no-any-return]
 
         return filter_func
 
     @staticmethod
-    def _get_graph_node_type(node):
+    def _get_graph_node_type(node: str) -> str:
         """
         Returns the node feature type.
 
@@ -439,10 +476,10 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        return node.get("content", {}).get("type")
+        return node.get("content", {}).get("type")  # type: ignore[attr-defined, no-any-return]
 
     @staticmethod
-    def set_default_gardenlinux_root_dir(root_dir):
+    def set_default_gardenlinux_root_dir(root_dir: str) -> None:
         """
         Sets the default GardenLinux root directory used.
 
@@ -454,7 +491,7 @@ class Parser(object):
         Parser._GARDENLINUX_ROOT = root_dir
 
     @staticmethod
-    def sort_graph_nodes(graph):
+    def sort_graph_nodes(graph: networkx.Graph) -> List[str]:
         """
         Sorts graph nodes by feature type.
 
@@ -464,7 +501,7 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        def key_function(node):
+        def key_function(node: str) -> str:
             prefix_map = {"platform": "0", "element": "1", "flag": "2"}
             node_type = Parser._get_graph_node_type(graph.nodes.get(node, {}))
             prefix = prefix_map[node_type]
@@ -474,7 +511,21 @@ class Parser(object):
         return list(networkx.lexicographical_topological_sort(graph, key=key_function))
 
     @staticmethod
-    def sort_reversed_graph_nodes(graph):
+    def subset(input_set: Set[str], order_list: List[str]) -> List[str]:
+        """
+        Returns items from `order_list` if given in `input_set`.
+
+        :param input_set:  Set of values for filtering
+        :param order_list: Set of values to be filtered
+
+        :return: (list) Subset
+        :since:  0.11.0
+        """
+
+        return [item for item in order_list if item in input_set]
+
+    @staticmethod
+    def sort_reversed_graph_nodes(graph: networkx.Graph) -> List[str]:
         """
         Sorts graph nodes by feature type.
 

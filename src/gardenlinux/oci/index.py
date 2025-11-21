@@ -2,11 +2,12 @@
 
 import json
 from copy import deepcopy
+from typing import Any, Dict
 
 from .schemas import EmptyIndex
 
 
-class Index(dict):
+class Index(dict):  # type: ignore[type-arg]
     """
     OCI image index
 
@@ -19,7 +20,7 @@ class Index(dict):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         """
         Constructor __init__(Index)
 
@@ -33,7 +34,7 @@ class Index(dict):
         self.update(**kwargs)
 
     @property
-    def json(self):
+    def json(self) -> bytes:
         """
         Returns the OCI image index as a JSON
 
@@ -44,7 +45,7 @@ class Index(dict):
         return json.dumps(self).encode("utf-8")
 
     @property
-    def manifests_as_dict(self):
+    def manifests_as_dict(self) -> Dict[str, Dict[str, Any]]:
         """
         Returns the OCI image manifests of the index
 
@@ -64,7 +65,7 @@ class Index(dict):
 
         return manifests
 
-    def append_manifest(self, manifest):
+    def append_manifest(self, manifest: Dict[str, Any]) -> None:
         """
         Appends the given OCI image manifest to the index
 
