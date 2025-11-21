@@ -1095,6 +1095,18 @@ files = [
 markers = {main = "implementation_name != \"PyPy\"", dev = "platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\""}
 
 [[package]]
+name = "pyelftools"
+version = "0.32"
+description = "Library for analyzing ELF files and DWARF debugging information"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pyelftools-0.32-py3-none-any.whl", hash = "sha256:013df952a006db5e138b1edf6d8a68ecc50630adbd0d83a2d41e7f846163d738"},
+    {file = "pyelftools-0.32.tar.gz", hash = "sha256:6de90ee7b8263e740c8715a925382d4099b354f29ac48ea40d840cf7aa14ace5"},
+]
+
+[[package]]
 name = "pygit2"
 version = "1.19.0"
 description = "Python bindings for libgit2."
@@ -1901,4 +1913,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "ea1c3fd1bb706d5202222d76cea0a99b8f1091ea3d3b25532c53f0e48276d8ed"
+content-hash = "9e9d65ab3a2ba41e4a109299cfb2d2ea04b94c647471f020922148f2e6a906c8"
