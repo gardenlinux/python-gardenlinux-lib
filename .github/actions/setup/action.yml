@@ -46,7 +46,6 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python_version }}
-        cache: ${{ steps.env-check.outputs.package_tool }}
 
     - name: Install GardenLinux Python library
       shell: bash
