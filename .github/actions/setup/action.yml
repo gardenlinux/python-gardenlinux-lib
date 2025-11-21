@@ -47,7 +47,9 @@ runs:
       with:
         python-version: ${{ inputs.python_version }}
         cache: ${{ steps.env-check.outputs.package_tool }}
-
+        cache-dependency-path: |
+          ${{ github.workspace }}/poetry.lock
+          ${{ github.workspace }}/requirements.txt
     - name: Install GardenLinux Python library
       shell: bash
       run: |
