@@ -63,16 +63,7 @@ def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
                     return pathlib.Path("/lib64/ld-linux-x86-64.so.2")
                 case arch:
                     raise RuntimeError(f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}")
-
-def _get_python_from_path() -> pathlib.Path | None:
-    interpreter = None
-    for dir in os.environ["PATH"].split(":"):
-        binary = pathlib.Path(dir, "python3")
-        if binary.is_file():
-            interpreter = binary
-            break
-    return interpreter
-
+                
 def _get_default_package_dir() -> pathlib.Path | None:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
@@ -82,7 +73,7 @@ def _get_default_package_dir() -> pathlib.Path | None:
     """
     
     # Needs to escape the virtual environment python-gardenlinx-lib is running in
-    interpreter = _get_python_from_path()
+    interpreter = shutil.which("python3")
     if interpreter:
         out = subprocess.run(
             [interpreter, "-c", "import site; print(site.getsitepackages()[0])"],
