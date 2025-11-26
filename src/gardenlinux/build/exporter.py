@@ -62,8 +62,11 @@ def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
                 case "EM_X86_64":
                     return pathlib.Path("/lib64/ld-linux-x86-64.so.2")
                 case arch:
-                    raise RuntimeError(f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}")
-                
+                    raise RuntimeError(
+                        f"Error: Unsupported architecture for {path}: only support x86_64 (003e), aarch64 (00b7) and i686 (0003), but was {arch}"
+                    )
+
+
 def _get_default_package_dir() -> pathlib.Path | None:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
@@ -71,22 +74,25 @@ def _get_default_package_dir() -> pathlib.Path | None:
     :return: (str) Path to directory
     :since:  1.0.0
     """
-    
+
     # Needs to escape the virtual environment python-gardenlinx-lib is running in
     interpreter = shutil.which("python3")
-    if interpreter:
-        out = subprocess.run(
-            [interpreter, "-c", "import site; print(site.getsitepackages()[0])"],
-            stdout=subprocess.PIPE,
+
+    if not interpreter:
+        raise RuntimeError(
+            f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information."
         )
-        return pathlib.Path(out.stdout.decode().strip())
-    else:
-        raise RuntimeError(f"Error: Couldn't identify a default python package directory. Please specifiy one using the --package-dir option. Use -h for more information.")
+
+    out = subprocess.run(
+        [interpreter, "-c", "import site; print(site.getsitepackages()[0])"],
+        stdout=subprocess.PIPE,
+    )
+    return pathlib.Path(out.stdout.decode().strip())
 
 
 def export(
     output_dir: str | PathLike[str] = "/required_libs",
-    package_dir: str | PathLike[str] | None = None
+    package_dir: str | PathLike[str] | None = None,
 ) -> None:
     """
     Identifies shared library dependencies of `package_dir` and copies them to `output_dir`.
@@ -102,7 +108,7 @@ def export(
     else:
         package_dir = pathlib.Path(package_dir)
     output_dir = pathlib.Path(output_dir)
-        
+
     # Collect ld dependencies for installed pip packages
     dependencies = set()
     for root, dirs, files in package_dir.walk():

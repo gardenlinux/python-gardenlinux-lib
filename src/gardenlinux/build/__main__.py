@@ -53,7 +53,10 @@ def main():
 
     match args.type:
         case "export-python-libs":
-            export(output_dir=pathlib.Path(args.output_dir), package_dir=pathlib.Path(args.package_dir))
+            export(
+                output_dir=pathlib.Path(args.output_dir),
+                package_dir=pathlib.Path(args.package_dir),
+            )
         case _:
             raise NotImplementedError
 
