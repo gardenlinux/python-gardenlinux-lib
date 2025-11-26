@@ -52,14 +52,14 @@ dev = ["backports.zoneinfo ; python_version < \"3.9\"", "freezegun (>=1.0,<2.0)"
 
 [[package]]
 name = "bandit"
-version = "1.8.6"
+version = "1.9.2"
 description = "Security oriented static analyser for python code."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "bandit-1.8.6-py3-none-any.whl", hash = "sha256:3348e934d736fcdb68b6aa4030487097e23a501adf3e7827b63658df464dddd0"},
-    {file = "bandit-1.8.6.tar.gz", hash = "sha256:dbfe9c25fc6961c2078593de55fd19f2559f9e45b99f1272341f5b95dea4e56b"},
+    {file = "bandit-1.9.2-py3-none-any.whl", hash = "sha256:bda8d68610fc33a6e10b7a8f1d61d92c8f6c004051d5e946406be1fb1b16a868"},
+    {file = "bandit-1.9.2.tar.gz", hash = "sha256:32410415cd93bf9c8b91972159d5cf1e7f063a9146d70345641cd3877de348ce"},
 ]
 
 [package.dependencies]
@@ -127,34 +127,34 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.40.74"
+version = "1.41.2"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "boto3-1.40.74-py3-none-any.whl", hash = "sha256:41fc8844b37ae27b24bcabf8369769df246cc12c09453988d0696ad06d6aa9ef"},
-    {file = "boto3-1.40.74.tar.gz", hash = "sha256:484e46bf394b03a7c31b34f90945ebe1390cb1e2ac61980d128a9079beac87d4"},
+    {file = "boto3-1.41.2-py3-none-any.whl", hash = "sha256:edcde82fdae4201aa690e3683f8e5b1a846cf1bbf79d03db4fa8a2f6f46dba9c"},
+    {file = "boto3-1.41.2.tar.gz", hash = "sha256:7054fbc61cadab383f40ea6d725013ba6c8f569641dddb14c0055e790280ad6c"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.74,<1.41.0"
+botocore = ">=1.41.2,<1.42.0"
 jmespath = ">=0.7.1,<2.0.0"
-s3transfer = ">=0.14.0,<0.15.0"
+s3transfer = ">=0.15.0,<0.16.0"
 
 [package.extras]
 crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.74"
+version = "1.41.2"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "botocore-1.40.74-py3-none-any.whl", hash = "sha256:f39f5763e35e75f0bd91212b7b36120b1536203e8003cd952ef527db79702b15"},
-    {file = "botocore-1.40.74.tar.gz", hash = "sha256:57de0b9ffeada06015b3c7e5186c77d0692b210d9e5efa294f3214df97e2f8ee"},
+    {file = "botocore-1.41.2-py3-none-any.whl", hash = "sha256:154052dfaa7292212f01c8fab822c76cd10a15a7e164e4c45e4634eb40214b90"},
+    {file = "botocore-1.41.2.tar.gz", hash = "sha256:49a3e8f4c1a1759a687941fef8b36efd7bafcf63c1ef74aa75d6497eb4887c9c"},
 ]
 
 [package.dependencies]
@@ -913,14 +913,14 @@ files = [
 
 [[package]]
 name = "moto"
-version = "5.1.16"
+version = "5.1.17"
 description = "A library that allows you to easily mock out tests based on AWS infrastructure"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "moto-5.1.16-py3-none-any.whl", hash = "sha256:8e6186f20b3aa91755d186e47701fe7e47f74e625c36fdf3bd7747da68468b19"},
-    {file = "moto-5.1.16.tar.gz", hash = "sha256:792045b345d16a8aa09068ad4a7656894e707c796f0799b438fffb738e8fae7c"},
+    {file = "moto-5.1.17-py3-none-any.whl", hash = "sha256:7c59e92f6fc50a425b718ab1d490eee570dc0cf3dc7dc3d7ab222b8f1e1cb7fc"},
+    {file = "moto-5.1.17.tar.gz", hash = "sha256:31b832de25846529963bcb273448240cae34b9cbaff0bdae15f75c716c08a5f8"},
 ]
 
 [package.dependencies]
@@ -971,22 +971,24 @@ files = [
 
 [[package]]
 name = "networkx"
-version = "3.5"
+version = "3.6"
 description = "Python package for creating and manipulating graphs and networks"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "networkx-3.5-py3-none-any.whl", hash = "sha256:0030d386a9a06dee3565298b4a734b68589749a544acbb6c412dc9e2489ec6ec"},
-    {file = "networkx-3.5.tar.gz", hash = "sha256:d4c6f9cf81f52d69230866796b82afbccdec3db7ae4fbd1b65ea750feed50037"},
+    {file = "networkx-3.6-py3-none-any.whl", hash = "sha256:cdb395b105806062473d3be36458d8f1459a4e4b98e236a66c3a48996e07684f"},
+    {file = "networkx-3.6.tar.gz", hash = "sha256:285276002ad1f7f7da0f7b42f004bcba70d381e936559166363707fdad3d72ad"},
 ]
 
 [package.extras]
+benchmarking = ["asv", "virtualenv"]
 default = ["matplotlib (>=3.8)", "numpy (>=1.25)", "pandas (>=2.0)", "scipy (>=1.11.2)"]
 developer = ["mypy (>=1.15)", "pre-commit (>=4.1)"]
 doc = ["intersphinx-registry", "myst-nb (>=1.1)", "numpydoc (>=1.8.0)", "pillow (>=10)", "pydata-sphinx-theme (>=0.16)", "sphinx (>=8.0)", "sphinx-gallery (>=0.18)", "texext (>=0.6.7)"]
-example = ["cairocffi (>=1.7)", "contextily (>=1.6)", "igraph (>=0.11)", "momepy (>=0.7.2)", "osmnx (>=2.0.0)", "scikit-learn (>=1.5)", "seaborn (>=0.13)"]
+example = ["cairocffi (>=1.7)", "contextily (>=1.6)", "igraph (>=0.11)", "iplotx (>=0.9.0)", "momepy (>=0.7.2)", "osmnx (>=2.0.0)", "scikit-learn (>=1.5)", "seaborn (>=0.13)"]
 extra = ["lxml (>=4.6)", "pydot (>=3.0.1)", "pygraphviz (>=1.14)", "sympy (>=1.10)"]
+release = ["build (>=0.10)", "changelist (==0.5)", "twine (>=4.0)", "wheel (>=0.40)"]
 test = ["pytest (>=7.2)", "pytest-cov (>=4.0)", "pytest-xdist (>=3.0)"]
 test-extras = ["pytest-mpl", "pytest-randomly"]
 
@@ -1612,14 +1614,14 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.14.0"
+version = "0.15.0"
 description = "An Amazon S3 Transfer Manager"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "s3transfer-0.14.0-py3-none-any.whl", hash = "sha256:ea3b790c7077558ed1f02a3072fb3cb992bbbd253392f4b6e9e8976941c7d456"},
-    {file = "s3transfer-0.14.0.tar.gz", hash = "sha256:eff12264e7c8b4985074ccce27a3b38a485bb7f7422cc8046fee9be4983e4125"},
+    {file = "s3transfer-0.15.0-py3-none-any.whl", hash = "sha256:6f8bf5caa31a0865c4081186689db1b2534cef721d104eb26101de4b9d6a5852"},
+    {file = "s3transfer-0.15.0.tar.gz", hash = "sha256:d36fac8d0e3603eff9b5bfa4282c7ce6feb0301a633566153cbd0b93d11d8379"},
 ]
 
 [package.dependencies]
