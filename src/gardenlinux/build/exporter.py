@@ -10,8 +10,6 @@ from os import PathLike
 from elftools.common.exceptions import ELFError
 from elftools.elf.elffile import ELFFile
 
-from ..logger import LoggerSetup
-
 # Parses dependencies from ld output
 parse_output = re.compile("(?:.*=>)?\\s*(/\\S*).*\n")
 # Remove leading /
@@ -67,7 +65,7 @@ def _getInterpreter(path: str | PathLike[str]) -> pathlib.Path:
                     )
 
 
-def _get_default_package_dir() -> pathlib.Path | None:
+def _get_default_package_dir() -> pathlib.Path:
     """
     Finds the default site-packages or dist-packages directory of the default python3 environment
 
