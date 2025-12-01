@@ -12,7 +12,7 @@ from configparser import UNNAMED_SECTION, ConfigParser
 from os import PathLike, fdopen, getenv
 from pathlib import Path
 from tempfile import mkstemp
-from typing import Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit
 
 import jsonschema
@@ -31,7 +31,7 @@ from .manifest import Manifest
 from .schemas import index as IndexSchema
 
 
-class Container(Registry):
+class Container(Registry):  # type: ignore[misc]
     """
     OCI container instance to provide methods for interaction.
 
@@ -129,7 +129,7 @@ class Container(Registry):
         version: Optional[str] = None,
         commit: Optional[str] = None,
         feature_set: Optional[str] = None,
-    ):
+    ) -> ImageManifest:
         """
         Generates an OCI image manifest
 
@@ -159,9 +159,9 @@ class Container(Registry):
 
         manifest = ImageManifest()
 
-        manifest.version = version
+        manifest.version = version  # type: ignore[assignment]
         manifest.cname = cname
-        manifest.arch = architecture
+        manifest.arch = architecture  # type: ignore[assignment]
         manifest.feature_set = feature_set
         manifest.commit = commit
 
@@ -182,7 +182,7 @@ class Container(Registry):
 
         return manifest
 
-    def generate_index(self):
+    def generate_index(self) -> Index:
         """
         Generates an OCI image index
 
@@ -196,7 +196,7 @@ class Container(Registry):
         self,
         version: Optional[str] = None,
         commit: Optional[str] = None,
-    ):
+    ) -> Manifest:
         """
         Generates an OCI manifest
 
@@ -212,14 +212,14 @@ class Container(Registry):
 
         manifest = Manifest()
 
-        manifest.version = version
-        manifest.commit = commit
+        manifest.version = version  # type: ignore[assignment]
+        manifest.commit = commit  # type: ignore[assignment]
 
         manifest.config_from_dict({}, {})
 
         return manifest
 
-    def _get_index_without_response_parsing(self):
+    def _get_index_without_response_parsing(self) -> Response:
         """
         Return the response of an OCI image index request.
 
@@ -231,12 +231,12 @@ class Container(Registry):
             f"{self._container_name}:{self._container_version}"
         ).manifest_url()
 
-        return self.do_request(
+        return self.do_request(  # type: ignore[no-any-return]
             f"{self.prefix}://{manifest_url}",
             headers={"Accept": OCI_IMAGE_INDEX_MEDIA_TYPE},
         )
 
-    def _get_manifest_without_response_parsing(self, reference):
+    def _get_manifest_without_response_parsing(self, reference: str) -> Response:
         """
         Return the response of an OCI image manifest request.
 
@@ -244,14 +244,16 @@ class Container(Registry):
         :since:  0.7.0
         """
 
-        return self.do_request(
+        return self.do_request(  # type: ignore[no-any-return]
             f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
             headers={"Accept": "application/vnd.oci.image.manifest.v1+json"},
         )
 
     def push_index_from_directory(
-        self, manifests_dir: PathLike | str, additional_tags: list = None
-    ):
+        self,
+        manifests_dir: PathLike[str] | str,
+        additional_tags: Optional[List[str]] = None,
+    ) -> None:
         """
         Replaces an old manifest entries with new ones
 
@@ -272,7 +274,7 @@ class Container(Registry):
 
         new_entries = 0
 
-        for file_path_name in manifests_dir.iterdir():
+        for file_path_name in manifests_dir.iterdir():  # type: ignore[attr-defined]
             with open(file_path_name, "r") as fp:
                 manifest = json.loads(fp.read())
 
@@ -283,7 +285,7 @@ class Container(Registry):
 
                 if manifest["digest"] == existing_manifest["digest"]:
                     self._logger.debug(
-                        f"Skipping manifest with digest {manifest["digest"]} - already exists"
+                        f"Skipping manifest with digest {manifest['digest']} - already exists"
                     )
 
                     continue
@@ -291,7 +293,7 @@ class Container(Registry):
             index.append_manifest(manifest)
 
             self._logger.info(
-                f"Index appended locally {manifest["annotations"]["cname"]}"
+                f"Index appended locally {manifest['annotations']['cname']}"
             )
 
             new_entries += 1
@@ -307,7 +309,7 @@ class Container(Registry):
                 additional_tags,
             )
 
-    def push_index_for_tags(self, index, tags):
+    def push_index_for_tags(self, index: Index, tags: List[str]) -> None:
         """
         Push tags for an given OCI image index.
 
@@ -325,7 +327,7 @@ class Container(Registry):
         self,
         manifest: Manifest,
         manifest_file: Optional[str] = None,
-        additional_tags: Optional[list] = None,
+        additional_tags: Optional[List[str]] = None,
     ) -> Manifest:
         """
         Pushes an OCI image manifest.
@@ -358,9 +360,12 @@ class Container(Registry):
         finally:
             Path(config_file).unlink()
 
-        manifest_container = OrasContainer(
-            f"{self._container_url}:{self._container_version}-{manifest.cname}-{manifest.arch}"
-        )
+        manifest_url = f"{self._container_url}:{self._container_version}"
+
+        if isinstance(manifest, ImageManifest):
+            manifest_url += f"-{manifest.cname}-{manifest.arch}"
+
+        manifest_container = OrasContainer(manifest_url)
 
         self._check_200_response(self.upload_manifest(manifest, manifest_container))
 
@@ -376,7 +381,7 @@ class Container(Registry):
                 additional_tags,
             )
 
-        if manifest_file is not None:
+        if manifest_file is not None and isinstance(manifest, ImageManifest):
             manifest.write_metadata_file(manifest_file)
             self._logger.info(f"Index entry written to {manifest_file}")
 
@@ -384,11 +389,11 @@ class Container(Registry):
 
     def push_manifest_and_artifacts(
         self,
-        manifest: Manifest,
-        artifacts_with_metadata: list[dict],
-        artifacts_dir: Optional[PathLike | str] = ".build",
+        manifest: ImageManifest,
+        artifacts_with_metadata: list[Dict[str, Any]],
+        artifacts_dir: PathLike[str] | str = ".build",
         manifest_file: Optional[str] = None,
-        additional_tags: Optional[list] = None,
+        additional_tags: Optional[List[str]] = None,
     ) -> Manifest:
         """
         Pushes an OCI image manifest and its artifacts.
@@ -403,7 +408,7 @@ class Container(Registry):
         :since:  0.7.0
         """
 
-        if not isinstance(manifest, Manifest):
+        if not isinstance(manifest, ImageManifest):
             raise RuntimeError("Artifacts image manifest given is invalid")
 
         if not isinstance(artifacts_dir, PathLike):
@@ -413,7 +418,7 @@ class Container(Registry):
 
         # For each file, create sign, attach and push a layer
         for artifact in artifacts_with_metadata:
-            file_path_name = artifacts_dir.joinpath(artifact["file_name"])
+            file_path_name = artifacts_dir.joinpath(artifact["file_name"])  # type: ignore[attr-defined]
 
             layer = Layer(file_path_name, artifact["media_type"])
 
@@ -440,7 +445,7 @@ class Container(Registry):
                 )
 
                 self._logger.info(
-                    f"Pushed {artifact["file_name"]}: {layer_dict["digest"]}"
+                    f"Pushed {artifact['file_name']}: {layer_dict['digest']}"
                 )
             finally:
                 if cleanup_blob and file_path_name.exists():
@@ -452,10 +457,10 @@ class Container(Registry):
 
     def push_manifest_and_artifacts_from_directory(
         self,
-        manifest: Manifest,
-        artifacts_dir: Optional[PathLike | str] = ".build",
+        manifest: ImageManifest,
+        artifacts_dir: PathLike[str] | str = ".build",
         manifest_file: Optional[str] = None,
-        additional_tags: Optional[list] = None,
+        additional_tags: Optional[List[str]] = None,
     ) -> Manifest:
         """
         Pushes an OCI image manifest and its artifacts from the given directory.
@@ -472,16 +477,18 @@ class Container(Registry):
         if not isinstance(artifacts_dir, PathLike):
             artifacts_dir = Path(artifacts_dir)
 
-        if not isinstance(manifest, Manifest):
+        if not isinstance(manifest, ImageManifest):
             raise RuntimeError("Artifacts image manifest given is invalid")
 
         # Scan and extract nested artifacts
-        for file_path_name in artifacts_dir.glob("*.pxe.tar.gz"):
+        for file_path_name in artifacts_dir.glob("*.pxe.tar.gz"):  # type: ignore[attr-defined]
             self._logger.info(f"Found nested artifact {file_path_name}")
             extract_targz(file_path_name, artifacts_dir)
 
         files = [
-            file_name for file_name in artifacts_dir.iterdir() if file_name.is_file()
+            file_name
+            for file_name in artifacts_dir.iterdir()  # type: ignore[attr-defined]
+            if file_name.is_file()
         ]
 
         artifacts_with_metadata = Container.get_artifacts_metadata_from_files(
@@ -491,7 +498,7 @@ class Container(Registry):
         for artifact in artifacts_with_metadata:
             if artifact["media_type"] == "application/io.gardenlinux.release":
                 artifact_config = ConfigParser(allow_unnamed_section=True)
-                artifact_config.read(artifacts_dir.joinpath(artifact["file_name"]))
+                artifact_config.read(artifacts_dir.joinpath(artifact["file_name"]))  # type: ignore[attr-defined]
 
                 if artifact_config.has_option(UNNAMED_SECTION, "GARDENLINUX_FEATURES"):
                     manifest.feature_set = artifact_config.get(
@@ -513,7 +520,7 @@ class Container(Registry):
             additional_tags,
         )
 
-    def push_manifest_for_tags(self, manifest, tags):
+    def push_manifest_for_tags(self, manifest: Manifest, tags: List[str]) -> None:
         """
         Push tags for an given OCI image manifest.
 
@@ -529,11 +536,11 @@ class Container(Registry):
 
             self._check_200_response(self.upload_manifest(manifest, manifest_container))
 
-    def read_or_generate_index(self):
+    def read_or_generate_index(self) -> Index:
         """
         Reads from registry or generates the OCI image index.
 
-        :return: OCI image manifest
+        :return: OCI image index
         :since:  0.7.0
         """
 
@@ -555,7 +562,7 @@ class Container(Registry):
         version: Optional[str] = None,
         commit: Optional[str] = None,
         feature_set: Optional[str] = None,
-    ) -> Manifest:
+    ) -> Manifest | ImageManifest:
         """
         Reads from registry or generates the OCI manifest.
 
@@ -599,7 +606,7 @@ class Container(Registry):
 
         return manifest
 
-    def _upload_index(self, index: dict, reference: Optional[str] = None) -> Response:
+    def _upload_index(self, index: Index, reference: Optional[str] = None) -> Response:
         """
         Uploads the given OCI image index and returns the response.
 
@@ -615,7 +622,7 @@ class Container(Registry):
         if reference is None:
             reference = self._container_version
 
-        return self.do_request(
+        return self.do_request(  # type: ignore[no-any-return]
             f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
             "PUT",
             headers={"Content-Type": OCI_IMAGE_INDEX_MEDIA_TYPE},
@@ -623,7 +630,9 @@ class Container(Registry):
         )
 
     @staticmethod
-    def get_artifacts_metadata_from_files(files: list, arch: str) -> list:
+    def get_artifacts_metadata_from_files(
+        files: List[str], arch: str
+    ) -> List[Dict[str, Any]]:
         """
         Returns OCI layer metadata for the given list of files.
 

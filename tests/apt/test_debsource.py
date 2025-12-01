@@ -86,7 +86,7 @@ Description: Vi IMproved - enhanced vi editor - compact version
 """
 
 
-def test_parse_debsource_file():
+def test_parse_debsource_file() -> None:
     expected = sorted(
         [
             "vim-common 2:9.1.0496-1",

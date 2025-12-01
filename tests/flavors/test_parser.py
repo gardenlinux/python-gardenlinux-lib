@@ -1,11 +1,13 @@
+from typing import Any, Dict
+
 import pytest
 import yaml
 
 from gardenlinux.flavors.parser import Parser
 
 
-@pytest.fixture
-def valid_data():
+@pytest.fixture  # type: ignore[misc]
+def valid_data() -> Dict[str, Any]:
     """Minimal data for valid GL_FLAVORS_SCHEMA."""
     return {
         "targets": [
@@ -49,14 +51,14 @@ def valid_data():
     }
 
 
-def make_parser(data):
+def make_parser(data: str) -> Parser:
     """
     Construct Parser from dict.
     """
     return Parser(data)
 
 
-def test_init_accepts_yaml_and_dict(valid_data):
+def test_init_accepts_yaml_and_dict(valid_data: str) -> None:
     # Arrange
     yaml_str = yaml.safe_dump(valid_data)
 
@@ -69,7 +71,7 @@ def test_init_accepts_yaml_and_dict(valid_data):
     assert p_from_yaml._flavors_data == valid_data
 
 
-def test_filter_defaults(valid_data):
+def test_filter_defaults(valid_data: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
 
@@ -82,7 +84,7 @@ def test_filter_defaults(valid_data):
     assert any("linux-arm64" in name for name in combo_names)
 
 
-def test_filter_category_and_exclude(valid_data):
+def test_filter_category_and_exclude(valid_data: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
 
@@ -95,19 +97,19 @@ def test_filter_category_and_exclude(valid_data):
     assert all("android" in name for _, name in android_combos)
 
 
-@pytest.mark.parametrize("flag", ["only_build", "only_test", "only_publish"])
-def test_filter_with_flags(valid_data, flag):
+@pytest.mark.parametrize("flag", ["only_build", "only_test", "only_publish"])  # type: ignore[misc]
+def test_filter_with_flags(valid_data: str, flag: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
 
     # Act
-    combos = parser.filter(**{flag: True})
+    combos = parser.filter(only_build=True)
 
     # Assert
     assert all("linux-f1-amd64" in name for _, name in combos)
 
 
-def test_filter_only_test_platform(valid_data):
+def test_filter_only_test_platform(valid_data: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
 
@@ -118,7 +120,7 @@ def test_filter_only_test_platform(valid_data):
     assert combos == [("arm64", "android-f2-arm64")]
 
 
-def test_filter_with_excludes(valid_data):
+def test_filter_with_excludes(valid_data: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
 
@@ -129,7 +131,7 @@ def test_filter_with_excludes(valid_data):
     assert all(not name.startswith("linux") for _, name in combos)
 
 
-def test_group_by_arch_and_remove_arch():
+def test_group_by_arch_and_remove_arch() -> None:
     # Arrange
     combos = [
         ("amd64", "linux-amd64"),
@@ -147,7 +149,7 @@ def test_group_by_arch_and_remove_arch():
     assert "linux" in removed and "android" in removed
 
 
-def test_exclude_include_only():
+def test_exclude_include_only() -> None:
     # Arrange / Act / Assert
     assert Parser.should_exclude("abc", ["abc"], []) is True
     assert Parser.should_exclude("abc", [], ["a*"]) is True
