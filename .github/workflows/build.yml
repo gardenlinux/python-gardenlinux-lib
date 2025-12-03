@@ -17,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Force Python Version (workaround)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
       - name: Simple poetry build no package
         run: make build
