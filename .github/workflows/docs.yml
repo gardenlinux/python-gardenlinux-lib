@@ -3,14 +3,14 @@ name: Update Sphinx documentation
 on: [push, pull_request, workflow_dispatch]
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - uses: ./.github/actions/setup
       - run: make docs
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
