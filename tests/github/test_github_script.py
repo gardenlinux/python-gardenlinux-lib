@@ -15,23 +15,32 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "argument command: invalid choice: 'rejoice'" in captured.err
-    ), "Expected help message printed"
+    assert "argument command: invalid choice: 'rejoice'" in captured.err, (
+        "Expected help message printed"
+    )
 
 
 def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
     monkeypatch.setattr(
-        sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo", "gardenlinux"]
+        sys,
+        "argv",
+        [
+            "gh",
+            "create-with-gl-release-notes",
+            "--owner",
+            "gardenlinux",
+            "--repo",
+            "gardenlinux",
+        ],
     )
 
     with pytest.raises(SystemExit):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "the following arguments are required: --tag, --commit" in captured.err
-    ), "Expected help message on missing arguments for 'create' command"
+    assert "the following arguments are required: --tag, --commit" in captured.err, (
+        "Expected help message on missing arguments for 'create' command"
+    )
 
 
 def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
@@ -50,13 +59,12 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
 
 
 def test_script_create_dry_run(monkeypatch, capfd):
-
     monkeypatch.setattr(
         sys,
         "argv",
         [
             "gh",
-            "create",
+            "create-with-gl-release-notes",
             "--owner",
             "gardenlinux",
             "--repo",
@@ -88,7 +96,9 @@ def test_script_create(monkeypatch, caplog):
         "argv",
         [
             "gh",
-            "create",
+            "create-with-gl-release-notes",
+            "--token",
+            "test",
             "--owner",
             "gardenlinux",
             "--repo",
@@ -102,10 +112,6 @@ def test_script_create(monkeypatch, caplog):
     monkeypatch.setattr(
         "gardenlinux.github.release.__main__.create_github_release_notes",
         lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
-    )
-    monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release",
-        lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE,
     )
 
     gh.main()
