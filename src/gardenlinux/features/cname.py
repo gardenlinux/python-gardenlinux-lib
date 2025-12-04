@@ -6,7 +6,7 @@ Canonical name (cname)
 
 import re
 from configparser import UNNAMED_SECTION, ConfigParser
-from os import PathLike
+from os import PathLike, environ
 from pathlib import Path
 from typing import List, Optional
 
@@ -51,8 +51,13 @@ class CName(object):
         self._commit_id = None
         self._feature_elements_cached = None
         self._feature_flags_cached = None
-        self._feature_platforms_cached = None
+        self._feature_platform_cached = None
         self._feature_set_cached = None
+
+        self._flag_multiple_platforms = bool(
+            environ.get("GL_ALLOW_FRANKENSTEIN", False)
+        )
+
         self._flavor = None
         self._version = None
 
@@ -117,7 +122,7 @@ class CName(object):
         :return: (str) CName
         :since:  0.7.0
         """
-        assert self._flavor is not None, "CName flavor is not set!"
+
         cname = self._flavor
 
         if self._arch is not None:
@@ -134,7 +139,7 @@ class CName(object):
         Returns the commit hash if part of the cname parsed.
 
         :return: (str) Commit hash
-        :since:  0.11.0
+        :since:  1.0.0
         """
 
         if self._commit_hash is None:
@@ -151,7 +156,7 @@ class CName(object):
 
         :param commit_hash: Commit hash
 
-        :since: 0.11.0
+        :since: 1.0.0
         """
 
         if self._commit_id is not None and not commit_hash.startswith(self._commit_id):
@@ -202,7 +207,7 @@ class CName(object):
         Returns the feature set of type "element" for the cname parsed.
 
         :return: (str) Feature set elements
-        :since:  0.11.0
+        :since:  1.0.0
         """
 
         if self._feature_elements_cached is not None:
@@ -216,7 +221,7 @@ class CName(object):
         Returns the feature set of type "flag" for the cname parsed.
 
         :return: (str) Feature set flags
-        :since:  0.11.0
+        :since:  1.0.0
         """
 
         if self._feature_flags_cached is not None:
@@ -229,14 +234,21 @@ class CName(object):
         """
         Returns the feature set of type "platform" for the cname parsed.
 
-        :return: (str) Feature set platforms
-        :since:  0.11.0
+        :return: (str) Feature set platform
+        :since:  1.0.0
         """
 
-        if self._feature_platforms_cached is not None:
-            return ",".join(self._feature_platforms_cached)
+        if self._feature_platform_cached is not None:
+            return self._feature_platform_cached
 
-        return ",".join(Parser().filter_as_dict(self.flavor)["platform"])
+        platforms = Parser().filter_as_dict(self.flavor)["platform"]
+
+        if self._flag_multiple_platforms:
+            return ",".join(platforms)
+
+        assert len(platforms) < 2
+        "Only one platform is supported"
+        return platforms[0]
 
     @property
     def release_metadata_string(self) -> str:
@@ -244,14 +256,18 @@ class CName(object):
         Returns the release metadata describing the given CName instance.
 
         :return: (str) Release metadata describing the given CName instance
-        :since:  0.11.0
+        :since:  1.0.0
         """
 
         features = Parser().filter_as_dict(self.flavor)
 
+        if not self._flag_multiple_platforms:
+            assert len(features["platform"]) < 2
+            "Only one platform is supported"
+
         elements = ",".join(features["element"])
         flags = ",".join(features["flag"])
-        platforms = ",".join(features["platform"])
+        platform = ",".join(features["platform"])
 
         metadata = f"""
 ID={GL_RELEASE_ID}
@@ -264,7 +280,7 @@ SUPPORT_URL="{GL_SUPPORT_URL}"
 BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
 GARDENLINUX_CNAME="{self.cname}"
 GARDENLINUX_FEATURES="{self.feature_set}"
-GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
+GARDENLINUX_FEATURES_PLATFORM="{platform}"
 GARDENLINUX_FEATURES_ELEMENTS="{elements}"
 GARDENLINUX_FEATURES_FLAGS="{flags}"
 GARDENLINUX_VERSION="{self.version}"
@@ -282,23 +298,8 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         :return: (str) Feature set platforms
         :since:  0.7.0
         """
-        assert self._flavor is not None, "Flavor not set!"
 
         return self.feature_set_platform
-
-    @property
-    def platforms(self) -> List[str]:
-        """
-        Returns the platforms for the cname parsed.
-
-        :return: (str) Platforms
-        :since:  0.11.0
-        """
-
-        if self._feature_platforms_cached is not None:
-            return self._feature_platforms_cached
-
-        return Parser().filter_as_dict(self.flavor)["platform"]
 
     @property
     def version(self) -> Optional[str]:
@@ -331,7 +332,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         :param release_file: Release metadata file
 
-        :since: 0.11.0
+        :since: 1.0.0
         """
 
         if not isinstance(release_file, PathLike):
@@ -350,7 +351,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
             "GARDENLINUX_FEATURES",
             "GARDENLINUX_FEATURES_ELEMENTS",
             "GARDENLINUX_FEATURES_FLAGS",
-            "GARDENLINUX_FEATURES_PLATFORMS",
+            "GARDENLINUX_FEATURES_PLATFORM",
             "GARDENLINUX_VERSION",
         ):
             if not release_config.has_option(UNNAMED_SECTION, release_field):
@@ -395,9 +396,9 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
             UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS"
         ).split(",")
 
-        self._feature_platforms_cached = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS"
-        ).split(",")
+        self._feature_platform_cached = release_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORM"
+        )
 
     def save_to_release_file(
         self, release_file: PathLike | str, overwrite: Optional[bool] = False
@@ -407,7 +408,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         :param release_file: Release metadata file
 
-        :since: 0.11.0
+        :since: 1.0.0
         """
 
         if not isinstance(release_file, PathLike):
