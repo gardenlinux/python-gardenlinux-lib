@@ -18,6 +18,7 @@ networkx = "^3.6"
 oras = "^0.2.38"
 pygit2 = "^1.19.0"
 pygments = "^2.19.2"
+PyGithub = "^2.8.1"
 PyYAML = "^6.0.2"
 gitpython = "^3.1.45"
 

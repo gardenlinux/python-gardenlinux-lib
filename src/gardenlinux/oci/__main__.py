@@ -15,7 +15,9 @@ from .image_manifest import ImageManifest
 @click.group()
 def cli() -> None:
     """
-    gl-oci click argument entrypoint
+gl-oci provides functionality to handle OCI containers. It can pull and push
+images from remote repositories as well as handle GardenLinux artifacts, OCI
+image indices and manifests.
 
     :since: 0.7.0
     """
