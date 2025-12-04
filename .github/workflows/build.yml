@@ -17,6 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - uses: ./.github/actions/setup
       - name: Simple poetry build no package
         run: make build

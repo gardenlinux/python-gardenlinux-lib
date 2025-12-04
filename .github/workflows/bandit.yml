@@ -17,15 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+      - uses: ./.github/actions/setup
       - name: Simple bandit security checks
         run: make security
       - name: Show Report in Action Output
         if: always()
         run: cat bandit-report.json
       - name: Upload Bandit Scan Artifact
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # pin@v5.0.0
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # pin@v5.0.0
         if: always()
         with:
-            name: bandit-findings
-            path: bandit-report.json
+          name: bandit-findings
+          path: bandit-report.json
