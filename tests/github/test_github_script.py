@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import gardenlinux.github.__main__ as gh
+import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
@@ -69,7 +69,7 @@ def test_script_create_dry_run(monkeypatch, capfd):
         ],
     )
     monkeypatch.setattr(
-        "gardenlinux.github.__main__.create_github_release_notes",
+        "gardenlinux.github.release.__main__.create_github_release_notes",
         lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
     )
 
@@ -100,11 +100,11 @@ def test_script_create(monkeypatch, caplog):
         ],
     )
     monkeypatch.setattr(
-        "gardenlinux.github.__main__.create_github_release_notes",
+        "gardenlinux.github.release.__main__.create_github_release_notes",
         lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
     )
     monkeypatch.setattr(
-        "gardenlinux.github.__main__.create_github_release",
+        "gardenlinux.github.release.__main__.create_github_release",
         lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE,
     )
 
@@ -135,7 +135,7 @@ def test_script_upload_dry_run(monkeypatch, capfd):
         ],
     )
     monkeypatch.setattr(
-        "gardenlinux.github.__main__.upload_to_github_release_page",
+        "gardenlinux.github.release.__main__.upload_to_github_release_page",
         lambda a1, a2, a3, a4, dry_run: print(f"dry-run: {dry_run}"),
     )
 
