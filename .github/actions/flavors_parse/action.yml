@@ -13,7 +13,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@0.10.7
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@f805dacd2a1e0feb41950f5bc311bd174639ad4f # 0.10.7
     - id: matrix
       shell: bash
       run: |
