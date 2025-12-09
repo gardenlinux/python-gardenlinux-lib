@@ -2,16 +2,16 @@ name: features_parse
 description: Parses the given GardenLinux features parameters
 inputs:
   flags:
-    description: 'Flags passed to `gl-features-parse`'
+    description: "Flags passed to `gl-features-parse`"
     required: true
 outputs:
   result:
-    description: 'features result'
+    description: "features result"
     value: ${{ steps.result.outputs.result }}
 runs:
   using: composite
   steps:
-    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@f805dacd2a1e0feb41950f5bc311bd174639ad4f # 0.10.7
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@124bed686e26b2014e89f4359b67cde59bc66e03 # 0.10.8
     - id: result
       shell: bash
       run: |
