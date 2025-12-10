@@ -23,6 +23,7 @@ _ARGS_TYPE_ALLOWED = [
     "commit_id",
     "features",
     "platform",
+    "platforms",
     "flags",
     "flavor",
     "elements",
@@ -143,6 +144,7 @@ def main() -> None:
         "flavor",
         "graph",
         "platform",
+        "platforms",
     ):
         if args.type == "graph" or len(args.ignore) > 0:
             features_parser = Parser(gardenlinux_root, feature_dir_name)
@@ -255,13 +257,15 @@ def print_output_from_features_parser(
                 flavor, additional_filter_func=additional_filter_func
             )
         )
-    elif output_type in ("platform", "elements", "flags"):
+    elif output_type in ("platform", "platforms", "elements", "flags"):
         features_by_type = parser.filter_as_dict(
             flavor, additional_filter_func=additional_filter_func
         )
 
         if output_type == "platform":
             print(features_by_type["platform"][0])
+        if output_type == "platforms":
+            print(",".join(features_by_type["platform"]))
         elif output_type == "elements":
             print(",".join(features_by_type["element"]))
         elif output_type == "flags":
@@ -290,12 +294,6 @@ def print_output_from_features_parser(
             print(cname)
         elif output_type == "container_name":
             print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
-        elif output_type == "platform":
-            print(features_by_type["platform"][0])
-        elif output_type == "elements":
-            print(",".join(features_by_type["element"]))
-        elif output_type == "flags":
-            print(",".join(features_by_type["flag"]))
         elif output_type == "graph":
             print(graph_as_mermaid_markup(flavor, graph))
 
@@ -328,6 +326,8 @@ def print_output_from_cname(output_type: str, cname_instance: CName) -> None:
     elif output_type == "container_name":
         print(RE_CAMEL_CASE_SPLITTER.sub("\\1-\\2", cname_instance.flavor).lower())
     elif output_type == "platform":
+        print(cname_instance.platform)
+    elif output_type == "platforms":
         print(cname_instance.feature_set_platform)
     elif output_type == "elements":
         print(cname_instance.feature_set_element)

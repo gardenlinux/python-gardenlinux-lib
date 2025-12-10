@@ -51,7 +51,7 @@ class CName(object):
         self._commit_id = None
         self._feature_elements_cached = None
         self._feature_flags_cached = None
-        self._feature_platform_cached = None
+        self._feature_platforms_cached = None
         self._feature_set_cached = None
         self._platform_variant_cached = None
 
@@ -239,10 +239,10 @@ class CName(object):
         :since:  1.0.0
         """
 
-        if self._feature_platform_cached is not None:
-            return self._feature_platform_cached
-
-        platforms = Parser().filter_as_dict(self.flavor)["platform"]
+        if self._feature_platforms_cached is None:
+            platforms = Parser().filter_as_dict(self.flavor)["platform"]
+        else:
+            platforms = self._feature_platforms_cached
 
         if self._flag_multiple_platforms:
             return ",".join(platforms)
@@ -260,7 +260,15 @@ class CName(object):
         :since:  0.7.0
         """
 
-        return self.feature_set_platform
+        if self._feature_platforms_cached is None:
+            platforms = Parser().filter_as_dict(self.flavor)["platform"]
+        else:
+            platforms = self._feature_platforms_cached
+
+        if not self._flag_multiple_platforms:
+            assert len(platforms) < 2
+
+        return platforms[0]
 
     @property
     def platform_variant(self) -> Optional[str]:
@@ -306,7 +314,8 @@ class CName(object):
 
         elements = ",".join(features["element"])
         flags = ",".join(features["flag"])
-        platform = ",".join(features["platform"])
+        platform = features["platform"][0]
+        platforms = ",".join(features["platform"])
         platform_variant = self.platform_variant
 
         if platform_variant is None:
@@ -323,9 +332,10 @@ SUPPORT_URL="{GL_SUPPORT_URL}"
 BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
 GARDENLINUX_CNAME="{self.cname}"
 GARDENLINUX_FEATURES="{self.feature_set}"
-GARDENLINUX_FEATURES_PLATFORM="{platform}"
+GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
 GARDENLINUX_FEATURES_ELEMENTS="{elements}"
 GARDENLINUX_FEATURES_FLAGS="{flags}"
+GARDENLINUX_PLATFORM="{platform}"
 GARDENLINUX_PLATFORM_VARIANT="{platform_variant}"
 GARDENLINUX_VERSION="{self.version}"
 GARDENLINUX_COMMIT_ID="{self.commit_id}"
@@ -384,7 +394,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
             "GARDENLINUX_FEATURES",
             "GARDENLINUX_FEATURES_ELEMENTS",
             "GARDENLINUX_FEATURES_FLAGS",
-            "GARDENLINUX_FEATURES_PLATFORM",
+            "GARDENLINUX_FEATURES_PLATFORMS",
             "GARDENLINUX_VERSION",
         ):
             if not release_config.has_option(UNNAMED_SECTION, release_field):
@@ -439,9 +449,11 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
             .split(",")
         )
 
-        self._feature_platform_cached = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORM"
-        ).strip("\"'")
+        self._feature_platforms_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS")
+            .strip("\"'")
+            .split(",")
+        )
 
         if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
             self._platform_variant_cached = release_config.get(
