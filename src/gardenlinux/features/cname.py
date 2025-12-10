@@ -8,7 +8,7 @@ import re
 from configparser import UNNAMED_SECTION, ConfigParser
 from os import PathLike, environ
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from ..constants import (
     ARCHS,
@@ -53,6 +53,7 @@ class CName(object):
         self._feature_flags_cached = None
         self._feature_platform_cached = None
         self._feature_set_cached = None
+        self._platform_variant_cached = None
 
         self._flag_multiple_platforms = bool(
             environ.get("GL_ALLOW_FRANKENSTEIN", False)
@@ -251,6 +252,44 @@ class CName(object):
         return platforms[0]
 
     @property
+    def platform(self) -> str:
+        """
+        Returns the feature set of type "platform" for the cname parsed.
+
+        :return: (str) Feature set platforms
+        :since:  0.7.0
+        """
+
+        return self.feature_set_platform
+
+    @property
+    def platform_variant(self) -> Optional[str]:
+        """
+        Returns the platform variant for the cname parsed.
+
+        :return: (str) Platform variant
+        :since:  1.0.0
+        """
+
+        if self._platform_variant_cached is not None:
+            return self._platform_variant_cached
+
+        # @TODO: Platform variant is set by GardenLinux features to the release file. If not read or cached it is currently invisible for this library.
+        return None
+
+    @platform_variant.setter
+    def platform_variant(self, variant: str) -> None:
+        """
+        Sets the the platform variant
+
+        :param variant: Platform variant
+
+        :since: 1.0.0
+        """
+
+        self._platform_variant_cached = variant
+
+    @property
     def release_metadata_string(self) -> str:
         """
         Returns the release metadata describing the given CName instance.
@@ -268,6 +307,10 @@ class CName(object):
         elements = ",".join(features["element"])
         flags = ",".join(features["flag"])
         platform = ",".join(features["platform"])
+        platform_variant = self.platform_variant
+
+        if platform_variant is None:
+            platform_variant = ""
 
         metadata = f"""
 ID={GL_RELEASE_ID}
@@ -283,23 +326,13 @@ GARDENLINUX_FEATURES="{self.feature_set}"
 GARDENLINUX_FEATURES_PLATFORM="{platform}"
 GARDENLINUX_FEATURES_ELEMENTS="{elements}"
 GARDENLINUX_FEATURES_FLAGS="{flags}"
+GARDENLINUX_PLATFORM_VARIANT="{platform_variant}"
 GARDENLINUX_VERSION="{self.version}"
 GARDENLINUX_COMMIT_ID="{self.commit_id}"
 GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         """.strip()
 
         return metadata
-
-    @property
-    def platform(self) -> str:
-        """
-        Returns the feature set of type "platform" for the cname parsed.
-
-        :return: (str) Feature set platforms
-        :since:  0.7.0
-        """
-
-        return self.feature_set_platform
 
     @property
     def version(self) -> Optional[str]:
@@ -360,12 +393,18 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
                 )
 
         loaded_cname_instance = CName(
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME")
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME").strip("\"'")
         )
 
-        commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID")
-        commit_hash = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG")
-        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION")
+        commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID").strip(
+            "\"'"
+        )
+        commit_hash = release_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
+        ).strip("\"'")
+        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION").strip(
+            "\"'"
+        )
 
         if (
             loaded_cname_instance.flavor != self.flavor
@@ -386,19 +425,28 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         self._feature_set_cached = release_config.get(
             UNNAMED_SECTION, "GARDENLINUX_FEATURES"
+        ).strip("\"'")
+
+        self._feature_elements_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS")
+            .strip("\"'")
+            .split(",")
         )
 
-        self._feature_elements_cached = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS"
-        ).split(",")
-
-        self._feature_flags_cached = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS"
-        ).split(",")
+        self._feature_flags_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS")
+            .strip("\"'")
+            .split(",")
+        )
 
         self._feature_platform_cached = release_config.get(
             UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORM"
-        )
+        ).strip("\"'")
+
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
+            self._platform_variant_cached = release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"
+            ).strip("\"'")
 
     def save_to_release_file(
         self, release_file: PathLike | str, overwrite: Optional[bool] = False

@@ -1,12 +1,15 @@
 import sys
 import types
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pytest
 
 import gardenlinux.features.__main__ as fema
-from gardenlinux.features import CName, Parser
+from gardenlinux.features import CName
 
 from ..constants import GL_ROOT_DIR
+from .constants import generate_container_amd64_release_metadata
 
 # -------------------------------
 # Helper function tests
@@ -363,3 +366,32 @@ def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
         "sap,ssh,_fwcfg,_ignite,_legacy,_nopkg,_prod,_slim,base,server,cloud,kvm,multipath,iscsi,nvme,gardener"
         == captured
     )
+
+
+def test_cname_release_file(monkeypatch, capsys):
+    """
+    Test validation between release metadata and arguments given
+    """
+    # Arrange
+    with TemporaryDirectory() as tmpdir:
+        os_release_file = Path(tmpdir, "os_release")
+
+        with os_release_file.open("w") as fp:
+            fp.write(generate_container_amd64_release_metadata("today", "local"))
+
+        argv = [
+            "prog",
+            "--cname",
+            "container-amd64-today-local",
+            "--release-file",
+            str(os_release_file),
+            "cname",
+        ]
+        monkeypatch.setattr(sys, "argv", argv)
+
+        # Act / Assert
+        fema.main()
+
+        # Assert
+        out = capsys.readouterr().out
+        assert "container-amd64-today-local" in out

@@ -5,34 +5,8 @@ from tempfile import TemporaryDirectory
 import pytest
 
 import gardenlinux.features.metadata_main as metadata_main
-from gardenlinux.constants import (
-    GL_BUG_REPORT_URL,
-    GL_DISTRIBUTION_NAME,
-    GL_HOME_URL,
-    GL_RELEASE_ID,
-    GL_SUPPORT_URL,
-)
 
-
-def get_container_amd64_release_metadata(version, commit_hash):
-    return f"""
-ID={GL_RELEASE_ID}
-NAME="{GL_DISTRIBUTION_NAME}"
-PRETTY_NAME="{GL_DISTRIBUTION_NAME} today"
-IMAGE_VERSION=today
-VARIANT_ID="container-amd64"
-HOME_URL="{GL_HOME_URL}"
-SUPPORT_URL="{GL_SUPPORT_URL}"
-BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
-GARDENLINUX_CNAME="container-amd64-today-local"
-GARDENLINUX_FEATURES="_slim,base,container"
-GARDENLINUX_FEATURES_PLATFORM="container"
-GARDENLINUX_FEATURES_ELEMENTS="base"
-GARDENLINUX_FEATURES_FLAGS="_slim"
-GARDENLINUX_VERSION="today"
-GARDENLINUX_COMMIT_ID="local"
-GARDENLINUX_COMMIT_ID_LONG="local"
-""".strip()
+from .constants import generate_container_amd64_release_metadata
 
 
 def test_main_output(monkeypatch, capsys):
@@ -56,7 +30,7 @@ def test_main_output(monkeypatch, capsys):
     metadata_main.main()
 
     # Assert
-    expected = get_container_amd64_release_metadata("today", "local")
+    expected = generate_container_amd64_release_metadata("today", "local")
     assert expected == capsys.readouterr().out.strip()
 
 
@@ -85,7 +59,7 @@ def test_main_write(monkeypatch, capsys):
         metadata_main.main()
 
         # Assert
-        expected = get_container_amd64_release_metadata("today", "local")
+        expected = generate_container_amd64_release_metadata("today", "local")
         assert expected == os_release_file.open("r").read()
 
 
@@ -98,7 +72,7 @@ def test_main_validation(monkeypatch):
         os_release_file = Path(tmpdir, "os_release")
 
         with os_release_file.open("w") as fp:
-            fp.write(get_container_amd64_release_metadata("today", "local"))
+            fp.write(generate_container_amd64_release_metadata("today", "local"))
 
         argv = [
             "prog",
@@ -115,5 +89,5 @@ def test_main_validation(monkeypatch):
         monkeypatch.setattr(sys, "argv", argv)
 
         # Act / Assert
-        with pytest.raises(AssertionError):
+        with pytest.raises(RuntimeError):
             metadata_main.main()
