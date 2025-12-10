@@ -370,6 +370,22 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         return f"{self._version}-{self._commit_id}"
 
+    @property
+    def version_epoch(self) -> Optional[int]:
+        """
+        Returns the GardenLinux version epoch of the cname parsed.
+
+        :return: (str) GardenLinux version epoch
+        :since:  1.0.0
+        """
+
+        epoch = None
+
+        if self._version is not None and "." in self._version:
+            epoch = int(self._version.split(".", 1)[0])
+
+        return epoch
+
     def load_from_release_file(self, release_file: PathLike | str) -> None:
         """
         Loads and parses a release metadata file.
@@ -410,9 +426,11 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID").strip(
             "\"'"
         )
+
         commit_hash = release_config.get(
             UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
         ).strip("\"'")
+
         version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION").strip(
             "\"'"
         )

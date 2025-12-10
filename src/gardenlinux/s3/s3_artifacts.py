@@ -153,13 +153,18 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_list
 
+        version_epoch = cname_object.version_epoch
+
+        if version_epoch is None:
+            version_epoch = ""
+
         metadata = {
             "platform": cname_object.feature_set_platform,
             "architecture": cname_object.arch,
             "base_image": None,
             "build_committish": cname_object.commit_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
-            "gardenlinux_epoch": int(cname_object.version.split(".", 1)[0]),
+            "gardenlinux_epoch": {version_epoch},
             "logs": None,
             "modifiers": cname_object.feature_set,
             "require_uefi": require_uefi,
