@@ -21,7 +21,7 @@ class Debsrc:
                  Apache License, Version 2.0
     """
 
-    def __init__(self, deb_source, deb_version):
+    def __init__(self, deb_source: str, deb_version: str):
         """
         Constructor __init__(Debsrc)
 
@@ -31,8 +31,8 @@ class Debsrc:
         :since: 0.7.0
         """
 
-        self.deb_source: str = deb_source
-        self.deb_version: str = deb_version
+        self.deb_source = deb_source
+        self.deb_version = deb_version
 
     def __repr__(self) -> str:
         """

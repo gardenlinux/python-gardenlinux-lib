@@ -3,12 +3,13 @@
 import json
 from copy import deepcopy
 from hashlib import sha256
+from typing import Any, Dict
 
 from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.oci import EmptyManifest
 
 
-class Manifest(dict):
+class Manifest(dict):  # type: ignore[type-arg]
     """
     OCI image manifest
 
@@ -21,7 +22,7 @@ class Manifest(dict):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         """
         Constructor __init__(Manifest)
 
@@ -37,7 +38,7 @@ class Manifest(dict):
         self.update(**kwargs)
 
     @property
-    def commit(self):
+    def commit(self) -> str:
         """
         Returns the GardenLinux Git commit ID of the OCI manifest.
 
@@ -50,10 +51,10 @@ class Manifest(dict):
                 "Unexpected manifest with missing config annotation 'commit' found"
             )
 
-        return self["annotations"]["commit"]
+        return self["annotations"]["commit"]  #  type: ignore[no-any-return]
 
     @commit.setter
-    def commit(self, value):
+    def commit(self, value: str) -> None:
         """
         Sets the GardenLinux Git commit ID of the OCI manifest.
 
@@ -66,7 +67,7 @@ class Manifest(dict):
         self["annotations"]["commit"] = value
 
     @property
-    def config_json(self):
+    def config_json(self) -> bytes:
         """
         Returns the OCI image manifest config.
 
@@ -77,7 +78,7 @@ class Manifest(dict):
         return self._config_bytes
 
     @property
-    def digest(self):
+    def digest(self) -> str:
         """
         Returns the OCI image manifest digest.
 
@@ -89,7 +90,7 @@ class Manifest(dict):
         return f"sha256:{digest}"
 
     @property
-    def json(self):
+    def json(self) -> bytes:
         """
         Returns the OCI image manifest as a JSON
 
@@ -100,7 +101,7 @@ class Manifest(dict):
         return json.dumps(self).encode("utf-8")
 
     @property
-    def size(self):
+    def size(self) -> int:
         """
         Returns the OCI image manifest JSON size in bytes.
 
@@ -111,7 +112,7 @@ class Manifest(dict):
         return len(self.json)
 
     @property
-    def version(self):
+    def version(self) -> str:
         """
         Returns the GardenLinux version of the OCI image manifest.
 
@@ -124,10 +125,10 @@ class Manifest(dict):
                 "Unexpected manifest with missing config annotation 'version' found"
             )
 
-        return self["annotations"]["version"]
+        return self["annotations"]["version"]  # type: ignore[no-any-return]
 
     @version.setter
-    def version(self, value):
+    def version(self, value: str) -> None:
         """
         Sets the GardenLinux version of the OCI image manifest.
 
@@ -139,7 +140,9 @@ class Manifest(dict):
         self._ensure_annotations_dict()
         self["annotations"]["version"] = value
 
-    def config_from_dict(self, config: dict, annotations: dict):
+    def config_from_dict(
+        self, config: Dict[str, Any], annotations: Dict[str, Any]
+    ) -> None:
         """
         Write a new OCI configuration to file, and generate oci metadata for it.
 
@@ -162,6 +165,6 @@ class Manifest(dict):
 
         self["config"] = config
 
-    def _ensure_annotations_dict(self):
+    def _ensure_annotations_dict(self) -> None:
         if "annotations" not in self:
             self["annotations"] = {}

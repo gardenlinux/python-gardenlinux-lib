@@ -3,7 +3,7 @@ import pytest
 from gardenlinux.features import CName
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "input_cname, expected_output",
     [
         (
@@ -24,7 +24,7 @@ from gardenlinux.features import CName
         ),
     ],
 )
-def test_cname_flavor(input_cname: str, expected_output: dict):
+def test_cname_flavor(input_cname: str, expected_output: str) -> None:
     """
     Tests if cname returns the dict with expected features.
 
@@ -36,7 +36,7 @@ def test_cname_flavor(input_cname: str, expected_output: dict):
     assert cname.flavor == expected_output
 
 
-def test_cname_commit_id_setter():
+def test_cname_commit_id_setter() -> None:
     """
     Tests cname setter for `commit_id` to verify a given ID before overwriting.
     """

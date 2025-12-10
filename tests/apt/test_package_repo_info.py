@@ -1,4 +1,8 @@
 from types import SimpleNamespace
+from typing import List
+
+import pytest
+from apt_repo import BinaryPackage
 
 import gardenlinux.apt.package_repo_info as repoinfo
 
@@ -11,18 +15,18 @@ class FakeAPTRepo:
     - exposes `.packages` and `get_packages_by_name(name)`
     """
 
-    def __init__(self, url, dist, components) -> None:
+    def __init__(self, url: str, dist: str, components: List[str]) -> None:
         self.url = url
         self.dist = dist
         self.components = components
         # list of objects with .package and .version attributes
-        self.packages = []
+        self.packages: List[BinaryPackage] = []
 
-    def get_packages_by_name(self, name):
+    def get_packages_by_name(self, name: str) -> BinaryPackage:
         return [p for p in self.packages if p.package == name]
 
 
-def test_gardenlinuxrepo_init(monkeypatch):
+def test_gardenlinuxrepo_init(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Test if GardenLinuxRepo creates an internal APTRepo
     """
@@ -44,7 +48,7 @@ def test_gardenlinuxrepo_init(monkeypatch):
     assert gr.repo.components == gr.components
 
 
-def test_get_package_version_by_name(monkeypatch):
+def test_get_package_version_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
     # Arrange
     monkeypatch.setattr(repoinfo, "APTRepository", FakeAPTRepo)
     gr = repoinfo.GardenLinuxRepo("d")
@@ -52,7 +56,7 @@ def test_get_package_version_by_name(monkeypatch):
     gr.repo.packages = [
         SimpleNamespace(package="pkg-a", version="1.0"),
         SimpleNamespace(package="pkg-b", version="2.0"),
-    ]  # type: ignore
+    ]
 
     # Act
     result = gr.get_package_version_by_name("pkg-a")
@@ -61,14 +65,16 @@ def test_get_package_version_by_name(monkeypatch):
     assert result == [("pkg-a", "1.0")]
 
 
-def test_get_packages_versions_returns_all_pairs(monkeypatch):
+def test_get_packages_versions_returns_all_pairs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # Arrange
     monkeypatch.setattr(repoinfo, "APTRepository", FakeAPTRepo)
     gr = repoinfo.GardenLinuxRepo("d")
     gr.repo.packages = [
         SimpleNamespace(package="aa", version="0.1"),
         SimpleNamespace(package="bb", version="0.2"),
-    ]  # type: ignore
+    ]
 
     # Act
     pv = gr.get_packages_versions()
@@ -77,7 +83,7 @@ def test_get_packages_versions_returns_all_pairs(monkeypatch):
     assert pv == [("aa", "0.1"), ("bb", "0.2")]
 
 
-def test_compare_repo_union_returns_all():
+def test_compare_repo_union_returns_all() -> None:
     """
     When available_in_both=False, compare_repo returns entries for:
     - only names in A
@@ -100,7 +106,7 @@ def test_compare_repo_union_returns_all():
     assert set(result) == expected
 
 
-def test_compare_repo_intersection_only():
+def test_compare_repo_intersection_only() -> None:
     """
     When available_in_both=True, only intersection names are considered;
     differences are only returned if versions differ.
@@ -116,7 +122,7 @@ def test_compare_repo_intersection_only():
     assert set(result) == {("b", "2", "3")}
 
 
-def test_compare_same_returns_empty():
+def test_compare_same_returns_empty() -> None:
     """
     When both sets are identical, compare_repo should return an empty set.
     """
@@ -128,7 +134,7 @@ def test_compare_same_returns_empty():
     assert repoinfo.compare_repo(a, b, available_in_both=False) == []  # type: ignore
 
 
-def test_compare_empty_returns_empty():
+def test_compare_empty_returns_empty() -> None:
     """
     If both sets are empty, compare_repo should return an empty set.
     """
