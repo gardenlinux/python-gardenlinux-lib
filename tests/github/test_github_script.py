@@ -1,11 +1,13 @@
 import sys
 
 import pytest
+import requests_mock
 
 import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
+from .constants import REPO_JSON
 
 
 def test_script_parse_args_wrong_command(monkeypatch, capfd):
@@ -15,23 +17,32 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "argument command: invalid choice: 'rejoice'" in captured.err
-    ), "Expected help message printed"
+    assert "argument command: invalid choice: 'rejoice'" in captured.err, (
+        "Expected help message printed"
+    )
 
 
 def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
     monkeypatch.setattr(
-        sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo", "gardenlinux"]
+        sys,
+        "argv",
+        [
+            "gh",
+            "create-with-gl-release-notes",
+            "--owner",
+            "gardenlinux",
+            "--repo",
+            "gardenlinux",
+        ],
     )
 
     with pytest.raises(SystemExit):
         gh.main()
     captured = capfd.readouterr()
 
-    assert (
-        "the following arguments are required: --tag, --commit" in captured.err
-    ), "Expected help message on missing arguments for 'create' command"
+    assert "the following arguments are required: --tag, --commit" in captured.err, (
+        "Expected help message on missing arguments for 'create' command"
+    )
 
 
 def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
@@ -50,13 +61,12 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
 
 
 def test_script_create_dry_run(monkeypatch, capfd):
-
     monkeypatch.setattr(
         sys,
         "argv",
         [
             "gh",
-            "create",
+            "create-with-gl-release-notes",
             "--owner",
             "gardenlinux",
             "--repo",
@@ -83,37 +93,48 @@ def test_script_create_dry_run(monkeypatch, capfd):
 
 
 def test_script_create(monkeypatch, caplog):
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "gh",
-            "create",
-            "--owner",
-            "gardenlinux",
-            "--repo",
-            "gardenlinux",
-            "--tag",
-            TEST_GARDENLINUX_RELEASE,
-            "--commit",
-            TEST_GARDENLINUX_COMMIT,
-        ],
-    )
-    monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release_notes",
-        lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
-    )
-    monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release",
-        lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE,
-    )
+    with requests_mock.Mocker() as m:
+        m.get(
+            "//api.github.com:443/repos/gardenlinux/gardenlinux",
+            json=REPO_JSON,
+            status_code=200,
+        )
 
-    gh.main()
+        m.post(
+            "//api.github.com:443/repos/gardenlinux/gardenlinux/releases",
+            json={"id": 101},
+            status_code=201,
+        )
 
-    assert any(
-        f"Release created with ID: {TEST_GARDENLINUX_RELEASE}" in record.message
-        for record in caplog.records
-    ), "Expected a release creation confirmation log entry"
+        monkeypatch.setenv("GITHUB_TOKEN", "test")
+
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "gh",
+                "create-with-gl-release-notes",
+                "--owner",
+                "gardenlinux",
+                "--repo",
+                "gardenlinux",
+                "--tag",
+                TEST_GARDENLINUX_RELEASE,
+                "--commit",
+                TEST_GARDENLINUX_COMMIT,
+            ],
+        )
+        monkeypatch.setattr(
+            "gardenlinux.github.release.__main__.create_github_release_notes",
+            lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
+        )
+
+        gh.main()
+
+        assert any(
+            "Release created with ID: 101" in record.message
+            for record in caplog.records
+        ), "Expected a release creation confirmation log entry"
 
 
 def test_script_upload_dry_run(monkeypatch, capfd):
