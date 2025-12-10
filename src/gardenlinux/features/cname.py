@@ -323,6 +323,7 @@ class CName(object):
 
         metadata = f"""
 ID={GL_RELEASE_ID}
+ID_LIKE=debian
 NAME="{GL_DISTRIBUTION_NAME}"
 PRETTY_NAME="{GL_DISTRIBUTION_NAME} {self.version}"
 IMAGE_VERSION={self.version}

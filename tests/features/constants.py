@@ -10,6 +10,7 @@ from gardenlinux.constants import (
 def generate_container_amd64_release_metadata(version, commit_hash):
     return f"""
 ID={GL_RELEASE_ID}
+ID_LIKE=debian
 NAME="{GL_DISTRIBUTION_NAME}"
 PRETTY_NAME="{GL_DISTRIBUTION_NAME} {version}"
 IMAGE_VERSION={version}
