@@ -168,6 +168,8 @@ GLVD_BASE_URL = (
 
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 
+PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
+
 # https://github.com/gardenlinux/gardenlinux/issues/3044
 # Empty string is the 'legacy' variant with traditional root fs and still needed/supported
 IMAGE_VARIANTS = ["", "_usi", "_tpm2_trustedboot"]
