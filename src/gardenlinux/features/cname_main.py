@@ -11,10 +11,8 @@ import re
 from os.path import basename, dirname
 
 from .__main__ import (
-    get_flavor,
     get_minimal_feature_set,
     get_version_and_commit_id_from_files,
-    sort_subset,
 )
 from .cname import CName
 from .parser import Parser
@@ -78,9 +76,9 @@ def main():
     sorted_features = Parser.sort_graph_nodes(graph)
     minimal_feature_set = get_minimal_feature_set(graph)
 
-    sorted_minimal_features = sort_subset(minimal_feature_set, sorted_features)
+    sorted_minimal_features = Parser.subset(minimal_feature_set, sorted_features)
 
-    generated_cname = get_flavor(sorted_minimal_features)
+    generated_cname = Parser.get_flavor_from_feature_set(sorted_minimal_features)
 
     generated_cname += f"-{cname.arch}"
 

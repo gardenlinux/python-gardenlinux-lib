@@ -9,10 +9,14 @@ import yaml
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 
 RELEASE_DATA = """
-    GARDENLINUX_VERSION = 1234.1
-    GARDENLINUX_COMMIT_ID = abc123
-    GARDENLINUX_COMMIT_ID_LONG = abc123long
-    GARDENLINUX_FEATURES = _usi,_trustedboot
+    GARDENLINUX_CNAME="container-amd64-1234.1-abc123"
+    GARDENLINUX_VERSION=1234.1
+    GARDENLINUX_COMMIT_ID="abc123"
+    GARDENLINUX_COMMIT_ID_LONG="abc123long"
+    GARDENLINUX_FEATURES="_usi,_trustedboot"
+    GARDENLINUX_FEATURES_ELEMENTS=
+    GARDENLINUX_FEATURES_FLAGS="_usi,_trustedboot"
+    GARDENLINUX_FEATURES_PLATFORMS="container"
     """
 
 
@@ -101,7 +105,7 @@ def test_upload_from_directory_success(s3_setup):
     release_path = env.tmp_path / f"{env.cname}.release"
     release_path.write_text(RELEASE_DATA)
 
-    for filename in [f"{env.cname}-file1", f"{env.cname}-file2"]:
+    for filename in [f"{env.cname}-file1", f"{env.cname}-file2", "container"]:
         (env.tmp_path / filename).write_bytes(b"dummy content")
 
     # Act
@@ -124,7 +128,7 @@ def test_upload_from_directory_success(s3_setup):
         Bucket=env.bucket_name, Key=f"objects/{env.cname}/{env.cname}-file1"
     )
     tags = {tag["Key"]: tag["Value"] for tag in raw_tags_response["TagSet"]}
-    assert tags["platform"] == "container+kvm"
+    assert tags["platform"] == "container"
 
 
 def test_upload_from_directory_with_delete(s3_setup):
@@ -160,30 +164,6 @@ def test_upload_from_directory_with_delete(s3_setup):
     assert f"meta/singles/{env.cname}" in keys
 
 
-def test_upload_from_directory_arch_none_raises(monkeypatch, s3_setup):
-    """Raise RuntimeError when CName has no arch"""
-    # Arrange
-    env = s3_setup
-    release_path = env.tmp_path / f"{env.cname}.release"
-    release_path.write_text(RELEASE_DATA)
-
-    # Monkeypatch CName to simulate missing architecture
-    import gardenlinux.s3.s3_artifacts as s3art
-
-    class DummyCName:
-        arch = None
-
-        def __init__(self, cname):
-            pass
-
-    monkeypatch.setattr(s3art, "CName", DummyCName)
-
-    # Act / Assert
-    artifacts = S3Artifacts(env.bucket_name)
-    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
-        artifacts.upload_from_directory(env.cname, env.tmp_path)
-
-
 def test_upload_from_directory_invalid_dir_raises(s3_setup):
     """Raise RuntimeError if artifacts_dir is invalid"""
     env = s3_setup
@@ -204,41 +184,20 @@ def test_upload_from_directory_version_mismatch_raises(s3_setup):
     artifacts = S3Artifacts(env.bucket_name)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Version"):
+    with pytest.raises(RuntimeError, match="failed consistency check"):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
-def test_upload_from_directory_none_version_raises(monkeypatch, s3_setup):
+def test_upload_from_directory_succeeds_because_of_release_file(monkeypatch, s3_setup):
     """
     Raise RuntimeError if CName.version is None.
     """
     # Arrange
     env = s3_setup
-    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+    (env.tmp_path / f"container.release").write_text(RELEASE_DATA)
 
-    import gardenlinux.s3.s3_artifacts as s3art
-
-    # Monkeypatch CName to force Cname.version to be None and avoid
-    # class internal error checks
-    class DummyCName:
-        arch = "amd64"
-        version = None
-        commit_id = "abc123"
-        platform = "aws"
-
-        def __init__(self, cname):
-            pass
-
-    monkeypatch.setattr(s3art, "CName", DummyCName)
-
-    artifacts = s3art.S3Artifacts(env.bucket_name)
-
-    # Act / Assert
-    with pytest.raises(
-        RuntimeError,
-        match="Release file data and given cname conflict detected: Version None",
-    ):
-        artifacts.upload_from_directory(env.cname, env.tmp_path)
+    artifacts = S3Artifacts(env.bucket_name)
+    artifacts.upload_from_directory("container", env.tmp_path)
 
 
 def test_upload_from_directory_invalid_artifact_name(s3_setup):
@@ -273,7 +232,7 @@ def test_upload_from_directory_commit_mismatch_raises(s3_setup):
     artifacts = S3Artifacts(env.bucket_name)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Commit ID"):
+    with pytest.raises(RuntimeError, match="failed consistency check"):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
