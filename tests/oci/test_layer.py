@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Any, Dict, Generator, Optional
+
 import pytest
 
 import gardenlinux.oci.layer as gl_layer
@@ -6,29 +9,31 @@ import gardenlinux.oci.layer as gl_layer
 class DummyLayer:
     """Minimal stub for oras.oci.Layer"""
 
-    def __init__(self, blob_path, media_type=None, is_dir=False):
+    def __init__(
+        self, blob_path: str, media_type: Optional[str] = None, is_dir: bool = False
+    ):
         self._init_args = (blob_path, media_type, is_dir)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {"dummy": True}
 
 
-@pytest.fixture(autouse=True)
-def patch__Layer(monkeypatch):
+@pytest.fixture(autouse=True)  # type: ignore[misc]
+def patch__Layer(monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
     """Replace oras.oci.Layer with DummyLayer in Layer's module."""
     monkeypatch.setattr(gl_layer, "_Layer", DummyLayer)
     yield
 
 
-def test_dict_property_returns_with_annotations(tmp_path):
+def test_dict_property_returns_with_annotations(tmp_path: Path) -> None:
     """dict property should merge _Layer.to_dict() with annotations."""
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
 
     # Act
-    l = gl_layer.Layer(blob)
-    result = l.dict
+    layer = gl_layer.Layer(blob)
+    result = layer.dict
 
     # Assert
     assert result["dummy"] is True
@@ -36,80 +41,79 @@ def test_dict_property_returns_with_annotations(tmp_path):
     assert result["annotations"]["org.opencontainers.image.title"] == "blob.txt"
 
 
-def test_getitem_and_delitem_annotations(tmp_path):
+def test_getitem_and_delitem_annotations(tmp_path: Path) -> None:
     """getitem should return annotations, delitem should clear them."""
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert (__getitem__)
-    ann = l["annotations"]
+    ann = layer["annotations"]
     assert isinstance(ann, dict)
     assert "org.opencontainers.image.title" in ann
 
     # Act / Assert (__delitem__)
-    l.__delitem__("annotations")
-    assert l._annotations == {}
+    layer.__delitem__("annotations")
+    assert layer._annotations == {}
 
 
-def test_getitem_invalid_key_raises(tmp_path):
+def test_getitem_invalid_key_raises(tmp_path: Path) -> None:
     """getitem with unsupported key should raise KeyError."""
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert
     with pytest.raises(KeyError):
-        _ = l["invalid"]
+        _ = layer["invalid"]
 
 
-def test_setitem_annotations(tmp_path):
+def test_setitem_annotations(tmp_path: Path) -> None:
     """setitem with supported keys should set annotations"""
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act
     new_ann = {"x": "y"}
-    l.__setitem__("annotations", new_ann)
+    layer.__setitem__("annotations", new_ann)
 
     # Assert
-    assert l._annotations == new_ann
+    assert layer._annotations == new_ann
 
 
-def test_setitem_annotations_invalid_raises(tmp_path):
+def test_setitem_annotations_invalid_raises(tmp_path: Path) -> None:
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act / Assert
     with pytest.raises(KeyError):
-        _ = l["invalid"]
+        _ = layer["invalid"]
 
 
-def test_len_iter(tmp_path):
+def test_len_iter(tmp_path: Path) -> None:
     # Arrange
     blob = tmp_path / "blob.txt"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
+    layer = gl_layer.Layer(blob)
 
     # Act
-    keys = list(iter(l))
+    keys = list(iter(layer))
 
     # Assert
     assert keys == ["annotations"]
     assert len(keys) == 1
 
 
-def test_gen_metadata_from_file(tmp_path):
+def test_gen_metadata_from_file(tmp_path: Path) -> None:
     # Arrange
     blob = tmp_path / "blob.tar"
     blob.write_text("data")
-    l = gl_layer.Layer(blob)
 
     # Act
     arch = "amd64"
@@ -121,7 +125,7 @@ def test_gen_metadata_from_file(tmp_path):
     assert metadata["annotations"]["io.gardenlinux.image.layer.architecture"] == arch
 
 
-def test_lookup_media_type_for_file_name(tmp_path):
+def test_lookup_media_type_for_file_name(tmp_path: Path) -> None:
     # Arrange
     blob = tmp_path / "blob.tar"
     blob.write_text("data")
@@ -133,7 +137,9 @@ def test_lookup_media_type_for_file_name(tmp_path):
     assert media_type == GL_MEDIA_TYPE_LOOKUP["tar"]
 
 
-def test_lookup_media_type_for_file_name_invalid_raises(tmp_path):
+def test_lookup_media_type_for_file_name_invalid_raises(
+    tmp_path: Path,
+) -> None:
     # Arrange / Act / Assert
     with pytest.raises(ValueError):
         gl_layer.Layer.lookup_media_type_for_file_name(tmp_path / "unknown.xyz")

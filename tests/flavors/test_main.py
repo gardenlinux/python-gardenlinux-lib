@@ -1,15 +1,19 @@
 import json
 import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import pytest
 
 from gardenlinux.flavors import __main__ as fm
 
 
-def test_generate_markdown_table():
+def test_generate_markdown_table() -> None:
     # Arrange
     combos = [("amd64", "linux-amd64")]
 
     # Act
-    table = fm.generate_markdown_table(combos, no_arch=False)
+    table = fm.generate_markdown_table(combos)
 
     # Assert
     assert table.startswith("| Platform   | Architecture       | Flavor")
@@ -17,7 +21,7 @@ def test_generate_markdown_table():
     assert "| linux"
 
 
-def test_parse_args(monkeypatch):
+def test_parse_args(monkeypatch: pytest.MonkeyPatch) -> None:
     """simulate CLI invocation and make sure parse_args reads them correctly"""
     # Arrange
     argv = [
@@ -55,33 +59,37 @@ def test_parse_args(monkeypatch):
     assert args.json_by_arch is True
 
 
-def _make_parser_class(filter_result, group_result=None, remove_result=None):
+def _make_parser_class(
+    filter_result: List[Tuple[Any, str]],
+    group_result: Optional[Dict[str, List[str]]] = None,
+    remove_result: Optional[List[str]] = None,
+) -> Any:
     """
     Factory to create a fake Parser class
     Instances ignore the favors_data passed to __init__.
     """
 
     class DummyParser:
-        def __init__(self, flavors_data):
+        def __init__(self, flavors_data: str):
             self._data = flavors_data
 
-        def filter(self, **kwargs):
+        def filter(self, **kwargs: Any) -> List[Tuple[Any, str]]:
             # return the prepared combinations list
             return filter_result
 
         @staticmethod
-        def group_by_arch(combinations):
+        def group_by_arch(combinations: List[Tuple[Any, str]]) -> Dict[str, List[str]]:
             # Return a prepared mapping or derive a simple mapping if None
             if group_result is not None:
                 return group_result
             # naive default behaviour: group combinations by arch
-            d = {}
+            d: Dict[str, List[str]] = {}
             for arch, comb in combinations:
                 d.setdefault(arch, []).append(comb)
             return d
 
         @staticmethod
-        def remove_arch(combinations):
+        def remove_arch(combinations: List[Tuple[Any, str]]) -> List[str]:
             if remove_result is not None:
                 return remove_result
             # naive default: remote '-{arch}' suffix if present
@@ -97,20 +105,22 @@ def _make_parser_class(filter_result, group_result=None, remove_result=None):
     return DummyParser
 
 
-def _make_git_repository_class(tmp_path):
+def _make_git_repository_class(tmp_path: Path) -> Any:
     """
     Factory to create a fake Parser class
     Instances ignore the favors_data passed to __init__.
     """
 
     class DummyRepository:
-        def __init__(self):
+        def __init__(self):  # type: ignore[no-untyped-def]
             self.root = tmp_path
 
     return DummyRepository
 
 
-def test_main_json_by_arch_prints_json(tmp_path, monkeypatch, capsys):
+def test_main_json_by_arch_prints_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     # Arrange
     # prepare flavors.yaml at tmp path
     flavors_file = tmp_path / "flavors.yaml"
@@ -121,7 +131,7 @@ def test_main_json_by_arch_prints_json(tmp_path, monkeypatch, capsys):
     grouped = {"x86": ["linux-x86"], "arm": ["android-arm"]}
 
     DummyParser = _make_parser_class(filter_result=combinations, group_result=grouped)
-    DummyRepository = _make_git_repository_class(str(tmp_path))
+    DummyRepository = _make_git_repository_class(Path(tmp_path))
 
     monkeypatch.setattr(fm, "Parser", DummyParser)
     monkeypatch.setattr(fm, "Repository", DummyRepository)
@@ -137,8 +147,8 @@ def test_main_json_by_arch_prints_json(tmp_path, monkeypatch, capsys):
 
 
 def test_main_json_by_arch_with_no_arch_strips_arch_suffix(
-    tmp_path, monkeypatch, capsys
-):
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     # Arrange
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
@@ -148,7 +158,7 @@ def test_main_json_by_arch_with_no_arch_strips_arch_suffix(
     grouped = {"x86": ["linux-x86"], "arm": ["android-arm"]}
 
     DummyParser = _make_parser_class(filter_result=combinations, group_result=grouped)
-    DummyRepository = _make_git_repository_class(str(tmp_path))
+    DummyRepository = _make_git_repository_class(Path(tmp_path))
 
     monkeypatch.setattr(fm, "Parser", DummyParser)
     monkeypatch.setattr(fm, "Repository", DummyRepository)
@@ -164,7 +174,9 @@ def test_main_json_by_arch_with_no_arch_strips_arch_suffix(
     assert parsed == {"x86": ["linux"], "arm": ["android"]}
 
 
-def test_main_markdown_table_branch(tmp_path, monkeypatch, capsys):
+def test_main_markdown_table_branch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     # Arrange
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
@@ -172,7 +184,7 @@ def test_main_markdown_table_branch(tmp_path, monkeypatch, capsys):
     combinations = [("x86_64", "linux-x86_64"), ("armv7", "android-armv7")]
 
     DummyParser = _make_parser_class(filter_result=combinations)
-    DummyRepository = _make_git_repository_class(str(tmp_path))
+    DummyRepository = _make_git_repository_class(Path(tmp_path))
 
     monkeypatch.setattr(fm, "Parser", DummyParser)
     monkeypatch.setattr(fm, "Repository", DummyRepository)
@@ -188,7 +200,9 @@ def test_main_markdown_table_branch(tmp_path, monkeypatch, capsys):
     assert "| Platform" in out
 
 
-def test_main_default_prints_flavors_list(tmp_path, monkeypatch, capsys):
+def test_main_default_prints_flavors_list(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     # Arrange
     flavors_file = tmp_path / "flavors.yaml"
     flavors_file.write_text("dummy: content")
@@ -197,7 +211,7 @@ def test_main_default_prints_flavors_list(tmp_path, monkeypatch, capsys):
     combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
 
     DummyParser = _make_parser_class(filter_result=combinations)
-    DummyRepository = _make_git_repository_class(str(tmp_path))
+    DummyRepository = _make_git_repository_class(Path(tmp_path))
 
     monkeypatch.setattr(fm, "Parser", DummyParser)
     monkeypatch.setattr(fm, "Repository", DummyRepository)
@@ -212,7 +226,9 @@ def test_main_default_prints_flavors_list(tmp_path, monkeypatch, capsys):
     assert sorted(lines) == sorted(["linux-x86", "android-arm"])
 
 
-def test_main_default_prints_git_flavors_list(tmp_path, monkeypatch, capsys):
+def test_main_default_prints_git_flavors_list(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     # filter returns tuples; main's default branch prints comb[1] values, sorted unique
     combinations = [("x86", "linux-x86"), ("arm", "android-arm")]
 

@@ -15,7 +15,7 @@ _ARGS_ACTION_ALLOWED = [
 ]
 
 
-def main():
+def main() -> None:
     """
     gl-metadata main()
 

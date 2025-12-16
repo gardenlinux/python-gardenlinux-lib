@@ -9,7 +9,9 @@ import gardenlinux.features.metadata_main as metadata_main
 from .constants import generate_container_amd64_release_metadata
 
 
-def test_main_output(monkeypatch, capsys):
+def test_main_output(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test successful "output-release-metadata"
     """
@@ -34,7 +36,9 @@ def test_main_output(monkeypatch, capsys):
     assert expected == capsys.readouterr().out.strip()
 
 
-def test_main_write(monkeypatch, capsys):
+def test_main_write(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test successful "write"
     """
@@ -63,7 +67,7 @@ def test_main_write(monkeypatch, capsys):
         assert expected == os_release_file.open("r").read()
 
 
-def test_main_validation(monkeypatch):
+def test_main_validation(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Test validation between release metadata and arguments given
     """

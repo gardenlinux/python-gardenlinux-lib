@@ -2,6 +2,7 @@ import sys
 import types
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any, List, Tuple
 
 import pytest
 
@@ -16,7 +17,7 @@ from .constants import generate_container_amd64_release_metadata
 # -------------------------------
 
 
-def test_graph_mermaid():
+def test_graph_mermaid() -> None:
     # Arrange
     class FakeGraph:
         edges = [("a", "b"), ("b", "c")]
@@ -32,7 +33,7 @@ def test_graph_mermaid():
     assert "b-->c" in markup
 
 
-def test_graph_mermaid_raises_no_flavor():
+def test_graph_mermaid_raises_no_flavor() -> None:
     # Arrange
     class MockGraph:
         edges = [("x", "y"), ("y", "z")]
@@ -44,10 +45,10 @@ def test_graph_mermaid_raises_no_flavor():
         fema.graph_as_mermaid_markup(None, MockGraph())
 
 
-def test_get_minimal_feature_set_filters():
+def test_get_minimal_feature_set_filters() -> None:
     # Arrange
     class FakeGraph:
-        def in_degree(self):
+        def in_degree(self) -> List[Tuple[str, int]]:
             return [("a", 0), ("b", 1), ("c", 0)]
 
     graph = FakeGraph()
@@ -59,7 +60,7 @@ def test_get_minimal_feature_set_filters():
     assert result == {"a", "c"}
 
 
-def test_get_version_and_commit_from_file(tmp_path):
+def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
     # Arrange
     commit_file = tmp_path / "COMMIT"
     commit_file.write_text("abcdef12\n")
@@ -74,7 +75,7 @@ def test_get_version_and_commit_from_file(tmp_path):
     assert commit == "abcdef12"
 
 
-def test_get_version_missing_file_raises(tmp_path):
+def test_get_version_missing_file_raises(tmp_path: Path) -> None:
     # Arrange (one file only)
     (tmp_path / "COMMIT").write_text("abcdef1234\n")
 
@@ -86,7 +87,9 @@ def test_get_version_missing_file_raises(tmp_path):
 # -------------------------------
 # Tests for main()
 # -------------------------------
-def test_main_prints_arch(monkeypatch, capsys):
+def test_main_prints_arch(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "arch"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -100,7 +103,9 @@ def test_main_prints_arch(monkeypatch, capsys):
     assert "amd64" in out
 
 
-def test_main_prints_container_name(monkeypatch, capsys):
+def test_main_prints_container_name(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = [
         "prog",
@@ -123,7 +128,9 @@ def test_main_prints_container_name(monkeypatch, capsys):
     assert "container-python-dev" in out
 
 
-def test_main_prints_container_tag(monkeypatch, capsys):
+def test_main_prints_container_tag(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = [
         "prog",
@@ -148,7 +155,9 @@ def test_main_prints_container_tag(monkeypatch, capsys):
     assert "1-0-post1" == out
 
 
-def test_main_prints_commit_id(monkeypatch, capsys):
+def test_main_prints_commit_id(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -169,7 +178,9 @@ def test_main_prints_commit_id(monkeypatch, capsys):
     assert "abcdef12" == captured.out.strip()
 
 
-def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
+def test_main_prints_flags_elements_platforms(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = [
         "prog",
@@ -184,7 +195,7 @@ def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", argv)
 
     class FakeCName(CName):
-        def __init__(self, *a, **k):
+        def __init__(self, *a: Any, **k: Any):
             CName.__init__(self, *a, **k)
             self._feature_flags_cached = ["flag1"]
 
@@ -198,7 +209,9 @@ def test_main_prints_flags_elements_platforms(monkeypatch, capsys):
     assert "flag1" in out
 
 
-def test_main_prints_version(monkeypatch, capsys):
+def test_main_prints_version(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "version"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -219,7 +232,9 @@ def test_main_prints_version(monkeypatch, capsys):
     assert "1.2.3" == captured.out.strip()
 
 
-def test_main_prints_version_and_commit_id(monkeypatch, capsys):
+def test_main_prints_version_and_commit_id(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "version_and_commit_id"]
     monkeypatch.setattr(sys, "argv", argv)
@@ -240,7 +255,7 @@ def test_main_prints_version_and_commit_id(monkeypatch, capsys):
     assert "1.2.3-abcdef12" == captured.out.strip()
 
 
-def test_main_requires_cname(monkeypatch):
+def test_main_requires_cname(monkeypatch: pytest.MonkeyPatch) -> None:
     # Arrange
     monkeypatch.setattr(sys, "argv", ["prog", "arch"])
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
@@ -250,7 +265,7 @@ def test_main_requires_cname(monkeypatch):
         fema.main()
 
 
-def test_main_cname_raises_missing_commit_id(monkeypatch):
+def test_main_cname_raises_missing_commit_id(monkeypatch: pytest.MonkeyPatch) -> None:
     # Arrange
     # args.type == 'cname, arch is None and no default_arch set
     argv = [
@@ -270,7 +285,7 @@ def test_main_cname_raises_missing_commit_id(monkeypatch):
         fema.main()
 
 
-def test_main_raises_no_arch_no_default(monkeypatch):
+def test_main_raises_no_arch_no_default(monkeypatch: pytest.MonkeyPatch) -> None:
     # Arrange
     # args.type == 'cname, arch is None and no default_arch set
     argv = ["prog", "--cname", "flav", "cname"]
@@ -281,7 +296,9 @@ def test_main_raises_no_arch_no_default(monkeypatch):
         fema.main()
 
 
-def test_main_raises_missing_commit_id(monkeypatch, capsys):
+def test_main_raises_missing_commit_id(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     argv = [
         "prog",
@@ -301,7 +318,9 @@ def test_main_raises_missing_commit_id(monkeypatch, capsys):
         fema.main()
 
 
-def test_main_with_exclude_cname_print_elements(monkeypatch, capsys):
+def test_main_with_exclude_cname_print_elements(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     monkeypatch.setattr(
         sys,
@@ -333,7 +352,9 @@ def test_main_with_exclude_cname_print_elements(monkeypatch, capsys):
     assert "log,sap,ssh,base,server,multipath,iscsi,nvme,gardener" == captured
 
 
-def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
+def test_main_with_exclude_cname_print_features(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     # Arrange
     monkeypatch.setattr(
         sys,
@@ -368,7 +389,9 @@ def test_main_with_exclude_cname_print_features(monkeypatch, capsys):
     )
 
 
-def test_cname_release_file(monkeypatch, capsys):
+def test_cname_release_file(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
     """
     Test validation between release metadata and arguments given
     """

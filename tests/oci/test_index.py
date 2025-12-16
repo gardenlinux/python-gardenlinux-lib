@@ -1,11 +1,12 @@
 import json
+from typing import Any, Dict
 
 import pytest
 
 from gardenlinux.oci.index import Index
 
 
-def test_index_init_and_json():
+def test_index_init_and_json() -> None:
     """Ensure Index init works correctly"""
     # Arrange
     idx = Index()
@@ -20,7 +21,7 @@ def test_index_init_and_json():
     assert decoded == idx
 
 
-def test_manifests_as_dict():
+def test_manifests_as_dict() -> None:
     """Verify manifests_as_dict returns correct keys for cname and digest cases."""
     # Arrange
     idx = Index()
@@ -36,7 +37,7 @@ def test_manifests_as_dict():
     assert result["sha256:def"] == manifest_no_cname
 
 
-def test_append_manifest_replace():
+def test_append_manifest_replace() -> None:
     """Ensure append_manifest replaces existing manifest with same cname."""
     # Arrange
     idx = Index()
@@ -55,7 +56,7 @@ def test_append_manifest_replace():
     assert any(manifest["digest"] == "sha256:new" for manifest in idx["manifests"])
 
 
-def test_append_manifest_cname_not_found():
+def test_append_manifest_cname_not_found() -> None:
     """Test appending new manifest if cname isn't found."""
     # Arrange
     idx = Index()
@@ -76,8 +77,8 @@ def test_append_manifest_cname_not_found():
         "not-a-dict",
         {"annotations": {}},
     ],
-)
-def test_append_invalid_input_raises(bad_manifest):
+)  #  type: ignore[misc]
+def test_append_invalid_input_raises(bad_manifest: Dict[str, Any]) -> None:
     """Test proper error handling for invalid append_manifest input."""
     # Arrange
     idx = Index()

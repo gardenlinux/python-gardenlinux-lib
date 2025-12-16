@@ -155,13 +155,13 @@ def main() -> None:
         else:
             print_output_from_cname(args.type, cname)
     elif args.type == "commit_id":
-        print(commit_id_or_hash[:8])
+        print(commit_id_or_hash[:8])  # type: ignore[index]
     elif args.type == "container_tag":
-        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))
+        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))  # type: ignore[index]
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit_id":
-        print(f"{version}-{commit_id_or_hash[:8]}")
+        print(f"{version}-{commit_id_or_hash[:8]}")  # type: ignore[index]
 
 
 def get_version_and_commit_id_from_files(gardenlinux_root: str) -> tuple[str, str]:
@@ -235,7 +235,7 @@ def print_output_from_features_parser(
     cname_instance: CName,
     parser: Parser,
     flavor: str,
-    ignores_list: set,
+    ignores_list: Set[str],
 ) -> None:
     """
     Prints output to stdout based on the given features parser and parameters.
@@ -248,7 +248,7 @@ def print_output_from_features_parser(
     :since: 1.0.0
     """
 
-    def additional_filter_func(node):
+    def additional_filter_func(node: str) -> bool:
         return node not in ignores_list
 
     if output_type == "features":

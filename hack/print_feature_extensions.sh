@@ -3,14 +3,14 @@
 
 search_and_print_directories() {
     local pattern="$1"
-    local base_pattern="${pattern%%.*}" 
-    
+    local base_pattern="${pattern%%.*}"
+
     while IFS= read -r file; do
         dir=$(dirname "$file" | sed 's|^\./||')
-        
+
         suffix="${file##*/}"
-        suffix="${suffix#"$base_pattern"}" 
-        
+        suffix="${suffix#"$base_pattern"}"
+
         echo "('$dir', '$suffix'),"
     done < <(find . -type f -name "$pattern" | sort -u)
 }

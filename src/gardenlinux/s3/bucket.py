@@ -9,7 +9,7 @@ import logging
 from os import PathLike
 from pathlib import Path
 from time import time
-from typing import Any, Optional
+from typing import Any, BinaryIO, List, Optional
 
 import boto3
 
@@ -62,7 +62,7 @@ class Bucket(object):
         self._logger = logger
 
     @property
-    def objects(self):
+    def objects(self) -> List[Any]:
         """
         Returns a list of all objects in a bucket.
 
@@ -72,9 +72,9 @@ class Bucket(object):
 
         self._logger.debug(f"Returning all S3 bucket objects for {self._bucket.name}")
 
-        return self._bucket.objects.all()
+        return self._bucket.objects.all()  # type: ignore[no-any-return]
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         """
         python.org: Called when an attribute lookup has not found the attribute in
         the usual places (i.e. it is not an instance attribute nor is it found in the
@@ -88,7 +88,9 @@ class Bucket(object):
 
         return getattr(self._bucket, name)
 
-    def download_file(self, key, file_name, *args, **kwargs):
+    def download_file(
+        self, key: str, file_name: str, *args: Any, **kwargs: Any
+    ) -> None:
         """
         boto3: Download an S3 object to a file.
 
@@ -102,7 +104,9 @@ class Bucket(object):
 
         self._logger.info(f"Downloaded {key} from S3 to {file_name}")
 
-    def download_fileobj(self, key, fp, *args, **kwargs):
+    def download_fileobj(
+        self, key: str, fp: BinaryIO, *args: Any, **kwargs: Any
+    ) -> None:
         """
         boto3: Download an object from this bucket to a file-like-object.
 
@@ -117,8 +121,11 @@ class Bucket(object):
         self._logger.info(f"Downloaded {key} from S3 as binary data")
 
     def read_cache_file_or_filter(
-        self, cache_file: str | PathLike[str] | None, cache_ttl: int = 3600, **kwargs
-    ):
+        self,
+        cache_file: Optional[PathLike[str] | str],
+        cache_ttl: int = 3600,
+        **kwargs: Any,
+    ) -> List[Any]:
         """
         Read S3 object keys from cache if valid or filter for S3 object keys.
 
@@ -138,7 +145,7 @@ class Bucket(object):
                 and (time() - cache_path.stat().st_mtime) < cache_ttl
             ):
                 with cache_path.open("r") as fp:
-                    return json.loads(fp.read())
+                    return json.loads(fp.read())  # type: ignore[no-any-return]
         else:
             cache_path = None
 
@@ -152,7 +159,7 @@ class Bucket(object):
 
         return artifacts
 
-    def upload_file(self, file_name, key, *args, **kwargs):
+    def upload_file(self, file_name: str, key: str, *args: Any, **kwargs: Any) -> None:
         """
         boto3: Upload a file to an S3 object.
 
@@ -166,7 +173,7 @@ class Bucket(object):
 
         self._logger.info(f"Uploaded {key} to S3 for {file_name}")
 
-    def upload_fileobj(self, fp, key, *args, **kwargs):
+    def upload_fileobj(self, fp: BinaryIO, key: str, *args: Any, **kwargs: Any) -> None:
         """
         boto3: Upload a file-like object to this bucket.
 

@@ -10,11 +10,11 @@ packages = [{ include = "gardenlinux", from = "src" }]
 [tool.poetry.dependencies]
 python = ">=3.13, <3.14"
 apt-repo = "^0.5"
-boto3 = "^1.40.57"
-click = "^8.2.1"
-cryptography = "^46.0.1"
+boto3 = "^1.42.10"
+click = "^8.3.1"
+cryptography = "^46.0.3"
 jsonschema = "^4.25.1"
-networkx = "^3.5"
+networkx = "^3.6"
 oras = "^0.2.38"
 pygit2 = "^1.19.0"
 pygments = "^2.19.2"
@@ -22,15 +22,14 @@ PyYAML = "^6.0.2"
 gitpython = "^3.1.45"
 
 [tool.poetry.group.dev.dependencies]
-bandit = "^1.8.6"
-black = "^25.1.0"
-moto = "^5.1.12"
-python-dotenv = "^1.1.1"
-pytest = "^9.0.0"
+bandit = "^1.9.2"
+moto = "^5.1.16"
+pre-commit = "^4.5.0"
+python-dotenv = "^1.2.1"
+pytest = "^9.0.2"
 pytest-cov = "^7.0.0"
 isort = "^7.0.0"
 requests-mock = "^1.12.1"
-pyright = "^1.1.403"
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
@@ -53,19 +52,6 @@ profile = "black"
 line_length = 120
 known_first_party = ["gardenlinux"]
 skip = ["test-data", ".venv", "**/__pycache", ".pytest-cache", "hack"]
-
-[tool.pyright]
-typeCheckingMode = "strict"
-venvPath = "."
-venv = ".venv"
-exclude = [
-    "test-data",
-    "docs",
-    "hack",
-    ".venv",
-    ".pytest-cache",
-    "**/__pycache",
-]
 
 [tool.bandit]
 skips = ["B101", "B404"] # allow asserts, subprocesses
