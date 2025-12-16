@@ -18,6 +18,7 @@ from urllib.parse import urlencode
 
 import yaml
 
+from ..features import CName
 from .bucket import Bucket
 
 
@@ -116,36 +117,20 @@ class S3Artifacts(object):
 
         artifacts_dir = Path(artifacts_dir)
 
+        cname_object = CName(cname)
+
         if not artifacts_dir.is_dir():
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
 
         release_file = artifacts_dir.joinpath(f"{cname}.release")
         release_timestamp = stat(release_file).st_ctime
 
-        release_config = ConfigParser(allow_unnamed_section=True)
-        release_config.read(release_file)
+        cname_object.load_from_release_file(release_file)
 
-        # Get architecture from the GARDENLINUX_CNAME (second to last element when split by -)
-        release_cname = release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME")
-        cname_parts = release_cname.split("-")
-        if len(cname_parts) < 2:
-            raise RuntimeError(f"Invalid GARDENLINUX_CNAME format in release file: {release_cname}")
-        arch = cname_parts[-2]  # Second to last element is the architecture
+        if cname_object.arch is None:
+            raise RuntimeError("Architecture could not be determined from cname")
 
-        commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID")
-        expected_cname = f"{release_cname}-{commit_id}"
-
-        # Verify the provided cname matches the release file
-        if cname != expected_cname:
-            raise RuntimeError(
-                f"Release file cname does not match provided cname: {expected_cname} != {cname}"
-            )
-
-        commit_hash = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG")
-
-        feature_set = release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES")
-        feature_list = feature_set.split(",")
-
+        feature_list = cname_object.feature_set
         requirements_file = artifacts_dir.joinpath(f"{cname}.requirements")
         require_uefi = None
         secureboot = None
@@ -168,32 +153,29 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_list
 
-        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION")
-        platform = release_config.get(UNNAMED_SECTION, "GARDENLINUX_PLATFORM")
+        version_epoch = cname_object.version_epoch
+
+        if version_epoch is None:
+            version_epoch = ""
 
         metadata = {
-            "platform": platform,
-            "architecture": arch,
+            "platform": cname_object.feature_set_platform,
+            "architecture": cname_object.arch,
             "base_image": None,
-            "build_committish": commit_hash,
+            "build_committish": cname_object.commit_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
-            "gardenlinux_epoch": int(version.split(".", 1)[0]),
+            "gardenlinux_epoch": {version_epoch},
             "logs": None,
-            "modifiers": feature_list,
+            "modifiers": cname_object.feature_set,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
             "published_image_metadata": None,
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{cname}",
             "test_result": None,
-            "version": version,
+            "version": cname_object.version,
             "paths": [],
         }
-
-        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
-            metadata["platform_variant"] = release_config.get(
-                UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"
-            )
 
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
@@ -224,15 +206,13 @@ class S3Artifacts(object):
             }
 
             s3_tags = {
-                "architecture": re_object.sub("+", arch),
-                "platform": re_object.sub("+", platform),
-                "version": re_object.sub("+", version),
-                "committish": commit_hash,
+                "architecture": re_object.sub("+", cname_object.arch),
+                "platform": re_object.sub("+", cname_object.platform),
+                "version": re_object.sub("+", cname_object.version),
+                "committish": cname_object.commit_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
-
-            metadata["paths"].append(artifact_metadata)
 
             if not dry_run:
                 if delete_before_push:
@@ -243,6 +223,8 @@ class S3Artifacts(object):
                     s3_key,
                     ExtraArgs={"Tagging": urlencode(s3_tags)},
                 )
+
+            metadata["paths"].append(artifact_metadata)
 
         if dry_run:
             print(yaml.dump(metadata, sort_keys=False))
