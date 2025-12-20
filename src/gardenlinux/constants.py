@@ -165,6 +165,8 @@ S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 GLVD_BASE_URL = "https://security.gardenlinux.org/v1"
 
+PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
+
 # https://github.com/gardenlinux/gardenlinux/issues/3044
 # Empty string is the 'legacy' variant with traditional root fs and still needed/supported
 IMAGE_VARIANTS = ["", "_usi", "_tpm2_trustedboot"]

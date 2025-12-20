@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 
@@ -7,7 +8,7 @@ import requests
 from gardenlinux.constants import RELEASE_ID_FILE, REQUESTS_TIMEOUTS
 from gardenlinux.logger import LoggerSetup
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release", "INFO")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github.release", logging.INFO)
 
 
 def create_github_release(owner, repo, tag, commitish, latest, body):
