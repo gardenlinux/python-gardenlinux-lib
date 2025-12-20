@@ -202,7 +202,7 @@ class Podman(object):
             kwargs["tag"] = oci_tag
 
         image = podman.images.pull(container, **kwargs)
-        return image.id
+        return image.id  # type: ignore[no-any-return]
 
     @PodmanContext.wrap
     def push(
