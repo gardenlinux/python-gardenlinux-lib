@@ -18,7 +18,9 @@ from .podman_context import PodmanContext
 @click.group()
 def cli() -> None:
     """
-    gl-oci click argument entrypoint
+    gl-oci provides functionality to handle OCI containers. It can pull and push
+    images from remote repositories as well as handle GardenLinux artifacts, OCI
+    image indices and manifests.
 
     :since: 0.7.0
     """
@@ -177,7 +179,7 @@ def build_container(
 )
 def load_container(oci_archive: str, additional_tag: List[str]) -> None:
     """
-    Push to an OCI registry.
+    Load an OCI archive.
 
     :since: 1.0.0
     """
@@ -203,7 +205,7 @@ def load_container(oci_archive: str, additional_tag: List[str]) -> None:
 )
 def load_containers_from_directory(directory: str) -> None:
     """
-    Push to an OCI registry.
+    Load multiple OCI archives.
 
     :since: 1.0.0
     """
@@ -232,7 +234,7 @@ def load_containers_from_directory(directory: str) -> None:
 )
 def new_index(index: str, insecure: bool, additional_tag: List[str]) -> None:
     """
-    Push a list of files from the `manifest_folder` to an index.
+    Create a new OCI image index.
 
     :since: 1.0.0
     """
@@ -267,7 +269,7 @@ def new_index(index: str, insecure: bool, additional_tag: List[str]) -> None:
 )
 def pull_container(container: str, tag: str, platform: str, insecure: bool) -> None:
     """
-    Push to an OCI registry.
+    Pull an OCI image container from a remote OCI registry.
 
     :since: 1.0.0
     """
@@ -300,7 +302,7 @@ def pull_container(container: str, tag: str, platform: str, insecure: bool) -> N
 )
 def push_container(container: str, tag: str, destination: str, insecure: bool) -> None:
     """
-    Push to an OCI registry.
+    Push an OCI image container to a remote OCI registry.
 
     :since: 1.0.0
     """
@@ -376,7 +378,8 @@ def push_manifest(
     additional_tag: List[str],
 ) -> None:
     """
-    Push artifacts and the manifest from a directory to a registry.
+    Push to an OCI image container given GardenLinux canonical named artifacts
+    in a specified directory.
 
     :since: 0.7.0
     """
@@ -451,7 +454,7 @@ def push_manifest_tags(
     tag: List[str],
 ) -> None:
     """
-    Push artifacts and the manifest from a directory to a registry.
+    Push tags to an OCI image container for a given GardenLinux canonical named image.
 
     :since: 0.10.0
     """
@@ -483,7 +486,7 @@ def push_manifest_tags(
 )
 def save_container(container: str, tag: str, oci_archive: str) -> None:
     """
-    Push to an OCI registry.
+    Saves a given OCI image container as an OCI archive.
 
     :since: 1.0.0
     """
@@ -513,7 +516,7 @@ def save_container(container: str, tag: str, oci_archive: str) -> None:
 )
 def tag_container(container: str, tag: str, additional_tag: List[str]) -> None:
     """
-    Push to an OCI registry.
+    Adds additional tags to a given OCI image container.
 
     :since: 1.0.0
     """
@@ -570,7 +573,7 @@ def update_index(
     additional_tag: List[str],
 ) -> None:
     """
-    Push a list of files from the `manifest_folder` to an index.
+    Pushes manifests stored in a directory to a given OCI image index.
 
     :since: 0.7.0
     """
