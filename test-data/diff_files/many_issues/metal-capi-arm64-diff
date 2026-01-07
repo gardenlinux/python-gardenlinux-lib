@@ -1,0 +1,3 @@
+/boot/initrd.img-6.12.57-arm64
+/efi/Default/6.12.57-arm64/initrd
+/etc/os-release

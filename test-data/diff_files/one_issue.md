@@ -1,0 +1,15 @@
+# Reproducibility Test Results
+
+⚠️ **97.3%** of **73** tested flavors were reproducible.
+**1** Problem detected.
+
+## Detailed Result
+
+*The mentioned features are included in every affected flavor and not included in every unaffected flavor.*
+
+| Affected Files | Flavors | Features Causing the Problem |
+|----------------|---------|------------------------------|
+|`/etc/hostname`|**2.7%** affected<br>`container-amd64`<br>`container-arm64`|<pre>container</pre>|
+|✅ No problems found|**97.3%**<br><details><summary>ali-gardener_prod-amd64...</summary>`ali-gardener_prod-amd64`<br>`aws-gardener_prod-amd64`<br>`aws-gardener_prod-arm64`<br>`aws-gardener_prod_tpm2_trustedboot-amd64`<br>`aws-gardener_prod_tpm2_trustedboot-arm64`<br>`aws-gardener_prod_trustedboot-amd64`<br>`aws-gardener_prod_trustedboot-arm64`<br>`aws-gardener_prod_usi-amd64`<br>`aws-gardener_prod_usi-arm64`<br>`azure-gardener_prod-amd64`<br>`azure-gardener_prod-arm64`<br>`azure-gardener_prod_tpm2_trustedboot-amd64`<br>`azure-gardener_prod_tpm2_trustedboot-arm64`<br>`azure-gardener_prod_trustedboot-amd64`<br>`azure-gardener_prod_trustedboot-arm64`<br>`azure-gardener_prod_usi-amd64`<br>`azure-gardener_prod_usi-arm64`<br>`bare-libc-amd64`<br>`bare-libc-arm64`<br>`bare-nodejs-amd64`<br>`bare-nodejs-arm64`<br>`bare-python-amd64`<br>`bare-python-arm64`<br>`bare-sapmachine-amd64`<br>`bare-sapmachine-arm64`<br>`gcp-gardener_prod-amd64`<br>`gcp-gardener_prod-arm64`<br>`gcp-gardener_prod_tpm2_trustedboot-amd64`<br>`gcp-gardener_prod_tpm2_trustedboot-arm64`<br>`gcp-gardener_prod_trustedboot-amd64`<br>`gcp-gardener_prod_trustedboot-arm64`<br>`gcp-gardener_prod_usi-amd64`<br>`gcp-gardener_prod_usi-arm64`<br>`gdch-gardener_prod-amd64`<br>`gdch-gardener_prod-arm64`<br>`kvm-gardener_prod-amd64`<br>`kvm-gardener_prod-arm64`<br>`kvm-gardener_prod_tpm2_trustedboot-amd64`<br>`kvm-gardener_prod_tpm2_trustedboot-arm64`<br>`kvm-gardener_prod_trustedboot-amd64`<br>`kvm-gardener_prod_trustedboot-arm64`<br>`kvm-gardener_prod_usi-amd64`<br>`kvm-gardener_prod_usi-arm64`<br>`metal-capi-amd64`<br>`metal-capi-arm64`<br>`metal-gardener_prod-amd64`<br>`metal-gardener_prod-arm64`<br>`metal-gardener_prod_tpm2_trustedboot-amd64`<br>`metal-gardener_prod_tpm2_trustedboot-arm64`<br>`metal-gardener_prod_trustedboot-amd64`<br>`metal-gardener_prod_trustedboot-arm64`<br>`metal-gardener_prod_usi-amd64`<br>`metal-gardener_prod_usi-arm64`<br>`metal-gardener_pxe-amd64`<br>`metal-gardener_pxe-arm64`<br>`metal-vhost-amd64`<br>`metal-vhost-arm64`<br>`metal_pxe-amd64`<br>`metal_pxe-arm64`<br>`openstack-gardener_prod-amd64`<br>`openstack-gardener_prod-arm64`<br>`openstack-gardener_prod_tpm2_trustedboot-amd64`<br>`openstack-gardener_prod_tpm2_trustedboot-arm64`<br>`openstack-gardener_prod_trustedboot-amd64`<br>`openstack-gardener_prod_trustedboot-arm64`<br>`openstack-gardener_prod_usi-amd64`<br>`openstack-gardener_prod_usi-arm64`<br>`openstackbaremetal-gardener_prod-amd64`<br>`openstackbaremetal-gardener_prod-arm64`<br>`vmware-gardener_prod-amd64`<br>`vmware-gardener_prod-arm64`</details>|-|
+
+*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*
