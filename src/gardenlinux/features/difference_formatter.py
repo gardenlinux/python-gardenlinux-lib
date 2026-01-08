@@ -325,7 +325,11 @@ with a new build"
             row += "|No analysis available|\n"
             rows += row
 
-        for files in trees:
+        # Sort the problems by affected flavors in descending order and by files names for problems with the same number of affected flavors
+        # to get a derterministic ordering for testing
+        sorting_function = lambda files: (-len(trees[files][0]), ",".join(files))
+
+        for files in sorted(trees, key=sorting_function):
             flavors, tree = trees[files]
             row = "|"
             row += self._dropdown(files)
