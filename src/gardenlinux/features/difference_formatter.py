@@ -327,7 +327,7 @@ with a new build"
 
         # Sort the problems by affected flavors in descending order and by files names for problems with the same number of affected flavors
         # to get a derterministic ordering for testing
-        sorting_function = lambda files: (-len(trees[files][0]), ",".join(files))
+        sorting_function = lambda files: (-len(trees[files][0]), ",".join(sorted(files)))
 
         for files in sorted(trees, key=sorting_function):
             flavors, tree = trees[files]
