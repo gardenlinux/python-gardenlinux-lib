@@ -1,18 +1,21 @@
-# pyright: reportIncompatibleMethodOverride=false
+from typing import Any, Dict
+
 from . import DeploymentPlatform
 
 
 class Azure(DeploymentPlatform):
-    def short_name(self):
+    def short_name(self) -> str:
         return "azure"
 
-    def full_name(self):
+    def full_name(self) -> str:
         return "Microsoft Azure"
 
-    def image_extension(self):
+    def image_extension(self) -> str:
         return "vhd"
 
-    def published_images_by_regions(self, image_metadata):
+    def published_images_by_regions(
+        self, image_metadata: Dict[str, Any]
+    ) -> Dict[str, Any]:
         published_image_metadata = image_metadata["published_image_metadata"]
         flavor_name = image_metadata["s3_key"].split("/")[-1]
 

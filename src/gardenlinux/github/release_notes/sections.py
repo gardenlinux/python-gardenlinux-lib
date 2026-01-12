@@ -1,5 +1,7 @@
+import logging
 import re
 import textwrap
+from typing import Any, Dict
 
 import requests
 import yaml
@@ -17,7 +19,7 @@ from .deployment_platform.openstack import OpenStack
 from .deployment_platform.openstack_baremetal import OpenStackBareMetal
 from .helpers import compare_apt_repo_versions, get_variant_from_flavor
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes", "INFO")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes", logging.INFO)
 
 IMAGE_IDS_VARIANT_ORDER = ["legacy", "usi", "tpm2_trustedboot"]
 IMAGE_IDS_VARIANT_TABLE_NAMES = {
@@ -40,7 +42,7 @@ PLATFORMS = {
 }
 
 
-def release_notes_changes_section(gardenlinux_version):
+def release_notes_changes_section(gardenlinux_version: str) -> str:
     """
     Get list of fixed CVEs, grouped by upgraded package.
     Note: This result is not perfect, feel free to edit the generated release notes and
@@ -87,7 +89,7 @@ def release_notes_changes_section(gardenlinux_version):
         )
 
 
-def release_notes_software_components_section(package_list):
+def release_notes_software_components_section(package_list: Dict[str, Any]) -> str:
     output = "## Software Component Versions\n"
     output += "```"
     output += "\n"
@@ -102,7 +104,9 @@ def release_notes_software_components_section(package_list):
     return output
 
 
-def release_notes_compare_package_versions_section(gardenlinux_version, package_list):
+def release_notes_compare_package_versions_section(
+    gardenlinux_version: str, package_list: dict[str, Any]
+) -> str:
     version = DistroVersion(gardenlinux_version)
     output = ""
 
@@ -126,7 +130,9 @@ def release_notes_compare_package_versions_section(gardenlinux_version, package_
     return output
 
 
-def generate_table_format(grouped_data):
+def generate_table_format(
+    grouped_data: dict[str, dict[str, dict[str, list[dict[str, Any]]]]],
+) -> str:
     """
     Generate the table format with collapsible region details
     """
@@ -165,7 +171,9 @@ def generate_table_format(grouped_data):
     return output
 
 
-def generate_detailed_format(grouped_data):
+def generate_detailed_format(
+    grouped_data: dict[str, dict[str, dict[str, list[dict[str, Any]]]]],
+) -> str:
     """
     Generate the old detailed format with YAML
     """
@@ -243,12 +251,12 @@ def generate_detailed_format(grouped_data):
     return output
 
 
-def release_notes_image_ids_section(metadata_files):
+def release_notes_image_ids_section(metadata_files: list[str]) -> str:
     """
     Groups metadata files by image variant, then platform, then architecture
     """
     # Group metadata by variant, platform, and architecture
-    grouped_data = {}
+    grouped_data: dict[str, dict[str, dict[str, list[dict[str, Any]]]]] = {}
 
     for metadata_file_path in metadata_files:
         with open(metadata_file_path) as f:

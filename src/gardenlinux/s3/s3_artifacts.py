@@ -84,14 +84,14 @@ class S3Artifacts(object):
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
 
         release_object = list(
-            self._bucket.objects.filter(Prefix=f"meta/singles/{cname}")  # type: ignore[attr-defined]
+            self._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
         )[0]
 
         self._bucket.download_file(
             release_object.key, str(artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml"))
         )
 
-        for s3_object in self._bucket.objects.filter(Prefix=f"objects/{cname}").all():  # type: ignore[attr-defined]
+        for s3_object in self._bucket.objects.filter(Prefix=f"objects/{cname}").all():
             self._bucket.download_file(
                 s3_object.key, str(artifacts_dir.joinpath(basename(s3_object.key)))
             )

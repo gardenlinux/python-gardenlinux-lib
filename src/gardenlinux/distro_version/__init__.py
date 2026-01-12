@@ -1,3 +1,6 @@
+from typing import Self
+
+
 class UnsupportedDistroVersion(Exception):
     pass
 
@@ -6,7 +9,49 @@ class NotAPatchRelease(Exception):
     pass
 
 
-def DistroVersion(maybe_distro_version):
+class BaseDistroVersion:
+    major: int = 0
+    minor: int = 0
+    patch: int = 0
+
+    def is_patch_release(self) -> int:
+        return self.patch and self.patch > 0
+
+
+class LegacyDistroVersion(BaseDistroVersion):
+    def __init__(self: Self, major: int, patch: int) -> None:
+        self.major = major
+        self.patch = patch
+
+    def __str__(self) -> str:
+        return f"{self.major}.{self.patch}"
+
+    def previous_patch_release(self) -> "LegacyDistroVersion":
+        if not self.is_patch_release():
+            raise NotAPatchRelease(f"{self} is not a patch release")
+
+        return LegacyDistroVersion(self.major, self.patch - 1)
+
+
+class SemverDistroVersion(BaseDistroVersion):
+    def __init__(self, major: int, minor: int, patch: int) -> None:
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+
+    def __str__(self) -> str:
+        return f"{self.major}.{self.minor}.{self.patch}"
+
+    def previous_patch_release(self) -> "SemverDistroVersion":
+        if not self.is_patch_release():
+            raise NotAPatchRelease(f"{self} is not a patch release")
+
+        return SemverDistroVersion(self.major, self.minor, self.patch - 1)
+
+
+def DistroVersion(
+    maybe_distro_version: str,
+) -> LegacyDistroVersion | SemverDistroVersion:
     version_components = maybe_distro_version.split(".")
     if len(version_components) > 3 or len(version_components) < 2:
         raise UnsupportedDistroVersion(
@@ -26,43 +71,3 @@ def DistroVersion(maybe_distro_version):
         raise UnsupportedDistroVersion(
             f"Unexpected number of version components: {maybe_distro_version}"
         )
-
-
-class BaseDistroVersion:
-    major = None
-    minor = None
-    patch = None
-
-    def is_patch_release(self):
-        return self.patch and self.patch > 0
-
-
-class LegacyDistroVersion(BaseDistroVersion):
-    def __init__(self, major, patch):
-        self.major = major
-        self.patch = patch
-
-    def __str__(self):
-        return f"{self.major}.{self.patch}"
-
-    def previous_patch_release(self):
-        if not self.is_patch_release():
-            raise NotAPatchRelease(f"{self} is not a patch release")
-
-        return LegacyDistroVersion(self.major, self.patch - 1)
-
-
-class SemverDistroVersion(BaseDistroVersion):
-    def __init__(self, major, minor, patch):
-        self.major = major
-        self.minor = minor
-        self.patch = patch
-
-    def __str__(self):
-        return f"{self.major}.{self.minor}.{self.patch}"
-
-    def previous_patch_release(self):
-        if not self.is_patch_release():
-            raise NotAPatchRelease(f"{self} is not a patch release")
-
-        return SemverDistroVersion(self.major, self.minor, self.patch - 1)
