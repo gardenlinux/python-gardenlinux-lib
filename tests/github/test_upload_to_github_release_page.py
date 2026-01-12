@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 import pytest
 import requests
@@ -10,14 +11,16 @@ from gardenlinux.github.release import upload_to_github_release_page
 from ..constants import TEST_GARDENLINUX_RELEASE
 
 
-def test_upload_to_github_release_page_dryrun(caplog, artifact_for_upload):
+def test_upload_to_github_release_page_dryrun(
+    caplog: pytest.LogCaptureFixture, artifact_for_upload: Path
+) -> None:
     with requests_mock.Mocker():
         assert (
-            upload_to_github_release_page(
+            upload_to_github_release_page(  # type: ignore[func-returns-value]
                 "gardenlinux",
                 "gardenlinux",
                 TEST_GARDENLINUX_RELEASE,
-                artifact_for_upload,
+                str(artifact_for_upload),
                 dry_run=True,
             )
             is None
@@ -28,15 +31,15 @@ def test_upload_to_github_release_page_dryrun(caplog, artifact_for_upload):
 
 
 def test_upload_to_github_release_page_needs_github_token(
-    downloads_dir, artifact_for_upload
-):
+    downloads_dir: None, artifact_for_upload: Path
+) -> None:
     with requests_mock.Mocker():
         with pytest.raises(ValueError) as exn:
             upload_to_github_release_page(
                 "gardenlinux",
                 "gardenlinux",
                 TEST_GARDENLINUX_RELEASE,
-                artifact_for_upload,
+                str(artifact_for_upload),
                 dry_run=False,
             )
             assert str(exn.value) == "GITHUB_TOKEN environment variable not set", (
@@ -45,8 +48,11 @@ def test_upload_to_github_release_page_needs_github_token(
 
 
 def test_upload_to_github_release_page(
-    downloads_dir, caplog, github_token, artifact_for_upload
-):
+    downloads_dir: None,
+    caplog: pytest.LogCaptureFixture,
+    github_token: None,
+    artifact_for_upload: Path,
+) -> None:
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}/assets?name=artifact.log",
@@ -58,7 +64,7 @@ def test_upload_to_github_release_page(
             "gardenlinux",
             "gardenlinux",
             TEST_GARDENLINUX_RELEASE,
-            artifact_for_upload,
+            str(artifact_for_upload),
             dry_run=False,
         )
         assert any(
@@ -67,15 +73,18 @@ def test_upload_to_github_release_page(
 
 
 def test_upload_to_github_release_page_unreadable_artifact(
-    downloads_dir, caplog, github_token, artifact_for_upload
-):
+    downloads_dir: None,
+    caplog: pytest.LogCaptureFixture,
+    github_token: None,
+    artifact_for_upload: Path,
+) -> None:
     artifact_for_upload.chmod(0)
 
     upload_to_github_release_page(
         "gardenlinux",
         "gardenlinux",
         TEST_GARDENLINUX_RELEASE,
-        artifact_for_upload,
+        str(artifact_for_upload),
         dry_run=False,
     )
     assert any("Error reading file" in record.message for record in caplog.records), (
@@ -84,8 +93,11 @@ def test_upload_to_github_release_page_unreadable_artifact(
 
 
 def test_upload_to_github_release_page_failed(
-    downloads_dir, caplog, github_token, artifact_for_upload
-):
+    downloads_dir: None,
+    caplog: pytest.LogCaptureFixture,
+    github_token: None,
+    artifact_for_upload: Path,
+) -> None:
     with requests_mock.Mocker(real_http=True) as m:
         m.post(
             f"https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}/assets?name=artifact.log",
@@ -98,7 +110,7 @@ def test_upload_to_github_release_page_failed(
                 "gardenlinux",
                 "gardenlinux",
                 TEST_GARDENLINUX_RELEASE,
-                artifact_for_upload,
+                str(artifact_for_upload),
                 dry_run=False,
             )
         assert any(
@@ -107,7 +119,9 @@ def test_upload_to_github_release_page_failed(
         ), "Expected an error HTTP status code to be logged"
 
 
-def test_script_parse_args_wrong_command(monkeypatch, capfd):
+def test_script_parse_args_wrong_command(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(sys, "argv", ["gh", "rejoice"])
 
     with pytest.raises(SystemExit):
@@ -119,7 +133,9 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
     )
 
 
-def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
+def test_script_parse_args_upload_command_required_args(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo", "gardenlinux"]
     )
@@ -134,7 +150,9 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
     ), "Expected help message on missing arguments for 'upload' command"
 
 
-def test_script_upload_dry_run(monkeypatch, capfd):
+def test_script_upload_dry_run(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys,
         "argv",

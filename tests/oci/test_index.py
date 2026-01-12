@@ -77,7 +77,7 @@ def test_append_manifest_cname_not_found() -> None:
         "not-a-dict",
         {"annotations": {}},
     ],
-)  #  type: ignore[misc]
+)
 def test_append_invalid_input_raises(bad_manifest: Dict[str, Any]) -> None:
     """Test proper error handling for invalid append_manifest input."""
     # Arrange

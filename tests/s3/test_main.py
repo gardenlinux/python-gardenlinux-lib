@@ -7,7 +7,7 @@ import pytest
 import gardenlinux.s3.__main__ as s3m
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "argv, expected_method, expected_args, expected_kwargs",
     [
         (

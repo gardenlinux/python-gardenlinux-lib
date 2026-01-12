@@ -1,17 +1,16 @@
 from types import SimpleNamespace
-from typing import List
+from typing import List, Tuple
 
 import pytest
-from apt_repo import BinaryPackage
 
 import gardenlinux.apt.package_repo_info as repoinfo
 
 
 class FakeAPTRepo:
     """
-    Fake replacement for apt_repo.APTTRepository.
+    Fake replacement for apt_repo.APTRepository.
 
-    - stores the contructor args for assertions
+    - stores the constructor args for assertions
     - exposes `.packages` and `get_packages_by_name(name)`
     """
 
@@ -20,10 +19,20 @@ class FakeAPTRepo:
         self.dist = dist
         self.components = components
         # list of objects with .package and .version attributes
-        self.packages: List[BinaryPackage] = []
+        self.packages: List[SimpleNamespace] = []
 
-    def get_packages_by_name(self, name: str) -> BinaryPackage:
+    def get_packages_by_name(self, name: str) -> List[SimpleNamespace]:
         return [p for p in self.packages if p.package == name]
+
+
+# Fake GardenLinuxRepo subclass to avoid incomplete type issues in compare tests
+class FakeRepo(repoinfo.GardenLinuxRepo):
+    def __init__(self, versions: List[Tuple[str, str]]) -> None:
+        # Skip calling the real constructor
+        self._versions = versions
+
+    def get_packages_versions(self) -> List[Tuple[str, str]]:
+        return self._versions
 
 
 def test_gardenlinuxrepo_init(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -91,11 +100,11 @@ def test_compare_repo_union_returns_all() -> None:
     - names in both but with different versions
     """
     # Arrange
-    a = SimpleNamespace(get_packages_versions=lambda: [("a", "1"), ("b", "2")])
-    b = SimpleNamespace(get_packages_versions=lambda: [("b", "3"), ("c", "4")])
+    a = FakeRepo([("a", "1"), ("b", "2")])
+    b = FakeRepo([("b", "3"), ("c", "4")])
 
     # Act
-    result = repoinfo.compare_repo(a, b, available_in_both=False)  # type: ignore
+    result = repoinfo.compare_repo(a, b, available_in_both=False)
 
     # Assert
     expected = {
@@ -111,12 +120,12 @@ def test_compare_repo_intersection_only() -> None:
     When available_in_both=True, only intersection names are considered;
     differences are only returned if versions differ.
     """
-    # Arrange (both share 'b' with different versions)
-    a = SimpleNamespace(get_packages_versions=lambda: [("a", "1"), ("b", "2")])
-    b = SimpleNamespace(get_packages_versions=lambda: [("b", "3"), ("c", "4")])
+    # Arrange
+    a = FakeRepo([("a", "1"), ("b", "2")])
+    b = FakeRepo([("b", "3"), ("c", "4")])
 
     # Act
-    result = repoinfo.compare_repo(a, b, available_in_both=True)  # type: ignore
+    result = repoinfo.compare_repo(a, b, available_in_both=True)
 
     # Assert
     assert set(result) == {("b", "2", "3")}
@@ -127,11 +136,11 @@ def test_compare_same_returns_empty() -> None:
     When both sets are identical, compare_repo should return an empty set.
     """
     # Arrange
-    a = SimpleNamespace(get_packages_versions=lambda: [("a", "1"), ("b", "2")])
-    b = SimpleNamespace(get_packages_versions=lambda: [("a", "1"), ("b", "2")])
+    a = FakeRepo([("a", "1"), ("b", "2")])
+    b = FakeRepo([("a", "1"), ("b", "2")])
 
     # Act / Assert
-    assert repoinfo.compare_repo(a, b, available_in_both=False) == []  # type: ignore
+    assert repoinfo.compare_repo(a, b, available_in_both=False) == []
 
 
 def test_compare_empty_returns_empty() -> None:
@@ -139,8 +148,8 @@ def test_compare_empty_returns_empty() -> None:
     If both sets are empty, compare_repo should return an empty set.
     """
     # Arrange
-    a = SimpleNamespace(get_packages_versions=lambda: [])
-    b = SimpleNamespace(get_packages_versions=lambda: [])
+    a = FakeRepo([])
+    b = FakeRepo([])
 
     # Act / Assert
-    assert repoinfo.compare_repo(a, b, available_in_both=True) == []  # type: ignore
+    assert repoinfo.compare_repo(a, b, available_in_both=True) == []

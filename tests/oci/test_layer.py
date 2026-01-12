@@ -18,7 +18,7 @@ class DummyLayer:
         return {"dummy": True}
 
 
-@pytest.fixture(autouse=True)  # type: ignore[misc]
+@pytest.fixture(autouse=True)
 def patch__Layer(monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
     """Replace oras.oci.Layer with DummyLayer in Layer's module."""
     monkeypatch.setattr(gl_layer, "_Layer", DummyLayer)

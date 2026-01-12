@@ -10,7 +10,7 @@ from .constants import generate_container_amd64_release_metadata
 
 
 def test_main_output(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
     Test successful "output-release-metadata"
@@ -37,7 +37,7 @@ def test_main_output(
 
 
 def test_main_write(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
     Test successful "write"

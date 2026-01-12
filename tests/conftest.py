@@ -129,7 +129,7 @@ def write_zot_config(config_dict: Dict[str, Any], fd: int) -> None:
         json.dump(config_dict, fp, indent=4)
 
 
-@pytest.fixture(autouse=False, scope="function")  # type: ignore[misc]
+@pytest.fixture(autouse=False, scope="function")
 def zot_session() -> Generator[subprocess.Popen[Any]]:
     load_dotenv()
     print("start zot session")

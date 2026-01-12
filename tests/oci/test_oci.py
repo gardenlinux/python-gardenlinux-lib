@@ -171,7 +171,9 @@ def get_tags(client: OrasClient, repo: str) -> List[str]:
     return tags_json.get("tags", [])  # type: ignore[no-any-return]
 
 
-def get_manifest(client: OrasClient, repo: str, reference: str) -> Tuple[Any, str]:
+def get_manifest(
+    client: OrasClient, repo: str, reference: str
+) -> Tuple[Any, str | None]:
     """Get manifest and digest for a repository reference"""
     # Create a simple request for the manifest
     manifest_resp = client.do_request(
@@ -305,8 +307,8 @@ def verify_additional_tags(
     return missing_tags
 
 
-@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.usefixtures("zot_session")
+@pytest.mark.parametrize(
     "version, cname, arch, additional_tags_index, additional_tags_manifest",
     [
         (

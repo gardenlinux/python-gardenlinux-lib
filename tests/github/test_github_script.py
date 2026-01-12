@@ -8,7 +8,9 @@ from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
 
 
-def test_script_parse_args_wrong_command(monkeypatch, capfd):
+def test_script_parse_args_wrong_command(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(sys, "argv", ["gh", "rejoice"])
 
     with pytest.raises(SystemExit):
@@ -20,7 +22,9 @@ def test_script_parse_args_wrong_command(monkeypatch, capfd):
     )
 
 
-def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
+def test_script_parse_args_create_command_required_args(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo", "gardenlinux"]
     )
@@ -34,7 +38,9 @@ def test_script_parse_args_create_command_required_args(monkeypatch, capfd):
     )
 
 
-def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
+def test_script_parse_args_upload_command_required_args(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys, "argv", ["gh", "upload", "--owner", "gardenlinux", "--repo", "gardenlinux"]
     )
@@ -49,7 +55,9 @@ def test_script_parse_args_upload_command_required_args(monkeypatch, capfd):
     ), "Expected help message on missing arguments for 'upload' command"
 
 
-def test_script_create_dry_run(monkeypatch, capfd):
+def test_script_create_dry_run(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys,
         "argv",
@@ -81,7 +89,9 @@ def test_script_create_dry_run(monkeypatch, capfd):
     ), "Expected dry-run create to return generated release notes text"
 
 
-def test_script_create(monkeypatch, caplog):
+def test_script_create(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
     monkeypatch.setattr(
         sys,
         "argv",
@@ -115,7 +125,9 @@ def test_script_create(monkeypatch, caplog):
     ), "Expected a release creation confirmation log entry"
 
 
-def test_script_upload_dry_run(monkeypatch, capfd):
+def test_script_upload_dry_run(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(
         sys,
         "argv",

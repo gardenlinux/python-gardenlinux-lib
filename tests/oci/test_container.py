@@ -7,15 +7,10 @@ from requests.exceptions import HTTPError
 
 from gardenlinux.oci import Container
 
-from ..constants import (
-    CONTAINER_NAME_ZOT_EXAMPLE,
-    REGISTRY,
-    TEST_COMMIT,
-    TEST_VERSION,
-)
+from ..constants import CONTAINER_NAME_ZOT_EXAMPLE, REGISTRY, TEST_COMMIT, TEST_VERSION
 
 
-@pytest.fixture(name="Container_login_403")  # type: ignore[misc]
+@pytest.fixture(name="Container_login_403")
 def patch__Container_login_403(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch `login()` to return HTTP 403. `docker.errors.APIError` extends from `requests.exceptions.HTTPError` as well."""
 
@@ -27,7 +22,7 @@ def patch__Container_login_403(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Container, "login", login_403)
 
 
-@pytest.fixture(name="Container_read_or_generate_403")  # type: ignore[misc]
+@pytest.fixture(name="Container_read_or_generate_403")
 def patch__Container_read_or_generate_403(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch `read_or_generate_manifest()` to return HTTP 403."""
 
@@ -39,7 +34,7 @@ def patch__Container_read_or_generate_403(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(Container, "read_or_generate_manifest", read_or_generate_403)
 
 
-@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+@pytest.mark.usefixtures("zot_session")
 def test_manifest() -> None:
     """Verify a newly created manifest returns correct commit value."""
     # Arrange
@@ -53,8 +48,8 @@ def test_manifest() -> None:
     assert manifest.commit == TEST_COMMIT
 
 
-@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
-@pytest.mark.usefixtures("Container_read_or_generate_403")  # type: ignore[misc]
+@pytest.mark.usefixtures("zot_session")
+@pytest.mark.usefixtures("Container_read_or_generate_403")
 def test_manifest_403() -> None:
     """Verify container calls raises exceptions for certain errors."""
     # Arrange
@@ -64,7 +59,7 @@ def test_manifest_403() -> None:
         container.read_or_generate_manifest(version=TEST_VERSION, commit=TEST_COMMIT)
 
 
-@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
+@pytest.mark.usefixtures("zot_session")
 def test_manifest_auth_token(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -82,8 +77,8 @@ def test_manifest_auth_token(
         assert container.auth.token == b64encode(bytes(token, "utf-8")).decode("utf-8")
 
 
-@pytest.mark.usefixtures("zot_session")  # type: ignore[misc]
-@pytest.mark.usefixtures("Container_login_403")  # type: ignore[misc]
+@pytest.mark.usefixtures("zot_session")
+@pytest.mark.usefixtures("Container_login_403")
 def test_manifest_login_username_password(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
