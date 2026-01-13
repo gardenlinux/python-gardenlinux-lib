@@ -91,7 +91,7 @@ diff_files = pathlib.Path("test-data/diff_files").resolve()
 
 
 @pytest.mark.parametrize("i", [i.name for i in diff_files.iterdir() if i.is_dir()])
-def test_formatter(i):
+def test_formatter(i: str) -> None:
     nightly_stats = diff_files.joinpath(f"{i}-nightly_stats")
 
     if nightly_stats.is_file():

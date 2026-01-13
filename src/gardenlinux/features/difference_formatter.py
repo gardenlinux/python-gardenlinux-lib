@@ -9,7 +9,7 @@ import os
 import pathlib
 import re
 from os import PathLike
-from typing import Optional
+from typing import Collection, Optional
 
 import networkx as nx
 import yaml
@@ -49,7 +49,7 @@ class Formatter(object):
         diff_dir: PathLike[str] = pathlib.Path("diffs"),
         nightly_stats: PathLike[str] = pathlib.Path("nightly_stats"),
         gardenlinux_root: Optional[str] = None,
-        feature_dir_name: Optional[str] = "features",
+        feature_dir_name: str = "features",
         logger: Optional[logging.Logger] = None,
     ):
         """
@@ -73,7 +73,7 @@ class Formatter(object):
 
         self._all = set()
         self._flavors = os.listdir(diff_dir)
-        self._nightly_stats = nightly_stats
+        self._nightly_stats = pathlib.Path(nightly_stats)
         self._feature_dir_name = feature_dir_name
 
         self._successful = []
@@ -108,7 +108,7 @@ class Formatter(object):
         self._unexpected_falvors = self._all - self._expected_falvors
 
         # Map files to flavors
-        affected = {}  # {file: {flavors...}}
+        affected: dict[str, set[str]] = {}  # {file: {flavors...}}
         for flavor in failed:
             for file in failed[flavor]:
                 if file not in affected:
@@ -116,13 +116,13 @@ class Formatter(object):
                 affected[file].add(flavor)
 
         # Merge files affected by the same flavors by mapping flavor sets to files
-        self._bundled = {}  # {{flavors...}: {files...}}
+        self._bundled: dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
         for file in affected:
             if frozenset(affected[file]) not in self._bundled:
                 self._bundled[frozenset(affected[file])] = set()
             self._bundled[frozenset(affected[file])].add(file)
 
-    def _node_key(self, node):
+    def _node_key(self, node: str) -> str:
         """
         Key order function to sort platforms before elements, platforms before flags and elements before flags
 
@@ -179,7 +179,9 @@ class Formatter(object):
 
         return trees
 
-    def _treeStr(self, graph: nx.DiGraph, found=None) -> tuple[str, set]:
+    def _treeStr(
+        self, graph: nx.DiGraph, found: Optional[set[str]] = None
+    ) -> tuple[str, set[str]]:
         """
         Returns a string representation of the graph containg each node exactly once
 
@@ -211,7 +213,7 @@ class Formatter(object):
         return "\n".join(s.split("\n")[:-1]), found
 
     @staticmethod
-    def _dropdown(items) -> str:
+    def _dropdown(items: Collection[str]) -> str:
         """
         Converts the items into a markdown dropwon list if the length is 10 or more
 
@@ -326,7 +328,8 @@ with a new build"
 
         # Sort the problems by affected flavors in descending order and by files names for problems with the same number of affected flavors
         # to get a derterministic ordering for testing
-        sorting_function = lambda files: (-len(trees[files][0]), ",".join(sorted(files)))
+        def sorting_function(files: frozenset[str]) -> tuple[int, str]:
+            return (-len(trees[files][0]), ",".join(sorted(files)))
 
         for files in sorted(trees, key=sorting_function):
             flavors, tree = trees[files]

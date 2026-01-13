@@ -13,7 +13,7 @@ from os.path import basename, dirname
 from .difference_formatter import Formatter
 
 
-def main():
+def main() -> None:
     """
     gl-diff main()
 
