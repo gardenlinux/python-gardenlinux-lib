@@ -8,8 +8,8 @@ from .sections import (
 
 
 def create_github_release_notes(
-    gardenlinux_version, commitish, releases_s3_bucket_name
-):
+    gardenlinux_version: str, commitish: str, releases_s3_bucket_name: str
+) -> str:
     package_list = get_package_list(gardenlinux_version)
 
     output = ""

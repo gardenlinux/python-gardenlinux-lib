@@ -1,7 +1,9 @@
 import gzip
 import io
+import logging
 import shutil
 from pathlib import Path
+from typing import Any
 
 import requests
 from git import Repo
@@ -18,10 +20,12 @@ from gardenlinux.flavors import Parser as FlavorsParser
 from gardenlinux.logger import LoggerSetup
 from gardenlinux.s3 import S3Artifacts
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release_notes.helpers", "INFO")
+LOGGER = LoggerSetup.get_logger(
+    "gardenlinux.github.release_notes.helpers", logging.INFO
+)
 
 
-def get_package_list(gardenlinux_version):
+def get_package_list(gardenlinux_version: str) -> DebsrcFile:
     url = f"{GL_DEB_REPO_BASE_URL}/dists/{gardenlinux_version}/main/binary-amd64/Packages.gz"
     response = requests.get(url, timeout=REQUESTS_TIMEOUTS)
     response.raise_for_status()
@@ -35,7 +39,7 @@ def get_package_list(gardenlinux_version):
     return d
 
 
-def compare_apt_repo_versions(previous_version, current_version):
+def compare_apt_repo_versions(previous_version: Any, current_version: Any) -> str:
     previous_repo = GardenLinuxRepo(previous_version)
     current_repo = GardenLinuxRepo(current_version)
     pkg_diffs = sorted(compare_repo(previous_repo, current_repo), key=lambda t: t[0])
@@ -48,7 +52,9 @@ def compare_apt_repo_versions(previous_version, current_version):
     return output
 
 
-def download_all_metadata_files(version, commitish, s3_bucket_name):
+def download_all_metadata_files(
+    version: Any, commitish: str, s3_bucket_name: str
+) -> list[str]:
     repo = Repo(".")
     commit = repo.commit(commitish)
     flavors_data = commit.tree["flavors.yaml"].data_stream.read().decode("utf-8")
@@ -95,7 +101,13 @@ def download_all_metadata_files(version, commitish, s3_bucket_name):
     return [str(artifact) for artifact in local_dest_path.iterdir()]
 
 
-def download_metadata_file(s3_artifacts, cname, version, commit_short, artifacts_dir):
+def download_metadata_file(
+    s3_artifacts: S3Artifacts,
+    cname: CName,
+    version: Any,
+    commit_short: str,
+    artifacts_dir: Path,
+) -> None:
     """
     Download metadata file (s3_metadata.yaml)
     """
@@ -111,11 +123,11 @@ def download_metadata_file(s3_artifacts, cname, version, commit_short, artifacts
 
     s3_artifacts.bucket.download_file(
         release_object.key,
-        artifacts_dir.joinpath(f"{cname.cname}.s3_metadata.yaml"),
+        str(artifacts_dir.joinpath(f"{cname.cname}.s3_metadata.yaml")),
     )
 
 
-def get_variant_from_flavor(flavor_name):
+def get_variant_from_flavor(flavor_name: str) -> str:
     """
     Determine the variant from a flavor name by checking for variant suffixes.
     Returns the variant key (e.g., 'legacy', 'usi', 'tpm2_trustedboot').

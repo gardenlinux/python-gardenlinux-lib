@@ -11,7 +11,7 @@ from gardenlinux.features import Parser
 
 
 def test_main_happy(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
     Test the "Happy Path" of the main() function.
@@ -49,7 +49,7 @@ def test_main_happy(
 
 
 def test_main_version_from_file(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
     "Happy Path" test for grabbing the version and commit id from file in main().

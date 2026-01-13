@@ -9,9 +9,13 @@ import logging
 from os import PathLike
 from pathlib import Path
 from time import time
-from typing import Any, BinaryIO, List, Optional
+from typing import TYPE_CHECKING, Any, BinaryIO, List, Optional
 
 import boto3
+
+if TYPE_CHECKING:
+    # Only import when type checking is enabled i.e. in a dev environment or CI.
+    from mypy_boto3_s3.service_resource import BucketObjectsCollection
 
 from ..logger import LoggerSetup
 
@@ -62,7 +66,7 @@ class Bucket(object):
         self._logger = logger
 
     @property
-    def objects(self) -> List[Any]:
+    def objects(self) -> "BucketObjectsCollection":
         """
         Returns a list of all objects in a bucket.
 
@@ -72,7 +76,7 @@ class Bucket(object):
 
         self._logger.debug(f"Returning all S3 bucket objects for {self._bucket.name}")
 
-        return self._bucket.objects.all()  # type: ignore[no-any-return]
+        return self._bucket.objects.all()
 
     def __getattr__(self, name: str) -> Any:
         """

@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
@@ -10,10 +11,10 @@ from . import (
     write_to_release_id_file,
 )
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github", "INFO")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github", logging.INFO)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="GitHub Release Script")
     subparsers = parser.add_subparsers(dest="command")
 

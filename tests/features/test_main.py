@@ -88,7 +88,7 @@ def test_get_version_missing_file_raises(tmp_path: Path) -> None:
 # Tests for main()
 # -------------------------------
 def test_main_prints_arch(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "arch"]
@@ -104,7 +104,7 @@ def test_main_prints_arch(
 
 
 def test_main_prints_container_name(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = [
@@ -129,7 +129,7 @@ def test_main_prints_container_name(
 
 
 def test_main_prints_container_tag(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = [
@@ -156,7 +156,7 @@ def test_main_prints_container_tag(
 
 
 def test_main_prints_commit_id(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]
@@ -179,7 +179,7 @@ def test_main_prints_commit_id(
 
 
 def test_main_prints_flags_elements_platforms(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = [
@@ -210,7 +210,7 @@ def test_main_prints_flags_elements_platforms(
 
 
 def test_main_prints_version(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "version"]
@@ -233,7 +233,7 @@ def test_main_prints_version(
 
 
 def test_main_prints_version_and_commit_id(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = ["prog", "--arch", "amd64", "--cname", "flav", "version_and_commit_id"]
@@ -297,7 +297,7 @@ def test_main_raises_no_arch_no_default(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_main_raises_missing_commit_id(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     argv = [
@@ -319,7 +319,7 @@ def test_main_raises_missing_commit_id(
 
 
 def test_main_with_exclude_cname_print_elements(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     monkeypatch.setattr(
@@ -353,7 +353,7 @@ def test_main_with_exclude_cname_print_elements(
 
 
 def test_main_with_exclude_cname_print_features(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
     monkeypatch.setattr(
@@ -390,7 +390,7 @@ def test_main_with_exclude_cname_print_features(
 
 
 def test_cname_release_file(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
     Test validation between release metadata and arguments given
