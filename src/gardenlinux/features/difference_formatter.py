@@ -82,7 +82,7 @@ class Formatter(object):
 
         self._expected_falvors = set(
             [
-                f'{variant["flavor"]}-{variant["arch"]}'
+                f"{variant['flavor']}-{variant['arch']}"
                 for variant in (
                     flavors_matrix["include"] + bare_flavors_matrix["include"]
                 )
