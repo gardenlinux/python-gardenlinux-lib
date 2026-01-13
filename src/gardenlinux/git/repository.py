@@ -74,12 +74,12 @@ class Repository(_Repository):  # type: ignore[misc]
         :since:  0.10.0
         """
 
-        root_dir = self.workdir
+        root_dir: Path = Path(self.workdir)
 
         if self.is_bare:
-            root_dir = self.path
+            root_dir = Path(self.path)
 
-        usual_git_dir = Path(root_dir, ".git")
+        usual_git_dir = root_dir / ".git"
 
         # Possible submodule Git repository. Validate repository containing `.git` directory.
         if self.path != str(usual_git_dir):

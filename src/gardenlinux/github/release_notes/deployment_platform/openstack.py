@@ -1,15 +1,19 @@
 # pyright: reportIncompatibleMethodOverride=false
+from typing import Any, Dict
+
 from . import DeploymentPlatform
 
 
 class OpenStack(DeploymentPlatform):
-    def short_name(self):
+    def short_name(self) -> str:
         return "openstack"
 
-    def full_name(self):
+    def full_name(self) -> str:
         return "OpenStack"
 
-    def published_images_by_regions(self, image_metadata):
+    def published_images_by_regions(
+        self, image_metadata: Dict[str, Any]
+    ) -> Dict[str, Any]:
         published_image_metadata = image_metadata["published_image_metadata"]
         flavor_name = image_metadata["s3_key"].split("/")[-1]
 

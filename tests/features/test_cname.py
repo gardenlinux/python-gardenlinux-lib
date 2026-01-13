@@ -3,7 +3,7 @@ import pytest
 from gardenlinux.features import CName
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "input_cname, expected_output",
     [
         (

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 
@@ -7,10 +8,12 @@ import requests
 from gardenlinux.constants import RELEASE_ID_FILE, REQUESTS_TIMEOUTS
 from gardenlinux.logger import LoggerSetup
 
-LOGGER = LoggerSetup.get_logger("gardenlinux.github.release", "INFO")
+LOGGER = LoggerSetup.get_logger("gardenlinux.github.release", logging.INFO)
 
 
-def create_github_release(owner, repo, tag, commitish, latest, body):
+def create_github_release(
+    owner: str, repo: str, tag: str, commitish: str, latest: bool, body: str
+) -> int | None:
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise ValueError("GITHUB_TOKEN environment variable not set")
@@ -40,17 +43,19 @@ def create_github_release(owner, repo, tag, commitish, latest, body):
     if response.status_code == 201:
         LOGGER.info("Release created successfully")
         response_json = response.json()
-        return response_json.get("id")
+        return int(response_json.get("id"))  # Will raise KeyError if missing
     else:
         LOGGER.error("Failed to create release")
         LOGGER.debug(response.json())
         response.raise_for_status()
 
+    return None  # Simply to make mypy happy. should not be reached.
 
-def write_to_release_id_file(release_id):
+
+def write_to_release_id_file(release_id: str | int) -> None:
     try:
         with open(RELEASE_ID_FILE, "w") as file:
-            file.write(release_id)
+            file.write(str(release_id))
         LOGGER.info(f"Created {RELEASE_ID_FILE} successfully.")
     except IOError as e:
         LOGGER.error(f"Could not create {RELEASE_ID_FILE} file: {e}")
@@ -58,8 +63,12 @@ def write_to_release_id_file(release_id):
 
 
 def upload_to_github_release_page(
-    github_owner, github_repo, gardenlinux_release_id, file_to_upload, dry_run
-):
+    github_owner: str,
+    github_repo: str,
+    gardenlinux_release_id: str | int,
+    file_to_upload: str,
+    dry_run: bool,
+) -> None:
     if dry_run:
         LOGGER.info(
             f"Dry run: would upload {file_to_upload} to release {gardenlinux_release_id} in repo {github_owner}/{github_repo}"

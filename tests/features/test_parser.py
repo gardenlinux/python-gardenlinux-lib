@@ -7,7 +7,7 @@ from gardenlinux.features import Parser
 from ..constants import GL_ROOT_DIR
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "input_cname, expected_output",
     [
         (

@@ -1,16 +1,20 @@
+from typing import Any, Dict
+
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 
 class DeploymentPlatform:
     artifacts_bucket_name = GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
-    def short_name(self):
+    def short_name(self) -> str:
         return "generic"
 
-    def full_name(self):
+    def full_name(self) -> str:
         return "Generic Deployment Platform"
 
-    def published_images_by_regions(self, image_metadata):
+    def published_images_by_regions(
+        self, image_metadata: Dict[str, Any]
+    ) -> Dict[str, Any]:
         published_image_metadata = image_metadata["published_image_metadata"]
         flavor_name = image_metadata["s3_key"].split("/")[-1]
 
@@ -21,10 +25,10 @@ class DeploymentPlatform:
 
         return {"flavor": flavor_name, "regions": regions}
 
-    def image_extension(self):
+    def image_extension(self) -> str:
         return "raw"
 
-    def artifact_for_flavor(self, flavor, markdown_format=True):
+    def artifact_for_flavor(self, flavor: str, markdown_format: bool = True) -> str:
         base_url = (
             f"https://{self.__class__.artifacts_bucket_name}.s3.amazonaws.com/objects"
         )
@@ -35,11 +39,11 @@ class DeploymentPlatform:
         else:
             return download_url
 
-    def region_details(self, image_metadata):
+    def region_details(self, image_metadata: Dict[str, Any]) -> str:
         """
         Generate the detailed region information for the collapsible section
         """
-        details = ""
+        details: str = ""
 
         match self.published_images_by_regions(image_metadata):
             case {"regions": regions}:
@@ -81,7 +85,7 @@ class DeploymentPlatform:
 
         return details
 
-    def summary_text(self, image_metadata):
+    def summary_text(self, image_metadata: Dict[str, Any]) -> str:
         """
         Generate the summary text for the collapsible section
         """

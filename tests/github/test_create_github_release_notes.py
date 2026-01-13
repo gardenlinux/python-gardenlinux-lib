@@ -5,12 +5,13 @@ from moto import mock_aws
 
 from gardenlinux.constants import GLVD_BASE_URL
 from gardenlinux.distro_version import UnsupportedDistroVersion
-from gardenlinux.github.release_notes import (
-    release_notes_changes_section,
+from gardenlinux.github.release_notes import release_notes_changes_section  # type: ignore[attr-defined]
+from gardenlinux.github.release_notes import (  # type: ignore[attr-defined]
     release_notes_compare_package_versions_section,
 )
 from gardenlinux.github.release_notes.deployment_platform import DeploymentPlatform
 from gardenlinux.github.release_notes.helpers import get_variant_from_flavor
+from gardenlinux.s3.bucket import Bucket
 
 from ..constants import (
     RELEASE_ARTIFACTS_METADATA_FILES,
@@ -29,7 +30,7 @@ TEST_FLAVORS = [
 ]
 
 
-def test_release_notes_changes_section_empty_packagelist():
+def test_release_notes_changes_section_empty_packagelist() -> None:
     with requests_mock.Mocker() as m:
         m.get(
             f"{GLVD_BASE_URL}/releaseNotes/{TEST_GARDENLINUX_RELEASE}",
@@ -41,7 +42,7 @@ def test_release_notes_changes_section_empty_packagelist():
         )
 
 
-def test_release_notes_changes_section_broken_glvd_response():
+def test_release_notes_changes_section_broken_glvd_response() -> None:
     with requests_mock.Mocker() as m:
         m.get(
             f"{GLVD_BASE_URL}/releaseNotes/{TEST_GARDENLINUX_RELEASE}",
@@ -55,7 +56,9 @@ def test_release_notes_changes_section_broken_glvd_response():
         )
 
 
-def test_release_notes_compare_package_versions_section_legacy_versioning_is_recognized():
+def test_release_notes_compare_package_versions_section_legacy_versioning_is_recognized() -> (
+    None
+):
     assert (
         "Full List of Packages in Garden Linux version 1.0"
         in release_notes_compare_package_versions_section("1.0", {})
@@ -63,9 +66,11 @@ def test_release_notes_compare_package_versions_section_legacy_versioning_is_rec
 
 
 def test_release_notes_compare_package_versions_section_legacy_versioning_patch_release_is_recognized(
-    monkeypatch,
-):
-    def mock_compare_apt_repo_versions(previous_version, current_version):
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def mock_compare_apt_repo_versions(
+        previous_version: str, current_version: str
+    ) -> str:
         output = f"| Package | {previous_version} | {current_version} |\n"
         output += "|---------|--------------------|-------------------|\n"
         output += "|containerd|1.0|1.1|\n"
@@ -81,7 +86,7 @@ def test_release_notes_compare_package_versions_section_legacy_versioning_patch_
     ), "Legacy versioning patch releases are supported"
 
 
-def test_release_notes_compare_package_versions_section_semver_is_recognized():
+def test_release_notes_compare_package_versions_section_semver_is_recognized() -> None:
     assert (
         "Full List of Packages in Garden Linux version 1.20.0"
         in release_notes_compare_package_versions_section("1.20.0", {})
@@ -89,9 +94,11 @@ def test_release_notes_compare_package_versions_section_semver_is_recognized():
 
 
 def test_release_notes_compare_package_versions_section_semver_patch_release_is_recognized(
-    monkeypatch,
-):
-    def mock_compare_apt_repo_versions(previous_version, current_version):
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def mock_compare_apt_repo_versions(
+        previous_version: str, current_version: str
+    ) -> str:
         output = f"| Package | {previous_version} | {current_version} |\n"
         output += "|---------|--------------------|-------------------|\n"
         output += "|containerd|1.0|1.1|\n"
@@ -107,26 +114,30 @@ def test_release_notes_compare_package_versions_section_semver_patch_release_is_
     ), "Semver patch releases are supported"
 
 
-def test_release_notes_compare_package_versions_section_unrecognizable_version():
+def test_release_notes_compare_package_versions_section_unrecognizable_version() -> (
+    None
+):
     with pytest.raises(UnsupportedDistroVersion):
         release_notes_compare_package_versions_section("garden.linux", {})
 
 
 @pytest.mark.parametrize("flavor", TEST_FLAVORS)
-def test_get_variant_from_flavor(flavor):
+def test_get_variant_from_flavor(flavor: str) -> None:
     assert get_variant_from_flavor(flavor[0]) == flavor[1]
 
 
-def test_default_get_file_extension_for_deployment_platform():
+def test_default_get_file_extension_for_deployment_platform() -> None:
     assert DeploymentPlatform().image_extension() == "raw"
 
 
 @mock_aws
-def test_github_release_page(monkeypatch, downloads_dir, release_s3_bucket):
-    class SubmoduleAsRepo(Repo):
+def test_github_release_page(
+    monkeypatch: pytest.MonkeyPatch, downloads_dir: None, release_s3_bucket: Bucket
+) -> None:
+    class SubmoduleAsRepo(Repo):  # type: ignore[misc]
         """This will fake a git submodule as a git repository object."""
 
-        def __new__(cls, *args, **kwargs):
+        def __new__(cls, *args, **kwargs):  # type: ignore[no-untyped-def]
             r = super().__new__(Repo)  # pyright: ignore[reportArgumentType]
             r.__init__(*args, **kwargs)
 

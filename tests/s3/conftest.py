@@ -9,6 +9,7 @@ from typing import Any, Generator
 import boto3
 import pytest
 from moto import mock_aws
+from mypy_boto3_s3.service_resource import S3ServiceResource
 
 BUCKET_NAME = "test-bucket"
 REGION = "us-east-1"
@@ -16,7 +17,7 @@ REGION = "us-east-1"
 
 @dataclass(frozen=True)
 class S3Env:
-    s3: boto3.client
+    s3: S3ServiceResource
     bucket_name: str
     tmp_path: Path
     cname: str
@@ -50,8 +51,10 @@ def dummy_digest(data: BytesIO, algo: str) -> Any:
         raise ValueError(f"Unsupported algo: {algo}")
 
 
-@pytest.fixture(autouse=True)  # type: ignore[misc]
-def s3_setup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Generator[Any]:
+@pytest.fixture(autouse=True)
+def s3_setup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> Generator[S3Env, None, None]:
     """
     Provides a clean S3 setup for each test.
     """

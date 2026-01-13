@@ -1,16 +1,15 @@
+from pathlib import Path
+
 import pytest
 import requests
 import requests_mock
 
 from gardenlinux.github.release import create_github_release, write_to_release_id_file
 
-from ..constants import (
-    TEST_GARDENLINUX_COMMIT,
-    TEST_GARDENLINUX_RELEASE,
-)
+from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
 
 
-def test_create_github_release_needs_github_token():
+def test_create_github_release_needs_github_token() -> None:
     with requests_mock.Mocker():
         with pytest.raises(ValueError) as exn:
             create_github_release(
@@ -26,7 +25,9 @@ def test_create_github_release_needs_github_token():
             )
 
 
-def test_create_github_release_raise_on_failure(caplog, github_token):
+def test_create_github_release_raise_on_failure(
+    caplog: pytest.LogCaptureFixture, github_token: None
+) -> None:
     with requests_mock.Mocker() as m:
         with pytest.raises(requests.exceptions.HTTPError):
             m.post(
@@ -47,7 +48,9 @@ def test_create_github_release_raise_on_failure(caplog, github_token):
         ), "Expected a failure log record"
 
 
-def test_create_github_release(caplog, github_token):
+def test_create_github_release(
+    caplog: pytest.LogCaptureFixture, github_token: None
+) -> None:
     with requests_mock.Mocker() as m:
         m.post(
             "https://api.github.com/repos/gardenlinux/gardenlinux/releases",
@@ -71,12 +74,14 @@ def test_create_github_release(caplog, github_token):
         ), "Expected a success log record"
 
 
-def test_write_to_release_id_file(release_id_file):
+def test_write_to_release_id_file(release_id_file: Path) -> None:
     write_to_release_id_file(TEST_GARDENLINUX_RELEASE)
     assert release_id_file.read_text() == TEST_GARDENLINUX_RELEASE
 
 
-def test_write_to_release_id_file_broken_file_permissions(release_id_file, caplog):
+def test_write_to_release_id_file_broken_file_permissions(
+    release_id_file: Path, caplog: pytest.LogCaptureFixture
+) -> None:
     release_id_file.touch(0)  # this will make the file unwritable
 
     with pytest.raises(SystemExit):

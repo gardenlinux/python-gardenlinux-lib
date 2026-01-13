@@ -3,7 +3,7 @@ import pytest
 from gardenlinux.constants import S3_DOWNLOADS_DIR
 from gardenlinux.features import CName
 from gardenlinux.github.release_notes.helpers import download_metadata_file
-from gardenlinux.s3 import S3Artifacts
+from gardenlinux.s3 import Bucket, S3Artifacts
 
 from ..constants import (
     RELEASE_NOTES_S3_ARTIFACTS_DIR,
@@ -13,9 +13,11 @@ from ..constants import (
 )
 
 
-def test_download_metadata_file(downloads_dir, release_s3_bucket):
+def test_download_metadata_file(downloads_dir: None, release_s3_bucket: Bucket) -> None:
     release_s3_bucket.upload_file(
-        RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+        str(
+            RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml"
+        ),
         f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 
@@ -33,9 +35,13 @@ def test_download_metadata_file(downloads_dir, release_s3_bucket):
     assert (S3_DOWNLOADS_DIR / "test-aws-gardener_prod-amd64.s3_metadata.yaml").exists()
 
 
-def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket):
+def test_download_metadata_file_no_such_release(
+    downloads_dir: None, release_s3_bucket: Bucket
+) -> None:
     release_s3_bucket.upload_file(
-        RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+        str(
+            RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml"
+        ),
         f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
     s3_artifacts = S3Artifacts(TEST_GARDENLINUX_RELEASE_BUCKET_NAME)
@@ -58,9 +64,13 @@ def test_download_metadata_file_no_such_release(downloads_dir, release_s3_bucket
     ).exists()
 
 
-def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket):
+def test_download_metadata_file_no_such_commit(
+    downloads_dir: None, release_s3_bucket: Bucket
+) -> None:
     release_s3_bucket.upload_file(
-        RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+        str(
+            RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml"
+        ),
         f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 
@@ -85,10 +95,12 @@ def test_download_metadata_file_no_such_commit(downloads_dir, release_s3_bucket)
 
 
 def test_download_metadata_file_no_such_release_and_commit(
-    downloads_dir, release_s3_bucket
-):
+    downloads_dir: None, release_s3_bucket: Bucket
+) -> None:
     release_s3_bucket.upload_file(
-        RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml",
+        str(
+            RELEASE_NOTES_S3_ARTIFACTS_DIR / "aws-gardener_prod-amd64.s3_metadata.yaml"
+        ),
         f"meta/singles/test-aws-gardener_prod-amd64-{TEST_GARDENLINUX_RELEASE}-{TEST_GARDENLINUX_COMMIT_SHORT}",
     )
 

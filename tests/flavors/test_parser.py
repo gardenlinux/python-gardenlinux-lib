@@ -6,7 +6,7 @@ import yaml
 from gardenlinux.flavors.parser import Parser
 
 
-@pytest.fixture  # type: ignore[misc]
+@pytest.fixture
 def valid_data() -> Dict[str, Any]:
     """Minimal data for valid GL_FLAVORS_SCHEMA."""
     return {
@@ -97,7 +97,7 @@ def test_filter_category_and_exclude(valid_data: str) -> None:
     assert all("android" in name for _, name in android_combos)
 
 
-@pytest.mark.parametrize("flag", ["only_build", "only_test", "only_publish"])  # type: ignore[misc]
+@pytest.mark.parametrize("flag", ["only_build", "only_test", "only_publish"])
 def test_filter_with_flags(valid_data: str, flag: str) -> None:
     # Arrange
     parser = make_parser(valid_data)
