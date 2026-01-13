@@ -96,7 +96,7 @@ class Formatter(object):
 
                 flavor = flavor[:-5]
                 self._all.add(flavor)
-                if content == "\n":
+                if content == "":
                     self._successful.append(flavor)
                 elif content == "whitelist\n":
                     self._successful.append(flavor)
@@ -249,8 +249,7 @@ class Formatter(object):
 
 | Affected Files | Flavors | Features Causing the Problem |
 |----------------|---------|------------------------------|
-{rows}
-"""
+{rows}"""
 
         successrate = round(
             100 * (len(self._successful) / len(self._expected_falvors)), 1
@@ -279,7 +278,7 @@ class Formatter(object):
         if self._nightly_stats.is_file():
             with open(self._nightly_stats, "r") as f:
                 nightly_a, nightly_b = (
-                    Nightly(*n.split(",")) for n in f.read().split(";")
+                    Nightly(*n.split(",")) for n in f.read().rstrip().split(";")
                 )
             if nightly_a.run_number != "":
                 explanation += f"\n\nComparison of nightly **[#{nightly_a.run_number}](https://github.com/gardenlinux/gardenlinux/actions/runs/{nightly_a.id})** \
@@ -357,7 +356,7 @@ with a new build"
             rows += row
 
         if len(self._successful) < len(self._expected_falvors):
-            rows += "\n*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*"
+            rows += "\n*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*\n"
 
         return result.format(
             emoji=emoji,
