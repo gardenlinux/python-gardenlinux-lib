@@ -5,8 +5,9 @@ import sys
 
 import requests
 
-from gardenlinux.constants import RELEASE_ID_FILE, REQUESTS_TIMEOUTS
-from gardenlinux.logger import LoggerSetup
+from ...constants import RELEASE_ID_FILE, REQUESTS_TIMEOUTS
+from ...logger import LoggerSetup
+from .release import Release
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github.release", logging.INFO)
 
@@ -103,3 +104,6 @@ def upload_to_github_release_page(
             f"Upload failed with status code {response.status_code}: {response.text}"
         )
         response.raise_for_status()
+
+
+__all__ = ["Release", "write_to_release_id_file", "upload_to_github_release_page"]

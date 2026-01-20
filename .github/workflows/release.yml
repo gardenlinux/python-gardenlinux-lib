@@ -1,0 +1,52 @@
+name: pre-release
+
+on:
+  push:
+    tags: [ "[0-9]+.[0-9]+.[0-9]+*" ]
+
+env:
+  GIT_CLIFF_VERSION: 2.12.0
+
+jobs:
+  create-pre-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout commit
+      uses: actions/checkout@v6
+      with:
+        sparse-checkout: |
+          cliff.toml
+        sparse-checkout-cone-mode: false
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+    - name: Use cargo cache
+      id: cache-cargo
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.cargo
+        key: gh-release-${{ runner.os }}-git-cliff-${{ env.GIT_CLIFF_VERSION }}-
+        restore-keys: gh-release-${{ runner.os }}-git-cliff-${{ env.GIT_CLIFF_VERSION }}-${{ hashFiles('~/.cargo/.crates.toml') }}-
+    - name: Install git-cliff
+      if: steps.cache-cargo.outputs.cache-hit != 'true'
+      run: |
+        cargo install git-cliff@${GIT_CLIFF_VERSION}
+    - name: Get the Git tag name
+      id: get-tag-name
+      run: echo "tag-name=${GITHUB_REF/refs\/tags\//}" | tee -a "$GITHUB_OUTPUT"
+    - id: release
+      name: Create changelog and release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gl-gh-release create \
+         --repo "python-gardenlinux-lib" \
+         --tag "${{ steps.get-tag-name.outputs.tag-name }}" \
+         --commit "${{ github.sha }}" \
+         --name 'python-gardenlinux-lib v${{ steps.get-tag-name.outputs.tag-name }}' \
+         --latest \
+         --body "
+         $(git-cliff -o - --current)
+         "
