@@ -16,4 +16,4 @@
 |`/boot/initrd.img-6.12.57-arm64`<br>`/efi/Default/6.12.57-arm64/initrd`|**8.2%** affected<br>`metal-capi-arm64`<br>`metal-gardener_prod-arm64`<br>`metal-gardener_pxe-arm64`<br>`metal-vhost-arm64`<br>`metal_pxe-arm64`<br>`openstackbaremetal-gardener_prod-arm64`|No analysis available|
 |`/etc/hostname`|**2.7%** affected<br>`container-amd64`<br>`container-arm64`|<pre>container</pre>|
 
-*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*
+*To add affected files to the whitelist, edit the `whitelist` variable in python-gardenlinux-lib `src/gardenlinux/features/reproducibility/comparator.py`*

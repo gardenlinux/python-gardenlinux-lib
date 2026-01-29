@@ -24,4 +24,4 @@ Comparison of the latest nightly **[#2365](https://github.com/gardenlinux/garden
 |`/lib/jvm/java-1.25.0-sapmachine/lib/libsleef.so`<br>`/lib/jvm/sapmachine-25/lib/libsleef.so`<br>`/usr/lib/jvm/java-1.25.0-sapmachine/lib/libsleef.so`<br>`/usr/lib/jvm/sapmachine-25/lib/libsleef.so`|**1.4%** affected<br>`bare-sapmachine-arm64`|No analysis available|
 |✅ No problems found|**2.7%**<br>`bare-libc-amd64`<br>`bare-libc-arm64`|-|
 
-*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*
+*To add affected files to the whitelist, edit the `whitelist` variable in python-gardenlinux-lib `src/gardenlinux/features/reproducibility/comparator.py`*

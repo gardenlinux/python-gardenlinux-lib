@@ -17,4 +17,4 @@
 |`/etc/hostname`|**2.7%** affected<br>`container-amd64`<br>`container-arm64`|<pre>container</pre>|
 |✅ No problems found|**2.7%**<br>`bare-libc-amd64`<br>`bare-libc-arm64`|-|
 
-*To add affected files to the whitelist, edit the `whitelist` variable in `.github/workflows/generate_diff.sh`*
+*To add affected files to the whitelist, edit the `whitelist` variable in python-gardenlinux-lib `src/gardenlinux/features/reproducibility/comparator.py`*
