@@ -145,7 +145,7 @@ class Comparator(object):
         """
 
         if filecmp.cmp(a, b):
-            return []
+            return [], False
 
         with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
             cmp = filecmp.dircmp(unpacked_a, unpacked_b, shallow=False)
