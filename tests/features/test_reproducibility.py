@@ -104,7 +104,7 @@ def test_formatter(i: str) -> None:
             FLAVORS_MATRIX,
             BARE_FLAVORS_MATRIX,
             diff_files.joinpath(i),
-            gardenlinux_root=gardenlinux_root,
+            gardenlinux_root=str(gardenlinux_root),
             nightly_stats=nightly_stats,
         )
     else:
@@ -112,7 +112,7 @@ def test_formatter(i: str) -> None:
             FLAVORS_MATRIX,
             BARE_FLAVORS_MATRIX,
             diff_files.joinpath(i),
-            gardenlinux_root=gardenlinux_root,
+            gardenlinux_root=str(gardenlinux_root),
         )
 
     with open(diff_files.joinpath(f"{i}.md"), "r") as f:

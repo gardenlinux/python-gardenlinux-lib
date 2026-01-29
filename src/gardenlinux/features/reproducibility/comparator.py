@@ -129,7 +129,7 @@ class Comparator(object):
         if not left_root:
             left_root = Path(cmp.left)
         for name in cmp.diff_files:
-            result.append(f"/{left_root.relative_to(left_root).joinpath(name)}")
+            result.append(f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}")
         for sub_cmp in cmp.subdirs.values():
             result += self._diff_files(sub_cmp, left_root=left_root)
         return result
