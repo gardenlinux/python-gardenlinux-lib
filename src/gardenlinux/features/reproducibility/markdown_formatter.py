@@ -191,7 +191,12 @@ with a new build"
 """
 
         successrate = round(
-            100 * (len(self._diff_parser.successful) / len(self._diff_parser.expected_falvors)), 1
+            100
+            * (
+                len(self._diff_parser.successful)
+                / len(self._diff_parser.expected_falvors)
+            ),
+            1,
         )
 
         emoji = (
