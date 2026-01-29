@@ -183,5 +183,5 @@ def test_comparator_main(
     received = capsys.readouterr().out
 
     assert received == "/a/b/c.txt\n"
-    assert pytest_exit.type == SystemExit
+    assert pytest_exit.type is SystemExit
     assert pytest_exit.value.code == 1
