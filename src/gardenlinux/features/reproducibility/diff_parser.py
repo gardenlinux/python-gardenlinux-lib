@@ -9,7 +9,7 @@ import os
 import re
 from os import PathLike
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 import networkx as nx
 
@@ -56,30 +56,30 @@ class DiffParser(object):
         self._parser = Parser(gardenlinux_root, feature_dir_name, logger)
         self._feature_dir_name = Path(self._gardenlinux_root).joinpath(feature_dir_name)
 
-        self.all = set()
-        self.successful = []
-        self.whitelist = []
-        self.expected_falvors = set()
-        self.missing_flavors = set()
-        self.unexpected_falvors = set()
+        self.all: set[str] = set()
+        self.successful: set[str] = set()
+        self.whitelist: set[str] = set()
+        self.expected_falvors: set[str] = set()
+        self.missing_flavors: set[str] = set()
+        self.unexpected_falvors: set[str] = set()
 
-    def read_feature_info(self, feature: str) -> dict[str, Any]:
+    def read_feature_info(self, feature: str) -> Any:
         """
         Read the content of the feature info.yaml
 
         :param feature:                 The queried feature
 
-        :return: dict[str, Any]         Parsed content of the features' info.yaml file
+        :return: Dict[str, Any]         Parsed content of the features' info.yaml file
         :since: 1.0.0
         """
         return self._parser.read_feature_yaml(
-            self._feature_dir_name.joinpath(f"{feature}/info.yaml")
+            str(self._feature_dir_name.joinpath(f"{feature}/info.yaml"))
         )["content"]
 
     def parse(
         self,
-        flavors_matrix: dict[str, list[dict[str, str]]],
-        bare_flavors_matrix: dict[str, list[dict[str, str]]],
+        flavors_matrix: Dict[str, list[Dict[str, str]]],
+        bare_flavors_matrix: Dict[str, list[Dict[str, str]]],
         diff_dir: PathLike[str] = Path("diffs"),
     ) -> None:
         """
@@ -93,20 +93,16 @@ class DiffParser(object):
         """
 
         self.all = set()
-        self.successful = []
-        self.whitelist = []
+        self.successful = set()
+        self.whitelist = set()
         failed = {}  # {flavor: [files...]}
 
         diff_dir = Path(self._gardenlinux_root).joinpath(diff_dir)
 
-        self.expected_falvors = set(
-            [
-                f"{variant['flavor']}-{variant['arch']}"
-                for variant in (
-                    flavors_matrix["include"] + bare_flavors_matrix["include"]
-                )
-            ]
-        )
+        self.expected_falvors = {
+            f"{variant['flavor']}-{variant['arch']}"
+            for variant in (flavors_matrix["include"] + bare_flavors_matrix["include"])
+        }
 
         for flavor in os.listdir(diff_dir):
             if flavor.endswith(self._SUFFIX):
@@ -116,10 +112,10 @@ class DiffParser(object):
                 flavor = flavor.rstrip(self._SUFFIX)
                 self.all.add(flavor)
                 if content == "":
-                    self.successful.append(flavor)
+                    self.successful.add(flavor)
                 elif content == "whitelist\n":
-                    self.successful.append(flavor)
-                    self.whitelist.append(flavor)
+                    self.successful.add(flavor)
+                    self.whitelist.add(flavor)
                 else:
                     failed[flavor] = content.split("\n")[:-1]
 
@@ -127,7 +123,7 @@ class DiffParser(object):
         self.unexpected_falvors = self.all - self.expected_falvors
 
         # Map files to flavors
-        affected: dict[str, set[str]] = {}  # {file: {flavors...}}
+        affected: Dict[str, set[str]] = {}  # {file: {flavors...}}
         for flavor in failed:
             for file in failed[flavor]:
                 if file not in affected:
@@ -135,7 +131,7 @@ class DiffParser(object):
                 affected[file].add(flavor)
 
         # Merge files affected by the same flavors by mapping flavor sets to files
-        self._bundled: dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
+        self._bundled: Dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
         for file in affected:
             if frozenset(affected[file]) not in self._bundled:
                 self._bundled[frozenset(affected[file])] = set()
@@ -143,11 +139,11 @@ class DiffParser(object):
 
     def intersectionTrees(
         self,
-    ) -> dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]:
+    ) -> Dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]:
         """
         Intersects all features of the affected flavors and removes all features from unaffected flavors to identify features causing the issue
 
-        :return: (dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]) Dict in the form of {{files...}: ({flavors..., intersectionTree})}
+        :return: (Dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]) Dict in the form of {{files...}: ({flavors..., intersectionTree})}
         :since:  1.0.0
         """
 

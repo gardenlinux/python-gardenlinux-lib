@@ -11,6 +11,7 @@ import tarfile
 import tempfile
 from os import PathLike
 from pathlib import Path
+from typing import Optional
 
 
 class Comparator(object):
@@ -26,7 +27,7 @@ class Comparator(object):
                  Apache License, Version 2.0
     """
 
-    _default_whitelist = []
+    _default_whitelist: list[str] = []
 
     _nightly_whitelist = [
         r"/etc/apt/sources\.list\.d/gardenlinux\.sources",
@@ -56,7 +57,7 @@ class Comparator(object):
             self.whitelist += self._nightly_whitelist
 
     @staticmethod
-    def _unpack(file: PathLike[str]) -> tempfile.TemporaryDirectory:
+    def _unpack(file: PathLike[str]) -> tempfile.TemporaryDirectory[str]:
         """
         Unpack a .tar archive or .oci image into a temporary dictionary
 
@@ -112,8 +113,8 @@ class Comparator(object):
         return output_dir
 
     def _diff_files(
-        self, cmp: filecmp.dircmp, left_root: PathLike[str] = None
-    ) -> list[Path]:
+        self, cmp: filecmp.dircmp[str], left_root: Optional[Path] = None
+    ) -> list[str]:
         """
         Recursively compare files
 
@@ -126,14 +127,14 @@ class Comparator(object):
 
         result = []
         if not left_root:
-            left_root = cmp.left
+            left_root = Path(cmp.left)
         for name in cmp.diff_files:
-            result.append(f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}")
+            result.append(f"/{left_root.relative_to(left_root).joinpath(name)}")
         for sub_cmp in cmp.subdirs.values():
             result += self._diff_files(sub_cmp, left_root=left_root)
         return result
 
-    def generate(self, a: PathLike[str], b: PathLike[str]) -> tuple[list[Path], bool]:
+    def generate(self, a: PathLike[str], b: PathLike[str]) -> tuple[list[str], bool]:
         """
         Compare two .tar/.oci images with each other
 
@@ -144,7 +145,7 @@ class Comparator(object):
         :since: 1.0.0
         """
 
-        if filecmp.cmp(a, b):
+        if filecmp.cmp(a, b, shallow=False):
             return [], False
 
         with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:

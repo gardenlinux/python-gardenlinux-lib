@@ -14,7 +14,7 @@ from .comparator import Comparator
 from .markdown_formatter import MarkdownFormatter
 
 
-def generate(args) -> None:
+def generate(args: argparse.Namespace) -> None:
     """
     Call Comparator
 
@@ -41,7 +41,7 @@ def generate(args) -> None:
         exit(1)
 
 
-def format(args) -> None:
+def format(args: argparse.Namespace) -> None:
     """
     Call MarkdownFormatter
 
