@@ -68,7 +68,7 @@ class Comparator(object):
         """
 
         output_dir = tempfile.TemporaryDirectory()
-        file = Path(file)
+        file = Path(file).resolve()
         if file.name.endswith(".oci"):
             with tempfile.TemporaryDirectory() as extracted:
                 # Extract .oci file
