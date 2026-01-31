@@ -74,6 +74,17 @@ class Parser(object):
         )
 
     @property
+    def features_dir_path(self) -> Path[str]:
+        """
+        Returns the GardenLinux features directory.
+
+        :return: (Path) Features directory path
+        :since:  1.0.0
+        """
+
+        return self._feature_base_dir
+
+    @property
     def graph(self) -> networkx.Graph:
         """
         Returns the features graph based on the GardenLinux features directory.
@@ -284,7 +295,8 @@ class Parser(object):
 
         for feature in feature_set:
             for node in networkx.descendants(
-                Parser._get_graph_view_for_attr(self.graph, "include"), feature
+                Parser._get_graph_view_for_attr(self.graph, "include"),
+                feature,
             ):
                 if node not in filter_set:
                     filter_set.append(node)
@@ -395,6 +407,9 @@ class Parser(object):
         flags = []
 
         for feature in cname.split("-"):
+            if len(feature) < 1:
+                continue
+
             if platform is None:
                 platform = feature
                 continue

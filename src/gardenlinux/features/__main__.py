@@ -33,11 +33,6 @@ _ARGS_TYPE_ALLOWED = [
     "graph",
 ]
 
-RE_CAMEL_CASE_SPLITTER = re.compile("([A-Z]+|[a-z0-9])([A-Z])(?!$)")
-"""
-CamelCase splitter RegExp
-"""
-
 
 def main() -> None:
     """
@@ -293,7 +288,7 @@ def print_output_from_features_parser(
 
             print(cname)
         elif output_type == "container_name":
-            print(RE_CAMEL_CASE_SPLITTER.sub("\\1_\\2", cname_base).lower())
+            print(CName.get_camel_case_name_for_feature(cname_base))
         elif output_type == "graph":
             print(graph_as_mermaid_markup(flavor, graph))
 
