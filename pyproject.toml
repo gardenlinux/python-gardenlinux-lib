@@ -39,6 +39,8 @@ boto3-stubs = { extras = ["s3"], version = "^1.42.30" }
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
+sphinx-click = "^4.4.0"
+sphinxcontrib-autoprogram = "^0.1.8"
 
 [tool.poetry.scripts]
 gl-cname = "gardenlinux.features.cname_main:main"
