@@ -1,5 +1,5 @@
-python-gardenlinux-lib release documentation
-============================================
+release documentation
+=====================
 
 *python-gardenlinux-lib* strictly follow syntax and intention of `Semantic Versioning <https://www.semver.org>`. Each release reflects the intention and expected impact therefore.
 
