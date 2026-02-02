@@ -39,6 +39,85 @@ CamelCase splitter RegExp
 """
 
 
+def get_parser() -> argparse.ArgumentParser:
+    """
+    Get the argument parser for gl-features-parse.
+    Used for documentation generation.
+
+    :return: ArgumentParser instance
+    :since: 0.10.9
+    """
+    parser = argparse.ArgumentParser(
+        description="Parse and extract information from GardenLinux features."
+    )
+
+    parser.add_argument(
+        "--arch",
+        dest="arch",
+        help="Target architecture (e.g., amd64, arm64). Overrides architecture from cname.",
+    )
+    parser.add_argument(
+        "--cname",
+        dest="cname",
+        required=True,
+        help="Canonical name (cname) to parse. Must be a valid GardenLinux canonical name.",
+    )
+    parser.add_argument(
+        "--commit",
+        dest="commit",
+        help="Git commit hash. If not specified, will be read from COMMIT file or release file.",
+    )
+    parser.add_argument(
+        "--feature-dir",
+        default="features",
+        help="Path to the features directory (default: 'features'). Either --feature-dir or --release-file must be provided.",
+    )
+    parser.add_argument(
+        "--release-file",
+        dest="release_file",
+        help="Path to a release file containing cname metadata. Either --feature-dir or --release-file must be provided.",
+    )
+    parser.add_argument(
+        "--default-arch",
+        dest="default_arch",
+        help="Default architecture to use if architecture cannot be determined from cname or other sources.",
+    )
+    parser.add_argument(
+        "--default-version",
+        dest="default_version",
+        help="Default version to use if version cannot be determined from files or other sources.",
+    )
+    parser.add_argument(
+        "--version",
+        dest="version",
+        help="Version string. If not specified, will be read from VERSION file or release file.",
+    )
+
+    parser.add_argument(
+        "--ignore",
+        dest="ignore",
+        type=lambda arg: set([f for f in arg.split(",") if f]),
+        default=set(),
+        help="Comma-separated list of features to ignore when processing (e.g., 'feature1,feature2').",
+    )
+
+    parser.add_argument(
+        "type",
+        nargs="?",
+        choices=_ARGS_TYPE_ALLOWED,
+        default="cname",
+        help="Type of output to generate. Choices: {}. Default: 'cname'.".format(
+            ", ".join(_ARGS_TYPE_ALLOWED)
+        ),
+    )
+    return parser
+
+
+# Parser object for documentation generation
+parser = get_parser()
+parser.prog = "gl-features-parse"
+
+
 def main() -> None:
     """
     gl-features-parse main()
@@ -46,26 +125,7 @@ def main() -> None:
     :since: 0.7.0
     """
 
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--arch", dest="arch")
-    parser.add_argument("--cname", dest="cname", required=True)
-    parser.add_argument("--commit", dest="commit")
-    parser.add_argument("--feature-dir", default="features")
-    parser.add_argument("--release-file", dest="release_file")
-    parser.add_argument("--default-arch", dest="default_arch")
-    parser.add_argument("--default-version", dest="default_version")
-    parser.add_argument("--version", dest="version")
-
-    parser.add_argument(
-        "--ignore",
-        dest="ignore",
-        type=lambda arg: set([f for f in arg.split(",") if f]),
-        default=set(),
-    )
-
-    parser.add_argument("type", nargs="?", choices=_ARGS_TYPE_ALLOWED, default="cname")
-
+    parser = get_parser()
     args = parser.parse_args()
 
     assert bool(args.feature_dir) or bool(args.release_file), (
