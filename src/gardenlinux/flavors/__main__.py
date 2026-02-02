@@ -47,14 +47,14 @@ def generate_markdown_table(combinations: List[Tuple[Any, str]]) -> str:
     return table
 
 
-def parse_args() -> Namespace:
+def get_parser() -> ArgumentParser:
     """
-    Parses arguments used for main()
+    Get the argument parser for gl-flavors-parse.
+    Used for documentation generation.
 
-    :return: (object) Parsed argparse.ArgumentParser namespace
-    :since:  0.7.0
+    :return: ArgumentParser instance
+    :since: 1.0.0
     """
-
     parser = ArgumentParser(description="Parse flavors.yaml and generate combinations.")
 
     parser.add_argument(
@@ -122,7 +122,22 @@ def parse_args() -> Namespace:
         help="Generate a markdown table by platform.",
     )
 
-    return parser.parse_args()
+    return parser
+
+
+# Parser object for documentation generation
+parser = get_parser()
+parser.prog = "gl-flavors-parse"
+
+
+def parse_args() -> Namespace:
+    """
+    Parses arguments used for main()
+
+    :return: (object) Parsed argparse.ArgumentParser namespace
+    :since:  0.7.0
+    """
+    return get_parser().parse_args()
 
 
 def main() -> None:
