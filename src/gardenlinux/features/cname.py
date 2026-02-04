@@ -57,14 +57,15 @@ class CName(object):
         self._commit_id = None
         self._feature_elements_cached: Optional[List[str]] = None
         self._feature_flags_cached: Optional[List[str]] = None
-        self._feature_platform_cached: Optional[str] = None
+        self._feature_platforms_cached: Optional[List[str]] = None
         self._feature_set_cached: Optional[str] = None
         self._platform_variant_cached: Optional[str] = None
+        self._flavor = ""
+        self._version = None
+
         self._flag_multiple_platforms = bool(
             environ.get("GL_ALLOW_FRANKENSTEIN", False)
         )
-        self._flavor = ""
-        self._version = None
 
         commit_id_or_hash = None
 

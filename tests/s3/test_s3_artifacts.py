@@ -11,15 +11,15 @@ from gardenlinux.s3.s3_artifacts import S3Artifacts
 from .conftest import S3Env
 
 RELEASE_DATA = """
-    GARDENLINUX_CNAME="container-amd64-1234.1-abc123"
-    GARDENLINUX_VERSION=1234.1
-    GARDENLINUX_COMMIT_ID="abc123"
-    GARDENLINUX_COMMIT_ID_LONG="abc123long"
-    GARDENLINUX_FEATURES="_usi,_trustedboot"
-    GARDENLINUX_FEATURES_ELEMENTS=
-    GARDENLINUX_FEATURES_FLAGS="_usi,_trustedboot"
-    GARDENLINUX_FEATURES_PLATFORMS="container"
-    """
+GARDENLINUX_CNAME="container-amd64-1234.1-abc123"
+GARDENLINUX_VERSION=1234.1
+GARDENLINUX_COMMIT_ID="abc123"
+GARDENLINUX_COMMIT_ID_LONG="abc123long"
+GARDENLINUX_FEATURES="_usi,_trustedboot"
+GARDENLINUX_FEATURES_ELEMENTS=
+GARDENLINUX_FEATURES_FLAGS="_usi,_trustedboot"
+GARDENLINUX_FEATURES_PLATFORMS="container"
+"""
 
 
 def test_s3artifacts_init_success(s3_setup: S3Env) -> None:
@@ -238,6 +238,31 @@ def test_upload_from_directory_commit_mismatch_raises(s3_setup: S3Env) -> None:
     # Act / Assert
     with pytest.raises(RuntimeError, match="failed consistency check"):
         artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+
+def test_upload_from_directory_with_platform_variant(s3_setup: S3Env) -> None:
+    """
+    RuntimeError if version in release file does not match cname.
+    """
+    # Arrange
+    env = s3_setup
+    release_path = env.tmp_path / f"{env.cname}.release"
+
+    release_path.write_text(
+        RELEASE_DATA.strip() + "\nGARDENLINUX_PLATFORM_VARIANT=test"
+    )
+
+    # Act
+    artifacts = S3Artifacts(env.bucket_name)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    meta_obj = next(
+        o for o in bucket.objects.all() if o.key == f"meta/singles/{env.cname}"
+    )
+    metadata = yaml.safe_load(meta_obj.get()["Body"].read())
+    assert metadata["platform_variant"] == "test"
 
 
 def test_upload_directory_with_requirements_override(s3_setup: S3Env) -> None:
