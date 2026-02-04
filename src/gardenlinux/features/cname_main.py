@@ -40,7 +40,7 @@ def main() -> None:
         args.cname,
     )
 
-    assert re_match, f"Not a valid GardenLinux canonical name {args.cname}"
+    assert re_match, f"Not a valid Garden Linux canonical name {args.cname}"
 
     arch = args.arch
     commit_id_or_hash = args.commit

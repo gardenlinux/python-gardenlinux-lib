@@ -8,7 +8,7 @@ import re
 from configparser import UNNAMED_SECTION, ConfigParser
 from os import PathLike, environ
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Self
 
 from ..constants import (
     ARCHS,
@@ -74,7 +74,7 @@ class CName(object):
             cname,
         )
 
-        assert re_match, f"Not a valid GardenLinux canonical name {cname}"
+        assert re_match, f"Not a valid Garden Linux canonical name {cname}"
 
         if re_match.lastindex == 1:
             self._flavor = re_match[1]
@@ -106,7 +106,7 @@ class CName(object):
         if commit_id_or_hash is not None:
             self._commit_id = commit_id_or_hash[:8]
 
-            if len(commit_id_or_hash) == 40:  # sha1 hex
+            if len(commit_id_or_hash) == 40 or commit_id_or_hash == "local":  # sha1 hex
                 self._commit_hash = commit_id_or_hash
 
     @property
@@ -140,18 +140,13 @@ class CName(object):
         return cname
 
     @property
-    def commit_hash(self) -> str:
+    def commit_hash(self) -> Optional[str]:
         """
         Returns the commit hash if part of the cname parsed.
 
         :return: (str) Commit hash
         :since:  1.0.0
         """
-
-        if self._commit_hash is None:
-            raise RuntimeError(
-                "GardenLinux canonical name given does not contain the commit hash"
-            )
 
         return self._commit_hash
 
@@ -391,6 +386,25 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         return epoch
 
+    def _copy_from_cname_object(self, cname_object: Self) -> None:
+        """
+        Copies values from a given Garden Linux canonical name instance.
+
+        :param cname_object: Garden Linux canonical name instance
+
+        :since: 1.0.0
+        """
+
+        self._arch = cname_object.arch
+        self._commit_hash = cname_object.commit_hash
+        self._commit_id = cname_object.commit_id
+        self._feature_set_cached = cname_object.feature_set
+        self._feature_elements_cached = cname_object.feature_set_element.split(",")
+        self._feature_flags_cached = cname_object.feature_set_flag.split(",")
+        self._feature_platforms_cached = cname_object.feature_set_platform.split(",")
+        self._platform_variant_cached = cname_object.platform_variant
+        self._version = cname_object.version
+
     def load_from_release_file(self, release_file: PathLike[str] | str) -> None:
         """
         Loads and parses a release metadata file.
@@ -400,89 +414,21 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         :since: 1.0.0
         """
 
-        if not isinstance(release_file, PathLike):
-            release_file = Path(release_file)
-
-        if not release_file.exists():  # type: ignore[attr-defined]
-            raise RuntimeError(
-                f"Release metadata file given is invalid: {release_file}"
-            )
-
-        release_config = ConfigParser(allow_unnamed_section=True)
-        release_config.read(release_file)
-
-        for release_field in (
-            "GARDENLINUX_CNAME",
-            "GARDENLINUX_FEATURES",
-            "GARDENLINUX_FEATURES_ELEMENTS",
-            "GARDENLINUX_FEATURES_FLAGS",
-            "GARDENLINUX_FEATURES_PLATFORMS",
-            "GARDENLINUX_VERSION",
-        ):
-            if not release_config.has_option(UNNAMED_SECTION, release_field):
-                raise RuntimeError(
-                    f"Release metadata file given is invalid: {release_file} misses {release_field}"
-                )
-
-        loaded_cname_instance = CName(
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME").strip("\"'")
-        )
-
-        commit_id = release_config.get(UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID").strip(
-            "\"'"
-        )
-
-        commit_hash = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
-        ).strip("\"'")
-
-        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION").strip(
-            "\"'"
-        )
+        cname_object = CName.new_from_release_file(release_file)
 
         if (
-            loaded_cname_instance.flavor != self.flavor
-            or loaded_cname_instance.commit_id != commit_id
-            or (self._commit_id is not None and self._commit_id != commit_id)
-            or loaded_cname_instance.version != version
-            or (self._version is not None and self._version != version)
+            cname_object.flavor != self.flavor
+            or (
+                self._commit_id is not None
+                and self._commit_id != cname_object.commit_id
+            )
+            or (self._version is not None and self._version != cname_object.version)
         ):
             raise RuntimeError(
-                f"Release metadata file given is invalid: {release_file} failed consistency check - {self.cname} != {loaded_cname_instance.cname}"
+                f"Release metadata file given is invalid: {release_file} failed consistency check - {self.cname} != {cname_object.cname}"
             )
 
-        self._arch = loaded_cname_instance.arch
-        self._flavor = loaded_cname_instance.flavor
-        self._commit_hash = commit_hash
-        self._commit_id = commit_id
-        self._version = version
-
-        self._feature_set_cached = release_config.get(
-            UNNAMED_SECTION, "GARDENLINUX_FEATURES"
-        ).strip("\"'")
-
-        self._feature_elements_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS")
-            .strip("\"'")
-            .split(",")
-        )
-
-        self._feature_flags_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS")
-            .strip("\"'")
-            .split(",")
-        )
-
-        self._feature_platforms_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS")
-            .strip("\"'")
-            .split(",")
-        )
-
-        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
-            self._platform_variant_cached = release_config.get(
-                UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"
-            ).strip("\"'")
+        self._copy_from_cname_object(cname_object)
 
     def save_to_release_file(
         self, release_file: PathLike[str] | str, overwrite: Optional[bool] = False
@@ -505,3 +451,81 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         with release_file.open("w") as fp:  # type: ignore[attr-defined]
             fp.write(self.release_metadata_string)
+
+    @staticmethod
+    def new_from_release_file(release_file: PathLike[str] | str) -> "CName":
+        """
+        Loads and parses a release metadata file.
+
+        :param release_file: Release metadata file
+
+        :since: 0.10.10
+        """
+
+        if not isinstance(release_file, PathLike):
+            release_file = Path(release_file)
+
+        if not release_file.exists():  # type: ignore[attr-defined]
+            raise RuntimeError(
+                f"Release metadata file given is invalid: {release_file}"
+            )
+
+        release_config = ConfigParser(allow_unnamed_section=True)
+        release_config.read(release_file)
+
+        for release_field in (
+            "GARDENLINUX_CNAME",
+            "GARDENLINUX_COMMIT_ID_LONG",
+            "GARDENLINUX_FEATURES",
+            "GARDENLINUX_FEATURES_ELEMENTS",
+            "GARDENLINUX_FEATURES_FLAGS",
+            "GARDENLINUX_FEATURES_PLATFORMS",
+            "GARDENLINUX_VERSION",
+        ):
+            if not release_config.has_option(UNNAMED_SECTION, release_field):
+                raise RuntimeError(
+                    f"Release metadata file given is invalid: {release_file} misses {release_field}"
+                )
+
+        commit_hash = release_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
+        ).strip("\"'")
+
+        version = release_config.get(UNNAMED_SECTION, "GARDENLINUX_VERSION").strip(
+            "\"'"
+        )
+
+        cname_object = CName(
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME").strip("\"'"),
+            commit_hash=commit_hash,
+            version=version,
+        )
+
+        cname_object._feature_set_cached = release_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_FEATURES"
+        ).strip("\"'")
+
+        cname_object._feature_elements_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS")
+            .strip("\"'")
+            .split(",")
+        )
+
+        cname_object._feature_flags_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS")
+            .strip("\"'")
+            .split(",")
+        )
+
+        cname_object._feature_platforms_cached = (
+            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS")
+            .strip("\"'")
+            .split(",")
+        )
+
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
+            cname_object._platform_variant_cached = release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"
+            ).strip("\"'")
+
+        return cname_object

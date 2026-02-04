@@ -158,6 +158,11 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_list
 
+        commit_hash = cname_object.commit_hash
+
+        if commit_hash is None:
+            commit_hash = ""
+
         version_epoch = str(cname_object.version_epoch)
 
         if version_epoch is None:
@@ -167,7 +172,7 @@ class S3Artifacts(object):
             "platform": cname_object.feature_set_platform,
             "architecture": cname_object.arch,
             "base_image": None,
-            "build_committish": cname_object.commit_hash,
+            "build_committish": commit_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
             "gardenlinux_epoch": {version_epoch},
             "logs": None,
@@ -219,7 +224,7 @@ class S3Artifacts(object):
                 "architecture": re_object.sub("+", cname_object.arch),
                 "platform": re_object.sub("+", cname_object.platform),
                 "version": re_object.sub("+", cname_object.version),  # type: ignore[arg-type]
-                "committish": cname_object.commit_hash,
+                "committish": commit_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
