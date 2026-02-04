@@ -182,6 +182,11 @@ class S3Artifacts(object):
             "paths": [],
         }
 
+        platform_variant = cname_object.platform_variant
+
+        if platform_variant is not None:
+            metadata["platform_variant"] = platform_variant
+
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
         for artifact in artifacts_dir.iterdir():
