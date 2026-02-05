@@ -20,6 +20,11 @@ from ..constants import (
 )
 from .parser import Parser
 
+RE_CAMEL_CASE_SPLITTER = re.compile("([A-Z]+|[a-z0-9])([A-Z])(?!$)")
+"""
+CamelCase splitter RegExp
+"""
+
 
 class CName(object):
     """
@@ -505,3 +510,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
 
         with release_file.open("w") as fp:  # type: ignore[attr-defined]
             fp.write(self.release_metadata_string)
+
+    @staticmethod
+    def get_camel_case_name_for_feature(feature, char = "_"):
+        return RE_CAMEL_CASE_SPLITTER.sub(f"\\1{char}\\2", feature).lower()
