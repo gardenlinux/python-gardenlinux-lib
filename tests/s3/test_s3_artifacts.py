@@ -9,17 +9,7 @@ import yaml
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 
 from .conftest import S3Env
-
-RELEASE_DATA = """
-GARDENLINUX_CNAME="container-amd64-1234.1-abc123"
-GARDENLINUX_VERSION=1234.1
-GARDENLINUX_COMMIT_ID="abc123"
-GARDENLINUX_COMMIT_ID_LONG="abc123long"
-GARDENLINUX_FEATURES="_usi,_trustedboot"
-GARDENLINUX_FEATURES_ELEMENTS=
-GARDENLINUX_FEATURES_FLAGS="_usi,_trustedboot"
-GARDENLINUX_FEATURES_PLATFORMS="container"
-"""
+from .constants import RELEASE_DATA
 
 
 def test_s3artifacts_init_success(s3_setup: S3Env) -> None:
@@ -174,9 +164,9 @@ def test_upload_from_directory_invalid_dir_raises(s3_setup: S3Env) -> None:
         artifacts.upload_from_directory(env.cname, "/invalid/path")
 
 
-def test_upload_from_directory_version_mismatch_raises(s3_setup: S3Env) -> None:
+def test_upload_from_directory_version_mismatch(s3_setup: S3Env) -> None:
     """
-    RuntimeError if version in release file does not match cname.
+    Validate that the release file may contain a different version not matching the artifact name.
     """
     # Arrange
     env = s3_setup
@@ -186,8 +176,7 @@ def test_upload_from_directory_version_mismatch_raises(s3_setup: S3Env) -> None:
     artifacts = S3Artifacts(env.bucket_name)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="failed consistency check"):
-        artifacts.upload_from_directory(env.cname, env.tmp_path)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
 def test_upload_from_directory_succeeds_because_of_release_file(
@@ -226,8 +215,10 @@ def test_upload_from_directory_invalid_artifact_name(s3_setup: S3Env) -> None:
     assert len(list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))) == 1
 
 
-def test_upload_from_directory_commit_mismatch_raises(s3_setup: S3Env) -> None:
-    """Raise RuntimeError when commit ID is not matching with cname."""
+def test_upload_from_directory_commit_mismatch(s3_setup: S3Env) -> None:
+    """
+    Validate that the release file may contain a different commit hash not matching the artifact name.
+    """
     # Arrange
     env = s3_setup
     release_path = env.tmp_path / f"{env.cname}.release"
@@ -236,8 +227,7 @@ def test_upload_from_directory_commit_mismatch_raises(s3_setup: S3Env) -> None:
     artifacts = S3Artifacts(env.bucket_name)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="failed consistency check"):
-        artifacts.upload_from_directory(env.cname, env.tmp_path)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
 
 
 def test_upload_from_directory_with_platform_variant(s3_setup: S3Env) -> None:

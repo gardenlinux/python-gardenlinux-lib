@@ -4,7 +4,7 @@ description: Installs the given GardenLinux Python library
 inputs:
   version:
     description: GardenLinux Python library version
-    default: "0.10.10"
+    default: "0.10.11"
   python_version:
     description: Python version to setup
     default: "3.13"
