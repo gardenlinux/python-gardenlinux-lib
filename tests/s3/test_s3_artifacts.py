@@ -11,7 +11,7 @@ from gardenlinux.s3.s3_artifacts import S3Artifacts
 from .conftest import S3Env
 
 RELEASE_DATA = """
-GARDENLINUX_CNAME="container-amd64-1234.1-abc123"
+GARDENLINUX_CNAME="container-amd64-1234.1"
 GARDENLINUX_VERSION=1234.1
 GARDENLINUX_COMMIT_ID="abc123"
 GARDENLINUX_COMMIT_ID_LONG="abc123long"

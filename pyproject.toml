@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "0.10.10"
+version = "0.10.11"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{ include = "gardenlinux", from = "src" }]
 
 [tool.poetry.dependencies]
-python = ">=3.13, <3.14"
+python = ">=3.13, !=3.14.1"
 apt-repo = "^0.5"
 boto3 = "^1.42.10"
 click = "^8.3.1"

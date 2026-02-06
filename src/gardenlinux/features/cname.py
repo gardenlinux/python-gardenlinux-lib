@@ -69,17 +69,46 @@ class CName(object):
 
         commit_id_or_hash = None
 
-        re_match = re.match(
-            "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$",
-            cname,
+        if version is not None:
+            # Support version values formatted as <version>-<commit_hash>
+            if commit_hash is None:
+                re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", version)
+                assert re_match, f"Not a valid version {version}"
+
+                commit_id_or_hash = re_match[3]
+                version = re_match[1]
+            else:
+                commit_id_or_hash = commit_hash
+
+        re_object = re.compile(
+            "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+)-([a-z0-9]+))*)?$"
         )
+
+        re_match = re_object.match(cname)
+
+        # Workaround Garden Linux canonical names without mandatory final commit hash
+        if (
+            not re_match
+            and commit_id_or_hash
+            and re.match(
+                "([a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*?)(-([a-z0-9]+)(-([a-z0-9.]+))*)?$",
+                cname,
+            )
+        ):
+            re_match = re_object.match(f"{cname}-{commit_id_or_hash}")
 
         assert re_match, f"Not a valid Garden Linux canonical name {cname}"
 
         if re_match.lastindex == 1:
             self._flavor = re_match[1]
         else:
-            commit_id_or_hash = re_match[7]
+            if commit_id_or_hash is None:
+                commit_id_or_hash = re_match[7]
+            elif re_match.group(7) is not None:
+                assert commit_id_or_hash.startswith(re_match[7]), (
+                    f"Mismatch between Garden Linux canonical name '{cname}' and given commit ID '{commit_id_or_hash}' detected"
+                )
+
             self._flavor = re_match[1]
             self._version = re_match[6]
 
@@ -91,17 +120,13 @@ class CName(object):
         if self._arch is None and arch is not None:
             self._arch = arch
 
-        if self._version is None and version is not None:
-            # Support version values formatted as <version>-<commit_hash>
-            if commit_hash is None:
-                re_match = re.match("([a-z0-9.]+)(-([a-z0-9]+))?$", version)
-                assert re_match, f"Not a valid version {version}"
-
-                commit_id_or_hash = re_match[3]
-                self._version = re_match[1]
-            else:
-                commit_id_or_hash = commit_hash
+        if version is not None:
+            if self._version is None:
                 self._version = version
+            else:
+                assert version == self._version, (
+                    f"Mismatch between Garden Linux canonical name '{cname}' and given version '{version}' detected"
+                )
 
         if commit_id_or_hash is not None:
             self._commit_id = commit_id_or_hash[:8]
@@ -312,21 +337,36 @@ class CName(object):
             assert len(features["platform"]) < 2
             "Only one platform is supported"
 
+        commit_hash = self.commit_hash
+        commit_id = self.commit_id
         elements = ",".join(features["element"])
         flags = ",".join(features["flag"])
         platform = features["platform"][0]
         platforms = ",".join(features["platform"])
         platform_variant = self.platform_variant
+        version = self.version
+
+        if commit_id is None:
+            commit_id = ""
+
+        if commit_hash is None:
+            commit_hash = commit_id
 
         if platform_variant is None:
             platform_variant = ""
+
+        if version is None:
+            pretty_name = f"{GL_DISTRIBUTION_NAME} unsupported version"
+            version = ""
+        else:
+            pretty_name = f"{GL_DISTRIBUTION_NAME} {version}"
 
         metadata = f"""
 ID={GL_RELEASE_ID}
 ID_LIKE=debian
 NAME="{GL_DISTRIBUTION_NAME}"
-PRETTY_NAME="{GL_DISTRIBUTION_NAME} {self.version}"
-IMAGE_VERSION={self.version}
+PRETTY_NAME="{pretty_name}"
+IMAGE_VERSION={version}
 VARIANT_ID="{self.flavor}-{self.arch}"
 HOME_URL="{GL_HOME_URL}"
 SUPPORT_URL="{GL_SUPPORT_URL}"
@@ -338,9 +378,9 @@ GARDENLINUX_FEATURES_ELEMENTS="{elements}"
 GARDENLINUX_FEATURES_FLAGS="{flags}"
 GARDENLINUX_PLATFORM="{platform}"
 GARDENLINUX_PLATFORM_VARIANT="{platform_variant}"
-GARDENLINUX_VERSION="{self.version}"
-GARDENLINUX_COMMIT_ID="{self.commit_id}"
-GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
+GARDENLINUX_VERSION="{version}"
+GARDENLINUX_COMMIT_ID="{commit_id}"
+GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
         """.strip()
 
         return metadata
@@ -365,7 +405,7 @@ GARDENLINUX_COMMIT_ID_LONG="{self.commit_hash}"
         :since:  0.7.0
         """
 
-        if self._commit_id is None:
+        if self._version is None or self._commit_id is None:
             return None
 
         return f"{self._version}-{self._commit_id}"
