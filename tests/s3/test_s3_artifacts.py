@@ -9,17 +9,7 @@ import yaml
 from gardenlinux.s3.s3_artifacts import S3Artifacts
 
 from .conftest import S3Env
-
-RELEASE_DATA = """
-GARDENLINUX_CNAME="container-amd64-1234.1"
-GARDENLINUX_VERSION=1234.1
-GARDENLINUX_COMMIT_ID="abc123lo"
-GARDENLINUX_COMMIT_ID_LONG="abc123long"
-GARDENLINUX_FEATURES="_usi,_trustedboot"
-GARDENLINUX_FEATURES_ELEMENTS=
-GARDENLINUX_FEATURES_FLAGS="_usi,_trustedboot"
-GARDENLINUX_FEATURES_PLATFORMS="container"
-"""
+from .constants import RELEASE_DATA
 
 
 def test_s3artifacts_init_success(s3_setup: S3Env) -> None:
