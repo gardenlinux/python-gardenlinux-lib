@@ -27,12 +27,12 @@ def make_cname(
     flavor: str = "container",
     arch: str = "amd64",
     version: str = "1234.1",
-    commit: str = "abc123",
+    commit: str = "abc123long",
 ) -> str:
     """
     Helper function to build cname. Can be used to customized the cname.
     """
-    return f"{flavor}-{arch}-{version}-{commit}"
+    return f"{flavor}-{arch}-{version}-{commit[:8]}"
 
 
 # Helpers to compute digests for fake files
