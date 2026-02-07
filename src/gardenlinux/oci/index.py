@@ -34,6 +34,17 @@ class Index(dict):  # type: ignore[type-arg]
         self.update(**kwargs)
 
     @property
+    def extended_dict(self) -> Dict[str, Any]:
+        """
+        Returns the final parsed and extended OCI image index dictionary
+
+        :return: (dict) OCI image index dictionary
+        :since:  1.0.0
+        """
+
+        return self.copy()
+
+    @property
     def json(self) -> bytes:
         """
         Returns the OCI image index as a JSON
@@ -42,7 +53,7 @@ class Index(dict):  # type: ignore[type-arg]
         :since:  0.7.0
         """
 
-        return json.dumps(self).encode("utf-8")
+        return json.dumps(self.extended_dict).encode("utf-8")
 
     @property
     def manifests_as_dict(self) -> Dict[str, Dict[str, Any]]:
