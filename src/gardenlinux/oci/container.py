@@ -19,7 +19,7 @@ import jsonschema
 from oras.container import Container as OrasContainer
 from oras.provider import Registry
 from oras.utils import extract_targz, make_targz
-from requests import Response
+from requests import HTTPError, Response
 
 from ..constants import OCI_IMAGE_INDEX_MEDIA_TYPE
 from ..features.cname import CName
@@ -62,24 +62,22 @@ class Container(Registry):  # type: ignore[misc]
         :since: 0.7.0
         """
 
-        if "://" in container_url:
-            container_data = container_url.rsplit(":", 2)
+        container_data = container_url.rsplit(":", 1)
 
-            if len(container_data) < 3:
-                raise RuntimeError("Container name given is invalid")
+        if len(container_data) < 2:
+            raise RuntimeError("Container name given is invalid")
 
-            self._container_url = f"{container_data[0]}:{container_data[1]}"
-            self._container_version = container_data[2]
+        self._container_version = container_data[1]
+
+        if "://" in container_data[0]:
+            scheme = container_data[0].split(":", 1)[0].lower()
+            insecure = scheme != "https"
+
+            self._container_url = container_data[0]
         else:
-            container_data = container_url.rsplit(":", 1)
-
-            if len(container_data) < 2:
-                raise RuntimeError("Container name given is invalid")
-
             scheme = "http" if insecure else "https"
 
             self._container_url = f"{scheme}://{container_data[0]}"
-            self._container_version = container_data[1]
 
         container_url_data = urlsplit(self._container_url)
         self._token = None
@@ -249,6 +247,23 @@ class Container(Registry):  # type: ignore[misc]
             headers={"Accept": "application/vnd.oci.image.manifest.v1+json"},
         )
 
+    def push_index(self, index: Index, tag: Optional[str] = None) -> None:
+        """
+        Replaces an old manifest entries with new ones
+
+        :param manifests_dir:   Directory where the manifest entries are read from
+        :param additional_tags: Additional tags to push the index with
+
+        :since: 1.0.0
+        """
+
+        index_kwargs = {}
+
+        if tag is not None:
+            index_kwargs["reference"] = tag
+
+        self._check_200_response(self._upload_index(index, **index_kwargs))
+
     def push_index_from_directory(
         self,
         manifests_dir: PathLike[str] | str,
@@ -298,7 +313,7 @@ class Container(Registry):  # type: ignore[misc]
 
             new_entries += 1
 
-        self._check_200_response(self._upload_index(index))
+        self.push_index(index)
         self._logger.info(f"Index pushed with {new_entries} new entries")
 
         if isinstance(additional_tags, Sequence) and len(additional_tags) > 0:
@@ -321,7 +336,7 @@ class Container(Registry):  # type: ignore[misc]
 
         # For each additional tag, push the manifest using Registry.upload_manifest
         for tag in tags:
-            self._check_200_response(self._upload_index(index, tag))
+            self.push_index(index, tag)
 
     def push_manifest(
         self,
@@ -536,6 +551,63 @@ class Container(Registry):  # type: ignore[misc]
 
             self._check_200_response(self.upload_manifest(manifest, manifest_container))
 
+    def read_index(self) -> Index:
+        """
+        Reads the OCI image index from registry.
+
+        :return: OCI image manifest
+        :since:  1.0.0
+        """
+
+        response = self._get_index_without_response_parsing()
+
+        if response.ok:
+            index = Index(**response.json())
+        else:
+            response.raise_for_status()
+
+        return index
+
+    def read_manifest(
+        self,
+        cname: Optional[str] = None,
+        architecture: Optional[str] = None,
+        version: Optional[str] = None,
+    ) -> Manifest:
+        """
+        Reads the OCI manifest from registry.
+
+        :param cname: Canonical name of the manifest
+        :param architecture: Target architecture of the manifest
+        :param version: Artifacts version of the manifest
+
+        :return: OCI image manifest
+        :since:  1.0.0
+        """
+
+        if cname is None:
+            manifest_type = Manifest
+
+            response = self._get_manifest_without_response_parsing(
+                self._container_version
+            )
+        else:
+            manifest_type = ImageManifest
+
+            if architecture is None:
+                architecture = CName(cname, architecture, version).arch
+
+            response = self._get_manifest_without_response_parsing(
+                f"{self._container_version}-{cname}-{architecture}"
+            )
+
+        if response.ok:
+            manifest = manifest_type(**response.json())
+        else:
+            response.raise_for_status()
+
+        return manifest
+
     def read_or_generate_index(self) -> Index:
         """
         Reads from registry or generates the OCI image index.
@@ -544,14 +616,13 @@ class Container(Registry):  # type: ignore[misc]
         :since:  0.7.0
         """
 
-        response = self._get_index_without_response_parsing()
+        try:
+            index = self.read_index()
+        except HTTPError as exc:
+            if exc.response.status_code != 404:
+                raise
 
-        if response.ok:
-            index = Index(**response.json())
-        elif response.status_code == 404:
             index = self.generate_index()
-        else:
-            response.raise_for_status()
 
         return index
 
@@ -576,33 +647,18 @@ class Container(Registry):  # type: ignore[misc]
         :since:  0.7.0
         """
 
-        if cname is None:
-            manifest_type = Manifest
+        try:
+            manifest = self.read_manifest(cname, architecture, version)
+        except HTTPError as exc:
+            if exc.response.status_code != 404:
+                raise
 
-            response = self._get_manifest_without_response_parsing(
-                self._container_version
-            )
-        else:
-            manifest_type = ImageManifest
-
-            if architecture is None:
-                architecture = CName(cname, architecture, version).arch
-
-            response = self._get_manifest_without_response_parsing(
-                f"{self._container_version}-{cname}-{architecture}"
-            )
-
-        if response.ok:
-            manifest = manifest_type(**response.json())
-        elif response.status_code == 404:
             if cname is None:
                 manifest = self.generate_manifest(version, commit)
             else:
                 manifest = self.generate_image_manifest(
                     cname, architecture, version, commit, feature_set
                 )
-        else:
-            response.raise_for_status()
 
         return manifest
 
