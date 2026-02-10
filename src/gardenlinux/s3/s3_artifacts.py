@@ -210,13 +210,11 @@ class S3Artifacts(object):
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
-            suffixes = "".join(artifact.name)[1 + base_name_length :]
-
             artifact_metadata = {
                 "name": artifact.name,
                 "s3_bucket_name": self._bucket.name,
                 "s3_key": s3_key,
-                "suffix": re_object.sub("+", suffixes),
+                "suffix": re_object.sub("+", artifact.name[base_name_length:]),
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }

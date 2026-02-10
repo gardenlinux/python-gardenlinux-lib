@@ -33,7 +33,7 @@ paths:
 - name: container-amd64-1234.1-abc123lo.release
   s3_bucket_name: test-bucket
   s3_key: objects/container-amd64-1234.1-abc123lo/container-amd64-1234.1-abc123lo.release
-  suffix: release
+  suffix: .release
   md5sum: {md5sum}
   sha256sum: {sha256sum}
 """.strip()
