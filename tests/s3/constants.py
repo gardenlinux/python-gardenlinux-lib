@@ -19,7 +19,9 @@ build_committish: abc123lo
 build_timestamp: '{build_timestamp}'
 gardenlinux_epoch: '1234'
 logs: null
-modifiers: _usi,_trustedboot
+modifiers:
+- _usi
+- _trustedboot
 require_uefi: true
 secureboot: true
 published_image_metadata: null

@@ -128,7 +128,7 @@ class S3Artifacts(object):
             )
 
         arch = cname_object.arch
-        feature_list = cname_object.feature_set
+        feature_set_list = cname_object.feature_set_list
         release_timestamp = stat(release_file).st_ctime
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
         require_uefi = None
@@ -155,10 +155,10 @@ class S3Artifacts(object):
             )
 
         if require_uefi is None:
-            require_uefi = "_usi" in feature_list
+            require_uefi = "_usi" in feature_set_list
 
         if secureboot is None:
-            secureboot = "_trustedboot" in feature_list
+            secureboot = "_trustedboot" in feature_set_list
 
         # RegEx for S3 supported characters
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
@@ -182,7 +182,7 @@ class S3Artifacts(object):
             "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
             "gardenlinux_epoch": version_epoch,
             "logs": None,
-            "modifiers": cname_object.feature_set,
+            "modifiers": feature_set_list,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
             "published_image_metadata": None,
