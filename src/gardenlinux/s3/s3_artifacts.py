@@ -169,18 +169,12 @@ class S3Artifacts(object):
         if commit_id_or_hash is None:
             commit_id_or_hash = cname_object.commit_id
 
-        version_epoch = str(cname_object.version_epoch)
-
-        if version_epoch is None:
-            version_epoch = ""
-
         metadata = {
             "platform": cname_object.feature_set_platform,
             "architecture": arch,
             "base_image": None,
             "build_committish": commit_id_or_hash,
-            "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
-            "gardenlinux_epoch": version_epoch,
+            "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
             "require_uefi": require_uefi,
@@ -192,6 +186,9 @@ class S3Artifacts(object):
             "version": cname_object.version,
             "paths": [],
         }
+
+        if cname_object.version_epoch is not None:
+            metadata["gardenlinux_epoch"] = cname_object.version_epoch
 
         platform_variant = cname_object.platform_variant
 
@@ -210,13 +207,11 @@ class S3Artifacts(object):
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
-            suffixes = "".join(artifact.name)[1 + base_name_length :]
-
             artifact_metadata = {
                 "name": artifact.name,
                 "s3_bucket_name": self._bucket.name,
                 "s3_key": s3_key,
-                "suffix": re_object.sub("+", suffixes),
+                "suffix": re_object.sub("+", artifact.name[base_name_length:]),
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }

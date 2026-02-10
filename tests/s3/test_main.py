@@ -96,8 +96,8 @@ def test_main_with_expected_result(
         result = capsys.readouterr().out.strip()
 
         result = re.sub(
-            "^(.*)build_timestamp\\: '.+'$",
-            "\\1build_timestamp: '{build_timestamp}'",
+            "^(.*)build_timestamp\\: .+$",
+            "\\1build_timestamp: {build_timestamp}",
             result,
             flags=re.M,
         )
