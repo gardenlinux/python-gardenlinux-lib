@@ -84,7 +84,7 @@ class Parser(object):
 
         if self._graph is None:
             feature_yaml_files = glob("{0}/*/info.yaml".format(self._feature_base_dir))
-            features = [self._read_feature_yaml(i) for i in feature_yaml_files]
+            features = [self.read_feature_yaml(i) for i in feature_yaml_files]
 
             feature_graph = networkx.DiGraph()
 
@@ -345,7 +345,7 @@ class Parser(object):
 
         return node.get("content", {}).get("features", {})  # type: ignore[no-any-return]
 
-    def _read_feature_yaml(self, feature_yaml_file: str) -> Dict[str, Any]:
+    def read_feature_yaml(self, feature_yaml_file: str) -> Dict[str, Any]:
         """
         Reads and returns the content of the given features file.
 
