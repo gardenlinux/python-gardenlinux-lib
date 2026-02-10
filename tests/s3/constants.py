@@ -16,7 +16,7 @@ platform: container
 architecture: amd64
 base_image: null
 build_committish: abc123lo
-build_timestamp: '{build_timestamp}'
+build_timestamp: {build_timestamp}
 logs: null
 modifiers:
 - _usi

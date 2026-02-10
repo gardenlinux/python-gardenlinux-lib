@@ -174,7 +174,7 @@ class S3Artifacts(object):
             "architecture": arch,
             "base_image": None,
             "build_committish": commit_id_or_hash,
-            "build_timestamp": datetime.fromtimestamp(release_timestamp).isoformat(),
+            "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
             "require_uefi": require_uefi,
