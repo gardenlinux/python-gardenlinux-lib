@@ -277,6 +277,20 @@ class CName(object):
         return platforms[0]
 
     @property
+    def feature_set_list(self) -> List[str]:
+        """
+        Returns the feature set for the cname parsed.
+
+        :return: (list) Feature set list of the cname
+        :since:  0.10.12
+        """
+
+        if self._feature_set_cached is not None:
+            return self._feature_set_cached.split(",")
+
+        return Parser().filter_as_list(self.flavor)
+
+    @property
     def platform(self) -> str:
         """
         Returns the feature set of type "platform" for the cname parsed.
