@@ -17,7 +17,6 @@ architecture: amd64
 base_image: null
 build_committish: abc123lo
 build_timestamp: '{build_timestamp}'
-gardenlinux_epoch: '1234'
 logs: null
 modifiers:
 - _usi
@@ -36,4 +35,5 @@ paths:
   suffix: .release
   md5sum: {md5sum}
   sha256sum: {sha256sum}
+gardenlinux_epoch: 1234
 """.strip()
