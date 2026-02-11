@@ -22,6 +22,15 @@ class Manifest(dict):  # type: ignore[type-arg]
                  Apache License, Version 2.0
     """
 
+    ANNOTATION_COMMIT_KEY = "commit"
+    """
+    OCI image manifest GardenLinux commit hash annotation
+    """
+    ANNOTATION_VERSION_KEY = "version"
+    """
+    OCI image manifest GardenLinux version annotation
+    """
+
     def __init__(self, *args: Any, **kwargs: Any):
         """
         Constructor __init__(Manifest)
@@ -46,12 +55,12 @@ class Manifest(dict):  # type: ignore[type-arg]
         :since:  0.7.0
         """
 
-        if "commit" not in self.get("annotations", {}):
+        if Manifest.ANNOTATION_COMMIT_KEY not in self.get("annotations", {}):
             raise RuntimeError(
-                "Unexpected manifest with missing config annotation 'commit' found"
+                f"Unexpected manifest with missing config annotation '{Manifest.ANNOTATION_COMMIT_KEY}' found"
             )
 
-        return self["annotations"]["commit"]  #  type: ignore[no-any-return]
+        return self["annotations"][Manifest.ANNOTATION_COMMIT_KEY]  #  type: ignore[no-any-return]
 
     @commit.setter
     def commit(self, value: str) -> None:
@@ -64,7 +73,7 @@ class Manifest(dict):  # type: ignore[type-arg]
         """
 
         self._ensure_annotations_dict()
-        self["annotations"]["commit"] = value
+        self["annotations"][Manifest.ANNOTATION_COMMIT_KEY] = value
 
     @property
     def config_json(self) -> bytes:
@@ -90,6 +99,18 @@ class Manifest(dict):  # type: ignore[type-arg]
         return f"sha256:{digest}"
 
     @property
+    def extended_dict(self) -> Dict[str, Any]:
+        """
+        Returns the final parsed and extended OCI manifest dictionary
+
+        :return: (dict) OCI manifest dictionary
+        :since:  1.0.0
+        """
+
+        self._ensure_annotations_dict()
+        return self.copy()
+
+    @property
     def json(self) -> bytes:
         """
         Returns the OCI image manifest as a JSON
@@ -98,7 +119,7 @@ class Manifest(dict):  # type: ignore[type-arg]
         :since:  0.7.0
         """
 
-        return json.dumps(self).encode("utf-8")
+        return json.dumps(self.extended_dict).encode("utf-8")
 
     @property
     def size(self) -> int:
@@ -120,12 +141,12 @@ class Manifest(dict):  # type: ignore[type-arg]
         :since:  0.7.0
         """
 
-        if "version" not in self.get("annotations", {}):
+        if Manifest.ANNOTATION_VERSION_KEY not in self.get("annotations", {}):
             raise RuntimeError(
-                "Unexpected manifest with missing config annotation 'version' found"
+                f"Unexpected manifest with missing config annotation '{Manifest.ANNOTATION_VERSION_KEY}' found"
             )
 
-        return self["annotations"]["version"]  # type: ignore[no-any-return]
+        return self["annotations"][Manifest.ANNOTATION_VERSION_KEY]  # type: ignore[no-any-return]
 
     @version.setter
     def version(self, value: str) -> None:
@@ -138,7 +159,7 @@ class Manifest(dict):  # type: ignore[type-arg]
         """
 
         self._ensure_annotations_dict()
-        self["annotations"]["version"] = value
+        self["annotations"][Manifest.ANNOTATION_VERSION_KEY] = value
 
     def config_from_dict(
         self, config: Dict[str, Any], annotations: Dict[str, Any]
@@ -166,5 +187,11 @@ class Manifest(dict):  # type: ignore[type-arg]
         self["config"] = config
 
     def _ensure_annotations_dict(self) -> None:
+        """
+        Ensure the annotations dictionary is initialized.
+
+        :since: 0.7.0
+        """
+
         if "annotations" not in self:
             self["annotations"] = {}

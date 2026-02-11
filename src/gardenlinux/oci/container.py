@@ -319,7 +319,7 @@ class Container(Registry):  # type: ignore[misc]
         :since: 0.7.0
         """
 
-        # For each additional tag, push the manifest using Registry.upload_manifest
+        # For each additional tag, push the index using Registry.upload_index
         for tag in tags:
             self._check_200_response(self._upload_index(index, tag))
 
@@ -626,8 +626,21 @@ class Container(Registry):  # type: ignore[misc]
             f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
             "PUT",
             headers={"Content-Type": OCI_IMAGE_INDEX_MEDIA_TYPE},
-            data=index.json,
+            json=index.extended_dict,
         )
+
+    def upload_manifest(self, manifest: Manifest, container: OrasContainer) -> Response:
+        """
+        oras-project.github.io: Read a manifest file and upload it.
+
+        :param manifest:  manifest to upload
+        :param container: parsed container URI
+
+        :return: (object) OCI manifest put response
+        :since:  1.0.0
+        """
+
+        return Registry.upload_manifest(self, manifest.extended_dict, container)  # type: ignore[no-any-return]
 
     @staticmethod
     def get_artifacts_metadata_from_files(

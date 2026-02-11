@@ -5,7 +5,6 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional
 
-from oras.defaults import annotation_title as ANNOTATION_TITLE
 from oras.oci import Layer as _Layer
 
 from ..constants import GL_MEDIA_TYPE_LOOKUP, GL_MEDIA_TYPES
@@ -24,6 +23,15 @@ class Layer(_Layer, Mapping):  # type: ignore[misc, type-arg]
     :since:      0.7.0
     :license:    https://www.apache.org/licenses/LICENSE-2.0
                  Apache License, Version 2.0
+    """
+
+    ANNOTATION_ARCH_KEY = "io.gardenlinux.image.layer.architecture"
+    """
+    OCI image layer architecture annotation
+    """
+    ANNOTATION_TITLE_KEY = "org.opencontainers.image.title"
+    """
+    OCI image layer title annotation
     """
 
     def __init__(
@@ -48,7 +56,7 @@ class Layer(_Layer, Mapping):  # type: ignore[misc, type-arg]
         _Layer.__init__(self, blob_path, media_type, is_dir)
 
         self._annotations = {
-            ANNOTATION_TITLE: blob_path.name,  # type: ignore[attr-defined]
+            Layer.ANNOTATION_TITLE_KEY: blob_path.name,  # type: ignore[attr-defined]
         }
 
     @property
@@ -157,7 +165,7 @@ class Layer(_Layer, Mapping):  # type: ignore[misc, type-arg]
         return {
             "file_name": file_name.name,  # type: ignore[attr-defined]
             "media_type": media_type,
-            "annotations": {"io.gardenlinux.image.layer.architecture": arch},
+            "annotations": {Layer.ANNOTATION_ARCH_KEY: arch},
         }
 
     @staticmethod
