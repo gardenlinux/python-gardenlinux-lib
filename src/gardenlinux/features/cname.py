@@ -8,13 +8,14 @@ import re
 from configparser import UNNAMED_SECTION, ConfigParser
 from os import PathLike, environ
 from pathlib import Path
-from typing import List, Optional, Self
+from typing import Any, Dict, List, Optional, Self
 
 from ..constants import (
     ARCHS,
     GL_BUG_REPORT_URL,
     GL_DISTRIBUTION_NAME,
     GL_HOME_URL,
+    GL_PLATFORM_FRANKENSTEIN,
     GL_RELEASE_ID,
     GL_SUPPORT_URL,
 )
@@ -59,13 +60,20 @@ class CName(object):
         self._feature_flags_cached: Optional[List[str]] = None
         self._feature_platforms_cached: Optional[List[str]] = None
         self._feature_set_cached: Optional[str] = None
+        self._features_cached: Optional[Dict[str, Any]] = None
+        self._platform_cached: Optional[str] = None
         self._platform_variant_cached: Optional[str] = None
         self._flavor = ""
         self._version = None
 
+        self._flag_frankenstein = bool(environ.get("GL_ALLOW_FRANKENSTEIN", False))
+
         self._flag_multiple_platforms = bool(
-            environ.get("GL_ALLOW_FRANKENSTEIN", False)
+            environ.get("GL_ALLOW_MULTIPLE_PLATFORMS", False)
         )
+
+        if self._flag_frankenstein:
+            self._flag_multiple_platforms = True
 
         commit_id_or_hash = None
 
@@ -214,6 +222,20 @@ class CName(object):
         return self._flavor
 
     @property
+    def features(self) -> Dict[str, Any]:
+        """
+        Returns the features for the cname parsed.
+
+        :return: (dict) Features of the cname
+        :since:  0.10.14
+        """
+
+        if self._features_cached is None:
+            self._features_cached = Parser().filter_as_dict(self.flavor)
+
+        return self._features_cached
+
+    @property
     def feature_set(self) -> str:
         """
         Returns the feature set for the cname parsed.
@@ -239,7 +261,7 @@ class CName(object):
         if self._feature_elements_cached is not None:
             return ",".join(self._feature_elements_cached)
 
-        return ",".join(Parser().filter_as_dict(self.flavor)["element"])
+        return ",".join(self.features["element"])
 
     @property
     def feature_set_flag(self) -> str:
@@ -253,7 +275,7 @@ class CName(object):
         if self._feature_flags_cached is not None:
             return ",".join(self._feature_flags_cached)
 
-        return ",".join(Parser().filter_as_dict(self.flavor)["flag"])
+        return ",".join(self.features["flag"])
 
     @property
     def feature_set_platform(self) -> str:
@@ -265,7 +287,7 @@ class CName(object):
         """
 
         if self._feature_platforms_cached is None:
-            platforms = Parser().filter_as_dict(self.flavor)["platform"]
+            platforms = self.features["platform"]
         else:
             platforms = self._feature_platforms_cached
 
@@ -274,7 +296,7 @@ class CName(object):
 
         assert len(platforms) < 2
         "Only one platform is supported"
-        return platforms[0]
+        return platforms[0]  # type: ignore[no-any-return]
 
     @property
     def feature_set_list(self) -> List[str]:
@@ -293,19 +315,25 @@ class CName(object):
     @property
     def platform(self) -> str:
         """
-        Returns the feature set of type "platform" for the cname parsed.
+        Returns the platform for the cname parsed.
 
-        :return: (str) Feature set platforms
+        :return: (str) Platform
         :since:  0.7.0
         """
 
-        if self._feature_platforms_cached is None:
-            platforms = Parser().filter_as_dict(self.flavor)["platform"]
-        else:
+        if self._platform_cached is not None:
+            platforms = [self._platform_cached]
+        elif self._feature_platforms_cached is not None:
             platforms = self._feature_platforms_cached
+        else:
+            platforms = self.features["platform"]
+
+        if self._flag_frankenstein and len(platforms) > 1:
+            return GL_PLATFORM_FRANKENSTEIN
 
         if not self._flag_multiple_platforms:
             assert len(platforms) < 2
+            "Only one platform is supported"
 
         return platforms[0]
 
@@ -345,18 +373,8 @@ class CName(object):
         :since:  1.0.0
         """
 
-        features = Parser().filter_as_dict(self.flavor)
-
-        if not self._flag_multiple_platforms:
-            assert len(features["platform"]) < 2
-            "Only one platform is supported"
-
         commit_hash = self.commit_hash
         commit_id = self.commit_id
-        elements = ",".join(features["element"])
-        flags = ",".join(features["flag"])
-        platform = features["platform"][0]
-        platforms = ",".join(features["platform"])
         platform_variant = self.platform_variant
         version = self.version
 
@@ -387,10 +405,10 @@ SUPPORT_URL="{GL_SUPPORT_URL}"
 BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
 GARDENLINUX_CNAME="{self.cname}"
 GARDENLINUX_FEATURES="{self.feature_set}"
-GARDENLINUX_FEATURES_PLATFORMS="{platforms}"
-GARDENLINUX_FEATURES_ELEMENTS="{elements}"
-GARDENLINUX_FEATURES_FLAGS="{flags}"
-GARDENLINUX_PLATFORM="{platform}"
+GARDENLINUX_FEATURES_PLATFORMS="{self.feature_set_platform}"
+GARDENLINUX_FEATURES_ELEMENTS="{self.feature_set_element}"
+GARDENLINUX_FEATURES_FLAGS="{self.feature_set_flag}"
+GARDENLINUX_PLATFORM="{self.platform}"
 GARDENLINUX_PLATFORM_VARIANT="{platform_variant}"
 GARDENLINUX_VERSION="{version}"
 GARDENLINUX_COMMIT_ID="{commit_id}"
@@ -456,6 +474,7 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
         self._feature_elements_cached = cname_object.feature_set_element.split(",")
         self._feature_flags_cached = cname_object.feature_set_flag.split(",")
         self._feature_platforms_cached = cname_object.feature_set_platform.split(",")
+        self._platform_cached = cname_object.platform
         self._platform_variant_cached = cname_object.platform_variant
         self._version = cname_object.version
 
@@ -477,6 +496,10 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
                 and self._commit_id != cname_object.commit_id
             )
             or (self._version is not None and self._version != cname_object.version)
+            or (
+                not self._flag_frankenstein
+                and cname_object.platform not in cname_object.feature_set_platform
+            )
         ):
             raise RuntimeError(
                 f"Release metadata file given is invalid: {release_file} failed consistency check - {self.cname} != {cname_object.cname}"
@@ -531,9 +554,7 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
             "GARDENLINUX_CNAME",
             "GARDENLINUX_COMMIT_ID_LONG",
             "GARDENLINUX_FEATURES",
-            "GARDENLINUX_FEATURES_ELEMENTS",
-            "GARDENLINUX_FEATURES_FLAGS",
-            "GARDENLINUX_FEATURES_PLATFORMS",
+            "GARDENLINUX_PLATFORM",
             "GARDENLINUX_VERSION",
         ):
             if not release_config.has_option(UNNAMED_SECTION, release_field):
@@ -559,23 +580,30 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
             UNNAMED_SECTION, "GARDENLINUX_FEATURES"
         ).strip("\"'")
 
-        cname_object._feature_elements_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS")
-            .strip("\"'")
-            .split(",")
-        )
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS"):
+            cname_object._feature_elements_cached = (
+                release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_ELEMENTS")
+                .strip("\"'")
+                .split(",")
+            )
 
-        cname_object._feature_flags_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS")
-            .strip("\"'")
-            .split(",")
-        )
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS"):
+            cname_object._feature_flags_cached = (
+                release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_FLAGS")
+                .strip("\"'")
+                .split(",")
+            )
 
-        cname_object._feature_platforms_cached = (
-            release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS")
-            .strip("\"'")
-            .split(",")
-        )
+        if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS"):
+            cname_object._feature_platforms_cached = (
+                release_config.get(UNNAMED_SECTION, "GARDENLINUX_FEATURES_PLATFORMS")
+                .strip("\"'")
+                .split(",")
+            )
+
+        cname_object._platform_cached = release_config.get(
+            UNNAMED_SECTION, "GARDENLINUX_PLATFORM"
+        ).strip("\"'")
 
         if release_config.has_option(UNNAMED_SECTION, "GARDENLINUX_PLATFORM_VARIANT"):
             cname_object._platform_variant_cached = release_config.get(
