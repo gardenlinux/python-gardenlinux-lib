@@ -18,7 +18,6 @@ from urllib.parse import urlencode
 
 import yaml
 
-from ..features import CName
 from .bucket import Bucket
 
 
@@ -120,26 +119,90 @@ class S3Artifacts(object):
 
         release_file = artifacts_dir.joinpath(f"{base_name}.release")
 
-        cname_object = CName.new_from_release_file(release_file)
+        if not release_file.exists():
+            raise RuntimeError(f"Release file not found: {release_file}")
 
-        if cname_object.version_and_commit_id is None:
-            raise RuntimeError(
-                "Version information could not be determined from release file"
-            )
+        # RegEx for S3 supported characters
+        re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
-        arch = cname_object.arch
-        feature_set_list = cname_object.feature_set_list
-        release_timestamp = stat(release_file).st_ctime
+        def _sanitize(value: Optional[str]) -> Optional[str]:
+            if value is None:
+                return None
+            return re_object.sub("+", str(value))
+
+        def _read_kv_file(path: Path) -> ConfigParser:
+            cfg = ConfigParser(allow_unnamed_section=True, interpolation=None)
+            with path.open("r", encoding="utf-8") as fp:
+                cfg.read_file(fp)
+            return cfg
+
+        def _get_required(cfg: ConfigParser, key: str, what: Path) -> str:
+            if not cfg.has_option(UNNAMED_SECTION, key):
+                raise RuntimeError(f"Missing required field {key} in {what}")
+            v = cfg.get(UNNAMED_SECTION, key).strip()
+            if len(v) >= 2 and ((v[0] == '"' and v[-1] == '"') or (v[0] == "'" and v[-1] == "'")):
+                v = v[1:-1]
+            if v == "":
+                raise RuntimeError(f"Empty required field {key} in {what}")
+            return v
+
+        def _get_optional(cfg: ConfigParser, key: str) -> Optional[str]:
+            if not cfg.has_option(UNNAMED_SECTION, key):
+                return None
+            v = cfg.get(UNNAMED_SECTION, key).strip()
+            if len(v) >= 2 and ((v[0] == '"' and v[-1] == '"') or (v[0] == "'" and v[-1] == "'")):
+                v = v[1:-1]
+            if v == "":
+                return None
+            return v
+
+        release_config = _read_kv_file(release_file)
+
+        # Backwards compatibility: platform fallback
+        cname = _get_optional(release_config, "GARDENLINUX_CNAME")
+        platform = _get_optional(release_config, "GARDENLINUX_PLATFORM")
+        if platform is None:
+            if cname is None:
+                cname = base_name
+            platform = cname.split("-", 1)[0]
+
+        # Hard guard: frankenstein images must never be published
+        if platform == "frankenstein":
+            raise RuntimeError("frankenstein images must not be published")
+
+        version = _get_required(release_config, "GARDENLINUX_VERSION", release_file)
+        commit_id_long = _get_required(
+            release_config, "GARDENLINUX_COMMIT_ID_LONG", release_file
+        )
+
+        platform_variant = _get_optional(
+            release_config, "GARDENLINUX_PLATFORM_VARIANT"
+        )
+
+        features = _get_optional(release_config, "GARDENLINUX_FEATURES")
+        feature_set_list: list[str] = []
+        if features is not None:
+            feature_set_list = [x.strip() for x in features.split(",")]
+            feature_set_list = [x for x in feature_set_list if x]
+
+        gardenlinux_epoch = None
+        try:
+            gardenlinux_epoch = int(version.split(".", 1)[0])
+        except Exception:
+            gardenlinux_epoch = None
+
+        release_timestamp = stat(release_file).st_mtime
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
-        require_uefi = None
-        secureboot = None
+        require_uefi = False
+        secureboot = False
+        tpm2 = False
+        arch = None
 
         if requirements_file.exists():
-            requirements_config = ConfigParser(allow_unnamed_section=True)
-            requirements_config.read(requirements_file)
+            requirements_config = _read_kv_file(requirements_file)
 
             if requirements_config.has_option(UNNAMED_SECTION, "arch"):
-                arch = requirements_config.get(UNNAMED_SECTION, "arch")
+                arch = requirements_config.get(UNNAMED_SECTION, "arch").strip()
 
             if requirements_config.has_option(UNNAMED_SECTION, "uefi"):
                 require_uefi = requirements_config.getboolean(UNNAMED_SECTION, "uefi")
@@ -149,56 +212,55 @@ class S3Artifacts(object):
                     UNNAMED_SECTION, "secureboot"
                 )
 
-        if arch is None:
-            raise RuntimeError(
-                "Architecture could not be determined from release or requirements file"
-            )
+            if requirements_config.has_option(UNNAMED_SECTION, "tpm2"):
+                tpm2 = requirements_config.getboolean(UNNAMED_SECTION, "tpm2")
 
-        if require_uefi is None:
-            require_uefi = "_usi" in feature_set_list
+        # Backwards compatibility: arch fallback
+        if not arch:
+            if cname is None:
+                cname = base_name
+            cname_parts = cname.split("-")
+            if len(cname_parts) < 2:
+                raise RuntimeError(
+                    "Architecture could not be determined from requirements file or cname"
+                )
+            arch = cname_parts[-2]
 
-        if secureboot is None:
-            secureboot = "_trustedboot" in feature_set_list
-
-        # RegEx for S3 supported characters
-        re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
-
-        arch = re_object.sub("+", arch)
-        commit_id_or_hash = cname_object.commit_hash
-
-        if commit_id_or_hash is None:
-            commit_id_or_hash = cname_object.commit_id
+        arch = _sanitize(arch)
 
         metadata = {
-            "platform": cname_object.feature_set_platform,
+            "platform": platform,
+            "platform_variant": platform_variant,
             "architecture": arch,
-            "base_image": None,
-            "build_committish": commit_id_or_hash,
+            "version": version,
+            "gardenlinux_epoch": gardenlinux_epoch,
+            "build_committish": commit_id_long,
             "build_timestamp": datetime.fromtimestamp(release_timestamp),
-            "logs": None,
             "modifiers": feature_set_list,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
-            "published_image_metadata": None,
+            "tpm2": tpm2,
+            "paths": [],
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{base_name}",
-            "test_result": None,
-            "version": cname_object.version,
-            "paths": [],
         }
 
-        if cname_object.version_epoch is not None:
-            metadata["gardenlinux_epoch"] = cname_object.version_epoch
+        if metadata["platform_variant"] is None:
+            del metadata["platform_variant"]
 
-        platform_variant = cname_object.platform_variant
-
-        if platform_variant is not None:
-            metadata["platform_variant"] = platform_variant
+        if metadata["gardenlinux_epoch"] is None:
+            del metadata["gardenlinux_epoch"]
 
         base_name_length = len(base_name)
 
         for artifact in artifacts_dir.iterdir():
-            if not artifact.match(f"{base_name}*"):
+            if artifact.is_dir():
+                continue
+
+            if artifact.name == f"{base_name}.release":
+                continue
+
+            if artifact.name == f"{base_name}.requirements":
                 continue
 
             s3_key = f"objects/{base_name}/{artifact.name}"
@@ -207,20 +269,25 @@ class S3Artifacts(object):
                 md5sum = file_digest(fp, "md5").hexdigest()
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
+            if artifact.name.startswith(base_name):
+                suffix = artifact.name[base_name_length:]
+            else:
+                suffix = artifact.suffix
+
             artifact_metadata = {
                 "name": artifact.name,
                 "s3_bucket_name": self._bucket.name,
                 "s3_key": s3_key,
-                "suffix": re_object.sub("+", artifact.name[base_name_length:]),
+                "suffix": _sanitize(suffix),
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
 
             s3_tags = {
                 "architecture": arch,
-                "platform": re_object.sub("+", cname_object.platform),
-                "version": re_object.sub("+", cname_object.version),  # type: ignore[arg-type]
-                "committish": commit_id_or_hash,
+                "platform": _sanitize(platform),
+                "version": _sanitize(version),
+                "committish": commit_id_long,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
@@ -246,7 +313,7 @@ class S3Artifacts(object):
                 )
 
             with TemporaryFile(mode="wb+") as fp:
-                fp.write(yaml.dump(metadata).encode("utf-8"))
+                fp.write(yaml.dump(metadata, sort_keys=False).encode("utf-8"))
                 fp.seek(0)
 
                 self._bucket.upload_fileobj(
