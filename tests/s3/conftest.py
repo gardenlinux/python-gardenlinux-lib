@@ -24,7 +24,7 @@ class S3Env:
 
 
 def make_cname(
-    flavor: str = "container",
+    flavor: str = "container_trustedboot_usi",
     arch: str = "amd64",
     version: str = "1234.1",
     commit: str = "abc123long",
