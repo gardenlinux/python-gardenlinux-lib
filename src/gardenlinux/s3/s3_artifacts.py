@@ -120,7 +120,26 @@ class S3Artifacts(object):
 
         release_file = artifacts_dir.joinpath(f"{base_name}.release")
 
-        cname_object = CName.new_from_release_file(release_file)
+        try:
+            cname_object = CName.new_from_release_file(release_file)
+        except RuntimeError:
+            if not release_file.exists():
+                raise RuntimeError(
+                    f"Release metadata file given is invalid: {release_file}"
+                )
+
+            release_config = ConfigParser(allow_unnamed_section=True)
+            release_config.read(release_file)
+
+            cname_object = CName(
+                release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME").strip("\"'"),
+                commit_hash=release_config.get(
+                    UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
+                ).strip("\"'"),
+                version=release_config.get(
+                    UNNAMED_SECTION, "GARDENLINUX_VERSION"
+                ).strip("\"'"),
+            )
 
         if cname_object.version_and_commit_id is None:
             raise RuntimeError(
@@ -133,6 +152,7 @@ class S3Artifacts(object):
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
         require_uefi = None
         secureboot = None
+        tpm2 = None
 
         if requirements_file.exists():
             requirements_config = ConfigParser(allow_unnamed_section=True)
@@ -149,6 +169,9 @@ class S3Artifacts(object):
                     UNNAMED_SECTION, "secureboot"
                 )
 
+            if requirements_config.has_option(UNNAMED_SECTION, "tpm2"):
+                tpm2 = requirements_config.getboolean(UNNAMED_SECTION, "tpm2")
+
         if arch is None:
             raise RuntimeError(
                 "Architecture could not be determined from release or requirements file"
@@ -160,6 +183,9 @@ class S3Artifacts(object):
         if secureboot is None:
             secureboot = "_trustedboot" in feature_set_list
 
+        if tpm2 is None:
+            tpm2 = "_tpm2" in feature_set_list
+
         # RegEx for S3 supported characters
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
@@ -170,16 +196,15 @@ class S3Artifacts(object):
             commit_id_or_hash = cname_object.commit_id
 
         metadata = {
-            "platform": cname_object.feature_set_platform,
+            "platform": cname_object.platform,
             "architecture": arch,
-            "base_image": None,
             "build_committish": commit_id_or_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
-            "published_image_metadata": None,
+            "tpm2": tpm2,
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{base_name}",
             "test_result": None,

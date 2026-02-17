@@ -14,7 +14,7 @@ REPO_NAME = "gardenlinux-example"
 CONTAINER_NAME_ZOT_EXAMPLE = f"{REGISTRY}/{REPO_NAME}"
 GARDENLINUX_ROOT_DIR_EXAMPLE = f"{TEST_DATA_DIR}/gardenlinux/.build"
 
-TEST_PLATFORMS = ["aws", "azure", "gcp", "openstack", "openstackbaremetal", "metal"]
+TEST_PLATFORMS = ["aws", "azure", "baremetal", "gcp", "openstack"]
 TEST_ARCHITECTURES = ["arm64", "amd64"]
 TEST_FEATURE_STRINGS_SHORT = ["gardener_prod"]
 TEST_FEATURE_SET = "_slim,base,container"

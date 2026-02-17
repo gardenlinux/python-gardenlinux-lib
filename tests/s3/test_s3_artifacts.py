@@ -215,6 +215,30 @@ def test_upload_from_directory_invalid_artifact_name(s3_setup: S3Env) -> None:
     assert len(list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))) == 1
 
 
+def test_upload_from_directory_invalid_release_file_with_valid_cname(
+    s3_setup: S3Env,
+) -> None:
+    """
+    Raise RuntimeError if artifact release file is invalid but contains a valid cname.
+    """
+    # Arrange
+    env = s3_setup
+    release_path = env.tmp_path / f"{env.cname}.release"
+    bad_data = RELEASE_DATA.replace(
+        "GARDENLINUX_FEATURES_PLATFORMS=", "GARDENLINUX_FEATURES_PLATFORMS_UNDEFINED="
+    )
+    release_path.write_text(bad_data)
+
+    artifacts = S3Artifacts(env.bucket_name)
+
+    # Act
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    assert len(list(bucket.objects.filter(Prefix=f"meta/singles/{env.cname}"))) == 1
+
+
 def test_upload_from_directory_commit_mismatch(s3_setup: S3Env) -> None:
     """
     Validate that the release file may contain a different commit hash not matching the artifact name.
