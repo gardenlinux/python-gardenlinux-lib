@@ -1,6 +1,7 @@
 import logging
 import re
 import textwrap
+from collections.abc import Mapping
 from typing import Any, Dict
 
 import requests
@@ -262,9 +263,13 @@ def release_notes_image_ids_section(metadata_files: list[str]) -> str:
         with open(metadata_file_path) as f:
             metadata = yaml.load(f, Loader=SafeLoader)
 
-        published_image_metadata = metadata["published_image_metadata"]
+        published_image_metadata = metadata.get("published_image_metadata", {})
+
         # Skip if no publishing metadata found
-        if published_image_metadata is None:
+        if (
+            not isinstance(published_image_metadata, Mapping)
+            or len(published_image_metadata) < 1
+        ):
             continue
 
         platform = metadata["platform"]
