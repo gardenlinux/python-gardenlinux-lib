@@ -6,6 +6,8 @@
 # Parse features lib
 
 This library includes tooling to build and distribute [Garden Linux](https://github.com/gardenlinux/gardenlinux).
+It is targeted to Garden Linux developers and not meant for end users.
+There is no stable API.
 
 Features:
 
