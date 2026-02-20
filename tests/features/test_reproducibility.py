@@ -153,11 +153,12 @@ def test_formatter_main(
     assert received == expected
 
 
-def test_comparator() -> None:
+@pytest.mark.parametrize("type", [".tar", ".oci"])
+def test_comparator_tar(type: str) -> None:
     comparator = Comparator()
 
     files, whitelist = comparator.generate(
-        compare_files.joinpath("a.tar"), compare_files.joinpath("b.tar")
+        compare_files.joinpath(f"a{type}"), compare_files.joinpath(f"b{type}")
     )
 
     assert not whitelist, "Whitelist is empty and should not filter anything"
@@ -165,14 +166,15 @@ def test_comparator() -> None:
     assert files == ["/a/b/c.txt"]
 
 
+@pytest.mark.parametrize("type", [".tar", ".oci"])
 def test_comparator_main(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    type: str, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     argv = [
         "gl-diff",
         "generate",
-        str(compare_files.joinpath("a.tar")),
-        str(compare_files.joinpath("b.tar")),
+        str(compare_files.joinpath(f"a{type}")),
+        str(compare_files.joinpath(f"b{type}")),
     ]
 
     monkeypatch.setattr(sys, "argv", argv)

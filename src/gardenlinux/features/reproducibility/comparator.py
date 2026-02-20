@@ -73,7 +73,7 @@ class Comparator(object):
             with tempfile.TemporaryDirectory() as extracted:
                 # Extract .oci file
                 with tarfile.open(file, "r") as tar:
-                    tar.extractall(path=extracted)
+                    tar.extractall(path=extracted, filter="fully_trusted")
 
                 layers_dir = Path(extracted).joinpath("blobs/sha256")
                 assert layers_dir.is_dir()
@@ -96,14 +96,22 @@ class Comparator(object):
                         with tarfile.open(layer_path, "r") as tar:
                             for member in tar.getmembers():
                                 try:
-                                    tar.extract(member, path=output_dir.name)
+                                    tar.extract(
+                                        member,
+                                        path=output_dir.name,
+                                        filter="fully_trusted",
+                                    )
                                 except tarfile.AbsoluteLinkError:
                                     # Convert absolute link to relative link
                                     member.linkpath = (
                                         "../" * member.path.count("/")
                                         + member.linkpath[1:]
                                     )
-                                    tar.extract(member, path=output_dir.name)
+                                    tar.extract(
+                                        member,
+                                        path=output_dir.name,
+                                        filter="fully_trusted",
+                                    )
                                 except tarfile.TarError as e:
                                     print(f"Skipping {member.name} due to error: {e}")
         else:
