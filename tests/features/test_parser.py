@@ -87,9 +87,9 @@ from ..constants import GL_ROOT_DIR
             },
         ),
         (
-            "metal-khost_dev",
+            "openstack-metal-khost_dev",
             {
-                "platform": ["metal"],
+                "platform": ["openstack"],
                 "element": [
                     "firewall",
                     "log",
@@ -99,6 +99,7 @@ from ..constants import GL_ROOT_DIR
                     "server",
                     "chost",
                     "khost",
+                    "metal",
                 ],
                 "flag": ["_dev", "_fwcfg", "_legacy", "_selinux", "_slim"],
             },

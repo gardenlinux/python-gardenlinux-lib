@@ -15,7 +15,7 @@ class DeploymentPlatform:
     def published_images_by_regions(
         self, image_metadata: Dict[str, Any]
     ) -> Dict[str, Any]:
-        published_image_metadata = image_metadata["published_image_metadata"]
+        published_image_metadata = image_metadata.get("published_image_metadata", {})
         flavor_name = image_metadata["s3_key"].split("/")[-1]
 
         regions = []

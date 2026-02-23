@@ -121,10 +121,10 @@ def update_index(
     print("Updating index")
 
     cmd = [
-        "update-index",
-        "--container",
+        "push-index-from-directory",
+        "--index",
         CONTAINER_NAME_ZOT_EXAMPLE,
-        "--version",
+        "--index-tag",
         version,
         "--insecure",
         "True",

@@ -148,6 +148,7 @@ GL_COMMIT_SPECIAL_VALUES = ("local",)
 GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 GL_DISTRIBUTION_NAME = "Garden Linux"
 GL_HOME_URL = "https://gardenlinux.io"
+GL_PLATFORM_FRANKENSTEIN = "frankenstein"
 GL_RELEASE_ID = "gardenlinux"
 GL_REPOSITORY_URL = "https://github.com/gardenlinux/gardenlinux"
 GL_SUPPORT_URL = "https://github.com/gardenlinux/gardenlinux"
