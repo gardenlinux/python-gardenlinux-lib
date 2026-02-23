@@ -59,10 +59,25 @@ def test_release_notes_changes_section_broken_glvd_response() -> None:
 def test_release_notes_compare_package_versions_section_legacy_versioning_is_recognized() -> (
     None
 ):
-    assert (
-        "Full List of Packages in Garden Linux version 1.0"
-        in release_notes_compare_package_versions_section("1.0", {})
-    ), "Legacy versioning is supported"
+    with requests_mock.Mocker() as m:
+        m.get(
+            f"{GLVD_BASE_URL}/releaseNotes/1.0",
+            json={
+                "packageList": [
+                    {
+                        "sourcePackageName": "gardenlinux-release-example",
+                        "oldVersion": "0.9pre1",
+                        "newVersion": "1.0",
+                        "fixedCves": [],
+                    }
+                ]
+            },
+            status_code=200,
+        )
+
+        assert "upgrade 'gardenlinux-release-example'" in release_notes_changes_section(
+            "1.0"
+        ), "Legacy versioning is supported"
 
 
 def test_release_notes_compare_package_versions_section_legacy_versioning_patch_release_is_recognized(
@@ -87,10 +102,25 @@ def test_release_notes_compare_package_versions_section_legacy_versioning_patch_
 
 
 def test_release_notes_compare_package_versions_section_semver_is_recognized() -> None:
-    assert (
-        "Full List of Packages in Garden Linux version 1.20.0"
-        in release_notes_compare_package_versions_section("1.20.0", {})
-    ), "Semver is supported"
+    with requests_mock.Mocker() as m:
+        m.get(
+            f"{GLVD_BASE_URL}/releaseNotes/1.20.0",
+            json={
+                "packageList": [
+                    {
+                        "sourcePackageName": "gardenlinux-release-example",
+                        "oldVersion": "1.19.0",
+                        "newVersion": "1.20.0",
+                        "fixedCves": [],
+                    }
+                ]
+            },
+            status_code=200,
+        )
+
+        assert "upgrade 'gardenlinux-release-example'" in release_notes_changes_section(
+            "1.20.0"
+        ), "Semver is supported"
 
 
 def test_release_notes_compare_package_versions_section_semver_patch_release_is_recognized(
