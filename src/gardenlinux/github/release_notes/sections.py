@@ -117,16 +117,9 @@ def release_notes_compare_package_versions_section(
         output += f"## Changes in Package Versions Compared to {previous_version}\n"
         output += compare_apt_repo_versions(previous_version, gardenlinux_version)
     else:
-        output += (
-            f"## Full List of Packages in Garden Linux version {gardenlinux_version}\n"
-        )
-        output += "<details><summary>Expand to see full list</summary>\n"
-        output += "<pre>"
-        output += "\n"
-        for entry in package_list.values():
-            output += f"{entry!r}\n"
-            output += "</pre>"
-            output += "\n</details>\n\n"
+        # creating the full list of all packages exceeds the limit for github release pages
+        # => ignore this part in the release page for now until we have a better strategy
+        pass
 
     return output
 
