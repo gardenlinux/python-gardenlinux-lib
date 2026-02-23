@@ -73,7 +73,9 @@ class Comparator(object):
             with tempfile.TemporaryDirectory() as extracted:
                 # Extract .oci file
                 with tarfile.open(file, "r") as tar:
-                    tar.extractall(path=extracted, filter="fully_trusted")
+                    tar.extractall(
+                        path=extracted, filter="fully_trusted", members=tar.getmembers()
+                    )
 
                 layers_dir = Path(extracted).joinpath("blobs/sha256")
                 assert layers_dir.is_dir()
@@ -116,7 +118,11 @@ class Comparator(object):
                                     print(f"Skipping {member.name} due to error: {e}")
         else:
             with tarfile.open(file, "r") as tar:
-                tar.extractall(path=output_dir.name, filter="fully_trusted")
+                tar.extractall(
+                    path=output_dir.name,
+                    filter="fully_trusted",
+                    members=tar.getmembers(),
+                )
 
         return output_dir
 

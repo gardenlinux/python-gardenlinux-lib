@@ -1,3 +1,0 @@
-/boot/initrd.img-6.12.48-amd64
-/efi/Default/6.12.48-amd64/initrd
-/etc/os-release
