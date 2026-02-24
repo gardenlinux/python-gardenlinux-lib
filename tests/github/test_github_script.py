@@ -1,11 +1,13 @@
 import sys
 
 import pytest
+import requests_mock
 
 import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
+from .constants import REPO_JSON
 
 
 def test_script_parse_args_wrong_command(
@@ -26,7 +28,16 @@ def test_script_parse_args_create_command_required_args(
     monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(
-        sys, "argv", ["gh", "create", "--owner", "gardenlinux", "--repo", "gardenlinux"]
+        sys,
+        "argv",
+        [
+            "gh",
+            "create-with-gl-release-notes",
+            "--owner",
+            "gardenlinux",
+            "--repo",
+            "gardenlinux",
+        ],
     )
 
     with pytest.raises(SystemExit):
@@ -63,7 +74,7 @@ def test_script_create_dry_run(
         "argv",
         [
             "gh",
-            "create",
+            "create-with-gl-release-notes",
             "--owner",
             "gardenlinux",
             "--repo",
@@ -92,37 +103,47 @@ def test_script_create_dry_run(
 def test_script_create(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "gh",
-            "create",
-            "--owner",
-            "gardenlinux",
-            "--repo",
-            "gardenlinux",
-            "--tag",
-            TEST_GARDENLINUX_RELEASE,
-            "--commit",
-            TEST_GARDENLINUX_COMMIT,
-        ],
-    )
-    monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release_notes",
-        lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
-    )
-    monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release",
-        lambda a1, a2, a3, a4, a5, a6: TEST_GARDENLINUX_RELEASE,
-    )
+    with requests_mock.Mocker() as m:
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "gh",
+                "create-with-gl-release-notes",
+                "--owner",
+                "gardenlinux",
+                "--repo",
+                "gardenlinux",
+                "--tag",
+                TEST_GARDENLINUX_RELEASE,
+                "--commit",
+                TEST_GARDENLINUX_COMMIT,
+            ],
+        )
+        monkeypatch.setattr(
+            "gardenlinux.github.release.__main__.create_github_release_notes",
+            lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
+        )
+        monkeypatch.setenv("GITHUB_TOKEN", "invalid")
 
-    gh.main()
+        m.get(
+            "//api.github.com:443/repos/gardenlinux/gardenlinux",
+            json=REPO_JSON,
+            status_code=200,
+        )
 
-    assert any(
-        f"Release created with ID: {TEST_GARDENLINUX_RELEASE}" in record.message
-        for record in caplog.records
-    ), "Expected a release creation confirmation log entry"
+        m.post(
+            "//api.github.com:443/repos/gardenlinux/gardenlinux/releases",
+            json={"id": 101},
+            status_code=201,
+        )
+
+        gh.main()
+
+        assert any(
+            "Release created with ID: 101" in record.message
+            for record in caplog.records
+        ), "Expected a release creation confirmation log entry"
 
 
 def test_script_upload_dry_run(
