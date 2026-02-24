@@ -38,7 +38,7 @@ def generate(args: argparse.Namespace) -> None:
     print(result, end="")
 
     if files != []:
-        exit(1)
+        exit(64)
 
 
 def format(args: argparse.Namespace) -> None:
