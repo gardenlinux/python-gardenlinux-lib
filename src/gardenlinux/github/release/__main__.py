@@ -5,9 +5,7 @@ from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
 
 from ..release_notes import create_github_release_notes
-from . import (
-    write_to_release_id_file,
-)
+from . import write_to_release_id_file
 from .release import Release
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", logging.INFO)
