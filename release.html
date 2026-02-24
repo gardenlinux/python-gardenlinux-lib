@@ -1,0 +1,131 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>python-gardenlinux-lib release documentation &mdash; python-gardenlinux-lib  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            python-gardenlinux-lib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">python-gardenlinux-lib release documentation</a><ul>
+<li><a class="reference internal" href="#step-by-step-guide">Step by step guide</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-gardenlinux-lib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">python-gardenlinux-lib release documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/release.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-gardenlinux-lib-release-documentation">
+<h1>python-gardenlinux-lib release documentation<a class="headerlink" href="#python-gardenlinux-lib-release-documentation" title="Link to this heading"></a></h1>
+<p><em>python-gardenlinux-lib</em> strictly follow syntax and intention of <cite>Semantic Versioning &lt;https://www.semver.org&gt;</cite>. Each release reflects the intention and expected impact therefore.</p>
+<p>A new release is done by tagging a commit with a valid version. This will create a GitHub pre-release for proof-reading. Once done a new release can be published using GitHub CLI or UI.</p>
+<p>Newly added docstrings should contain the first version supporting the new API / command line.</p>
+<section id="step-by-step-guide">
+<h2>Step by step guide<a class="headerlink" href="#step-by-step-guide" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><em>python-gardenlinux-lib</em> version files:</p>
+<p><em>python-gardenlinux-lib</em> versioning needs to be set in:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.github/actions/setup/action.yml</span></code></p></li>
+</ul>
+<p>Additionally at the moment (removal pending):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.github/actions/features_parse/action.yml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.github/actions/flavors_parse/action.yml</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">&lt;tag&gt;</span></code></p></li>
+<li><p>Review the generated pre-release changelog by visiting the GitHub project release page and publish it if applicable.</p></li>
+<li><p>Projects consuming the <em>python-gardenlinux-lib</em> may use the following git URL for dependency definition:
+<code class="docutils literal notranslate"><span class="pre">gardenlinux</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/gardenlinux/python-gardenlinux-lib.git&#64;1.0.0</span></code></p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, gardenlinux maintainer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
