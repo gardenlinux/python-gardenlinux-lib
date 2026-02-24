@@ -93,7 +93,7 @@ def main() -> None:
     format_parser = subparser.add_parser("format")
     format_parser.add_argument("--feature-dir", default="features")
     format_parser.add_argument("--diff-dir", default="diffs")
-    format_parser.add_argument("--nightly-stats", default="nightly_stats")
+    format_parser.add_argument("--nightly-stats", default="nightly_stats.csv")
     format_parser.add_argument("flavors_matrix")
     format_parser.add_argument("bare_flavors_matrix")
     format_parser.set_defaults(func=format)
