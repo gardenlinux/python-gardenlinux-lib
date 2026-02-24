@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..logger import LoggerSetup
+from .image import Image
 from .podman_context import PodmanContext
 
 
@@ -116,12 +117,12 @@ class Podman(object):
         return {oci_archive_file_name.name: image_id}
 
     @PodmanContext.wrap
-    def get_image_id(
+    def get_image(
         self,
         container: str,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
-    ) -> str:
+    ) -> Image:
         """
         Returns the Podman image ID for a given OCI container tag.
 
@@ -136,7 +137,22 @@ class Podman(object):
             else:
                 container_tag += f":{oci_tag}"
 
-        image = podman.images.get(container_tag)
+        return Image(podman.images.get(container_tag))
+
+    @PodmanContext.wrap
+    def get_image_id(
+        self,
+        container: str,
+        podman: PodmanContext,
+        oci_tag: Optional[str] = None,
+    ) -> str:
+        """
+        Returns the Podman image ID for a given OCI container tag.
+
+        :since: 1.0.0
+        """
+
+        image = self.get_image(container, oci_tag=oci_tag, podman=podman)
         return image.id  # type: ignore[no-any-return]
 
     @PodmanContext.wrap

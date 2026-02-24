@@ -9,11 +9,15 @@ import importlib
 import importlib.resources
 import json
 import re
-import tarfile
-import tempfile
 from os import PathLike
 from pathlib import Path
-from typing import Optional
+
+from ...constants import (
+    PODMAN_FS_CHANGE_ADDED,
+    PODMAN_FS_CHANGE_DELETED,
+    PODMAN_FS_CHANGE_MODIFIED,
+)
+from ...oci import Image, Podman, PodmanContext
 
 
 class Comparator(object):
@@ -29,15 +33,7 @@ class Comparator(object):
                  Apache License, Version 2.0
     """
 
-    _default_whitelist: list[str] = []
-
-    _nightly_whitelist = json.loads(
-        importlib.resources.read_text(__name__, "nightly_whitelist.json")
-    )
-
-    def __init__(
-        self, nightly: bool = False, whitelist: list[str] = _default_whitelist
-    ):
+    def __init__(self, nightly: bool = False, whitelist: list[str] = []):
         """
         Constructor __init__(Comparator)
 
@@ -46,103 +42,18 @@ class Comparator(object):
 
         :since: 1.0.0
         """
+
         self.whitelist = whitelist
+
         if nightly:
-            self.whitelist += self._nightly_whitelist
+            self.whitelist += json.loads(
+                importlib.resources.read_text(__name__, "nightly_whitelist.json")
+            )
 
-    @staticmethod
-    def _unpack(file: PathLike[str]) -> tempfile.TemporaryDirectory[str]:
-        """
-        Unpack a .tar archive or .oci image into a temporary dictionary
-
-        :param file:                    .tar or .oci file
-
-        :return: TemporaryDirectory     Temporary directory containing the unpacked file
-        :since: 1.0.0
-        """
-
-        output_dir = tempfile.TemporaryDirectory()
-        file = Path(file).resolve()
-        if file.name.endswith(".oci"):
-            with tempfile.TemporaryDirectory() as extracted:
-                # Extract .oci file
-                with tarfile.open(file, "r") as tar:
-                    tar.extractall(
-                        path=extracted, filter="fully_trusted", members=tar.getmembers()
-                    )
-
-                layers_dir = Path(extracted).joinpath("blobs/sha256")
-                assert layers_dir.is_dir()
-
-                with open(Path(extracted).joinpath("index.json"), "r") as f:
-                    index = json.load(f)
-
-                # Only support first manifest
-                manifest = index["manifests"][0]["digest"].split(":")[1]
-
-                with open(layers_dir.joinpath(manifest), "r") as f:
-                    manifest = json.load(f)
-
-                layers = [layer["digest"].split(":")[1] for layer in manifest["layers"]]
-
-                # Extract layers in order
-                for layer in layers:
-                    layer_path = layers_dir.joinpath(layer)
-                    if tarfile.is_tarfile(layer_path):
-                        with tarfile.open(layer_path, "r") as tar:
-                            for member in tar.getmembers():
-                                try:
-                                    tar.extract(
-                                        member,
-                                        path=output_dir.name,
-                                        filter="fully_trusted",
-                                    )
-                                except tarfile.AbsoluteLinkError:
-                                    # Convert absolute link to relative link
-                                    member.linkpath = (
-                                        "../" * member.path.count("/")
-                                        + member.linkpath[1:]
-                                    )
-                                    tar.extract(
-                                        member,
-                                        path=output_dir.name,
-                                        filter="fully_trusted",
-                                    )
-                                except tarfile.TarError as e:
-                                    print(f"Skipping {member.name} due to error: {e}")
-        else:
-            with tarfile.open(file, "r") as tar:
-                tar.extractall(
-                    path=output_dir.name,
-                    filter="fully_trusted",
-                    members=tar.getmembers(),
-                )
-
-        return output_dir
-
-    def _diff_files(
-        self, cmp: filecmp.dircmp[str], left_root: Optional[Path] = None
-    ) -> list[str]:
-        """
-        Recursively compare files
-
-        :param cmp:                     Dircmp to recursively compare
-        :param left_root:               Left root to obtain the archive relative path
-
-        :return: list[Path]             List of paths with different content
-        :since: 1.0.0
-        """
-
-        result = []
-        if not left_root:
-            left_root = Path(cmp.left)
-        for name in cmp.diff_files:
-            result.append(f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}")
-        for sub_cmp in cmp.subdirs.values():
-            result += self._diff_files(sub_cmp, left_root=left_root)
-        return result
-
-    def generate(self, a: PathLike[str], b: PathLike[str]) -> tuple[list[str], bool]:
+    @PodmanContext.wrap
+    def generate(
+        self, a: PathLike[str], b: PathLike[str], podman: PodmanContext
+    ) -> tuple[list[str], bool]:
         """
         Compare two .tar/.oci images with each other
 
@@ -156,16 +67,51 @@ class Comparator(object):
         if filecmp.cmp(a, b, shallow=False):
             return [], False
 
-        with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
-            cmp = filecmp.dircmp(unpacked_a, unpacked_b, shallow=False)
+        a = Path(a)
+        a_image_id = None
 
-            diff_files = self._diff_files(cmp)
+        b = Path(b)
+        b_image_id = None
 
-        filtered = [
-            file
-            for file in diff_files
-            if not any(re.match(pattern, file) for pattern in self.whitelist)
-        ]
-        whitelist = len(diff_files) != len(filtered)
+        differences = []
+        podman_api = Podman()
 
-        return filtered, whitelist
+        try:
+            if a.suffix == ".oci":
+                a_image_id = podman_api.load_oci_archive(a, podman=podman)
+            elif a.suffix == ".tar":
+                a_image_id = Image.import_plain_tar(a, podman=podman)
+            else:
+                raise RuntimeError(f"Unsupported file type for comparison: {a.name}")
+
+            if b.suffix == ".oci":
+                b_image_id = podman_api.load_oci_archive(b, podman=podman)
+            elif b.suffix == ".tar":
+                b_image_id = Image.import_plain_tar(b, podman=podman)
+            else:
+                raise RuntimeError(f"Unsupported file type for comparison: {b.name}")
+
+            image = podman_api.get_image(a_image_id, podman=podman)
+
+            result = image.get_filesystem_changes(
+                parent_layer_image_id=b_image_id, podman=podman
+            )
+
+            differences = (
+                result[PODMAN_FS_CHANGE_ADDED] + result[PODMAN_FS_CHANGE_DELETED]
+            )
+
+            whitelist = False
+
+            for entry in result[PODMAN_FS_CHANGE_MODIFIED]:
+                if not any(re.match(pattern, entry) for pattern in self.whitelist):
+                    differences.append(entry)
+                else:
+                    whitelist = True
+        finally:
+            if a_image_id is not None:
+                podman.images.remove(a_image_id)
+            if b_image_id is not None:
+                podman.images.remove(b_image_id)
+
+        return differences, whitelist
