@@ -35,7 +35,11 @@ def generate(args: argparse.Namespace) -> None:
     if result != "":
         result += "\n"
 
-    print(result, end="")
+    if args.out:
+        with open(args.out, "w") as f:
+            f.write(result)
+    else:
+        print(result, end="")
 
     if files != []:
         exit(64)
@@ -86,6 +90,7 @@ def main() -> None:
 
     generate_parser = subparser.add_parser("generate")
     generate_parser.add_argument("--nightly", action="store_true")
+    generate_parser.add_argument("--out")
     generate_parser.add_argument("a")
     generate_parser.add_argument("b")
     generate_parser.set_defaults(func=generate)
