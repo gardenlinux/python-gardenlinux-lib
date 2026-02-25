@@ -38,6 +38,12 @@ class Comparator(object):
         importlib.resources.read_text(__name__, "nightly_whitelist.json")
     )
 
+    _cname = re.compile(
+        r"[a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*-([0-9.]+|local)-([a-f0-9]{8}|today)"
+    )
+
+    _arch = re.compile(r"(arm64|amd64)")
+
     def __init__(
         self, nightly: bool = False, whitelist: list[str] = _default_whitelist
     ):

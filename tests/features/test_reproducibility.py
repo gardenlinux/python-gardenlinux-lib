@@ -1,7 +1,5 @@
 from pathlib import Path
 
-
-
 FLAVORS_MATRIX = {
     "include": [
         {"arch": "amd64", "flavor": "ali-gardener_prod"},
