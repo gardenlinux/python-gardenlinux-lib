@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-gl-diff main entrypoint
+gl-feature-fs-diff main entrypoint
 """
 
 import argparse
@@ -78,7 +78,7 @@ def format(args: argparse.Namespace) -> None:
 
 def main() -> None:
     """
-    gl-diff main()
+    gl-feature-fs-diff main()
 
     :since: 1.0.0
     """
