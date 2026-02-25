@@ -5,6 +5,8 @@ diff-files comparator generating the list of files for reproducibility test work
 """
 
 import filecmp
+import importlib
+import importlib.resources
 import json
 import logging
 import re
@@ -32,23 +34,9 @@ class Comparator(object):
 
     _default_whitelist: list[str] = []
 
-    _nightly_whitelist = [
-        r"/etc/apt/sources\.list\.d/gardenlinux\.sources",
-        r"/etc/os-release",
-        r"/etc/shadow",
-        r"/etc/update-motd\.d/05-logo",
-        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_.*",
-        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_main_binary-ARCH_Packages",
-        r"/efi/loader/entries/Default-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH\.conf",
-        r"/efi/Default/[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH/initrd",
-        r"/boot/initrd\.img-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH",
-    ]
-
-    _cname = re.compile(
-        r"[a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*-([0-9.]+|local)-([a-f0-9]{8}|today)"
+    _nightly_whitelist = json.loads(
+        importlib.resources.read_text(__name__, "nightly_whitelist.json")
     )
-
-    _arch = re.compile(r"(arm64|amd64)")
 
     def __init__(
         self, nightly: bool = False, whitelist: list[str] = _default_whitelist

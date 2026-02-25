@@ -13,6 +13,9 @@ from os.path import basename, dirname
 from .comparator import Comparator
 from .markdown_formatter import MarkdownFormatter
 
+# Use custom exit code to make a controlled failure visible
+DIFFERENCE_DETECTED_EXIT_CODE = 64
+
 
 def generate(args: argparse.Namespace) -> None:
     """
@@ -39,7 +42,7 @@ def generate(args: argparse.Namespace) -> None:
         print(result)
 
     if files != {}:
-        exit(64)
+        exit(DIFFERENCE_DETECTED_EXIT_CODE)
 
 
 def format(args: argparse.Namespace) -> None:

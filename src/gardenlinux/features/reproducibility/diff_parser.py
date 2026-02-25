@@ -9,7 +9,7 @@ import os
 import re
 from os import PathLike
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import networkx as nx
 
@@ -56,25 +56,23 @@ class DiffParser(object):
         self._parser = Parser(gardenlinux_root, feature_dir_name, logger)
         self._feature_dir_name = Path(self._gardenlinux_root).joinpath(feature_dir_name)
 
-        self.all: set[str] = set()
-        self.successful: set[str] = set()
-        self.whitelist: set[str] = set()
+        self.all_flavors: set[str] = set()
+        self.reproducible_flavors: set[str] = set()
+        self.passed_by_whitelist: set[str] = set()
         self.expected_falvors: set[str] = set()
         self.missing_flavors: set[str] = set()
         self.unexpected_falvors: set[str] = set()
 
-    def read_feature_info(self, feature: str) -> Any:
+    def sort_features(self, graph: nx.DiGraph) -> list[str]:
         """
-        Read the content of the feature info.yaml
+        Forward sorting implemented in the parser
 
-        :param feature:                 The queried feature
+        :param graph:                   The feature graph
 
-        :return: Dict[str, Any]         Parsed content of the features' info.yaml file
+        :return: list[str]              Sorted features considering the type
         :since: 1.0.0
         """
-        return self._parser.read_feature_yaml(
-            str(self._feature_dir_name.joinpath(f"{feature}/info.yaml"))
-        )["content"]
+        return self._parser.sort_graph_nodes(graph)
 
     def parse(
         self,
@@ -92,10 +90,10 @@ class DiffParser(object):
         :since:  1.0.0
         """
 
-        self.all = set()
-        self.successful = set()
-        self.whitelist = set()
-        failed = {}  # {flavor: [files...]}
+        self.all_flavors = set()
+        self.reproducible_flavors = set()
+        self.passed_by_whitelist = set()
+        non_reproducible_flavors = {}  # {flavor: [files...]}
 
         diff_dir = Path(self._gardenlinux_root).joinpath(diff_dir)
 
@@ -110,32 +108,32 @@ class DiffParser(object):
                     content = f.read()
 
                 flavor = flavor.rstrip(self._SUFFIX)
-                self.all.add(flavor)
+                self.all_flavors.add(flavor)
                 if content == "":
-                    self.successful.add(flavor)
+                    self.reproducible_flavors.add(flavor)
                 elif content == "whitelist\n":
-                    self.successful.add(flavor)
-                    self.whitelist.add(flavor)
+                    self.reproducible_flavors.add(flavor)
+                    self.passed_by_whitelist.add(flavor)
                 else:
-                    failed[flavor] = content.split("\n")[:-1]
+                    non_reproducible_flavors[flavor] = content.split("\n")[:-1]
 
-        self.missing_flavors = self.expected_falvors - self.all
-        self.unexpected_falvors = self.all - self.expected_falvors
+        self.missing_flavors = self.expected_falvors - self.all_flavors
+        self.unexpected_falvors = self.all_flavors - self.expected_falvors
 
         # Map files to flavors
-        affected: Dict[str, set[str]] = {}  # {file: {flavors...}}
-        for flavor in failed:
-            for file in failed[flavor]:
-                if file not in affected:
-                    affected[file] = set()
-                affected[file].add(flavor)
+        affected_flavors: Dict[str, set[str]] = {}  # {file: {flavors...}}
+        for flavor in non_reproducible_flavors:
+            for file in non_reproducible_flavors[flavor]:
+                if file not in affected_flavors:
+                    affected_flavors[file] = set()
+                affected_flavors[file].add(flavor)
 
-        # Merge files affected by the same flavors by mapping flavor sets to files
+        # Merge files affected_flavors by the same flavors by mapping flavor sets to files
         self._bundled: Dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
-        for file in affected:
-            if frozenset(affected[file]) not in self._bundled:
-                self._bundled[frozenset(affected[file])] = set()
-            self._bundled[frozenset(affected[file])].add(file)
+        for file in affected_flavors:
+            if frozenset(affected_flavors[file]) not in self._bundled:
+                self._bundled[frozenset(affected_flavors[file])] = set()
+            self._bundled[frozenset(affected_flavors[file])].add(file)
 
     def intersectionTrees(
         self,
@@ -150,27 +148,32 @@ class DiffParser(object):
         # Compute the intersecting features of the affected flavors and store them in a graph to allow hierarchical formatting
         trees = {}
         for flavors in self._bundled:
-            first = True
             tree = None
             # Compute the intersecting features of all affected flavors
             for flavor in flavors:
                 # Ignore bare flavors, as they may not be affected due to removing the file and could therefore disrupt the analysis
                 if not flavor.startswith("bare-"):
-                    t = self._parser.filter(self._remove_arch.sub("", flavor))
-                    if first:
-                        first = False
-                        tree = t
-                    else:
-                        tree = nx.intersection(tree, t)
+                    # Compute intersecting features
+                    tree = self._parser.filter(
+                        self._remove_arch.sub("", flavor),
+                        additional_filter_func=tree.__contains__
+                        if tree is not None
+                        else lambda _: True,
+                    )
 
             # Remove any features which are contained in unaffected flavors, as they cannot cause the problem
             if tree is not None:
-                unaffected = self.all - flavors
+                # Unfreeze tree
+                tree = nx.DiGraph(tree)
+                unaffected = self.all_flavors - flavors
+                merged_features: set[str] = set()
                 for flavor in unaffected:
                     # Again, ignore bare flavors
                     if not flavor.startswith("bare-"):
-                        t = self._parser.filter(self._remove_arch.sub("", flavor))
-                        tree.remove_nodes_from(n for n in t)
+                        merged_features.update(
+                            self._parser.filter(self._remove_arch.sub("", flavor))
+                        )
+                tree.remove_nodes_from(n for n in merged_features)
             else:
                 tree = nx.DiGraph()
 
