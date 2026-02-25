@@ -1,8 +1,4 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("../src"))
-
+from sphinx.application import Sphinx
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -12,9 +8,9 @@ sys.path.insert(0, os.path.abspath("../src"))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "python-gardenlinux-lib"
-copyright = "2024, gardenlinux maintainer"
-author = "gardenlinux maintainer"
+project = "Garden Linux Python Library"
+copyright = "2024, Garden Linux Maintainers"
+author = "Garden Linux Maintainers"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -24,6 +20,8 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx_rtd_theme",
     "sphinx.ext.napoleon",
+    "sphinx_click",
+    "sphinxcontrib.autoprogram",
 ]
 
 templates_path = ["_templates"]
@@ -36,3 +34,24 @@ autodoc_mock_imports = ["networkx"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+# Logo configuration
+html_logo = "_static/gardenlinux-logo.svg"
+
+html_theme_options = {
+    "logo_only": False,
+    "prev_next_buttons_location": "bottom",
+    "style_external_links": True,
+    "vcs_pageview_mode": "",
+    "style_nav_header_background": "#027154",  # Primary green
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
+}
+
+
+# Add custom CSS
+def setup(app: Sphinx) -> None:
+    app.add_css_file("custom.css")

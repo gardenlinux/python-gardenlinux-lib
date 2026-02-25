@@ -6,7 +6,7 @@ gl-flavors-parse main entrypoint
 """
 
 import json
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, List, Tuple
@@ -47,12 +47,13 @@ def generate_markdown_table(combinations: List[Tuple[Any, str]]) -> str:
     return table
 
 
-def parse_args() -> Namespace:
+def get_parser() -> ArgumentParser:
     """
-    Parses arguments used for main()
+    Get the argument parser for gl-flavors-parse.
+    Used for documentation generation.
 
-    :return: (object) Parsed argparse.ArgumentParser namespace
-    :since:  0.7.0
+    :return: ArgumentParser instance
+    :since: 1.0.0
     """
 
     parser = ArgumentParser(description="Parse flavors.yaml and generate combinations.")
@@ -62,67 +63,78 @@ def parse_args() -> Namespace:
         default=None,
         help="Commit hash to fetch flavors.yaml from GitHub. An existing 'flavors.yaml' file will be preferred.",
     )
+
     parser.add_argument(
         "--no-arch",
         action="store_true",
         help="Exclude architecture from the flavor output.",
     )
+
     parser.add_argument(
         "--include-only",
         action="append",
         default=[],
         help="Restrict combinations to those matching wildcard patterns (can be specified multiple times).",
     )
+
     parser.add_argument(
         "--exclude",
         action="append",
         default=[],
         help="Exclude combinations based on wildcard patterns (can be specified multiple times).",
     )
+
     parser.add_argument(
         "--build",
         action="store_true",
         help="Filter combinations to include only those with build enabled.",
     )
+
     parser.add_argument(
         "--publish",
         action="store_true",
         help="Filter combinations to include only those with publish enabled.",
     )
+
     parser.add_argument(
         "--test",
         action="store_true",
         help="Filter combinations to include only those with test enabled.",
     )
+
     parser.add_argument(
         "--test-platform",
         action="store_true",
         help="Filter combinations to include only platforms with test-platform: true.",
     )
+
     parser.add_argument(
         "--category",
         action="append",
         default=[],
         help="Filter combinations to include only platforms belonging to the specified categories (can be specified multiple times).",
     )
+
     parser.add_argument(
         "--exclude-category",
         action="append",
         default=[],
         help="Exclude platforms belonging to the specified categories (can be specified multiple times).",
     )
+
     parser.add_argument(
         "--json-by-arch",
         action="store_true",
         help="Output a JSON dictionary where keys are architectures and values are lists of flavors.",
     )
+
     parser.add_argument(
         "--markdown-table-by-platform",
         action="store_true",
         help="Generate a markdown table by platform.",
     )
 
-    return parser.parse_args()
+    return parser
 
 
 def main() -> None:
@@ -132,7 +144,8 @@ def main() -> None:
     :since: 0.7.0
     """
 
-    args = parse_args()
+    parser = get_parser()
+    args = parser.parse_args()
 
     try:
         flavors_data = _get_flavors_file_data(Path(Repository().root, "flavors.yaml"))
