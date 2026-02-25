@@ -5,6 +5,8 @@ diff-files comparator generating the list of files for reproducibility test work
 """
 
 import filecmp
+import importlib
+import importlib.resources
 import json
 import re
 import tarfile
@@ -29,17 +31,9 @@ class Comparator(object):
 
     _default_whitelist: list[str] = []
 
-    _nightly_whitelist = [
-        r"/etc/apt/sources\.list\.d/gardenlinux\.sources",
-        r"/etc/os-release",
-        r"/etc/shadow",
-        r"/etc/update-motd\.d/05-logo",
-        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_.*",
-        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_main_binary-(arm64|amd64)_Packages",
-        r"/efi/loader/entries/Default-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)\.conf",
-        r"/efi/Default/[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)/initrd",
-        r"/boot/initrd\.img-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)",
-    ]
+    _nightly_whitelist = json.loads(
+        importlib.resources.read_text(__name__, "nightly_whitelist.json")
+    )
 
     def __init__(
         self, nightly: bool = False, whitelist: list[str] = _default_whitelist

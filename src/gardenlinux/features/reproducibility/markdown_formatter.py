@@ -7,13 +7,15 @@ diff-files markdown generator for reproducibility test workflow
 import logging
 from os import PathLike
 from pathlib import Path
+from string import Template
 from typing import Collection, Optional
 
 import networkx as nx
 from attr import dataclass
-from networkx.algorithms.traversal.depth_first_search import dfs_tree
 
 from gardenlinux.features.reproducibility.diff_parser import DiffParser
+
+SUCCESS_TRESHOLD = 50.0
 
 
 @dataclass
@@ -39,6 +41,10 @@ class MarkdownFormatter(object):
     """
 
     _DROPDOWN_THRESHOLD = 10
+
+    _nighly_url_template = Template(
+        "https://github.com/gardenlinux/gardenlinux/actions/runs/$id"
+    )
 
     def __init__(
         self,
@@ -69,24 +75,6 @@ class MarkdownFormatter(object):
 
         self._nightly_stats = Path(nightly_stats)
 
-    def _node_key(self, node: str) -> str:
-        """
-        Key order function to sort platforms before elements, platforms before flags and elements before flags
-
-        :param node:                    The node name (can be any of platform, element or flag)
-
-        :return: ("1-" || "2-" || "2-") + node
-        :since:  1.0.0
-        """
-
-        info = self._diff_parser.read_feature_info(node)
-        if info["type"] == "platform":
-            return "1-" + node
-        elif info["type"] == "element":
-            return "2-" + node
-        else:
-            return "3-" + node
-
     def _treeStr(
         self, graph: nx.DiGraph, found: Optional[set[str]] = None
     ) -> tuple[str, set[str]]:
@@ -104,17 +92,25 @@ class MarkdownFormatter(object):
             found = set()
 
         s = ""
-        for node in sorted(graph, key=self._node_key):
+        for node in self._diff_parser.sort_features(graph):
             if node not in found and len(list(graph.predecessors(node))) == 0:
                 found.add(node)
                 if len(set(graph.successors(node)) - found) == 0:
                     s += str(node) + "\n"
                 else:
                     s += str(node) + ":\n"
-                    for successor in sorted(
-                        set(graph.successors(node)) - found, key=self._node_key
+                    # This filters all direct successors of node in a sorted order
+                    for successor in self._diff_parser.sort_features(
+                        nx.subgraph_view(
+                            graph, filter_node=list(graph.successors(node)).__contains__
+                        )
                     ):
-                        st, fnd = self._treeStr(dfs_tree(graph, successor), found)
+                        # Manually create dfs tree to keep attributes
+                        subtree = nx.DiGraph(graph)
+                        subtree.remove_edges_from(
+                            subtree.edges - nx.dfs_edges(graph, successor)
+                        )
+                        st, fnd = self._treeStr(subtree, found)
                         found.update(fnd)
                         s += "  " + st.replace("\n", "\n  ") + "\n"
         # Remove last linebreak as the last line can contain spaces
@@ -156,14 +152,14 @@ class MarkdownFormatter(object):
                 Nightly(*n.split(",")) for n in f.read().rstrip().split("\n")
             )
             if nightly_a.run_number != "":
-                result += f"\n\nComparison of nightly **[#{nightly_a.run_number}](https://github.com/gardenlinux/gardenlinux/actions/runs/{nightly_a.id})** \
-and **[#{nightly_b.run_number}](https://github.com/gardenlinux/gardenlinux/actions/runs/{nightly_b.id})**"
+                result += f"\n\nComparison of nightly **[#{nightly_a.run_number}]({self._nighly_url_template.substitute(id=nightly_a.id)})** \
+and **[#{nightly_b.run_number}]({self._nighly_url_template.substitute(id=nightly_b.id)})**"
                 if nightly_a.commit != nightly_b.commit:
                     result += f"\n\n⚠️ The nightlies used different commits: `{nightly_a.commit[:7]}` (#{nightly_a.run_number}) != `{nightly_b.commit[:7]}` (#{nightly_b.run_number})"
                 if nightly_a.run_number == nightly_b.run_number:
-                    result += f"\n\n⚠️ Comparing the nightly **[#{nightly_a.run_number}](https://github.com/gardenlinux/gardenlinux/actions/runs/{nightly_a.id})** to itself can not reveal any issues"
+                    result += f"\n\n⚠️ Comparing the nightly **[#{nightly_a.run_number}]({self._nighly_url_template.substitute(id=nightly_a.id)})** to itself can not reveal any issues"
             else:
-                result += f"\n\nComparison of the latest nightly **[#{nightly_b.run_number}](https://github.com/gardenlinux/gardenlinux/actions/runs/{nightly_b.id})** \
+                result += f"\n\nComparison of the latest nightly **[#{nightly_b.run_number}]({self._nighly_url_template.substitute(id=nightly_b.id)})** \
 with a new build"
                 if nightly_a.commit != nightly_b.commit:
                     result += f"\n\n⚠️ The build used different commits: `{nightly_b.commit[:7]}` (#{nightly_b.run_number}) != `{nightly_a.commit[:7]}` (new build)"
@@ -193,7 +189,7 @@ with a new build"
         successrate = round(
             100
             * (
-                len(self._diff_parser.successful)
+                len(self._diff_parser.reproducible_flavors)
                 / len(self._diff_parser.expected_falvors)
             ),
             1,
@@ -202,8 +198,8 @@ with a new build"
         emoji = (
             "✅"
             if len(self._diff_parser.expected_falvors)
-            == len(self._diff_parser.successful)
-            else ("⚠️" if successrate >= 50.0 else "❌")
+            == len(self._diff_parser.reproducible_flavors)
+            else ("⚠️" if successrate >= SUCCESS_TRESHOLD else "❌")
         )
 
         total_count = len(self._diff_parser.expected_falvors)
@@ -223,10 +219,10 @@ with a new build"
         if self._nightly_stats.is_file():
             explanation += self._format_nighlty_stats()
 
-        if len(self._diff_parser.whitelist) > 0:
+        if len(self._diff_parser.passed_by_whitelist) > 0:
             explanation += (
                 "\n\n<details><summary>📃 These flavors only passed due to the nightly whitelist</summary><pre>"
-                + "<br>".join(sorted(self._diff_parser.whitelist))
+                + "<br>".join(sorted(self._diff_parser.passed_by_whitelist))
                 + "</pre></details>"
             )
 
@@ -242,7 +238,7 @@ with a new build"
         explanation += (
             ""
             if len(self._diff_parser.expected_falvors)
-            <= len(self._diff_parser.successful)
+            <= len(self._diff_parser.reproducible_flavors)
             else "\n\n*The mentioned features are included in every affected flavor and not included in every unaffected flavor.*"
         )
 
@@ -299,19 +295,21 @@ with a new build"
             row += "|\n"
             rows += row
 
-        if len(self._diff_parser.successful) > 0:
+        if len(self._diff_parser.reproducible_flavors) > 0:
             # Success row
             row = "|"
             row += "✅ No problems found"
             row += "|"
-            row += f"**{round(100 * (len(self._diff_parser.successful) / len(self._diff_parser.expected_falvors)), 1)}%**<br>"
-            row += self._dropdown(self._diff_parser.successful)
+            row += f"**{round(100 * (len(self._diff_parser.reproducible_flavors) / len(self._diff_parser.expected_falvors)), 1)}%**<br>"
+            row += self._dropdown(self._diff_parser.reproducible_flavors)
             row += "|"
             row += "-"
             row += "|\n"
             rows += row
 
-        if len(self._diff_parser.successful) < len(self._diff_parser.expected_falvors):
+        if len(self._diff_parser.reproducible_flavors) < len(
+            self._diff_parser.expected_falvors
+        ):
             rows += "\n*To add affected files to the whitelist, edit the `whitelist` variable in python-gardenlinux-lib `src/gardenlinux/features/reproducibility/comparator.py`*\n"
 
         return table.format(rows=rows)
