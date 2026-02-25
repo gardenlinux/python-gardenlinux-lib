@@ -21,7 +21,7 @@ import patoolib
 
 class Comparator(object):
     """
-    This class takes either two .tar or two .oci files and identifies differences in the filesystems
+    This class takes either two .tar or two .oci files or two directories and identifies differences in the filesystems
 
     :author:     Garden Linux Maintainers
     :copyright:  Copyright 2026 SAP SE
@@ -194,58 +194,74 @@ class Comparator(object):
             )
         return result
 
-    def generate(
+    def _compare_directories(
         self, a: PathLike[str], b: PathLike[str]
     ) -> tuple[dict[str, Any], bool]:
         """
-        Compare two .tar/.oci images with each other
+        Compare directories with each other
 
-        :param a:                       First .tar/.oci file
-        :param b:                       Second .tar/.oci file
+        :param a:                       First folder
+        :param b:                       Second folder
 
         :return: dict[str, Any], bool   Filtered recursive dict of paths with different content and flag indicating if whitelist was applied
         :since: 1.0.0
         """
 
-        if filecmp.cmp(a, b, shallow=False):
-            return {}, False
+        cmp = filecmp.dircmp(a, b, shallow=False)
 
-        with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
-            cmp = filecmp.dircmp(unpacked_a, unpacked_b, shallow=False)
+        diff_files = self._diff_files(cmp)
 
-            diff_files = self._diff_files(cmp)
+        filtered: dict[tuple[str, Optional[str], Optional[str]], Any] = {
+            (
+                general_name,
+                diff_files[general_name][0],
+                diff_files[general_name][1],
+            ): {}
+            for general_name in diff_files
+            if not any(re.match(pattern, general_name) for pattern in self.whitelist)
+        }
+        whitelist = len(diff_files) != len(filtered)
 
-            filtered: dict[tuple[str, Optional[str], Optional[str]], Any] = {
-                (
-                    general_name,
-                    diff_files[general_name][0],
-                    diff_files[general_name][1],
-                ): {}
-                for general_name in diff_files
-                if not any(
-                    re.match(pattern, general_name) for pattern in self.whitelist
-                )
-            }
-            whitelist = len(diff_files) != len(filtered)
-
-            result: dict[str, Any] = {}
-            for general_name, left_name, right_name in filtered:
-                result[general_name] = {}
-                if left_name and right_name:
-                    file_a = Path(unpacked_a).joinpath(left_name[1:])
-                    file_b = Path(unpacked_b).joinpath(right_name[1:])
-                    if (
-                        file_a.is_file()
-                        and file_b.is_file()
-                        and patoolib.is_archive(file_a)
-                        and patoolib.is_archive(file_b)
-                    ):
-                        filtered_rec, whitelist_rec = self.generate(file_a, file_b)
-                        whitelist = whitelist or whitelist_rec
-                        if filtered_rec != {}:
-                            result[general_name] = filtered_rec
-                        else:
-                            # Remove if no files found in an archive to not count different timestamps inside the archives as a difference
-                            del result[general_name]
+        result: dict[str, Any] = {}
+        for general_name, left_name, right_name in filtered:
+            result[general_name] = {}
+            if left_name and right_name:
+                file_a = Path(a).joinpath(left_name[1:])
+                file_b = Path(b).joinpath(right_name[1:])
+                if (
+                    file_a.is_file()
+                    and file_b.is_file()
+                    and patoolib.is_archive(file_a)
+                    and patoolib.is_archive(file_b)
+                ):
+                    filtered_rec, whitelist_rec = self.generate(file_a, file_b)
+                    whitelist = whitelist or whitelist_rec
+                    if filtered_rec != {}:
+                        result[general_name] = filtered_rec
+                    else:
+                        # Remove if no files found in an archive to not count different timestamps inside the archives as a difference
+                        del result[general_name]
 
         return result, whitelist
+
+    def generate(
+        self, a: PathLike[str], b: PathLike[str]
+    ) -> tuple[dict[str, Any], bool]:
+        """
+        Compare two .tar/.oci images or directories with each other
+
+        :param a:                       First .tar/.oci file or directory
+        :param b:                       Second .tar/.oci file or directory
+
+        :return: dict[str, Any], bool   Filtered recursive dict of paths with different content and flag indicating if whitelist was applied
+        :since: 1.0.0
+        """
+
+        if Path(a).is_file() and Path(b).is_file():
+            if filecmp.cmp(a, b, shallow=False):
+                return {}, False
+
+            with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
+                return self._compare_directories(unpacked_a, unpacked_b)
+        else:
+            return self._compare_directories(a, b)
