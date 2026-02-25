@@ -129,7 +129,7 @@ def test_formatter_main(
     nightly_stats = diff_files.joinpath(f"{i}-nightly_stats.csv")
 
     argv = [
-        "gl-diff",
+        "gl-feature-fs-diff",
         "format",
         "--feature-dir",
         str(gardenlinux_root.joinpath("features")),
@@ -172,7 +172,7 @@ def test_comparator_main(
     type: str, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     argv = [
-        "gl-diff",
+        "gl-feature-fs-diff",
         "generate",
         str(compare_files.joinpath(f"a{type}")),
         str(compare_files.joinpath(f"b{type}")),
