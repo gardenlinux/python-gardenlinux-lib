@@ -310,7 +310,7 @@ with a new build"
         if len(self._diff_parser.reproducible_flavors) < len(
             self._diff_parser.expected_falvors
         ):
-            rows += "\n*To add affected files to the whitelist, edit the `whitelist` variable in python-gardenlinux-lib `src/gardenlinux/features/reproducibility/comparator.py`*\n"
+            rows += "\n*To add affected files to the whitelist, edit `src/gardenlinux/features/reproducibility/nightly_whitelist.json` in python-gardenlinux-lib*\n"
 
         return table.format(rows=rows)
 

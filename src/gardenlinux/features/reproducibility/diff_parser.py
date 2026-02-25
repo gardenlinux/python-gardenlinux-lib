@@ -9,7 +9,7 @@ import os
 import re
 from os import PathLike
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import networkx as nx
 
