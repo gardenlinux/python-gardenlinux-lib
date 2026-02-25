@@ -1585,6 +1585,21 @@ re2 = ["google-re2 (>=1.1)"]
 tests = ["pytest (>=9)", "typing-extensions (>=4.15)"]
 
 [[package]]
+name = "patool"
+version = "4.0.4"
+description = "portable archive file manager"
+optional = false
+python-versions = ">=3.11"
+groups = ["main"]
+files = [
+    {file = "patool-4.0.4-py2.py3-none-any.whl", hash = "sha256:15505e518a3cc1d2f845361e54082f7d382728e93a656ba1e683eaf8f68731ad"},
+    {file = "patool-4.0.4.tar.gz", hash = "sha256:2f23e2d6513193c28061425d6ddf1f56561ae4003cbe2007fc6d051df273e09a"},
+]
+
+[package.extras]
+argcompletion = ["argcomplete (==3.6.3)"]
+
+[[package]]
 name = "platformdirs"
 version = "4.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
@@ -2522,4 +2537,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13, !=3.14.1"
-content-hash = "cfd1fe0f7ea50e1d87ef53df17ca9b21f1dce9654b6003b08e89eeff3cbcfc6a"
+content-hash = "b41d39ab43d85e069393c420f9d498c933c50e58cb6c88fd33be6273a51243e8"

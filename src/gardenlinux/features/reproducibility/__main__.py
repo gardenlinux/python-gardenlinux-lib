@@ -27,21 +27,18 @@ def generate(args: argparse.Namespace) -> None:
 
     files, whitelist = comparator.generate(args.a, args.b)
 
-    result = "\n".join(files)
+    result = json.dumps(files)
 
-    if files == [] and whitelist:
+    if files == {} and whitelist:
         result = "whitelist"
-
-    if result != "":
-        result += "\n"
 
     if args.out:
         with open(args.out, "w") as f:
-            f.write(result)
+            f.write(result + "\n")
     else:
-        print(result, end="")
+        print(result)
 
-    if files != []:
+    if files != {}:
         exit(64)
 
 

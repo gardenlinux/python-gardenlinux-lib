@@ -6,12 +6,15 @@ diff-files comparator generating the list of files for reproducibility test work
 
 import filecmp
 import json
+import logging
 import re
 import tarfile
 import tempfile
 from os import PathLike
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
+
+import patoolib
 
 
 class Comparator(object):
@@ -35,11 +38,17 @@ class Comparator(object):
         r"/etc/shadow",
         r"/etc/update-motd\.d/05-logo",
         r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_.*",
-        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_main_binary-(arm64|amd64)_Packages",
-        r"/efi/loader/entries/Default-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)\.conf",
-        r"/efi/Default/[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)/initrd",
-        r"/boot/initrd\.img-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?(arm64|amd64)",
+        r"/var/lib/apt/lists/packages\.gardenlinux\.io_gardenlinux_dists_[0-9]*\.[0-9]*\.[0-9]*_main_binary-ARCH_Packages",
+        r"/efi/loader/entries/Default-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH\.conf",
+        r"/efi/Default/[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH/initrd",
+        r"/boot/initrd\.img-[0-9]*\.[0-9]*\.[0-9]*-(cloud-)?ARCH",
     ]
+
+    _cname = re.compile(
+        r"[a-zA-Z0-9]+([\\_\\-][a-zA-Z0-9]+)*-([0-9.]+|local)-([a-f0-9]{8}|today)"
+    )
+
+    _arch = re.compile(r"(arm64|amd64)")
 
     def __init__(
         self, nightly: bool = False, whitelist: list[str] = _default_whitelist
@@ -55,6 +64,10 @@ class Comparator(object):
         self.whitelist = whitelist
         if nightly:
             self.whitelist += self._nightly_whitelist
+
+        # Mute INFO logs from patool
+        patool_logger = logging.getLogger("patool")
+        patool_logger.setLevel("WARNING")
 
     @staticmethod
     def _unpack(file: PathLike[str]) -> tempfile.TemporaryDirectory[str]:
@@ -117,61 +130,128 @@ class Comparator(object):
                                 except tarfile.TarError as e:
                                     print(f"Skipping {member.name} due to error: {e}")
         else:
-            with tarfile.open(file, "r") as tar:
-                tar.extractall(
-                    path=output_dir.name,
-                    filter="fully_trusted",
-                    members=tar.getmembers(),
-                )
+            patoolib.extract_archive(str(file), outdir=output_dir.name, verbosity=-2)
 
         return output_dir
 
     def _diff_files(
-        self, cmp: filecmp.dircmp[str], left_root: Optional[Path] = None
-    ) -> list[str]:
+        self,
+        cmp: filecmp.dircmp[str],
+        left_root: Optional[Path] = None,
+        right_root: Optional[Path] = None,
+    ) -> dict[str, tuple[Optional[str], Optional[str]]]:
         """
         Recursively compare files
 
-        :param cmp:                     Dircmp to recursively compare
-        :param left_root:               Left root to obtain the archive relative path
+        :param cmp:                                                 Dircmp to recursively compare
+        :param left_root:                                           Left root to obtain the archive relative path
 
-        :return: list[Path]             List of paths with different content
+        :return: dict[str, tuple[Optional[str], Optional[str]]]     Dict with general name, left name and right name of files with different content
         :since: 1.0.0
         """
 
-        result = []
+        # {general name: (actual name left, actual name right)}
+        result: dict[str, tuple[Optional[str], Optional[str]]] = {}
         if not left_root:
             left_root = Path(cmp.left)
+        if not right_root:
+            right_root = Path(cmp.right)
+        for name in cmp.left_only:
+            if not (
+                name.endswith(".log")
+                and Path(cmp.left).joinpath(name.rstrip(".log")).is_file()
+            ):
+                actual_name = f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}"
+                general_name = self._arch.sub(
+                    "ARCH", self._cname.sub("CNAME", actual_name)
+                )
+                result[general_name] = (actual_name, None)
+        for name in cmp.right_only:
+            if not (
+                name.endswith(".log")
+                and Path(cmp.right).joinpath(name.rstrip(".log")).is_file()
+            ):
+                actual_name = (
+                    f"/{Path(cmp.right).relative_to(right_root).joinpath(name)}"
+                )
+                general_name = self._arch.sub(
+                    "ARCH", self._cname.sub("CNAME", actual_name)
+                )
+                if general_name not in result:
+                    result[general_name] = (None, actual_name)
+                else:
+                    result[general_name] = (result[general_name][0], actual_name)
         for name in cmp.diff_files:
-            result.append(f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}")
+            # Ignore *.log files as the timestamp differs always
+            if not (
+                name.endswith(".log")
+                and Path(cmp.left).joinpath(name.rstrip(".log")).is_file()
+            ):
+                actual_name = f"/{Path(cmp.left).relative_to(left_root).joinpath(name)}"
+                general_name = self._arch.sub(
+                    "ARCH", self._cname.sub("CNAME", actual_name)
+                )
+
+                result[general_name] = (actual_name, actual_name)
+
         for sub_cmp in cmp.subdirs.values():
-            result += self._diff_files(sub_cmp, left_root=left_root)
+            result |= self._diff_files(
+                sub_cmp, left_root=left_root, right_root=right_root
+            )
         return result
 
-    def generate(self, a: PathLike[str], b: PathLike[str]) -> tuple[list[str], bool]:
+    def generate(
+        self, a: PathLike[str], b: PathLike[str]
+    ) -> tuple[dict[str, Any], bool]:
         """
         Compare two .tar/.oci images with each other
 
         :param a:                       First .tar/.oci file
         :param b:                       Second .tar/.oci file
 
-        :return: list[Path], bool       Filtered list of paths with different content and flag indicating if whitelist was applied
+        :return: dict[str, Any], bool   Filtered recursive dict of paths with different content and flag indicating if whitelist was applied
         :since: 1.0.0
         """
 
         if filecmp.cmp(a, b, shallow=False):
-            return [], False
+            return {}, False
 
         with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
             cmp = filecmp.dircmp(unpacked_a, unpacked_b, shallow=False)
 
             diff_files = self._diff_files(cmp)
 
-        filtered = [
-            file
-            for file in diff_files
-            if not any(re.match(pattern, file) for pattern in self.whitelist)
-        ]
-        whitelist = len(diff_files) != len(filtered)
+            filtered: dict[tuple[str, Optional[str], Optional[str]], Any] = {
+                (
+                    general_name,
+                    diff_files[general_name][0],
+                    diff_files[general_name][1],
+                ): {}
+                for general_name in diff_files
+                if not any(
+                    re.match(pattern, general_name) for pattern in self.whitelist
+                )
+            }
+            whitelist = len(diff_files) != len(filtered)
 
-        return filtered, whitelist
+            result: dict[str, Any] = {}
+            for general_name, left_name, right_name in filtered:
+                result[general_name] = {}
+                if left_name and right_name:
+                    file_a = Path(unpacked_a).joinpath(left_name[1:])
+                    file_b = Path(unpacked_b).joinpath(right_name[1:])
+                    if (
+                        file_a.is_file()
+                        and file_b.is_file()
+                        and patoolib.is_archive(file_a)
+                        and patoolib.is_archive(file_b)
+                    ):
+                        filtered_rec, whitelist_rec = self.generate(file_a, file_b)
+                        whitelist = whitelist or whitelist_rec
+                        if filtered_rec != {}:
+                            result[general_name] = filtered_rec
+                        else:
+                            # Remove if no files found in an archive to not count different timestamps inside the archives as a difference
+                            del result[general_name]
+
+        return result, whitelist
