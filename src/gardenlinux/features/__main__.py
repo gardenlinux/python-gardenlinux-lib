@@ -47,8 +47,10 @@ def get_parser() -> argparse.ArgumentParser:
     :return: ArgumentParser instance
     :since: 0.10.9
     """
+
     parser = argparse.ArgumentParser(
-        description="Parse and extract information from GardenLinux features."
+        prog="gl-features-parse",
+        description="Parse and extract information from GardenLinux features.",
     )
 
     parser.add_argument(
@@ -56,37 +58,44 @@ def get_parser() -> argparse.ArgumentParser:
         dest="arch",
         help="Target architecture (e.g., amd64, arm64). Overrides architecture from cname.",
     )
+
     parser.add_argument(
         "--cname",
         dest="cname",
         required=True,
         help="Canonical name (cname) to parse. Must be a valid GardenLinux canonical name.",
     )
+
     parser.add_argument(
         "--commit",
         dest="commit",
         help="Git commit hash. If not specified, will be read from COMMIT file or release file.",
     )
+
     parser.add_argument(
         "--feature-dir",
         default="features",
         help="Path to the features directory (default: 'features'). Either --feature-dir or --release-file must be provided.",
     )
+
     parser.add_argument(
         "--release-file",
         dest="release_file",
         help="Path to a release file containing cname metadata. Either --feature-dir or --release-file must be provided.",
     )
+
     parser.add_argument(
         "--default-arch",
         dest="default_arch",
         help="Default architecture to use if architecture cannot be determined from cname or other sources.",
     )
+
     parser.add_argument(
         "--default-version",
         dest="default_version",
         help="Default version to use if version cannot be determined from files or other sources.",
     )
+
     parser.add_argument(
         "--version",
         dest="version",
@@ -110,12 +119,8 @@ def get_parser() -> argparse.ArgumentParser:
             ", ".join(_ARGS_TYPE_ALLOWED)
         ),
     )
+
     return parser
-
-
-# Parser object for documentation generation
-parser = get_parser()
-parser.prog = "gl-features-parse"
 
 
 def main() -> None:

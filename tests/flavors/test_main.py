@@ -44,7 +44,7 @@ def test_parse_args(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act
-    args = fm.parse_args()
+    args = fm.get_parser().parse_args()
 
     # Assert
     assert args.no_arch is True

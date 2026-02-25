@@ -1,8 +1,4 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("../src"))
-
+from sphinx.application import Sphinx
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -41,9 +37,9 @@ html_static_path = ["_static"]
 
 # Logo configuration
 html_logo = "_static/gardenlinux-logo.svg"
+
 html_theme_options = {
     "logo_only": False,
-    "display_version": True,
     "prev_next_buttons_location": "bottom",
     "style_external_links": True,
     "vcs_pageview_mode": "",
@@ -57,5 +53,5 @@ html_theme_options = {
 
 
 # Add custom CSS
-def setup(app):
+def setup(app: Sphinx) -> None:
     app.add_css_file("custom.css")

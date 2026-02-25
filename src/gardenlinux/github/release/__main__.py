@@ -22,39 +22,50 @@ def get_parser() -> argparse.ArgumentParser:
     :return: ArgumentParser instance
     :since: 1.0.0
     """
-    parser = argparse.ArgumentParser(description="Create and manage GitHub releases.")
+
+    parser = argparse.ArgumentParser(
+        prog="gl-gh-release", description="Create and manage GitHub releases."
+    )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     create_parser = subparsers.add_parser("create", help="Create a new GitHub release.")
+
     create_parser.add_argument(
         "--owner",
         default="gardenlinux",
         help="GitHub repository owner (default: 'gardenlinux').",
     )
+
     create_parser.add_argument(
         "--repo",
         default="gardenlinux",
         help="GitHub repository name (default: 'gardenlinux').",
     )
+
     create_parser.add_argument(
         "--tag", required=True, help="Git tag name for the release (required)."
     )
+
     create_parser.add_argument(
         "--name", help="Release name/title. If not specified, the tag will be used."
     )
+
     create_parser.add_argument(
         "--body", required=True, help="Release notes/description body (required)."
     )
+
     create_parser.add_argument(
         "--commit",
         help="Git commit hash. If not specified, the tag will be used to find the commit.",
     )
+
     create_parser.add_argument(
         "--pre-release",
         action="store_true",
         default=True,
         help="Mark the release as a pre-release (default: True).",
     )
+
     create_parser.add_argument(
         "--latest",
         action="store_true",
@@ -66,30 +77,36 @@ def get_parser() -> argparse.ArgumentParser:
         "create-with-gl-release-notes",
         help="Create a GitHub release with auto-generated GardenLinux release notes.",
     )
+
     create_parser_gl.add_argument(
         "--owner",
         default="gardenlinux",
         help="GitHub repository owner (default: 'gardenlinux').",
     )
+
     create_parser_gl.add_argument(
         "--repo",
         default="gardenlinux",
         help="GitHub repository name (default: 'gardenlinux').",
     )
+
     create_parser_gl.add_argument(
         "--tag", required=True, help="Git tag name for the release (required)."
     )
+
     create_parser_gl.add_argument(
         "--commit",
         required=True,
         help="Git commit hash used to generate release notes (required).",
     )
+
     create_parser_gl.add_argument(
         "--latest",
         action="store_true",
         default=False,
         help="Mark this release as the latest release (default: False).",
     )
+
     create_parser_gl.add_argument(
         "--dry-run",
         action="store_true",
@@ -100,26 +117,31 @@ def get_parser() -> argparse.ArgumentParser:
     upload_parser = subparsers.add_parser(
         "upload", help="Upload a file to an existing GitHub release."
     )
+
     upload_parser.add_argument(
         "--owner",
         default="gardenlinux",
         help="GitHub repository owner (default: 'gardenlinux').",
     )
+
     upload_parser.add_argument(
         "--repo",
         default="gardenlinux",
         help="GitHub repository name (default: 'gardenlinux').",
     )
+
     upload_parser.add_argument(
         "--release_id",
         required=True,
         help="GitHub release ID to upload the file to (required).",
     )
+
     upload_parser.add_argument(
         "--file_path",
         required=True,
         help="Path to the file to upload (required).",
     )
+
     upload_parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -128,11 +150,6 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     return parser
-
-
-# Parser object for documentation generation
-parser = get_parser()
-parser.prog = "gl-gh-release"
 
 
 def main() -> None:

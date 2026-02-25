@@ -19,7 +19,7 @@ def get_parser() -> argparse.ArgumentParser:
     :since: 0.10.9
     """
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser("gl-s3")
 
     parser.add_argument(
         "--bucket", dest="bucket", help="S3 bucket name to upload to or download from."
@@ -58,11 +58,6 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
-# Parser object for documentation generation
-parser = get_parser()
-parser.prog = "gl-s3"
-
-
 def main() -> None:
     """
     gl-s3 main()
@@ -70,6 +65,7 @@ def main() -> None:
     :since: 0.8.0
     """
 
+    parser = get_parser()
     args = parser.parse_args()
 
     if args.action == "download-artifacts-from-bucket":

@@ -11,14 +11,14 @@ gl-cname
 
 Generate a canonical name (cname) from feature sets.
 
-.. autoprogram:: gardenlinux.features.cname_main:parser
+.. autoprogram:: gardenlinux.features.cname_main:get_parser()
 
 gl-features-parse
 ~~~~~~~~~~~~~~~~~
 
 Parse and extract information from GardenLinux features.
 
-.. autoprogram:: gardenlinux.features.__main__:parser
+.. autoprogram:: gardenlinux.features.__main__:get_parser()
 
 Flavors Commands
 ----------------
@@ -28,7 +28,7 @@ gl-flavors-parse
 
 Parse flavors.yaml and generate combinations.
 
-.. autoprogram:: gardenlinux.flavors.__main__:parser
+.. autoprogram:: gardenlinux.flavors.__main__:get_parser()
 
 OCI Commands
 ------------
@@ -50,7 +50,7 @@ gl-s3
 
 Upload and download artifacts from S3 buckets.
 
-.. autoprogram:: gardenlinux.s3.__main__:parser
+.. autoprogram:: gardenlinux.s3.__main__:get_parser()
 
 GitHub Commands
 ---------------
@@ -60,4 +60,4 @@ gl-gh-release
 
 Create and manage GitHub releases.
 
-.. autoprogram:: gardenlinux.github.release.__main__:parser
+.. autoprogram:: gardenlinux.github.release.__main__:get_parser()

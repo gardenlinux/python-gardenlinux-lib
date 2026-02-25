@@ -1,5 +1,5 @@
 API Reference
-============
+=============
 
 This section provides detailed documentation for all Python modules and classes in python-gardenlinux-lib.
 

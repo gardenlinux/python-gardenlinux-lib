@@ -26,39 +26,42 @@ def get_parser() -> argparse.ArgumentParser:
     :return: ArgumentParser instance
     :since: 1.0.0
     """
+
     parser = argparse.ArgumentParser(
-        description="Generate a canonical name (cname) from feature sets."
+        prog="gl-cname",
+        description="Generate a canonical name (cname) from feature sets.",
     )
+
     parser.add_argument(
         "--arch",
         dest="arch",
         help="Target architecture (e.g., amd64, arm64). If not specified, will be determined from the cname or feature set.",
     )
+
     parser.add_argument(
         "--commit",
         dest="commit",
         help="Git commit hash. If not specified, will be read from COMMIT file in the GardenLinux root directory.",
     )
+
     parser.add_argument(
         "--feature-dir",
         default="features",
         help="Path to the features directory (default: 'features').",
     )
+
     parser.add_argument(
         "--version",
         dest="version",
         help="Version string. If not specified, will be read from VERSION file in the GardenLinux root directory.",
     )
+
     parser.add_argument(
         "cname",
         help="Canonical name (cname) to process. Must be a valid GardenLinux canonical name format.",
     )
+
     return parser
-
-
-# Parser object for documentation generation
-parser = get_parser()
-parser.prog = "gl-cname"
 
 
 def main() -> None:
