@@ -1,12 +1,6 @@
-import json
-import sys
 from pathlib import Path
 
-import pytest
 
-from gardenlinux.features.reproducibility.__main__ import main
-from gardenlinux.features.reproducibility.comparator import Comparator
-from gardenlinux.features.reproducibility.markdown_formatter import MarkdownFormatter
 
 FLAVORS_MATRIX = {
     "include": [
