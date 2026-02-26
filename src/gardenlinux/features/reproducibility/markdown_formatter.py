@@ -42,8 +42,8 @@ class MarkdownFormatter(object):
 
     _DROPDOWN_THRESHOLD = 10
 
-    _nighly_url_template = Template(
-        "https://github.com/gardenlinux/gardenlinux/actions/runs/$id"
+    _nightly_template = Template(
+        "**[#$run_number](https://github.com/gardenlinux/gardenlinux/actions/runs/$id)**"
     )
 
     def __init__(
@@ -152,14 +152,14 @@ class MarkdownFormatter(object):
                 Nightly(*n.split(",")) for n in f.read().rstrip().split("\n")
             )
             if nightly_a.run_number != "":
-                result += f"\n\nComparison of nightly **[#{nightly_a.run_number}]({self._nighly_url_template.substitute(id=nightly_a.id)})** \
-and **[#{nightly_b.run_number}]({self._nighly_url_template.substitute(id=nightly_b.id)})**"
+                result += f"\n\nComparison of nightly {self._nightly_template.substitute(run_number=nightly_a.run_number, id=nightly_a.id)} \
+and {self._nightly_template.substitute(run_number=nightly_b.run_number, id=nightly_b.id)}"
                 if nightly_a.commit != nightly_b.commit:
                     result += f"\n\n⚠️ The nightlies used different commits: `{nightly_a.commit[:7]}` (#{nightly_a.run_number}) != `{nightly_b.commit[:7]}` (#{nightly_b.run_number})"
                 if nightly_a.run_number == nightly_b.run_number:
-                    result += f"\n\n⚠️ Comparing the nightly **[#{nightly_a.run_number}]({self._nighly_url_template.substitute(id=nightly_a.id)})** to itself can not reveal any issues"
+                    result += f"\n\n⚠️ Comparing the nightly {self._nightly_template.substitute(run_number=nightly_a.run_number, id=nightly_a.id)} to itself can not reveal any issues"
             else:
-                result += f"\n\nComparison of the latest nightly **[#{nightly_b.run_number}]({self._nighly_url_template.substitute(id=nightly_b.id)})** \
+                result += f"\n\nComparison of the latest nightly {self._nightly_template.substitute(run_number=nightly_b.run_number, id=nightly_b.id)} \
 with a new build"
                 if nightly_a.commit != nightly_b.commit:
                     result += f"\n\n⚠️ The build used different commits: `{nightly_b.commit[:7]}` (#{nightly_b.run_number}) != `{nightly_a.commit[:7]}` (new build)"
