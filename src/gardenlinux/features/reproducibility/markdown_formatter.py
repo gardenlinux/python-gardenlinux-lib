@@ -8,7 +8,7 @@ import logging
 from os import PathLike
 from pathlib import Path
 from string import Template
-from typing import Collection, Optional
+from typing import Collection, Optional, Any
 
 import networkx as nx
 from attr import dataclass
@@ -116,7 +116,7 @@ class MarkdownFormatter(object):
         # Remove last linebreak as the last line can contain spaces
         return s.rstrip(), found
 
-    def _dropdown(self, items: Collection[str]) -> str:
+    def _dropdown(self, items: Collection[str], sort: bool = True) -> str:
         """
         Converts the items into a markdown dropwon list if the length is 10 or more
 
@@ -127,15 +127,52 @@ class MarkdownFormatter(object):
         """
 
         if len(items) <= self._DROPDOWN_THRESHOLD:
-            return "<br>".join([f"`{item}`" for item in sorted(items)])
+            return "<br>".join(
+                [f"`{item}`" for item in (sorted(items) if sort else items)]
+            )
         else:
-            for first in sorted(items):
+            for first in sorted(items) if sort else items:
                 return (
                     f"<details><summary>{first}...</summary>"
-                    + "<br>".join([f"`{item}`" for item in sorted(items)])
+                    + "<br>".join(
+                        [f"`{item}`" for item in (sorted(items) if sort else items)]
+                    )
                     + "</details>"
                 )
             return ""
+
+    def _format_files(self, files: Collection[str]) -> list[str]:
+        """
+        Rebuild a dictionary from the comma-separated hierarchy and return a representation with indentation
+
+        :param files:                  List of files
+
+        :return: list(str) Sorted and formatted files
+        :since:  1.0.0
+        """
+
+        dictionary: dict[str, Any] = {}
+
+        def fill_dictionary(d: dict[str, Any], parts: list[str]) -> None:
+            if parts[0] not in d:
+                d[parts[0]] = {}
+            if len(parts) > 1:
+                fill_dictionary(d[parts[0]], parts[1:])
+
+        for file in files:
+            fill_dictionary(dictionary, file.split(","))
+
+        def dict_to_strs(d: dict[str, Any], prefix: str = "") -> list[str]:
+            lines = []
+            for part in sorted(d):
+                if d[part] == {}:
+                    lines.append(prefix + part)
+                else:
+                    lines.append(prefix + part + ":")
+                    lines = lines + dict_to_strs(d[part], prefix=prefix + "  ")
+            return lines
+
+        return dict_to_strs(dictionary)
 
     def _format_nighlty_stats(self) -> str:
         """
@@ -283,7 +320,7 @@ with a new build"
         for files in sorted(trees, key=sorting_function):
             flavors, tree = trees[files]
             row = "|"
-            row += self._dropdown(files)
+            row += self._dropdown(self._format_files(files), sort=False)
             row += "|"
             row += f"**{round(100 * (len(flavors) / len(self._diff_parser.expected_falvors)), 1)}%** affected<br>"
             row += self._dropdown(flavors)

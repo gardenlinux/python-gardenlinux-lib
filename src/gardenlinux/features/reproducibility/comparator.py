@@ -262,6 +262,6 @@ class Comparator(object):
                 return {}, False
 
             with self._unpack(a) as unpacked_a, self._unpack(b) as unpacked_b:
-                return self._compare_directories(unpacked_a, unpacked_b)
+                return self._compare_directories(Path(unpacked_a), Path(unpacked_b))
         else:
             return self._compare_directories(a, b)

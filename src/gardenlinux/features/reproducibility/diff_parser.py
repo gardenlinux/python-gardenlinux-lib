@@ -9,7 +9,8 @@ import os
 import re
 from os import PathLike
 from pathlib import Path
-from typing import Dict, Optional
+import json
+from typing import Dict, Optional, Any
 
 import networkx as nx
 
@@ -32,7 +33,7 @@ class DiffParser(object):
 
     _remove_arch = re.compile("(-arm64|-amd64)$")
     _GARDENLINUX_ROOT: str = os.getenv("GL_ROOT_DIR", ".")
-    _SUFFIX = "-diff.txt"
+    _SUFFIX = "-diff.json"
 
     def __init__(
         self,
@@ -62,6 +63,33 @@ class DiffParser(object):
         self.expected_falvors: set[str] = set()
         self.missing_flavors: set[str] = set()
         self.unexpected_falvors: set[str] = set()
+
+    def _map_files_to_flavors(
+        self,
+        files: Dict[str, Any],
+        flavor: str,
+        dictionary: Dict[str, set[str]],
+        prefix: str = "",
+    ) -> None:
+        """
+        Map hierarchical files to a comma-separated representation and bundle the flavors having issues with the file
+
+        :param files:                   Dictionary of the archives and files
+        :param flavor:                  The flavor of the current files
+        :param dictionary:              The dictionary in which the files have to be inserted
+        :param prefix:                  Archive prefix path of the file (comma-separated)
+
+        :since: 1.0.0
+        """
+        for file in files:
+            if files[file] == {}:
+                if prefix + file not in dictionary:
+                    dictionary[prefix + file] = set()
+                dictionary[prefix + file].add(flavor)
+            else:
+                self._map_files_to_flavors(
+                    files[file], flavor, dictionary, prefix=prefix + file + ","
+                )
 
     def sort_features(self, graph: nx.DiGraph) -> list[str]:
         """
@@ -109,13 +137,13 @@ class DiffParser(object):
 
                 flavor = flavor.rstrip(self._SUFFIX)
                 self.all_flavors.add(flavor)
-                if content == "":
+                if content == "{}":
                     self.reproducible_flavors.add(flavor)
                 elif content == "whitelist\n":
                     self.reproducible_flavors.add(flavor)
                     self.passed_by_whitelist.add(flavor)
                 else:
-                    non_reproducible_flavors[flavor] = content.split("\n")[:-1]
+                    non_reproducible_flavors[flavor] = json.loads(content)
 
         self.missing_flavors = self.expected_falvors - self.all_flavors
         self.unexpected_falvors = self.all_flavors - self.expected_falvors
@@ -123,10 +151,9 @@ class DiffParser(object):
         # Map files to flavors
         affected_flavors: Dict[str, set[str]] = {}  # {file: {flavors...}}
         for flavor in non_reproducible_flavors:
-            for file in non_reproducible_flavors[flavor]:
-                if file not in affected_flavors:
-                    affected_flavors[file] = set()
-                affected_flavors[file].add(flavor)
+            self._map_files_to_flavors(
+                non_reproducible_flavors[flavor], flavor, affected_flavors
+            )
 
         # Merge files affected_flavors by the same flavors by mapping flavor sets to files
         self._bundled: Dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
