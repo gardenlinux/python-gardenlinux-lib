@@ -44,6 +44,7 @@ sphinxcontrib-autoprogram = "^0.1.8"
 
 [tool.poetry.scripts]
 gl-cname = "gardenlinux.features.cname_main:main"
+gl-feature-fs-diff = "gardenlinux.features.reproducibility.__main__:main"
 gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-gh-release = "gardenlinux.github.release.__main__:main"
