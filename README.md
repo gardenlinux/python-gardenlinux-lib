@@ -6,7 +6,7 @@
 # Parse features lib
 
 This library includes tooling to build and distribute [Garden Linux](https://github.com/gardenlinux/gardenlinux).
-It is targeted to Garden Linux developers and not meant for end users.
+It is targeted to Garden Linux developers and not meant for end users. It follows syntax and intention of `Semantic Versioning <https://www.semver.org>` for provided APIs. Each release reflects the intention and expected impact therefore.
 
 Features:
 
