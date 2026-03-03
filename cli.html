@@ -1,0 +1,865 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Command-Line Interface &mdash; Garden Linux Python Library  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=4fa623ac" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="release documentation" href="release.html" />
+    <link rel="prev" title="Garden Linux Python Library Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #027154" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Garden Linux Python Library
+              <img src="_static/gardenlinux-logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command-Line Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#features-commands">Features Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gl-cname">gl-cname</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">gl-cname</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gl-features-parse">gl-features-parse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">gl-features-parse</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#flavors-commands">Flavors Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gl-flavors-parse">gl-flavors-parse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sphinx-build">sphinx-build</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oci-commands">OCI Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gl-oci">gl-oci</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gl-oci">gl-oci</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#s3-commands">S3 Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gl-s3">gl-s3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">gl-s3</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#github-commands">GitHub Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gl-gh-release">gl-gh-release</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id4">gl-gh-release</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">release documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #027154" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Garden Linux Python Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Command-Line Interface</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/cli.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="command-line-interface">
+<h1>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading"></a></h1>
+<p>This page documents all available command-line tools provided by python-gardenlinux-lib.</p>
+<section id="features-commands">
+<h2>Features Commands<a class="headerlink" href="#features-commands" title="Link to this heading"></a></h2>
+<section id="gl-cname">
+<h3>gl-cname<a class="headerlink" href="#gl-cname" title="Link to this heading"></a></h3>
+<p>Generate a canonical name (cname) from feature sets.</p>
+<section id="id1">
+<h4>gl-cname<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>Generate a canonical name (cname) from feature sets.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-cname [-h] [--arch ARCH] [--commit COMMIT]</span>
+<span class="go">                [--feature-dir FEATURE_DIR] [--version VERSION]</span>
+<span class="go">                cname</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-arg-cname">
+<span class="sig-name descname"><span class="pre">cname</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-cname-arg-cname" title="Link to this definition"></a></dt>
+<dd><p>Canonical name (cname) to process. Must be a valid GardenLinux canonical name format.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-h">
+<span id="cmdoption-gl-cname-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-cname-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-arch">
+<span class="sig-name descname"><span class="pre">--arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;arch&gt;</span></span><a class="headerlink" href="#cmdoption-gl-cname-arch" title="Link to this definition"></a></dt>
+<dd><p>Target architecture (e.g., amd64, arm64). If not specified, will be determined from the cname or feature set.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-cname-commit" title="Link to this definition"></a></dt>
+<dd><p>Git commit hash. If not specified, will be read from COMMIT file in the GardenLinux root directory.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-feature-dir">
+<span class="sig-name descname"><span class="pre">--feature-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;feature_dir&gt;</span></span><a class="headerlink" href="#cmdoption-gl-cname-feature-dir" title="Link to this definition"></a></dt>
+<dd><p>Path to the features directory (default: ‘features’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-cname-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;version&gt;</span></span><a class="headerlink" href="#cmdoption-gl-cname-version" title="Link to this definition"></a></dt>
+<dd><p>Version string. If not specified, will be read from VERSION file in the GardenLinux root directory.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="gl-features-parse">
+<h3>gl-features-parse<a class="headerlink" href="#gl-features-parse" title="Link to this heading"></a></h3>
+<p>Parse and extract information from GardenLinux features.</p>
+<section id="id2">
+<h4>gl-features-parse<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>Parse and extract information from GardenLinux features.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-features-parse [-h] [--arch ARCH] --cname CNAME [--commit COMMIT]</span>
+<span class="go">                         [--feature-dir FEATURE_DIR]</span>
+<span class="go">                         [--release-file RELEASE_FILE]</span>
+<span class="go">                         [--default-arch DEFAULT_ARCH]</span>
+<span class="go">                         [--default-version DEFAULT_VERSION]</span>
+<span class="go">                         [--version VERSION] [--ignore IGNORE]</span>
+<span class="go">                         [{cname,cname_base,container_name,container_tag,commit_id,features,platform,platforms,flags,flavor,elements,arch,version,version_and_commit_id,graph}]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-arg-type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-features-parse-arg-type" title="Link to this definition"></a></dt>
+<dd><p>Type of output to generate. Choices: cname, cname_base, container_name, container_tag, commit_id, features, platform, platforms, flags, flavor, elements, arch, version, version_and_commit_id, graph. Default: ‘cname’.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-h">
+<span id="cmdoption-gl-features-parse-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-features-parse-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-arch">
+<span class="sig-name descname"><span class="pre">--arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;arch&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-arch" title="Link to this definition"></a></dt>
+<dd><p>Target architecture (e.g., amd64, arm64). Overrides architecture from cname.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-cname">
+<span class="sig-name descname"><span class="pre">--cname</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cname&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-cname" title="Link to this definition"></a></dt>
+<dd><p>Canonical name (cname) to parse. Must be a valid GardenLinux canonical name.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-commit" title="Link to this definition"></a></dt>
+<dd><p>Git commit hash. If not specified, will be read from COMMIT file or release file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-feature-dir">
+<span class="sig-name descname"><span class="pre">--feature-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;feature_dir&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-feature-dir" title="Link to this definition"></a></dt>
+<dd><p>Path to the features directory (default: ‘features’). Either –feature-dir or –release-file must be provided.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-release-file">
+<span class="sig-name descname"><span class="pre">--release-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;release_file&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-release-file" title="Link to this definition"></a></dt>
+<dd><p>Path to a release file containing cname metadata. Either –feature-dir or –release-file must be provided.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-default-arch">
+<span class="sig-name descname"><span class="pre">--default-arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;default_arch&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-default-arch" title="Link to this definition"></a></dt>
+<dd><p>Default architecture to use if architecture cannot be determined from cname or other sources.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-default-version">
+<span class="sig-name descname"><span class="pre">--default-version</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;default_version&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-default-version" title="Link to this definition"></a></dt>
+<dd><p>Default version to use if version cannot be determined from files or other sources.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;version&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-version" title="Link to this definition"></a></dt>
+<dd><p>Version string. If not specified, will be read from VERSION file or release file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-features-parse-ignore">
+<span class="sig-name descname"><span class="pre">--ignore</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ignore&gt;</span></span><a class="headerlink" href="#cmdoption-gl-features-parse-ignore" title="Link to this definition"></a></dt>
+<dd><p>Comma-separated list of features to ignore when processing (e.g., ‘feature1,feature2’).</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="flavors-commands">
+<h2>Flavors Commands<a class="headerlink" href="#flavors-commands" title="Link to this heading"></a></h2>
+<section id="gl-flavors-parse">
+<h3>gl-flavors-parse<a class="headerlink" href="#gl-flavors-parse" title="Link to this heading"></a></h3>
+<p>Parse flavors.yaml and generate combinations.</p>
+<section id="sphinx-build">
+<h4>sphinx-build<a class="headerlink" href="#sphinx-build" title="Link to this heading"></a></h4>
+<p>Parse flavors.yaml and generate combinations.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: sphinx-build [-h] [--commit COMMIT] [--no-arch]</span>
+<span class="go">                    [--include-only INCLUDE_ONLY] [--exclude EXCLUDE]</span>
+<span class="go">                    [--build] [--publish] [--test] [--test-platform]</span>
+<span class="go">                    [--category CATEGORY]</span>
+<span class="go">                    [--exclude-category EXCLUDE_CATEGORY] [--json-by-arch]</span>
+<span class="go">                    [--markdown-table-by-platform]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-h">
+<span id="cmdoption-sphinx-build-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-sphinx-build-commit" title="Link to this definition"></a></dt>
+<dd><p>Commit hash to fetch flavors.yaml from GitHub. An existing ‘flavors.yaml’ file will be preferred.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-no-arch">
+<span class="sig-name descname"><span class="pre">--no-arch</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-no-arch" title="Link to this definition"></a></dt>
+<dd><p>Exclude architecture from the flavor output.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-include-only">
+<span class="sig-name descname"><span class="pre">--include-only</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include_only&gt;</span></span><a class="headerlink" href="#cmdoption-sphinx-build-include-only" title="Link to this definition"></a></dt>
+<dd><p>Restrict combinations to those matching wildcard patterns (can be specified multiple times).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-exclude">
+<span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-sphinx-build-exclude" title="Link to this definition"></a></dt>
+<dd><p>Exclude combinations based on wildcard patterns (can be specified multiple times).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-build">
+<span class="sig-name descname"><span class="pre">--build</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-build" title="Link to this definition"></a></dt>
+<dd><p>Filter combinations to include only those with build enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-publish">
+<span class="sig-name descname"><span class="pre">--publish</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-publish" title="Link to this definition"></a></dt>
+<dd><p>Filter combinations to include only those with publish enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-test">
+<span class="sig-name descname"><span class="pre">--test</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-test" title="Link to this definition"></a></dt>
+<dd><p>Filter combinations to include only those with test enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-test-platform">
+<span class="sig-name descname"><span class="pre">--test-platform</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-test-platform" title="Link to this definition"></a></dt>
+<dd><p>Filter combinations to include only platforms with test-platform: true.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-category">
+<span class="sig-name descname"><span class="pre">--category</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;category&gt;</span></span><a class="headerlink" href="#cmdoption-sphinx-build-category" title="Link to this definition"></a></dt>
+<dd><p>Filter combinations to include only platforms belonging to the specified categories (can be specified multiple times).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-exclude-category">
+<span class="sig-name descname"><span class="pre">--exclude-category</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude_category&gt;</span></span><a class="headerlink" href="#cmdoption-sphinx-build-exclude-category" title="Link to this definition"></a></dt>
+<dd><p>Exclude platforms belonging to the specified categories (can be specified multiple times).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-json-by-arch">
+<span class="sig-name descname"><span class="pre">--json-by-arch</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-json-by-arch" title="Link to this definition"></a></dt>
+<dd><p>Output a JSON dictionary where keys are architectures and values are lists of flavors.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sphinx-build-markdown-table-by-platform">
+<span class="sig-name descname"><span class="pre">--markdown-table-by-platform</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sphinx-build-markdown-table-by-platform" title="Link to this definition"></a></dt>
+<dd><p>Generate a markdown table by platform.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="oci-commands">
+<h2>OCI Commands<a class="headerlink" href="#oci-commands" title="Link to this heading"></a></h2>
+<section id="gl-oci">
+<h3>gl-oci<a class="headerlink" href="#gl-oci" title="Link to this heading"></a></h3>
+<p>Push OCI artifacts to a registry and manage manifests.</p>
+<section id="gl-oci">
+<h4>gl-oci<a class="headerlink" href="#gl-oci" title="Link to this heading"></a></h4>
+<p>gl-oci click argument entrypoint</p>
+<dl class="field-list simple">
+<dt class="field-odd">since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gl-oci<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+</pre></div>
+</div>
+<section id="gl-oci-push-index-from-directory">
+<h5>push-index-from-directory<a class="headerlink" href="#gl-oci-push-index-from-directory" title="Link to this heading"></a></h5>
+<p>Push a list of files from the <cite>manifest_folder</cite> to an index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.10.9</p>
+</dd>
+</dl>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gl-oci<span class="w"> </span>push-index-from-directory<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-from-directory-index">
+<span class="sig-name descname"><span class="pre">--index</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-from-directory-index" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> OCI image index</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-from-directory-index-tag">
+<span class="sig-name descname"><span class="pre">--index-tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-from-directory-index-tag" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> OCI image index tag</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-from-directory-manifest_folder">
+<span class="sig-name descname"><span class="pre">--manifest_folder</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;manifest_folder&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-from-directory-manifest_folder" title="Link to this definition"></a></dt>
+<dd><p>A folder where the index entries are read from.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-from-directory-insecure">
+<span class="sig-name descname"><span class="pre">--insecure</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;insecure&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-from-directory-insecure" title="Link to this definition"></a></dt>
+<dd><p>Use HTTP to communicate with the registry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-from-directory-additional_tag">
+<span class="sig-name descname"><span class="pre">--additional_tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;additional_tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-from-directory-additional_tag" title="Link to this definition"></a></dt>
+<dd><p>Additional tag to push the index with</p>
+</dd></dl>
+
+</section>
+<section id="gl-oci-push-index-tags">
+<h5>push-index-tags<a class="headerlink" href="#gl-oci-push-index-tags" title="Link to this heading"></a></h5>
+<p>Push OCI image index tags to a registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.10.9</p>
+</dd>
+</dl>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gl-oci<span class="w"> </span>push-index-tags<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-tags-index">
+<span class="sig-name descname"><span class="pre">--index</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-tags-index" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> OCI image index</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-tags-index-tag">
+<span class="sig-name descname"><span class="pre">--index-tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-tags-index-tag" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> OCI image index tag</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-tags-insecure">
+<span class="sig-name descname"><span class="pre">--insecure</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;insecure&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-tags-insecure" title="Link to this definition"></a></dt>
+<dd><p>Use HTTP to communicate with the registry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-index-tags-tag">
+<span class="sig-name descname"><span class="pre">--tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-index-tags-tag" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> Tag to push the OCI image index with</p>
+</dd></dl>
+
+</section>
+<section id="gl-oci-push-manifest">
+<h5>push-manifest<a class="headerlink" href="#gl-oci-push-manifest" title="Link to this heading"></a></h5>
+<p>Push artifacts and the manifest from a directory to a registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.7.0</p>
+</dd>
+</dl>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gl-oci<span class="w"> </span>push-manifest<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-container">
+<span class="sig-name descname"><span class="pre">--container</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;container&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-container" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> Container Name</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-cname">
+<span class="sig-name descname"><span class="pre">--cname</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cname&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-cname" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> Canonical Name of Image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-arch">
+<span class="sig-name descname"><span class="pre">--arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;arch&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-arch" title="Link to this definition"></a></dt>
+<dd><p>Target Image CPU Architecture</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;version&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-version" title="Link to this definition"></a></dt>
+<dd><p>Version of image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-commit" title="Link to this definition"></a></dt>
+<dd><p>Commit of image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-dir">
+<span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-dir" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> path to the build artifacts</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-cosign_file">
+<span class="sig-name descname"><span class="pre">--cosign_file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cosign_file&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-cosign_file" title="Link to this definition"></a></dt>
+<dd><p>A file where the pushed manifests digests is written to. The content can be used by an external tool (e.g. cosign) to sign the manifests contents</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-manifest_file">
+<span class="sig-name descname"><span class="pre">--manifest_file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;manifest_file&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-manifest_file" title="Link to this definition"></a></dt>
+<dd><p>A file where the index entry for the pushed manifest is written to.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-insecure">
+<span class="sig-name descname"><span class="pre">--insecure</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;insecure&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-insecure" title="Link to this definition"></a></dt>
+<dd><p>Use HTTP to communicate with the registry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-additional_tag">
+<span class="sig-name descname"><span class="pre">--additional_tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;additional_tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-additional_tag" title="Link to this definition"></a></dt>
+<dd><p>Additional tag to push the manifest with</p>
+</dd></dl>
+
+</section>
+<section id="gl-oci-push-manifest-tags">
+<h5>push-manifest-tags<a class="headerlink" href="#gl-oci-push-manifest-tags" title="Link to this heading"></a></h5>
+<p>Push artifacts and the manifest from a directory to a registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">since<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0.10.0</p>
+</dd>
+</dl>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gl-oci<span class="w"> </span>push-manifest-tags<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-container">
+<span class="sig-name descname"><span class="pre">--container</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;container&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-container" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> Container Name</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-cname">
+<span class="sig-name descname"><span class="pre">--cname</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cname&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-cname" title="Link to this definition"></a></dt>
+<dd><p>Canonical Name of Image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-arch">
+<span class="sig-name descname"><span class="pre">--arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;arch&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-arch" title="Link to this definition"></a></dt>
+<dd><p>Target Image CPU Architecture</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;version&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-version" title="Link to this definition"></a></dt>
+<dd><p>Version of image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-commit" title="Link to this definition"></a></dt>
+<dd><p>Commit of image</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-insecure">
+<span class="sig-name descname"><span class="pre">--insecure</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;insecure&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-insecure" title="Link to this definition"></a></dt>
+<dd><p>Use HTTP to communicate with the registry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-oci-push-manifest-tags-tag">
+<span class="sig-name descname"><span class="pre">--tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-oci-push-manifest-tags-tag" title="Link to this definition"></a></dt>
+<dd><p><strong>Required</strong> Tag to push the manifest with</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+</section>
+<section id="s3-commands">
+<h2>S3 Commands<a class="headerlink" href="#s3-commands" title="Link to this heading"></a></h2>
+<section id="gl-s3">
+<h3>gl-s3<a class="headerlink" href="#gl-s3" title="Link to this heading"></a></h3>
+<p>Upload and download artifacts from S3 buckets.</p>
+<section id="id3">
+<h4>gl-s3<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-s3 [-h] [--bucket BUCKET] [--path PATH] [--dry-run]</span>
+<span class="go">             {download-artifacts-from-bucket,upload-artifacts-to-bucket} ...</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-h">
+<span id="cmdoption-gl-s3-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-s3-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-bucket">
+<span class="sig-name descname"><span class="pre">--bucket</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;bucket&gt;</span></span><a class="headerlink" href="#cmdoption-gl-s3-bucket" title="Link to this definition"></a></dt>
+<dd><p>S3 bucket name to upload to or download from.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-path">
+<span class="sig-name descname"><span class="pre">--path</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;path&gt;</span></span><a class="headerlink" href="#cmdoption-gl-s3-path" title="Link to this definition"></a></dt>
+<dd><p>Local directory path for upload (source) or download (destination).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-dry-run">
+<span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-s3-dry-run" title="Link to this definition"></a></dt>
+<dd><p>Perform a dry run without actually uploading or downloading files.</p>
+</dd></dl>
+
+<section id="gl-s3-download-artifacts-from-bucket">
+<h5>gl-s3 download-artifacts-from-bucket<a class="headerlink" href="#gl-s3-download-artifacts-from-bucket" title="Link to this heading"></a></h5>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-s3 download-artifacts-from-bucket [-h] [--cname CNAME]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-download-artifacts-from-bucket-h">
+<span id="cmdoption-gl-s3-download-artifacts-from-bucket-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-s3-download-artifacts-from-bucket-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-download-artifacts-from-bucket-cname">
+<span class="sig-name descname"><span class="pre">--cname</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cname&gt;</span></span><a class="headerlink" href="#cmdoption-gl-s3-download-artifacts-from-bucket-cname" title="Link to this definition"></a></dt>
+<dd><p>Canonical name (cname) used as the S3 key prefix for artifacts.</p>
+</dd></dl>
+
+</section>
+<section id="gl-s3-upload-artifacts-to-bucket">
+<h5>gl-s3 upload-artifacts-to-bucket<a class="headerlink" href="#gl-s3-upload-artifacts-to-bucket" title="Link to this heading"></a></h5>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-s3 upload-artifacts-to-bucket [-h] [--artifact-name ARTIFACT_NAME]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-upload-artifacts-to-bucket-h">
+<span id="cmdoption-gl-s3-upload-artifacts-to-bucket-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-s3-upload-artifacts-to-bucket-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-s3-upload-artifacts-to-bucket-artifact-name">
+<span class="sig-name descname"><span class="pre">--artifact-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;artifact_name&gt;</span></span><a class="headerlink" href="#cmdoption-gl-s3-upload-artifacts-to-bucket-artifact-name" title="Link to this definition"></a></dt>
+<dd><p>S3 artifact base name.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+</section>
+<section id="github-commands">
+<h2>GitHub Commands<a class="headerlink" href="#github-commands" title="Link to this heading"></a></h2>
+<section id="gl-gh-release">
+<h3>gl-gh-release<a class="headerlink" href="#gl-gh-release" title="Link to this heading"></a></h3>
+<p>Create and manage GitHub releases.</p>
+<section id="id4">
+<h4>gl-gh-release<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<p>Create and manage GitHub releases.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-gh-release [-h] {create,create-with-gl-release-notes,upload} ...</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-h">
+<span id="cmdoption-gl-gh-release-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<section id="gl-gh-release-create">
+<h5>gl-gh-release create<a class="headerlink" href="#gl-gh-release-create" title="Link to this heading"></a></h5>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-gh-release create [-h] [--owner OWNER] [--repo REPO] --tag TAG</span>
+<span class="go">                            [--name NAME] --body BODY [--commit COMMIT]</span>
+<span class="go">                            [--pre-release] [--latest]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-h">
+<span id="cmdoption-gl-gh-release-create-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-owner">
+<span class="sig-name descname"><span class="pre">--owner</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;owner&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-owner" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository owner (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-repo">
+<span class="sig-name descname"><span class="pre">--repo</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;repo&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-repo" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository name (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-tag">
+<span class="sig-name descname"><span class="pre">--tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-tag" title="Link to this definition"></a></dt>
+<dd><p>Git tag name for the release (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-name">
+<span class="sig-name descname"><span class="pre">--name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;name&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-name" title="Link to this definition"></a></dt>
+<dd><p>Release name/title. If not specified, the tag will be used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-body">
+<span class="sig-name descname"><span class="pre">--body</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;body&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-body" title="Link to this definition"></a></dt>
+<dd><p>Release notes/description body (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-commit" title="Link to this definition"></a></dt>
+<dd><p>Git commit hash. If not specified, the tag will be used to find the commit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-pre-release">
+<span class="sig-name descname"><span class="pre">--pre-release</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-pre-release" title="Link to this definition"></a></dt>
+<dd><p>Mark the release as a pre-release (default: True).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-latest">
+<span class="sig-name descname"><span class="pre">--latest</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-latest" title="Link to this definition"></a></dt>
+<dd><p>Mark this release as the latest release (default: False).</p>
+</dd></dl>
+
+</section>
+<section id="gl-gh-release-create-with-gl-release-notes">
+<h5>gl-gh-release create-with-gl-release-notes<a class="headerlink" href="#gl-gh-release-create-with-gl-release-notes" title="Link to this heading"></a></h5>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-gh-release create-with-gl-release-notes [-h] [--owner OWNER]</span>
+<span class="go">                                                  [--repo REPO] --tag TAG</span>
+<span class="go">                                                  --commit COMMIT [--latest]</span>
+<span class="go">                                                  [--dry-run]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-h">
+<span id="cmdoption-gl-gh-release-create-with-gl-release-notes-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-owner">
+<span class="sig-name descname"><span class="pre">--owner</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;owner&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-owner" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository owner (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-repo">
+<span class="sig-name descname"><span class="pre">--repo</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;repo&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-repo" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository name (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-tag">
+<span class="sig-name descname"><span class="pre">--tag</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;tag&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-tag" title="Link to this definition"></a></dt>
+<dd><p>Git tag name for the release (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-commit">
+<span class="sig-name descname"><span class="pre">--commit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;commit&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-commit" title="Link to this definition"></a></dt>
+<dd><p>Git commit hash used to generate release notes (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-latest">
+<span class="sig-name descname"><span class="pre">--latest</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-latest" title="Link to this definition"></a></dt>
+<dd><p>Mark this release as the latest release (default: False).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-create-with-gl-release-notes-dry-run">
+<span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-create-with-gl-release-notes-dry-run" title="Link to this definition"></a></dt>
+<dd><p>Perform a dry run without actually creating the release.</p>
+</dd></dl>
+
+</section>
+<section id="gl-gh-release-upload">
+<h5>gl-gh-release upload<a class="headerlink" href="#gl-gh-release-upload" title="Link to this heading"></a></h5>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: gl-gh-release upload [-h] [--owner OWNER] [--repo REPO]</span>
+<span class="go">                            --release_id RELEASE_ID --file_path FILE_PATH</span>
+<span class="go">                            [--dry-run]</span>
+</pre></div>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-h">
+<span id="cmdoption-gl-gh-release-upload-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-h" title="Link to this definition"></a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-owner">
+<span class="sig-name descname"><span class="pre">--owner</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;owner&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-owner" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository owner (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-repo">
+<span class="sig-name descname"><span class="pre">--repo</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;repo&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-repo" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository name (default: ‘gardenlinux’).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-release_id">
+<span class="sig-name descname"><span class="pre">--release_id</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;release_id&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-release_id" title="Link to this definition"></a></dt>
+<dd><p>GitHub release ID to upload the file to (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-file_path">
+<span class="sig-name descname"><span class="pre">--file_path</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;file_path&gt;</span></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-file_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the file to upload (required).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gl-gh-release-upload-dry-run">
+<span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gl-gh-release-upload-dry-run" title="Link to this definition"></a></dt>
+<dd><p>Perform a dry run without actually uploading the file.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Garden Linux Python Library Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="release.html" class="btn btn-neutral float-right" title="release documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Garden Linux Maintainers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
