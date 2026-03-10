@@ -74,3 +74,7 @@ for feature in feature_list:
 
 For more examples and for all CLI tools, see the **Command-Line Interface** and **API Reference** sections in the docs:
 [https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
+
+<p align="center">
+  <img alt="Bundesministerium für Wirtschaft und Energie (BMWE)-EU funding logo" src="https://apeirora.eu/assets/img/BMWK-EU.png" width="400"/>
+</p>
