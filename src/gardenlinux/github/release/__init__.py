@@ -76,6 +76,10 @@ def upload_to_github_release_page(
         )
         return
 
+    if os.path.getsize(file_to_upload) < 1:
+        LOGGER.info(f"{file_to_upload} is empty and will be ignored")
+        return
+
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise ValueError("GITHUB_TOKEN environment variable not set")
