@@ -8,7 +8,7 @@ from gardenlinux.oci import ImageManifest, Layer
 def test_ImageManifest_arch() -> None:
     # Arrange
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={"architecture": "amd64"})
+    manifest = ImageManifest(annotations={ImageManifest.ANNOTATION_ARCH_KEY: "amd64"})
 
     # Assert
     with pytest.raises(RuntimeError):
@@ -25,7 +25,7 @@ def test_ImageManifest_cname() -> None:
     cname = "container-amd64-today-local"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={"cname": cname})
+    manifest = ImageManifest(annotations={ImageManifest.ANNOTATION_CNAME_KEY: cname})
 
     # Assert
     with pytest.raises(RuntimeError):
@@ -42,7 +42,9 @@ def test_ImageManifest_feature_set() -> None:
     feature_set = "container"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={"feature_set": feature_set})
+    manifest = ImageManifest(
+        annotations={ImageManifest.ANNOTATION_FEATURE_SET_KEY: feature_set}
+    )
 
     # Assert
     with pytest.raises(RuntimeError):
@@ -60,7 +62,7 @@ def test_ImageManifest_flavor() -> None:
     cname = f"{flavor}-amd64-today-local"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={"cname": cname})
+    manifest = ImageManifest(annotations={ImageManifest.ANNOTATION_CNAME_KEY: cname})
 
     # Assert
     with pytest.raises(RuntimeError):
@@ -98,7 +100,9 @@ def test_ImageManifest_version() -> None:
     version = "today"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={"version": version})
+    manifest = ImageManifest(
+        annotations={ImageManifest.ANNOTATION_VERSION_KEY: version}
+    )
 
     # Assert
     with pytest.raises(RuntimeError):
