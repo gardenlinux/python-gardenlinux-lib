@@ -131,6 +131,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     upload_parser.add_argument(
         "--release_id",
+        type=int,
         required=True,
         help="GitHub release ID to upload the file to (required).",
     )
@@ -149,7 +150,10 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     upload_parser.add_argument(
-        "--overwrite-same-name", action="store_true", default=False
+        "--overwrite-same-name",
+        action="store_true",
+        default=False,
+        help="Overwrite assets with the same name.",
     )
 
     return parser

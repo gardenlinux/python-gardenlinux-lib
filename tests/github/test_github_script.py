@@ -8,7 +8,7 @@ import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
 from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
-from .constants import RELEASE_JSON, REPO_JSON
+from .constants import RELEASE_JSON, REPO_JSON, TEST_GARDENLINUX_RELEASE_ID
 
 
 def test_script_parse_args_wrong_command(
@@ -145,7 +145,7 @@ def test_script_upload_needs_github_token(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                str(TEST_GARDENLINUX_RELEASE_ID),
                 "--file_path",
                 str(artifact_for_upload),
                 "--dry-run",
@@ -190,7 +190,7 @@ def test_script_upload_dry_run(
         )
 
         m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_ID}",
             json=RELEASE_JSON,
             status_code=200,
         )
@@ -206,7 +206,7 @@ def test_script_upload_dry_run(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                str(TEST_GARDENLINUX_RELEASE_ID),
                 "--file_path",
                 str(artifact_for_upload),
                 "--dry-run",
@@ -237,21 +237,9 @@ def test_script_upload_inaccessible_file(
         )
 
         m.get(
-            "//api.github.com:443/repos/gardenlinux/gardenlinux/releases/1",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_ID}",
             json=RELEASE_JSON,
             status_code=200,
-        )
-
-        m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
-            json=RELEASE_JSON,
-            status_code=200,
-        )
-
-        m.post(
-            f"//uploads.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}/assets?name=artifact.log",
-            text="{}",
-            status_code=201,
         )
 
         monkeypatch.setattr(
@@ -265,7 +253,7 @@ def test_script_upload_inaccessible_file(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                str(TEST_GARDENLINUX_RELEASE_ID),
                 "--file_path",
                 str(artifact_for_upload),
             ],
@@ -289,19 +277,13 @@ def test_script_upload(
         )
 
         m.get(
-            "//api.github.com:443/repos/gardenlinux/gardenlinux/releases/1",
-            json=RELEASE_JSON,
-            status_code=200,
-        )
-
-        m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_ID}",
             json=RELEASE_JSON,
             status_code=200,
         )
 
         m.post(
-            "//uploads.github.com:443/repos/gardenlinux/gardenlinux/releases/1/assets?label=&name=artifact.log",
+            f"//uploads.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_ID}/assets?label=&name=artifact.log",
             json={},
             status_code=201,
         )
@@ -317,7 +299,7 @@ def test_script_upload(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                str(TEST_GARDENLINUX_RELEASE_ID),
                 "--file_path",
                 str(artifact_for_upload),
             ],
