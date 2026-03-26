@@ -38,7 +38,7 @@ def main() -> None:
     upload_parser = subparsers.add_parser("upload")
     upload_parser.add_argument("--owner", default="gardenlinux")
     upload_parser.add_argument("--repo", default="gardenlinux")
-    upload_parser.add_argument("--release_id", required=True)
+    upload_parser.add_argument("--release_id", type=int, required=True)
     upload_parser.add_argument("--file_path", required=True)
     upload_parser.add_argument("--dry-run", action="store_true", default=False)
 
