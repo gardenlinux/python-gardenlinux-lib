@@ -1,3 +1,16 @@
+---
+title: "Python Gardenlinux Lib - Release Process"
+github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/how-to/release.md"
+migration_status: "new"
+migration_source: ""
+migration_issue: ""
+migration_stakeholder: "@tmangold, @yeoldegrove, @ByteOtter"
+migration_approved: false
+github_org: gardenlinux
+github_repo: python-gardenlinux-lib
+github_source_path: docs/how-to/release.md
+---
+
 # Release Documentation
 
 _python-gardenlinux-lib_ strictly follows the syntax and intention of

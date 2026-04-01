@@ -1,3 +1,16 @@
+---
+title: "Python Gardenlinux Lib - CLI"
+github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/how-to/cli.md"
+migration_status: "new"
+migration_source: ""
+migration_issue: ""
+migration_stakeholder: "@tmangold, @yeoldegrove, @ByteOtter"
+migration_approved: false
+github_org: gardenlinux
+github_repo: python-gardenlinux-lib
+github_source_path: docs/how-to/cli.md
+---
+
 # Command-Line Interface
 
 This page documents all available command-line tools provided by
