@@ -1,3 +1,16 @@
+---
+title: "Python Gardenlinux Lib - Overview"
+github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/overview/index.md"
+migration_status: "new"
+migration_source: ""
+migration_issue: ""
+migration_stakeholder: "@tmangold, @yeoldegrove, @ByteOtter"
+migration_approved: false
+github_org: gardenlinux
+github_repo: python-gardenlinux-lib
+github_source_path: docs/overview/index.md
+---
+
 # Garden Linux Python Library Documentation
 
 Welcome to the Garden Linux Python Library documentation. This library provides
@@ -23,7 +36,7 @@ interacting with Garden Linux components. It includes:
 ### Command-Line Interface
 
 The library provides several command-line tools for common operations. See the
-[Command-Line Interface documentation](../reference/cli.md) for detailed
+[Command-Line Interface documentation](../how-to/cli.md) for detailed
 information about all available commands.
 
 ### Release Management
@@ -39,5 +52,5 @@ functions, see the
 
 ## Documentation Sections
 
-- [Command-Line Interface](../reference/cli.md)
+- [Command-Line Interface](../how-to/cli.md)
 - [Release documentation](../how-to/release.md)
