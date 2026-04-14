@@ -1,6 +1,10 @@
 ---
 title: "Python Library"
 description: An overview of the Garden Linux Python Library
+related_topics:
+  - /reference/supporting_tools/python-gardenlinux-lib.md
+  - /reference/python-gardenlinux-lib-cli.md
+  - /how-to/python-gardenlinux-lib-release.md
 migration_status: "new"
 migration_source: ""
 migration_issue: ""
@@ -9,7 +13,7 @@ migration_approved: false
 github_org: gardenlinux
 github_repo: python-gardenlinux-lib
 github_source_path: docs/overview/index.md
-github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/overview/index.md"
+github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib.md"
 ---
 
 # Garden Linux Python Library Documentation
@@ -17,8 +21,6 @@ github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/over
 Welcome to the Garden Linux Python Library documentation. This library provides
 Python tools and utilities for working with Garden Linux features, flavors, OCI
 artifacts, S3 buckets, and GitHub releases.
-
-![Garden Linux Logo](../_static/gardenlinux-logo.svg)
 
 ## Overview
 
@@ -37,13 +39,13 @@ interacting with Garden Linux components. It includes:
 ### Command-Line Interface
 
 The library provides several command-line tools for common operations. See the
-[Command-Line Interface documentation](../how-to/cli.md) for detailed
+[Command-Line Interface documentation](/reference/python-gardenlinux-lib-cli.md) for detailed
 information about all available commands.
 
 ### Release Management
 
 For information about versioning and release procedures, see the
-[Release documentation](../how-to/release.md).
+[Release documentation](/how-to/python-gardenlinux-lib-release.md).
 
 ### API Reference
 
@@ -51,7 +53,6 @@ For detailed Python API documentation, including all modules, classes, and
 functions, see the
 [API Reference on ReadTheDocs](https://gardenlinux.github.io/python-gardenlinux-lib/api.html).
 
-## Documentation Sections
+## Related Topics
 
-- [Command-Line Interface](../how-to/cli.md)
-- [Release documentation](../how-to/release.md)
+<RelatedTopics />
