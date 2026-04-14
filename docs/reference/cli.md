@@ -1,6 +1,6 @@
 ---
-title: Release Process - Python Library
-description: Release a new version of the Garden Linux Python Library
+title: Command-Line Interface - Python Library
+description: Command-Line Interface of the Garden Linux Python Library
 related_topics:
   - /reference/supporting_tools/python-gardenlinux-lib.md
   - /reference/python-gardenlinux-lib-cli.md
@@ -12,11 +12,11 @@ migration_stakeholder: "@tmangold, @yeoldegrove, @ByteOtter"
 migration_approved: false
 github_org: gardenlinux
 github_repo: python-gardenlinux-lib
-github_source_path: docs/how-to/release.md
-github_target_path: docs/how-to/python-gardenlinux-lib-release.md
+github_source_path: docs/reference/cli.md
+github_target_path: docs/reference/python-gardenlinux-lib-cli.md
 ---
 
-# Release Documentation
+# Documentation
 
 _python-gardenlinux-lib_ strictly follows the syntax and intention of
 [Semantic Versioning](https://www.semver.org). Each release reflects the
