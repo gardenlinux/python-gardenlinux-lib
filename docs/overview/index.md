@@ -1,6 +1,6 @@
 ---
-title: "Python Gardenlinux Lib - Overview"
-github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/overview/index.md"
+title: "Python Library"
+description: An overview of the Garden Linux Python Library
 migration_status: "new"
 migration_source: ""
 migration_issue: ""
@@ -9,6 +9,7 @@ migration_approved: false
 github_org: gardenlinux
 github_repo: python-gardenlinux-lib
 github_source_path: docs/overview/index.md
+github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib/overview/index.md"
 ---
 
 # Garden Linux Python Library Documentation
