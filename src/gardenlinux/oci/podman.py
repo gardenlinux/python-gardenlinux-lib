@@ -278,10 +278,13 @@ class Podman(object):
         :since: 1.0.0
         """
 
-        oci_data = oci_container_tag.rsplit(":", 1)
+        if ":" in oci_container_tag:
+            oci_data = oci_container_tag.rsplit(":", 1)
 
-        if len(oci_data) < 2:
-            raise RuntimeError("No tag given")
+            if len(oci_data) < 2:
+                raise RuntimeError("No tag given")
+        else:
+            oci_data = ("", oci_container_tag)
 
         image = podman.images.get(image_id)
         image.tag(oci_data[0], oci_data[1])
