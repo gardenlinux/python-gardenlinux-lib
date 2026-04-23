@@ -159,7 +159,7 @@ OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
 
 RELEASE_ID_FILE = ".github_release_id"
 
-REQUESTS_TIMEOUTS = (5, 30)  # connect, read
+REQUESTS_TIMEOUTS = (5, 60)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 
@@ -167,6 +167,10 @@ GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 GLVD_BASE_URL = "https://security.gardenlinux.org/v1"
 
 PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
+PODMAN_FS_CHANGE_ADDED = "added"
+PODMAN_FS_CHANGE_DELETED = "deleted"
+PODMAN_FS_CHANGE_MODIFIED = "modified"
+PODMAN_FS_CHANGE_UNSUPPORTED = "unsupported"
 
 # https://github.com/gardenlinux/gardenlinux/issues/3044
 # Empty string is the 'legacy' variant with traditional root fs and still needed/supported
