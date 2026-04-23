@@ -5,10 +5,7 @@ from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
 
 from ..release_notes import create_github_release_notes
-from . import (
-    upload_to_github_release_page,
-    write_to_release_id_file,
-)
+from . import write_to_release_id_file
 from .release import Release
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", logging.INFO)
@@ -149,6 +146,10 @@ def get_parser() -> argparse.ArgumentParser:
         help="Perform a dry run without actually uploading the file.",
     )
 
+    upload_parser.add_argument(
+        "--overwrite-same-name", action="store_true", default=False
+    )
+
     return parser
 
 
@@ -169,6 +170,7 @@ def main() -> None:
         body = create_github_release_notes(
             args.tag, args.commit, GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
         )
+
         if args.dry_run:
             print("Dry Run ...")
             print("This release would be created:")
@@ -184,9 +186,16 @@ def main() -> None:
             write_to_release_id_file(f"{release_id}")
             LOGGER.info(f"Release created with ID: {release_id}")
     elif args.command == "upload":
-        upload_to_github_release_page(
-            args.owner, args.repo, args.release_id, args.file_path, args.dry_run
-        )
+        release = Release.get(args.release_id, repo=args.repo, owner=args.owner)
+
+        if args.dry_run:
+            print("Dry Run ...")
+
+            print(
+                f"The file {args.file_path} would be uploaded for release: {release.name}"
+            )
+        else:
+            release.upload_asset(args.file_path, args.overwrite_same_name)
     else:
         parser.print_help()
 
