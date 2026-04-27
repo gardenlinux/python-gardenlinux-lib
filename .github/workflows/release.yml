@@ -6,6 +6,7 @@ on:
 
 env:
   GIT_CLIFF_VERSION: 2.12.0
+  GL_VERSION: 2150.1.0
 
 jobs:
   docs:
@@ -72,3 +73,51 @@ jobs:
          --body "
          $(git-cliff -o - --current)
          "
+
+  create-oci-release:
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-latest-arm' || 'ubuntu-latest' }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+
+    steps:
+    - name: Checkout commit
+      uses: actions/checkout@v6
+      with:
+        sparse-checkout: |
+          src/oci
+        sparse-checkout-cone-mode: false
+    - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
+    - name: Get the Git tag name
+      id: get-tag-name
+      run: echo "tag-name=${GITHUB_REF/refs\/tags\//}" | tee -a "$GITHUB_OUTPUT"
+    - name: Create OCI container and release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gl-oci build-container \
+         --container "ghcr.io/${{ github.repository }}/container" \
+         --tag "${{ matrix.arch }}-${{ steps.get-tag-name.outputs.tag-name }}" \
+         --oci_archive "container_${{ matrix.arch }}.oci" \
+         --platform linux/${{ matrix.arch }} \
+         --dir "src/oci" \
+         --build_arg GL_VERSION=$GL_VERSION \
+         --build_arg PY_GL_VERSION="${{ steps.get-tag-name.outputs.tag-name }}"
+
+         gl-oci push-container \
+          --container "ghcr.io/${{ github.repository }}/container" \
+          --tag "${{ matrix.arch }}-${{ steps.get-tag-name.outputs.tag-name }}"
+
+         gl-oci add-container-to-index \
+          --index "ghcr.io/${{ github.repository }}/container" \
+          --index-tag "${{ steps.get-tag-name.outputs.tag-name }}" \
+          --container "ghcr.io/${{ github.repository }}/container" \
+          --tag "${{ matrix.arch }}-${{ steps.get-tag-name.outputs.tag-name }}"
+    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # pin@v7.0.0
+      with:
+        name: container-${{ matrix.arch }}
+        path: container_${{ matrix.arch }}.oci
+        if-no-files-found: error
