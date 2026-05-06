@@ -2,9 +2,9 @@
 title: "Python Library"
 description: An overview of the Garden Linux Python Library
 related_topics:
-  - /reference/supporting_tools/python-gardenlinux-lib.md
-  - /reference/python-gardenlinux-lib-cli.md
-  - /how-to/python-gardenlinux-lib-release.md
+  - /reference/supporting_tools/python-gardenlinux-lib
+  - /reference/python-gardenlinux-lib-cli
+  - /how-to/python-gardenlinux-lib-release
 migration_status: "new"
 migration_source: ""
 migration_issue: ""

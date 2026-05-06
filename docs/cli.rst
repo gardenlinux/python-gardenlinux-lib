@@ -1,7 +1,7 @@
-Command-Line Interface
-======================
+Python Library - Command-Line Interface
+=======================================
 
-This page documents all available command-line tools provided by python-gardenlinux-lib.
+Available command-line tools provided by the Garden Linux Python Library
 
 Features Commands
 -----------------

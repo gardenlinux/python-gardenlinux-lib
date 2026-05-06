@@ -22,7 +22,14 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_click",
     "sphinxcontrib.autoprogram",
+    "sphinx_markdown_builder",
 ]
+
+# Markdown builder configuration (GitHub-Flavored Markdown for VitePress)
+# We can enable this after https://github.com/liran-funaro/sphinx-markdown-builder/pull/53 is merged
+# markdown_flavor = "github"
+markdown_anchor_sections = True
+markdown_anchor_signatures = True
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
