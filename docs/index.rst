@@ -1,7 +1,7 @@
-Garden Linux Python Library Documentation
+Garden Linux Python Library
 ==========================================
 
-Welcome to the Garden Linux Python Library documentation. This library provides
+The Garden linux Python Library provides
 Python tools and utilities for working with Garden Linux features, flavors,
 OCI artifacts, S3 buckets, and GitHub releases.
 
