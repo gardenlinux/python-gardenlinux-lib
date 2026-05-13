@@ -1,0 +1,8 @@
+{
+    "short_name": "ali",
+    "full_name": "Alibaba Cloud",
+    "image_extension": "qcow2",
+
+    "mapping_type": "regions_list",
+    "mapping_entry_json": "{\"region\": \"{region_id}\", \"image_id\": \"{image_id}\"}"
+}

@@ -7,7 +7,7 @@ import requests_mock
 import gardenlinux.github.release.__main__ as gh
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 
-from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE
+from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_RELEASE_MINOR
 from .constants import RELEASE_JSON, REPO_JSON
 
 
@@ -51,7 +51,9 @@ def test_script_parse_args_create_command_required_args(
 
 
 def test_script_create_dry_run(
-    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+    monkeypatch: pytest.MonkeyPatch,
+    capfd: pytest.CaptureFixture[str],
+    github_token: str,
 ) -> None:
     monkeypatch.setattr(
         sys,
@@ -64,15 +66,16 @@ def test_script_create_dry_run(
             "--repo",
             "gardenlinux",
             "--tag",
-            TEST_GARDENLINUX_RELEASE,
+            TEST_GARDENLINUX_RELEASE_MINOR,
             "--commit",
             TEST_GARDENLINUX_COMMIT,
             "--dry-run",
         ],
     )
+
     monkeypatch.setattr(
-        "gardenlinux.github.release.__main__.create_github_release_notes",
-        lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
+        "gardenlinux.github.release.notes.markdown_generator.MarkdownGenerator.__str__",
+        lambda self: f"{self._version} {self._commitish} {self._s3_bucket_name}",
     )
 
     gh.main()
@@ -80,12 +83,12 @@ def test_script_create_dry_run(
 
     assert (
         captured.out
-        == f"Dry Run ...\nThis release would be created:\n{TEST_GARDENLINUX_RELEASE} {TEST_GARDENLINUX_COMMIT} {GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME}\n"
+        == f"Dry Run ...\nThis release would be created:\n{TEST_GARDENLINUX_RELEASE_MINOR} {TEST_GARDENLINUX_COMMIT} {GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME}\n"
     ), "Expected dry-run create to return generated release notes text"
 
 
 def test_script_create(
-    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture, github_token: str
 ) -> None:
     with requests_mock.Mocker() as m:
         monkeypatch.setattr(
@@ -99,16 +102,16 @@ def test_script_create(
                 "--repo",
                 "gardenlinux",
                 "--tag",
-                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_RELEASE_MINOR,
                 "--commit",
                 TEST_GARDENLINUX_COMMIT,
             ],
         )
+
         monkeypatch.setattr(
-            "gardenlinux.github.release.__main__.create_github_release_notes",
-            lambda tag, commit, bucket: f"{tag} {commit} {bucket}",
+            "gardenlinux.github.release.notes.markdown_generator.MarkdownGenerator.__str__",
+            lambda self: f"{self._version} {self._commitish} {self._s3_bucket_name}",
         )
-        monkeypatch.setenv("GITHUB_TOKEN", "invalid")
 
         m.get(
             "//api.github.com:443/repos/gardenlinux/gardenlinux",
@@ -145,7 +148,7 @@ def test_script_upload_needs_github_token(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_RELEASE_MINOR,
                 "--file_path",
                 str(artifact_for_upload),
                 "--dry-run",
@@ -190,7 +193,7 @@ def test_script_upload_dry_run(
         )
 
         m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE_MINOR}",
             json=RELEASE_JSON,
             status_code=200,
         )
@@ -206,7 +209,7 @@ def test_script_upload_dry_run(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_RELEASE_MINOR,
                 "--file_path",
                 str(artifact_for_upload),
                 "--dry-run",
@@ -243,13 +246,13 @@ def test_script_upload_inaccessible_file(
         )
 
         m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE_MINOR}",
             json=RELEASE_JSON,
             status_code=200,
         )
 
         m.post(
-            f"//uploads.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}/assets?name=artifact.log",
+            f"//uploads.github.com:443/repos/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_MINOR}/assets?name=artifact.log",
             text="{}",
             status_code=201,
         )
@@ -265,7 +268,7 @@ def test_script_upload_inaccessible_file(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_RELEASE_MINOR,
                 "--file_path",
                 str(artifact_for_upload),
             ],
@@ -295,7 +298,7 @@ def test_script_upload(
         )
 
         m.get(
-            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE}",
+            f"//api.github.com:443/repos/gardenlinux/gardenlinux/releases/tags/{TEST_GARDENLINUX_RELEASE_MINOR}",
             json=RELEASE_JSON,
             status_code=200,
         )
@@ -317,7 +320,7 @@ def test_script_upload(
                 "--repo",
                 "gardenlinux",
                 "--release_id",
-                TEST_GARDENLINUX_RELEASE,
+                TEST_GARDENLINUX_RELEASE_MINOR,
                 "--file_path",
                 str(artifact_for_upload),
             ],
