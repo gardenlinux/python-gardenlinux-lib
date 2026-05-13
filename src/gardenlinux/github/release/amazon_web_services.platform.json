@@ -1,0 +1,8 @@
+{
+    "short_name": "aws",
+    "full_name": "Amazon Web Services",
+    "image_extension": "raw",
+
+    "mapping_type": "regions_list",
+    "mapping_entry_json": "{\"region\": \"{aws_region_id}\", \"image_id\": \"{ami_id}\"}"
+}

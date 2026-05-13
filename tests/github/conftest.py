@@ -7,7 +7,7 @@ import boto3
 import pytest
 from moto import mock_aws
 
-from gardenlinux.constants import RELEASE_ID_FILE, S3_DOWNLOADS_DIR
+from gardenlinux.constants import S3_DOWNLOADS_DIR
 
 from ..constants import TEST_GARDENLINUX_RELEASE_BUCKET_NAME
 
@@ -32,13 +32,6 @@ def artifact_for_upload(downloads_dir: None) -> Generator[Path, None, None]:
     artifact.write_text("Everything is fine so far")
     yield artifact
     artifact.unlink()
-
-
-@pytest.fixture
-def release_id_file() -> Generator[Path, None, None]:
-    f = Path(RELEASE_ID_FILE)
-    yield f
-    f.unlink()
 
 
 @pytest.fixture

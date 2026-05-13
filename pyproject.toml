@@ -10,8 +10,8 @@ packages = [{ include = "gardenlinux", from = "src" }]
 [tool.poetry.dependencies]
 python = ">=3.13,!=3.14.1"
 apt-repo = "^0.5"
-boto3 = "^1.42.30"
-click = "^8.3.1"
+boto3 = "^1.43.10"
+click = "^8.4.0"
 cryptography = "^46.0.3"
 jsonschema = "^4.26.0"
 networkx = "^3.6"
@@ -21,22 +21,22 @@ pygit2 = "^1.19.1"
 pygments = "^2.19.2"
 PyGithub = "^2.8.1"
 PyYAML = "^6.0.2"
-gitpython = "^3.1.45"
+semver = "^3.0.4"
 
 [tool.poetry.group.dev.dependencies]
-bandit = "^1.9.3"
+bandit = "^1.9.4"
 isort = "^8.0.1"
-moto = "^5.1.20"
-pre-commit = "^4.5.1"
-python-dotenv = "^1.2.1"
-pytest = "^9.0.2"
-pytest-cov = "^7.0.0"
+moto = "^5.2.1"
+pre-commit = "^4.6.0"
+python-dotenv = "^1.2.2"
+pytest = "^9.0.3"
+pytest-cov = "^7.1.0"
 requests-mock = "^1.12.1"
 mypy = "1.20.1"
 types-click = "^7.1.8"
-types-pyyaml = "^6.0.12.20250915"
-types-requests = "^2.32.4.20260107"
-boto3-stubs = { extras = ["s3"], version = "^1.42.30" }
+types-pyyaml = "^6.0.12.20260518"
+types-requests = "^2.33.0.20260518"
+boto3-stubs = { extras = ["s3"], version = "^1.42.41" }
 
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "^3.0.2"
