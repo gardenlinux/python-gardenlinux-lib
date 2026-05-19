@@ -29,7 +29,7 @@ def github_token() -> Generator[None, None, None]:
 @pytest.fixture
 def artifact_for_upload(downloads_dir: None) -> Generator[Path, None, None]:
     artifact = S3_DOWNLOADS_DIR / "artifact.log"
-    artifact.touch()
+    artifact.write_text("Everything is fine so far")
     yield artifact
     artifact.unlink()
 

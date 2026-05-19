@@ -159,7 +159,7 @@ OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
 
 RELEASE_ID_FILE = ".github_release_id"
 
-REQUESTS_TIMEOUTS = (5, 30)  # connect, read
+REQUESTS_TIMEOUTS = (5, 60)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
 

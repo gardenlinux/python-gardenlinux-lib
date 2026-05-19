@@ -1,3 +1,28 @@
+from ..constants import TEST_COMMIT, TEST_GARDENLINUX_RELEASE
+
+RELEASE_JSON = {
+    "url": "https://api.github.com/repos/gardenlinux/gardenlinux/releases/1",
+    "html_url": f"https://github.com/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}",
+    "assets_url": "https://api.github.com/repos/gardenlinux/gardenlinux/releases/1/assets",
+    "upload_url": "https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/1/assets{?name,label}",
+    "tarball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/tarball/{TEST_GARDENLINUX_RELEASE}",
+    "zipball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/zipball/{TEST_GARDENLINUX_RELEASE}",
+    "discussion_url": "https://github.com/gardenlinux/gardenlinux/discussions/1",
+    "id": 1,
+    "node_id": "MDc6UmVsZWFzZTE=",
+    "tag_name": TEST_GARDENLINUX_RELEASE,
+    "target_commitish": TEST_COMMIT,
+    "name": TEST_GARDENLINUX_RELEASE,
+    "body": "Happily copied from REST API endpoints for releases @ github.com",
+    "draft": False,
+    "prerelease": False,
+    "immutable": False,
+    "created_at": "2013-02-27T19:35:32Z",
+    "published_at": "2013-02-27T19:35:32Z",
+    "author": {},
+    "assets": [],
+}
+
 REPO_JSON = {
     "id": 1,
     "node_id": "test",
