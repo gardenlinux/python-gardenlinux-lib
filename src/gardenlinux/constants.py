@@ -145,6 +145,7 @@ GL_MEDIA_TYPE_LOOKUP = {
 
 GL_BUG_REPORT_URL = "https://github.com/gardenlinux/gardenlinux/issues"
 GL_COMMIT_SPECIAL_VALUES = ("local",)
+GL_CONTAINER_REGISTRY_BASE_URL = "ghcr.io/gardenlinux/gardenlinux"
 GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 GL_DISTRIBUTION_NAME = "Garden Linux"
 GL_HOME_URL = "https://gardenlinux.io"
@@ -157,8 +158,6 @@ OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
 OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"
 OCI_IMAGE_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
 
-RELEASE_ID_FILE = ".github_release_id"
-
 REQUESTS_TIMEOUTS = (5, 60)  # connect, read
 
 S3_DOWNLOADS_DIR = Path(os.path.dirname(__file__)) / ".." / "s3_downloads"
@@ -167,7 +166,3 @@ GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 GLVD_BASE_URL = "https://security.gardenlinux.org/v1"
 
 PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
-
-# https://github.com/gardenlinux/gardenlinux/issues/3044
-# Empty string is the 'legacy' variant with traditional root fs and still needed/supported
-IMAGE_VARIANTS = ["", "_usi", "_tpm2_trustedboot"]

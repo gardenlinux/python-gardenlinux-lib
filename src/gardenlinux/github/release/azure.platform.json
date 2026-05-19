@@ -1,0 +1,8 @@
+{
+    "short_name": "azure",
+    "full_name": "Microsoft Azure",
+    "image_extension": "vhd",
+
+    "mapping_type": "azure_gallery_and_marketplace_list",
+    "mapping_entry_json": "{\"hyper_v_generation\": \"{hyper_v_generation}\", \"azure_cloud\": \"{azure_cloud}\", \"image_id\": \"{community_gallery_image_id}\", \"urn\": \"{urn}\"}"
+}

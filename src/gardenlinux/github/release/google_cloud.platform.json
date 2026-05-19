@@ -1,0 +1,8 @@
+{
+    "short_name": "gcp",
+    "full_name": "Google Cloud Platform",
+    "image_extension": "gcpimage.tar.gz",
+
+    "mapping_type": "metadata_root",
+    "mapping_entry_json": "{\"project\": \"{gcp_project_name}\", \"image_name\": \"{gcp_image_name}\", \"availability\": \"All regions\"}"
+}

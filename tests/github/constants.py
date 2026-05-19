@@ -1,18 +1,18 @@
-from ..constants import TEST_COMMIT, TEST_GARDENLINUX_RELEASE
+from ..constants import TEST_COMMIT, TEST_GARDENLINUX_RELEASE_MINOR
 
 RELEASE_JSON = {
     "url": "https://api.github.com/repos/gardenlinux/gardenlinux/releases/1",
-    "html_url": f"https://github.com/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE}",
+    "html_url": f"https://github.com/gardenlinux/gardenlinux/releases/{TEST_GARDENLINUX_RELEASE_MINOR}",
     "assets_url": "https://api.github.com/repos/gardenlinux/gardenlinux/releases/1/assets",
     "upload_url": "https://uploads.github.com/repos/gardenlinux/gardenlinux/releases/1/assets{?name,label}",
-    "tarball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/tarball/{TEST_GARDENLINUX_RELEASE}",
-    "zipball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/zipball/{TEST_GARDENLINUX_RELEASE}",
+    "tarball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/tarball/{TEST_GARDENLINUX_RELEASE_MINOR}",
+    "zipball_url": "https://api.github.com/repos/gardenlinux/gardenlinux/zipball/{TEST_GARDENLINUX_RELEASE_MINOR}",
     "discussion_url": "https://github.com/gardenlinux/gardenlinux/discussions/1",
     "id": 1,
     "node_id": "MDc6UmVsZWFzZTE=",
-    "tag_name": TEST_GARDENLINUX_RELEASE,
+    "tag_name": TEST_GARDENLINUX_RELEASE_MINOR,
     "target_commitish": TEST_COMMIT,
-    "name": TEST_GARDENLINUX_RELEASE,
+    "name": TEST_GARDENLINUX_RELEASE_MINOR,
     "body": "Happily copied from REST API endpoints for releases @ github.com",
     "draft": False,
     "prerelease": False,

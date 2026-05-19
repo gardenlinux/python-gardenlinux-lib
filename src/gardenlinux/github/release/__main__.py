@@ -4,8 +4,7 @@ import logging
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
 
-from ..release_notes import create_github_release_notes
-from . import write_to_release_id_file
+from .notes import MarkdownGenerator
 from .release import Release
 
 LOGGER = LoggerSetup.get_logger("gardenlinux.github", logging.INFO)
@@ -167,24 +166,24 @@ def main() -> None:
         release.is_latest = args.latest
         release.create()
     elif args.command == "create-with-gl-release-notes":
-        body = create_github_release_notes(
-            args.tag, args.commit, GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
-        )
+        release = Release(args.repo, args.owner)
+        release.tag = args.tag
+        release.commitish = args.commit
+        release.is_latest = args.latest
+
+        generator = MarkdownGenerator(release, GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME)
 
         if args.dry_run:
             print("Dry Run ...")
             print("This release would be created:")
-            print(body)
+            print(str(generator))
         else:
-            release = Release(args.repo, args.owner)
-            release.tag = args.tag
-            release.body = body
-            release.commitish = args.commit
-            release.is_latest = args.latest
+            release.body = str(generator)
 
             release_id = release.create()
-            write_to_release_id_file(f"{release_id}")
             LOGGER.info(f"Release created with ID: {release_id}")
+
+            print(f"{release_id}")
     elif args.command == "upload":
         release = Release.get(args.release_id, repo=args.repo, owner=args.owner)
 

@@ -1,0 +1,8 @@
+{
+    "short_name": "openstackbaremetal",
+    "full_name": "OpenStack Baremetal",
+    "image_extension": "raw",
+
+    "mapping_type": "regions_list",
+    "mapping_entry_json": "{\"region\": \"{region_name}\", \"image_id\": \"{image_id}\", \"image_name\": \"{image_name}\"}"
+}
