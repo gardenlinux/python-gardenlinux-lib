@@ -1,14 +1,17 @@
+## Garden Linux Python Library
+
 ![poetry build](https://github.com/gardenlinux/parse_features_lib/actions/workflows/build.yml/badge.svg)
 ![Black Lint](https://github.com/gardenlinux/parse_features_lib/actions/workflows/black.yml/badge.svg)
 ![Test](https://github.com/gardenlinux/parse_features_lib/actions/workflows/pytests.yml/badge.svg)
 ![security check](https://github.com/gardenlinux/parse_features_lib/actions/workflows/bandit.yml/badge.svg)
 
-## Garden Linux Python Library
+Python tooling to work with
+[Garden Linux](https://github.com/gardenlinux/gardenlinux) features, flavors,
+OCI artifacts, repositories, and releases. It is primarily targeted at Garden
+Linux developers and CI pipelines rather than end users.
 
-Python tooling to work with [Garden Linux](https://github.com/gardenlinux/gardenlinux) features, flavors, OCI artifacts, repositories, and releases.
-It is primarily targeted at Garden Linux developers and CI pipelines rather than end users.
-
-The library follows the intent of [Semantic Versioning](https://semver.org) for its public APIs.
+The library follows the intent of [Semantic Versioning](https://semver.org) for
+its public APIs.
 
 ### Features
 
@@ -21,14 +24,11 @@ The library follows the intent of [Semantic Versioning](https://semver.org) for 
 
 ## Documentation
 
-Full documentation is available at the **Garden Linux Python Library Documentation** site:
-[https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
+You can find our full documentation for this python library on our
+[Documentation Hub](https://gardenlinux-docs.netlify.app/reference/supporting_tools/python-gardenlinux-lib.html).
 
-The docs include:
-
-- **Command-Line Interface**: `gl-features-*`, `gl-flavors-*`, `gl-oci`, `gl-s3`, `gl-gh-release`
-- **API Reference**: modules, classes, and functions (e.g. `Parser`, `CName`, `Container`, `Repository`)
-- **Release documentation**: versioning and release process
+For a detailed API documentation, check
+[gardenlinux.github.io/python-gardenlinux-lib/api.html](https://gardenlinux.github.io/python-gardenlinux-lib/)
 
 ## Installation
 
@@ -72,7 +72,8 @@ for feature in feature_list:
     print(feature)
 ```
 
-For more examples and for all CLI tools, see the **Command-Line Interface** and **API Reference** sections in the docs:
+For more examples and for all CLI tools, see the **Command-Line Interface** and
+**API Reference** sections in the docs:
 [https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
 
 <p align="center">
