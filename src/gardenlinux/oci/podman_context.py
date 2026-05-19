@@ -137,15 +137,19 @@ class PodmanContext(ExitStack):
         :since: 1.0.0
         """
 
+        # Use variable for status to catch corner cases of fast closing sockets
+        is_socket_available = False
         sock_path = Path(sock)
 
-        for _ in range(0, 5 * PODMAN_CONNECTION_MAX_IDLE_SECONDS):
-            if sock_path.exists():
+        for _ in range(0, 50 * PODMAN_CONNECTION_MAX_IDLE_SECONDS):
+            is_socket_available = sock_path.exists()
+
+            if is_socket_available:
                 break
 
             sleep(0.2)
 
-        if not sock_path.exists():
+        if not is_socket_available:
             raise TimeoutError()
 
     @staticmethod
