@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from logging import Logger
-from os import PathLike
+from os import PathLike, environ
 from pathlib import Path
 from typing import Any, List, Optional
 
-from pygit2 import Oid, RemoteCallbacks
+from pygit2 import Oid
 from pygit2 import Repository as _Repository
 from pygit2 import init_repository
 
 from ..constants import GL_REPOSITORY_URL
 from ..logger import LoggerSetup
-from .credentials import Credentials
+from .remote_callbacks import RemoteCallbacks
 
 
 class Repository(_Repository):  # type: ignore[misc]
@@ -136,8 +136,11 @@ class Repository(_Repository):  # type: ignore[misc]
             )
 
         repo = init_repository(git_directory, origin_url=repo_url)
-        callbacks = RemoteCallbacks(credentials=Credentials())
-        repo.remotes["origin"].fetch(callbacks=callbacks)
+        repo.remotes["origin"].fetch(
+            callbacks=RemoteCallbacks(
+                username=environ.get("GITHUB_TOKEN"), password="x-oauth-basic"
+            )
+        )
 
         if commit is None:
             refish = f"origin/{branch}"
