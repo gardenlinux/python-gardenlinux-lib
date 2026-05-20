@@ -5,12 +5,13 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, List, Optional
 
-from pygit2 import Oid
+from pygit2 import Oid, RemoteCallbacks
 from pygit2 import Repository as _Repository
 from pygit2 import init_repository
 
 from ..constants import GL_REPOSITORY_URL
 from ..logger import LoggerSetup
+from .credentials import Credentials
 
 
 class Repository(_Repository):  # type: ignore[misc]
@@ -135,7 +136,8 @@ class Repository(_Repository):  # type: ignore[misc]
             )
 
         repo = init_repository(git_directory, origin_url=repo_url)
-        repo.remotes["origin"].fetch()
+        callbacks = RemoteCallbacks(credentials=Credentials())
+        repo.remotes["origin"].fetch(callbacks=callbacks)
 
         if commit is None:
             refish = f"origin/{branch}"
