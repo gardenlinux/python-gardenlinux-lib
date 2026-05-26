@@ -5,6 +5,7 @@ OCI module
 """
 
 from .container import Container
+from .image import Image
 from .image_manifest import ImageManifest
 from .index import Index
 from .layer import Layer
@@ -15,6 +16,7 @@ from .podman_context import PodmanContext
 __all__ = [
     "Container",
     "ImageManifest",
+    "Image",
     "Index",
     "Layer",
     "Manifest",

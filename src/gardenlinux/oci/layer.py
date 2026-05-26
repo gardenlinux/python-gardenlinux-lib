@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+OCI image layer
+"""
+
 from collections.abc import Mapping
 from os import PathLike
 from pathlib import Path

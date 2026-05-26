@@ -7,23 +7,23 @@
 
 schema_url = "http://json-schema.org/draft-07/schema"
 
-platformProperties = {
+platform_properties = {
     "architecture": {"type": "string"},
     "os": {"type": "string"},
     "os.version": {"type": "string"},
     "variant": {"type": "string"},
 }
 
-manifestMetaProperties = {
+manifest_meta_properties = {
     "mediaType": {"type": "string"},
-    "platform": {"type": "object", "properties": platformProperties},
+    "platform": {"type": "object", "properties": platform_properties},
 }
 
-indexProperties = {
+index_properties = {
     "schemaVersion": {"type": "number"},
     "mediaType": {"type": "string"},
     "subject": {"type": ["null", "object"]},
-    "manifests": {"type": "array", "items": manifestMetaProperties},
+    "manifests": {"type": "array", "items": manifest_meta_properties},
     "annotations": {"type": ["object", "null", "array"]},
 }
 
@@ -37,24 +37,24 @@ index = {
         "manifests",
         "mediaType",
     ],
-    "properties": indexProperties,
+    "properties": index_properties,
     "additionalProperties": True,
 }
 
-EmptyPlatform = {
+empty_platform = {
     "architecture": "",
     "os": "gardenlinux",
     "os.version": "experimental",
 }
 
-EmptyManifestMetadata = {
+empty_manifest_metadata = {
     "mediaType": "application/vnd.oci.image.manifest.v1+json",
     "digest": "",
     "size": 0,
     "annotations": {},
 }
 
-EmptyIndex = {
+empty_index = {
     "schemaVersion": 2,
     "mediaType": "application/vnd.oci.image.index.v1+json",
     "manifests": [],

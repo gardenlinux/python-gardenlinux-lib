@@ -166,3 +166,7 @@ GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME = "gardenlinux-github-releases"
 GLVD_BASE_URL = "https://security.gardenlinux.org/v1"
 
 PODMAN_CONNECTION_MAX_IDLE_SECONDS = 3
+PODMAN_FS_CHANGE_ADDED = "added"
+PODMAN_FS_CHANGE_DELETED = "deleted"
+PODMAN_FS_CHANGE_MODIFIED = "modified"
+PODMAN_FS_CHANGE_UNSUPPORTED = "unsupported"

@@ -172,7 +172,7 @@ def test_comparator_tar(type: str) -> None:
 
     assert not whitelist, "Whitelist is empty and should not filter anything"
 
-    assert files == ["/a/b/c.txt"]
+    assert files == ["/a", "/a/b", "/a/b/c.txt"]
 
 
 @pytest.mark.parametrize("type", [".tar", ".oci"])
@@ -193,6 +193,6 @@ def test_comparator_main(
 
     received = capsys.readouterr().out
 
-    assert received == "/a/b/c.txt\n"
+    assert received == "/a\n/a/b\n/a/b/c.txt\n"
     assert pytest_exit.type is SystemExit
     assert pytest_exit.value.code == 64

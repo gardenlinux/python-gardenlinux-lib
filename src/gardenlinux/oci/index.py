@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
+"""
+OCI image index
+"""
+
 import json
 from copy import deepcopy
 from typing import Any, Dict
 
-from .schemas import EmptyIndex
+from .schemas import empty_index
 
 
 class Index(dict):  # type: ignore[type-arg]
@@ -29,7 +33,7 @@ class Index(dict):  # type: ignore[type-arg]
 
         dict.__init__(self)
 
-        self.update(deepcopy(EmptyIndex))
+        self.update(deepcopy(empty_index))
         self.update(*args)
         self.update(**kwargs)
 
