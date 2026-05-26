@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+OCI image manifest
+"""
+
 import json
 from copy import deepcopy
 from os import PathLike
@@ -12,8 +16,8 @@ from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
 from ..features import CName
 from .layer import Layer
 from .manifest import Manifest
-from .platform import NewPlatform
-from .schemas import EmptyManifestMetadata
+from .platform import new_platform
+from .schemas import empty_manifest_metadata
 
 
 class ImageManifest(Manifest):
@@ -282,12 +286,12 @@ class ImageManifest(Manifest):
             "feature_set": self.feature_set,
         }
 
-        metadata = deepcopy(EmptyManifestMetadata)
+        metadata = deepcopy(empty_manifest_metadata)
         metadata["mediaType"] = "application/vnd.oci.image.manifest.v1+json"
         metadata["digest"] = self.digest
         metadata["size"] = self.size
         metadata["annotations"] = metadata_annotations
-        metadata["platform"] = NewPlatform(self.arch, self.version)
+        metadata["platform"] = new_platform(self.arch, self.version)
 
         with open(manifest_file_path_name, "w") as fp:
             fp.write(json.dumps(metadata))

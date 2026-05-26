@@ -14,13 +14,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
       - run: make docs
-      - if: ${{ github.ref_name != 'main' }}
+      - if: ${{ github.ref_type != 'tag' }}
         name: Upload as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # pin@v7.0.1
         with:
           name: docs
           path: _build/
-      - if: ${{ github.ref_name == 'main' }}
+      - if: ${{ github.ref_type == 'tag' }}
         name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
@@ -30,7 +30,7 @@ jobs:
           force_orphan: true
 
   create-pre-release:
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

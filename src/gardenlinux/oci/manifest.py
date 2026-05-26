@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+OCI manifest
+"""
+
 import json
 from copy import deepcopy
 from hashlib import sha256
@@ -11,7 +15,7 @@ from oras.oci import EmptyManifest
 
 class Manifest(dict):  # type: ignore[type-arg]
     """
-    OCI image manifest
+    OCI manifest
 
     :author:     Garden Linux Maintainers
     :copyright:  Copyright 2024 SAP SE

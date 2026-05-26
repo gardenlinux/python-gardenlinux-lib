@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-OCI podman context
+OCI podman object context
 """
 
 import logging

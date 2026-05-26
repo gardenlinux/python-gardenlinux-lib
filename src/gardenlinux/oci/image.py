@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-OCI podman
+OCI podman image
 """
 
 import logging
