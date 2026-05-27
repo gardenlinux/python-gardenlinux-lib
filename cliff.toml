@@ -37,11 +37,12 @@ footer = """
 {%- macro remote_url() -%}
   https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endmacro -%}
+## Compare to previous version
 
 {% for release in releases -%}
     {% if release.version -%}
         {% if release.previous.version -%}
-            [{{ release.version | trim_start_matches(pat="v") }}]: \
+            [{{ release.previous.version | trim_start_matches(pat="v") }}]: \
                 {{ self::remote_url() }}/compare/{{ release.previous.version }}...{{ release.version }}
         {% endif -%}
     {% else -%}
@@ -77,8 +78,3 @@ commit_parsers = [
 ]
 # Prevent commits that are breaking from being excluded by commit parsers.
 filter_commits = false
-# Order releases topologically instead of chronologically.
-topo_order = true
-# Order of commits in each group/release within the changelog.
-# Allowed values: newest, oldest
-sort_commits = "oldest"
