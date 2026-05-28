@@ -38,10 +38,6 @@ jobs:
     steps:
     - name: Checkout commit
       uses: actions/checkout@v6
-      with:
-        sparse-checkout: |
-          cliff.toml
-        sparse-checkout-cone-mode: false
     - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
     - name: Use cargo cache
       id: cache-cargo

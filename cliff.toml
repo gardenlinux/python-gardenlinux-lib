@@ -78,3 +78,7 @@ commit_parsers = [
 ]
 # Prevent commits that are breaking from being excluded by commit parsers.
 filter_commits = false
+
+[remote.github]
+owner = "gardenlinux"
+repo = "python-gardenlinux-lib"
