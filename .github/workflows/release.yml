@@ -40,6 +40,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
+        ref: ${{ steps.get-tag-name.outputs.tag-name }}
     - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
     - name: Use cargo cache
       id: cache-cargo
