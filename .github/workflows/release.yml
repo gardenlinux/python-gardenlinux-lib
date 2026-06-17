@@ -36,6 +36,9 @@ jobs:
       contents: write
 
     steps:
+    - name: Get the Git tag name
+      id: get-tag-name
+      run: echo "tag-name=${GITHUB_REF/refs\/tags\//}" | tee -a "$GITHUB_OUTPUT"
     - name: Checkout commit
       uses: actions/checkout@v6
       with:
@@ -54,9 +57,6 @@ jobs:
       if: steps.cache-cargo.outputs.cache-hit != 'true'
       run: |
         cargo install git-cliff@${GIT_CLIFF_VERSION}
-    - name: Get the Git tag name
-      id: get-tag-name
-      run: echo "tag-name=${GITHUB_REF/refs\/tags\//}" | tee -a "$GITHUB_OUTPUT"
     - id: release
       name: Create changelog and release
       env:
