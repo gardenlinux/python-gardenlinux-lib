@@ -11,7 +11,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # pin@v7.0.0
       - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
       - run: make docs
       - if: ${{ github.ref_type != 'tag' }}
@@ -22,7 +22,7 @@ jobs:
           path: _build/
       - if: ${{ github.ref_type == 'tag' }}
         name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # pin@v4.1.0
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,7 +40,7 @@ jobs:
       id: get-tag-name
       run: echo "tag-name=${GITHUB_REF/refs\/tags\//}" | tee -a "$GITHUB_OUTPUT"
     - name: Checkout commit
-      uses: actions/checkout@v6
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # pin@v7.0.0
       with:
         fetch-depth: 0
         ref: ${{ steps.get-tag-name.outputs.tag-name }}
