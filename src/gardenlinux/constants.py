@@ -88,6 +88,7 @@ GL_MEDIA_TYPES = [
     "initrd",
     "tar.gz",
     "qcow2",
+    "sbom",
     "tar",
     "iso",
     "oci",
@@ -141,6 +142,7 @@ GL_MEDIA_TYPE_LOOKUP = {
     "secureboot.db.auth": "application/io.gardenlinux.cert.secureboot.db.auth",
     "secureboot.db.arn": "application/io.gardenlinux.cert.secureboot.db.arn",
     "secureboot.aws-efivars": "application/io.gardenlinux.cert.secureboot.aws-efivars",
+    "sbom": "application/vnd.cyclonedx+json",
 }
 
 GL_BUG_REPORT_URL = "https://github.com/gardenlinux/gardenlinux/issues"
