@@ -1,22 +1,34 @@
-API Reference
-=============
+Python Library - API Reference
+==============================
 
-This section provides detailed documentation for all Python modules and classes in python-gardenlinux-lib.
+Detailed documentation for all Python modules and classes in the Garden Linux Python Library
 
-.. automodule:: gardenlinux
-    :members:
+gardenlinux.apt
+~~~~~~~~~~~~~~~
 
 .. automodule:: gardenlinux.apt
     :members:
 
+gardenlinux.features
+~~~~~~~~~~~~~~~~~~~~
+
 .. automodule:: gardenlinux.features
     :members:
+
+gardenlinux.flavors
+~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: gardenlinux.flavors
     :members:
 
+gardenlinux.git
+~~~~~~~~~~~~~~~
+
 .. automodule:: gardenlinux.git
     :members:
+
+gardenlinux.oci
+~~~~~~~~~~~~~~~
 
 .. automodule:: gardenlinux.oci
     :members:

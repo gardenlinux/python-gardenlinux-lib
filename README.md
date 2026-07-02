@@ -1,14 +1,17 @@
+## Garden Linux Python Library
+
 ![poetry build](https://github.com/gardenlinux/parse_features_lib/actions/workflows/build.yml/badge.svg)
 ![Black Lint](https://github.com/gardenlinux/parse_features_lib/actions/workflows/black.yml/badge.svg)
 ![Test](https://github.com/gardenlinux/parse_features_lib/actions/workflows/pytests.yml/badge.svg)
 ![security check](https://github.com/gardenlinux/parse_features_lib/actions/workflows/bandit.yml/badge.svg)
 
-## Garden Linux Python Library
+Python tooling to work with
+[Garden Linux](https://github.com/gardenlinux/gardenlinux) features, flavors,
+OCI artifacts, repositories, and releases. It is primarily targeted at Garden
+Linux developers and CI pipelines rather than end users.
 
-Python tooling to work with [Garden Linux](https://github.com/gardenlinux/gardenlinux) features, flavors, OCI artifacts, repositories, and releases.
-It is primarily targeted at Garden Linux developers and CI pipelines rather than end users.
-
-The library follows the intent of [Semantic Versioning](https://semver.org) for its public APIs.
+The library follows the intent of [Semantic Versioning](https://semver.org) for
+its public APIs.
 
 ### Features
 
@@ -21,59 +24,45 @@ The library follows the intent of [Semantic Versioning](https://semver.org) for 
 
 ## Documentation
 
-Full documentation is available at the **Garden Linux Python Library Documentation** site:
-[https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
+You can find a full documentation about how to
+[install this python library](https://gardenlinux-docs.netlify.app/reference/supporting_tools/python-gardenlinux-lib.html#installation)
+and
+[use its CLI interface](https://gardenlinux-docs.netlify.app/reference/python-gardenlinux-lib-cli.html)
+this on our [documentation hub](https://gardenlinux-docs.netlify.app/).
 
-The docs include:
+For a detailed API documentation, check
+[gardenlinux.github.io/python-gardenlinux-lib/api.html](https://gardenlinux.github.io/python-gardenlinux-lib/)
 
-- **Command-Line Interface**: `gl-features-*`, `gl-flavors-*`, `gl-oci`, `gl-s3`, `gl-gh-release`
-- **API Reference**: modules, classes, and functions (e.g. `Parser`, `CName`, `Container`, `Repository`)
-- **Release documentation**: versioning and release process
+# Community
 
-## Installation
+To stay up-to-date with recent news about Gardenlinux, subscribe to our mailing
+list:
 
-### Using `poetry` (from Git)
+https://lists.neonephos.org/g/gardenlinux-discussion
 
-Add the library as a dependency in your `pyproject.toml`:
+For updates and statements regarding security issues, we have a security mailing
+list for you:
 
-```toml
-[tool.poetry.dependencies]
-gardenlinux = { git = "https://github.com/gardenlinux/python-gardenlinux-lib", rev = "0.10.5" }
-```
+https://lists.neonephos.org/g/gardenlinux-security
 
-Then install:
+For embargoed security related topics, this list is for you:
 
-```bash
-poetry install
-```
+https://lists.neonephos.org/g/gardenlinux-security-embargo
 
-### Local development setup
+# Contributing
 
-```bash
-git clone https://github.com/gardenlinux/python-gardenlinux-lib.git
-cd python-gardenlinux-lib
-python -m venv venv
-source venv/bin/activate
-poetry install
-```
+We welcome your contributions to Gardenlinux or any supporting projects.
 
-## Quickstart
+To find our more, visit our
+[Contributor Documentation](https://gardenlinux-docs.netlify.app/contributing).
 
-### Example: list features for a given `cname`
+## Licensing
 
-```python
-from gardenlinux.features import Parser
-
-cname = "aws-gardener_prod"
-feature_list = Parser().filter_as_list(cname)
-
-print(f"features of {cname}:")
-for feature in feature_list:
-    print(feature)
-```
-
-For more examples and for all CLI tools, see the **Command-Line Interface** and **API Reference** sections in the docs:
-[https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
+Copyright 2025 SAP SE or an SAP affiliate company and GardenLinux contributors.
+Please see our [LICENSE](LICENSE.md) for copyright and license information.
+Detailed information including third-party components and their
+licensing/copyright information is available
+[via the REUSE tool](https://reuse.software).
 
 <p align="center">
   <img alt="Bundesministerium für Wirtschaft und Energie (BMWE)-EU funding logo" src="https://apeirora.eu/assets/img/BMWK-EU.png" width="400"/>
