@@ -22,7 +22,7 @@ artifacts, S3 buckets, and GitHub releases.
 
 ## Overview
 
-The Garden Linux Python Library is a comprehensive toolkit for managing and
+The Garden Linux Python Library is a toolkit for managing and
 interacting with Garden Linux components. It includes:
 
 - **Feature Management**: Parse and work with Garden Linux features and generate
