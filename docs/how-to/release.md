@@ -35,7 +35,7 @@ command line.
    - `pyproject.toml`
    - `.github/actions/setup/action.yml`
 
-   Additionally at the moment (removal pending):
+   Also at the moment (removal pending):
    - `.github/actions/features_parse/action.yml`
    - `.github/actions/flavors_parse/action.yml`
 
