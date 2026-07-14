@@ -2488,6 +2488,26 @@ docs = ["reno"]
 test = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "sphinx-markdown-builder"
+version = "0.6.10"
+description = "A Sphinx extension to add markdown generation support."
+optional = false
+python-versions = ">=3.7"
+groups = ["docs"]
+files = [
+    {file = "sphinx_markdown_builder-0.6.10-py3-none-any.whl", hash = "sha256:16d86738b9ac69fcbc86e373c31c6402c30af1fa8d98d0f62cc5f38bfe5fc26e"},
+    {file = "sphinx_markdown_builder-0.6.10.tar.gz", hash = "sha256:cd5acf88d52ea0146a712fd557404f10326dff3428a78ba928e59b1727fd4a86"},
+]
+
+[package.dependencies]
+docutils = "*"
+sphinx = ">=5.1.0"
+tabulate = "*"
+
+[package.extras]
+dev = ["black", "bumpver", "coveralls", "flake8", "isort", "pip-tools", "pylint", "pytest", "pytest-cov", "sphinx (>=9.0.4)", "sphinxcontrib-plantuml", "sphinxcontrib.httpdomain"]
+
+[[package]]
 name = "sphinx-rtd-theme"
 version = "3.1.0"
 description = "Read the Docs theme for Sphinx"
@@ -2650,6 +2670,21 @@ files = [
 ]
 
 [[package]]
+name = "tabulate"
+version = "0.10.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.10"
+groups = ["docs"]
+files = [
+    {file = "tabulate-0.10.0-py3-none-any.whl", hash = "sha256:f0b0622e567335c8fabaaa659f1b33bcb6ddfe2e496071b743aa113f8774f2d3"},
+    {file = "tabulate-0.10.0.tar.gz", hash = "sha256:e2cfde8f79420f6deeffdeda9aaec3b6bc5abce947655d17ac662b126e48a60d"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "types-awscrt"
 version = "0.31.3"
 description = "Type annotations and code completion for awscrt"
@@ -2796,4 +2831,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,!=3.14.1"
-content-hash = "b6baad96983fa74aefc6cb92395fb20988d46251802ca705e0975095a42603e3"
+content-hash = "b89a42dd269e68aaf5515aaa786491a9ed3b3ff2e6742b6c3bb29ec68047412d"
