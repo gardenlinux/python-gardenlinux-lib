@@ -14,7 +14,7 @@ github_source_path: docs/overview/index.md
 github_target_path: "docs/reference/supporting_tools/python-gardenlinux-lib.md"
 ---
 
-# Garden Linux Python Library Documentation
+# Garden Linux Python library documentation
 
 Welcome to the Garden Linux Python Library documentation. This library provides
 Python tools and utilities for working with Garden Linux features, flavors, OCI
@@ -22,7 +22,7 @@ artifacts, S3 buckets, and GitHub releases.
 
 ## Overview
 
-The Garden Linux Python Library is a comprehensive toolkit for managing and
+The Garden Linux Python Library is a toolkit for managing and
 interacting with Garden Linux components. It includes:
 
 - **Feature Management**: Parse and work with Garden Linux features and generate
@@ -78,7 +78,7 @@ For more examples and for all CLI tools, see the **Command-Line Interface** and
 **API Reference** sections in the docs:
 [https://gardenlinux.github.io/python-gardenlinux-lib/](https://gardenlinux.github.io/python-gardenlinux-lib/)
 
-## Quick Start
+## Quick start
 
 ### Command-Line Interface
 
