@@ -25,10 +25,10 @@ its public APIs.
 ## Documentation
 
 You can find a full documentation about how to
-[install this python library](https://gardenlinux-docs.netlify.app/reference/supporting_tools/python-gardenlinux-lib.html#installation)
+[install this python library](https://docs.gardenlinux.org/reference/supporting_tools/python-gardenlinux-lib.html#installation)
 and
-[use its CLI interface](https://gardenlinux-docs.netlify.app/reference/python-gardenlinux-lib-cli.html)
-this on our [documentation hub](https://gardenlinux-docs.netlify.app/).
+[use its CLI interface](https://docs.gardenlinux.org/reference/python-gardenlinux-lib-cli.html)
+this on our [documentation hub](https://docs.gardenlinux.org/).
 
 For a detailed API documentation, check
 [gardenlinux.github.io/python-gardenlinux-lib/api.html](https://gardenlinux.github.io/python-gardenlinux-lib/)
@@ -54,7 +54,7 @@ https://lists.neonephos.org/g/gardenlinux-security-embargo
 We welcome your contributions to Gardenlinux or any supporting projects.
 
 To find our more, visit our
-[Contributor Documentation](https://gardenlinux-docs.netlify.app/contributing).
+[Contributor Documentation](https://docs.gardenlinux.org/contributing).
 
 ## Licensing
 
