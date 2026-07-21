@@ -5,9 +5,6 @@ related_topics:
   - /reference/supporting_tools/python-gardenlinux-lib
   - /reference/python-gardenlinux-lib-cli
   - /how-to/python-gardenlinux-lib-release
-migration_status: "done"
-migration_stakeholder: "@tmangold, @yeoldegrove, @ByteOtter"
-migration_approved: false
 github_org: gardenlinux
 github_repo: python-gardenlinux-lib
 github_source_path: docs/overview/index.md
