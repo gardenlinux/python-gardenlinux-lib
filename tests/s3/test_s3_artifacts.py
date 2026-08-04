@@ -302,3 +302,49 @@ def test_upload_directory_with_requirements_override(s3_setup: S3Env) -> None:
     metadata = yaml.safe_load(meta_obj.get()["Body"].read())
     assert metadata["require_uefi"] is False
     assert metadata["secureboot"] is True
+
+
+def test_upload_directory_with_publishing_group(s3_setup: S3Env) -> None:
+    """A publishing_group value in the .requirements file is copied into the metadata."""
+    # Arrange
+    env = s3_setup
+    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+    (env.tmp_path / f"{env.cname}.requirements").write_text(
+        "arch = amd64\npublishing_group = container\n"
+    )
+    (env.tmp_path / f"{env.cname}-artifact").write_bytes(b"abc")
+
+    # Act
+    artifacts = S3Artifacts(env.bucket_name)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    meta_obj = next(
+        o for o in bucket.objects.all() if o.key == f"meta/singles/{env.cname}"
+    )
+    metadata = yaml.safe_load(meta_obj.get()["Body"].read())
+    assert metadata["publishing_group"] == "container"
+
+
+def test_upload_directory_without_publishing_group(s3_setup: S3Env) -> None:
+    """An empty or absent publishing_group is not emitted, marking a standalone build."""
+    # Arrange
+    env = s3_setup
+    (env.tmp_path / f"{env.cname}.release").write_text(RELEASE_DATA)
+    (env.tmp_path / f"{env.cname}.requirements").write_text(
+        "arch = amd64\npublishing_group = \n"
+    )
+    (env.tmp_path / f"{env.cname}-artifact").write_bytes(b"abc")
+
+    # Act
+    artifacts = S3Artifacts(env.bucket_name)
+    artifacts.upload_from_directory(env.cname, env.tmp_path)
+
+    # Assert
+    bucket = env.s3.Bucket(env.bucket_name)
+    meta_obj = next(
+        o for o in bucket.objects.all() if o.key == f"meta/singles/{env.cname}"
+    )
+    metadata = yaml.safe_load(meta_obj.get()["Body"].read())
+    assert "publishing_group" not in metadata
