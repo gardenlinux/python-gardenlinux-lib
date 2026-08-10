@@ -138,6 +138,10 @@ def generate_table_format(
             continue
 
         for platform in sorted(grouped_data[variant].keys()):
+            if not hasattr(PLATFORMS, platform):
+                LOGGER.warn(f"GitHub release notes platform not defined: {platform}")
+                continue
+
             for arch in sorted(grouped_data[variant][platform].keys()):
                 for metadata in grouped_data[variant][platform][arch]:
                     data = PLATFORMS[platform].published_images_by_regions(metadata)
