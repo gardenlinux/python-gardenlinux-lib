@@ -130,6 +130,7 @@ def generate_table_format(
     """
     Generate the table format with collapsible region details
     """
+
     output = "| Variant | Platform | Architecture | Flavor | Regions & Image IDs | Download Links |\n"
     output += "|---------|----------|--------------|--------|---------------------|----------------|\n"
 
@@ -175,6 +176,7 @@ def generate_detailed_format(
     """
     Generate the old detailed format with YAML
     """
+
     output = ""
 
     for variant in IMAGE_IDS_VARIANT_ORDER:
@@ -185,6 +187,10 @@ def generate_detailed_format(
         output += f"### Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}\n\n"
 
         for platform in sorted(grouped_data[variant].keys()):
+            if not hasattr(PLATFORMS, platform):
+                LOGGER.warn(f"GitHub release notes platform not defined: {platform}")
+                continue
+
             platform_long_name = PLATFORMS[platform].full_name()
             platform_short_name = PLATFORMS[platform].short_name().upper()
             output += f"<details>\n<summary>{platform_short_name} - {platform_long_name}</summary>\n\n"
