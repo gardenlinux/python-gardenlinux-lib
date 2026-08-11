@@ -235,6 +235,7 @@ paths:
   suffix: .manifest.log
 platform: openstack
 published_image_metadata: null
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/openstack-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40

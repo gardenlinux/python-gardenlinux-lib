@@ -21,6 +21,7 @@ logs: null
 modifiers:
 - _usi
 - _trustedboot
+publishing_group: ''
 require_uefi: true
 secureboot: true
 tpm2: false
