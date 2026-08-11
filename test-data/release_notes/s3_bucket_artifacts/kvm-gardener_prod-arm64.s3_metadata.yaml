@@ -84,6 +84,7 @@ paths:
   suffix: .tar
 platform: kvm
 published_image_metadata: null
+publishing_group: ''
 require_uefi: false
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/kvm-gardener_prod-arm64-1877.3-75df9f40

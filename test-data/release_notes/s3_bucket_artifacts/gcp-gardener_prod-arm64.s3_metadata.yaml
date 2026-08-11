@@ -85,6 +85,7 @@ platform: gcp
 published_image_metadata:
   gcp_image_name: gardenlinux-gcp-c8504d3c3e67cf2fc7c3408c-1877-3-75df9f40
   gcp_project_name: sap-se-gcp-gardenlinux
+publishing_group: ''
 require_uefi: false
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/gcp-gardener_prod-arm64-1877.3-75df9f40

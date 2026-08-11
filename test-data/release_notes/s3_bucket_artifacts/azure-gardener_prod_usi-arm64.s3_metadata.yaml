@@ -141,6 +141,7 @@ published_image_metadata:
     community_gallery_image_id: /CommunityGalleries/gardenlinux-8e6518fb-9ae0-4f66-abfd-9a06997e2492/Images/gardenlinux-nvme-arm64-gen2-usi/Versions/1877.3.0
     hyper_v_generation: V2
   published_marketplace_images: []
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/azure-gardener_prod_usi-arm64-1877.3-75df9f40
