@@ -257,6 +257,7 @@ published_image_metadata:
   - ami_id: ami-005f7dab618420a91
     aws_region_id: eu-central-1
     image_name: gardenlinux-aws-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/aws-gardener_prod_tpm2_trustedboot-amd64-1877.3-75df9f40
