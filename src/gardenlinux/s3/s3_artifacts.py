@@ -148,6 +148,7 @@ class S3Artifacts(object):
 
         arch = cname_object.arch
         feature_set_list = cname_object.feature_set_list
+        publishing_group = ""
         release_timestamp = stat(release_file).st_ctime
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
         require_uefi = None
@@ -160,6 +161,11 @@ class S3Artifacts(object):
 
             if requirements_config.has_option(UNNAMED_SECTION, "arch"):
                 arch = requirements_config.get(UNNAMED_SECTION, "arch")
+
+            if requirements_config.has_option(UNNAMED_SECTION, "publishing_group"):
+                publishing_group = requirements_config.get(
+                    UNNAMED_SECTION, "publishing_group"
+                )
 
             if requirements_config.has_option(UNNAMED_SECTION, "uefi"):
                 require_uefi = requirements_config.getboolean(UNNAMED_SECTION, "uefi")
@@ -202,6 +208,7 @@ class S3Artifacts(object):
             "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
+            "publishing_group": publishing_group,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
             "tpm2": tpm2,
