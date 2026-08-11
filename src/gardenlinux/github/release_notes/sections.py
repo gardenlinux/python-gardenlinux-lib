@@ -139,7 +139,7 @@ def generate_table_format(
             continue
 
         for platform in sorted(grouped_data[variant].keys()):
-            if not hasattr(PLATFORMS, platform):
+            if platform not in PLATFORMS:
                 LOGGER.warn(f"GitHub release notes platform not defined: {platform}")
                 continue
 
@@ -187,7 +187,7 @@ def generate_detailed_format(
         output += f"### Variant - {IMAGE_IDS_VARIANT_NAMES[variant]}\n\n"
 
         for platform in sorted(grouped_data[variant].keys()):
-            if not hasattr(PLATFORMS, platform):
+            if platform not in PLATFORMS:
                 LOGGER.warn(f"GitHub release notes platform not defined: {platform}")
                 continue
 

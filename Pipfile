@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+poetry = "*"
+pre-commit = "*"
+sniffio = "*"
+podman = "*"
+sphinx-click = "*"
+sphinxcontrib-autoprogram = "*"
+isort = "*"
+gardenlinux = {file = ".", editable = true}
+semver = "*"
+
+[dev-packages]
