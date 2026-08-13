@@ -153,6 +153,7 @@ class S3Artifacts(object):
         require_uefi = None
         secureboot = None
         tpm2 = None
+        publishing_group = None
 
         if requirements_file.exists():
             requirements_config = ConfigParser(allow_unnamed_section=True)
@@ -171,6 +172,11 @@ class S3Artifacts(object):
 
             if requirements_config.has_option(UNNAMED_SECTION, "tpm2"):
                 tpm2 = requirements_config.getboolean(UNNAMED_SECTION, "tpm2")
+
+            if requirements_config.has_option(UNNAMED_SECTION, "publishing_group"):
+                publishing_group = requirements_config.get(
+                    UNNAMED_SECTION, "publishing_group"
+                )
 
         if arch is None:
             raise RuntimeError(
@@ -219,6 +225,9 @@ class S3Artifacts(object):
 
         if platform_variant is not None:
             metadata["platform_variant"] = platform_variant
+
+        if publishing_group:
+            metadata["publishing_group"] = publishing_group
 
         base_name_length = len(base_name)
 
