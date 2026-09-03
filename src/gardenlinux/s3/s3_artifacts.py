@@ -237,6 +237,7 @@ class S3Artifacts(object):
 
             with artifact.open("rb") as fp:
                 md5sum = file_digest(fp, "md5").hexdigest()
+                fp.seek(0)
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
             artifact_metadata = {
