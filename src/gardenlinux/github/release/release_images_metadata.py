@@ -18,7 +18,7 @@ import yaml
 
 from ...apt import DebsrcFile
 from ...constants import GL_DEB_REPO_BASE_URL, GLVD_BASE_URL, REQUESTS_TIMEOUTS
-from ...features import CName
+from ...features import ArtifactBaseName
 from ...flavors import Parser
 from ...git import Repository
 from ...logger import LoggerSetup
@@ -153,31 +153,28 @@ class ReleaseImagesMetadata(object):
                     f"{flavor=} version={self._version} commitish={self._commitish}"
                 )
 
-                cname = CName(
-                    flavor[1],
-                    arch=flavor[0],
-                    commit_hash=self._commitish,
-                    version=self._version,
+                abn_object = ArtifactBaseName(
+                    f"{flavor[1]}-{self._version}-{self._commitish}"
                 )
 
                 try:
                     release_object = list(
                         s3_artifacts.bucket.objects.filter(
-                            Prefix=f"meta/singles/{cname.cname}"
+                            Prefix=f"meta/singles/{abn_object}"
                         )
                     )[0]
 
                     s3_artifacts.bucket.download_file(
                         release_object.key,
-                        str(Path(tmpdir, f"{cname.cname}.s3_metadata.yaml")),
+                        str(Path(tmpdir, f"{abn_object}.s3_metadata.yaml")),
                     )
                 except IndexError:
                     self._logger.warning(
-                        f"No artifacts found for flavor {cname.cname}, skipping..."
+                        f"No artifacts found for flavor {abn_object}, skipping..."
                     )
                     continue
 
-                with Path(tmpdir, f"{cname.cname}.s3_metadata.yaml").open("r") as file:
+                with Path(tmpdir, f"{abn_object}.s3_metadata.yaml").open("r") as file:
                     s3_data = ReleaseImagesMetadata.parse_s3_metadata(
                         yaml.load(file, Loader=yaml.SafeLoader)
                     )

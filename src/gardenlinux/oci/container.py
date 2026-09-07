@@ -22,7 +22,6 @@ from oras.utils import extract_targz, make_targz
 from requests import HTTPError, Response
 
 from ..constants import OCI_IMAGE_INDEX_MEDIA_TYPE
-from ..features.cname import CName
 from ..logger import LoggerSetup
 from .image_manifest import ImageManifest
 from .index import Index
@@ -141,31 +140,32 @@ class Container(Registry):  # type: ignore[misc]
         :since:  0.10.0
         """
 
-        cname_object = CName(cname, architecture, version)
-
-        if architecture is None:
-            architecture = cname_object.arch
-        if version is None:
-            version = cname_object.version
-        if commit is None:
-            commit = cname_object.commit_id
-        if feature_set is None:
-            feature_set = cname_object.feature_set
-
-        if commit is None:
+        if not commit:
             commit = ""
 
         manifest = ImageManifest()
 
-        manifest.version = version  # type: ignore[assignment]
         manifest.cname = cname
-        manifest.arch = architecture  # type: ignore[assignment]
-        manifest.feature_set = feature_set
         manifest.commit = commit
 
+        if architecture:
+            manifest.arch = architecture
+        else:
+            architecture = ""
+
+        if feature_set:
+            manifest.feature_set = feature_set
+        else:
+            feature_set = ""
+
+        if version:
+            manifest.version = version
+        else:
+            version = ""
+
         description = (
-            f"Image: {cname} "
-            f"Flavor: {cname_object.flavor} "
+            f"Image: {cname}-{architecture}-{version}-{commit}"
+            f"Flavor: {cname}-{architecture} "
             f"Architecture: {architecture} "
             f"Features: {feature_set} "
             f"Commit: {commit} "
@@ -594,8 +594,8 @@ class Container(Registry):  # type: ignore[misc]
         else:
             manifest_type = ImageManifest
 
-            if architecture is None:
-                architecture = CName(cname, architecture, version).arch
+            if not architecture:
+                architecture = ""
 
             response = self._get_manifest_without_response_parsing(
                 f"{self._container_version}-{cname}-{architecture}"
