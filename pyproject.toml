@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "0.10.19"
+version = "1.0.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -10,47 +10,44 @@ packages = [{ include = "gardenlinux", from = "src" }]
 [tool.poetry.dependencies]
 python = ">=3.13,!=3.14.1"
 apt-repo = "^0.5"
-boto3 = "^1.43.10"
-click = "^8.4.0"
+boto3 = "^1.43.108"
 cryptography = "^49.0.0"
 jsonschema = "^4.26.0"
-networkx = "^3.6"
-oras = "^0.2.38"
-podman = "^5.6.0"
-pygit2 = "^1.19.1"
-pygments = "^2.19.2"
-PyGithub = "^2.8.1"
-PyYAML = "^6.0.2"
-semver = "^3.0.4"
+networkx = "^3.7"
+oras = "^0.2.43"
+podman = "^5.8.0"
+pygit2 = "^1.20.1"
+pygments = "^2.21.0"
+PyGithub = "^2.10.0"
+PyYAML = "^6.0.3"
+semver = "^3.1.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.9.4"
 isort = "^8.0.1"
 moto = "^5.2.1"
-pre-commit = "^4.6.0"
+pre-commit = "^4.6.2"
 python-dotenv = "^1.2.2"
-pytest = "^9.0.3"
+pytest = "^9.1.1"
 pytest-cov = "^7.1.0"
 requests-mock = "^1.12.1"
 mypy = "2.1.0"
-types-click = "^7.1.8"
 types-pyyaml = "^6.0.12.20260518"
 types-requests = "^2.33.0.20260518"
 boto3-stubs = { extras = ["s3"], version = "^1.42.41" }
 
 [tool.poetry.group.docs.dependencies]
-sphinx-rtd-theme = "^3.0.2"
-sphinx-click = "^6.2.0"
+sphinx-rtd-theme = "^3.1.0"
 sphinxcontrib-autoprogram = "^0.1.8"
-sphinx-markdown-builder = "^0.6.10"
+sphinx-markdown-builder = "^0.6.11"
 
 [tool.poetry.scripts]
-gl-cname = "gardenlinux.features.cname_main:main"
 gl-feature-fs-diff = "gardenlinux.features.reproducibility.__main__:main"
 gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-gh-release = "gardenlinux.github.release.__main__:main"
 gl-oci = "gardenlinux.oci.__main__:main"
+gl-metadata = "gardenlinux.features.metadata_main:main"
 gl-s3 = "gardenlinux.s3.__main__:main"
 
 [tool.pytest.ini_options]

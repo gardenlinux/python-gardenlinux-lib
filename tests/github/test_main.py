@@ -147,9 +147,9 @@ def test_script_upload_needs_github_token(
                 "gardenlinux",
                 "--repo",
                 "gardenlinux",
-                "--release_id",
+                "--release-id",
                 TEST_GARDENLINUX_RELEASE_MINOR,
-                "--file_path",
+                "--file",
                 str(artifact_for_upload),
                 "--dry-run",
             ],
@@ -174,8 +174,7 @@ def test_script_parse_args_upload_command_required_args(
     captured = capfd.readouterr()
 
     assert (
-        "the following arguments are required: --release_id, --file_path"
-        in captured.err
+        "the following arguments are required: --release-id, --file" in captured.err
     ), "Expected help message on missing arguments for 'upload' command"
 
 
@@ -208,9 +207,9 @@ def test_script_upload_dry_run(
                 "gardenlinux",
                 "--repo",
                 "gardenlinux",
-                "--release_id",
+                "--release-id",
                 TEST_GARDENLINUX_RELEASE_MINOR,
-                "--file_path",
+                "--file",
                 str(artifact_for_upload),
                 "--dry-run",
             ],
@@ -267,9 +266,9 @@ def test_script_upload_inaccessible_file(
                 "gardenlinux",
                 "--repo",
                 "gardenlinux",
-                "--release_id",
+                "--release-id",
                 TEST_GARDENLINUX_RELEASE_MINOR,
-                "--file_path",
+                "--file",
                 str(artifact_for_upload),
             ],
         )
@@ -319,9 +318,9 @@ def test_script_upload(
                 "gardenlinux",
                 "--repo",
                 "gardenlinux",
-                "--release_id",
+                "--release-id",
                 TEST_GARDENLINUX_RELEASE_MINOR,
-                "--file_path",
+                "--file",
                 str(artifact_for_upload),
             ],
         )

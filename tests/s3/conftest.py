@@ -20,10 +20,10 @@ class S3Env:
     s3: S3ServiceResource
     bucket_name: str
     tmp_path: Path
-    cname: str
+    artifact_base_name: str
 
 
-def make_cname(
+def make_artifact_base_name(
     flavor: str = "container_trustedboot_usi",
     arch: str = "amd64",
     version: str = "1234.1",
@@ -64,5 +64,5 @@ def s3_setup(
 
         monkeypatch.setattr("gardenlinux.s3.s3_artifacts.file_digest", dummy_digest)
 
-        cname = make_cname()
-        yield S3Env(s3, BUCKET_NAME, tmp_path, cname)
+        artifact_base_name = make_artifact_base_name()
+        yield S3Env(s3, BUCKET_NAME, tmp_path, artifact_base_name)

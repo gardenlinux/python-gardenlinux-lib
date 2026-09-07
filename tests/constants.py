@@ -11,7 +11,7 @@ ZOT_CONFIG_FILE = f"{TEST_DATA_DIR}/zot/config.json"
 REGISTRY = "127.0.0.1:18081"
 REGISTRY_URL = f"http://{REGISTRY}"
 REPO_NAME = "gardenlinux-example"
-CONTAINER_NAME_ZOT_EXAMPLE = f"{REGISTRY}/{REPO_NAME}"
+REPOSITORY_NAME_ZOT_EXAMPLE = f"{REGISTRY}/{REPO_NAME}"
 GARDENLINUX_ROOT_DIR_EXAMPLE = f"{TEST_DATA_DIR}/gardenlinux/.build"
 
 TEST_PLATFORMS = ["aws", "azure", "baremetal", "gcp", "openstack"]

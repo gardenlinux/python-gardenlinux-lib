@@ -13,7 +13,7 @@ from typing import Any, Dict
 from oras.defaults import annotation_title as ANNOTATION_TITLE
 
 from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
-from ..features import CName
+from ..features import Flavor
 from .layer import Layer
 from .manifest import Manifest
 from .platform import new_platform
@@ -154,7 +154,26 @@ class ImageManifest(Manifest):
         :since:  0.7.0
         """
 
-        return CName(self.cname).flavor
+        return Flavor(self.cname, self.arch).flavor
+
+    @flavor.setter
+    def flavor(self, value: str) -> None:
+        """
+        Sets the GardenLinux flavor of the OCI image manifest.
+
+        :param value: OCI image GardenLinux flavor
+
+        :since: 1.0.0
+        """
+
+        self._ensure_annotations_dict()
+
+        if "-" not in value:
+            raise RuntimeError(f"GardenLinux flavor is invalid: {value}")
+
+        cname, arch = value.rsplit("-", 1)
+        self["annotations"][ImageManifest.ANNOTATION_ARCH_KEY] = arch
+        self["annotations"][ImageManifest.ANNOTATION_CNAME_KEY] = cname
 
     @property
     def extended_dict(self) -> Dict[str, Any]:
