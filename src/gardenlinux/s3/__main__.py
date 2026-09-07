@@ -43,16 +43,16 @@ def get_parser() -> argparse.ArgumentParser:
     download_parser = subparsers.add_parser("download-artifacts-from-bucket")
 
     download_parser.add_argument(
-        "--cname",
+        "--artifact-base-name",
         required=False,
-        dest="cname",
-        help="Canonical name (cname) used as the S3 key prefix for artifacts.",
+        dest="artifact_base_name",
+        help="Artifact base name used as the S3 key prefix for artifacts.",
     )
 
     upload_parser = subparsers.add_parser("upload-artifacts-to-bucket")
 
     upload_parser.add_argument(
-        "--artifact-name", dest="artifact_name", help="S3 artifact base name."
+        "--artifact-base-name", dest="artifact_base_name", help="S3 artifact base name."
     )
 
     return parser
@@ -69,8 +69,10 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.action == "download-artifacts-from-bucket":
-        S3Artifacts(args.bucket).download_to_directory(args.cname, args.path)
+        S3Artifacts(args.bucket).download_to_directory(
+            args.artifact_base_name, args.path
+        )
     elif args.action == "upload-artifacts-to-bucket":
         S3Artifacts(args.bucket).upload_from_directory(
-            args.artifact_name, args.path, dry_run=args.dry_run
+            args.artifact_base_name, args.path, dry_run=args.dry_run
         )
