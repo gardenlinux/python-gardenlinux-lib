@@ -18,7 +18,7 @@ def test_main_output(
     # Arrange
     argv = [
         "prog",
-        "--cname",
+        "--flavor",
         "container-amd64",
         "--version",
         "today",
@@ -33,7 +33,7 @@ def test_main_output(
 
     # Assert
     expected = generate_container_amd64_release_metadata("today", "local")
-    assert expected == capsys.readouterr().out.strip()
+    assert capsys.readouterr().out.strip() == expected
 
 
 def test_main_write(
@@ -47,7 +47,7 @@ def test_main_write(
         os_release_file = Path(tmpdir, "os_release")
         argv = [
             "prog",
-            "--cname",
+            "--flavor",
             "container-amd64",
             "--version",
             "today",
@@ -80,7 +80,7 @@ def test_main_validation(monkeypatch: pytest.MonkeyPatch) -> None:
 
         argv = [
             "prog",
-            "--cname",
+            "--flavor",
             "base-python-amd64",
             "--version",
             "today",

@@ -5,7 +5,7 @@
 
 ## Detailed Result
 
-*The mentioned features are included in every affected flavor and not included in every unaffected flavor.*
+*The mentioned features are included in every affected CName and not included in every unaffected cname.*
 
 | Affected Files | Flavors | Features Causing the Problem |
 |----------------|---------|------------------------------|

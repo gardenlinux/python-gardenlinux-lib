@@ -28,7 +28,7 @@ class Nightly:
 class MarkdownFormatter(object):
     """
     This class takes the diff-files results from the reproducibility check and generates a markdown of the result
-    The diff-files contain paths of files which were different when building the flavor two times
+    The diff-files contain paths of files which were different when building the cname two times
     They can be generated using the Comparator class
 
     :author:     Garden Linux Maintainers
@@ -48,8 +48,8 @@ class MarkdownFormatter(object):
 
     def __init__(
         self,
-        flavors_matrix: dict[str, list[dict[str, str]]],
-        bare_flavors_matrix: dict[str, list[dict[str, str]]],
+        cnames_matrix: dict[str, list[dict[str, str]]],
+        bare_cnames_matrix: dict[str, list[dict[str, str]]],
         diff_dir: PathLike[str] = Path("diffs"),
         nightly_stats: PathLike[str] = Path("nightly_stats.csv"),
         gardenlinux_root: Optional[str] = None,
@@ -59,8 +59,8 @@ class MarkdownFormatter(object):
         """
         Constructor __init__(MarkdownFormatter)
 
-        :param flavors_matrix:          The flavors matrix to identify missing diff files
-        :param bare_flavors_matrix:     The bare flavors matrix to identify missing diff files
+        :param cnames_matrix:          The cnames matrix to identify missing diff files
+        :param bare_cnames_matrix:     The bare cnames matrix to identify missing diff files
         :param diff_dir:                Directory containing the diff-files
         :param nightly_stats:           File containing infos about nightly runs
         :param gardenlinux_root:        GardenLinux root directory
@@ -71,7 +71,7 @@ class MarkdownFormatter(object):
         """
 
         self._diff_parser = DiffParser(gardenlinux_root, feature_dir_name, logger)
-        self._diff_parser.parse(flavors_matrix, bare_flavors_matrix, diff_dir)
+        self._diff_parser.parse(cnames_matrix, bare_cnames_matrix, diff_dir)
 
         self._nightly_stats = Path(nightly_stats)
 
@@ -189,20 +189,20 @@ with a new build"
         successrate = round(
             100
             * (
-                len(self._diff_parser.reproducible_flavors)
-                / len(self._diff_parser.expected_falvors)
+                len(self._diff_parser.reproducible_cnames)
+                / len(self._diff_parser.expected_cnames)
             ),
             1,
         )
 
         emoji = (
             "✅"
-            if len(self._diff_parser.expected_falvors)
-            == len(self._diff_parser.reproducible_flavors)
+            if len(self._diff_parser.expected_cnames)
+            == len(self._diff_parser.reproducible_cnames)
             else ("⚠️" if successrate >= SUCCESS_TRESHOLD else "❌")
         )
 
-        total_count = len(self._diff_parser.expected_falvors)
+        total_count = len(self._diff_parser.expected_cnames)
 
         problem_count = (
             ""
@@ -226,20 +226,20 @@ with a new build"
                 + "</pre></details>"
             )
 
-        if len(self._diff_parser.unexpected_falvors) > 0:
+        if len(self._diff_parser.unexpected_cnames) > 0:
             # This should never happen, but print a warning if it somehow does
             explanation += (
                 "\n\n<details><summary>⁉️ These flavors were not expected to appear in the results, please check for errors in the workflow\
 </summary><pre>"
-                + "<br>".join(sorted(self._diff_parser.unexpected_falvors))
+                + "<br>".join(sorted(self._diff_parser.unexpected_cnames))
                 + "</pre></details>"
             )
 
         explanation += (
             ""
-            if len(self._diff_parser.expected_falvors)
-            <= len(self._diff_parser.reproducible_flavors)
-            else "\n\n*The mentioned features are included in every affected flavor and not included in every unaffected flavor.*"
+            if len(self._diff_parser.expected_cnames)
+            <= len(self._diff_parser.reproducible_cnames)
+            else "\n\n*The mentioned features are included in every affected CName and not included in every unaffected cname.*"
         )
 
         return header.format(
@@ -268,25 +268,25 @@ with a new build"
 
         rows = ""
 
-        if len(self._diff_parser.missing_flavors) > 0:
+        if len(self._diff_parser.missing_cnames) > 0:
             row = "|❌ Workflow run did not produce any results|"
-            row += f"**{round(100 * (len(self._diff_parser.missing_flavors) / len(self._diff_parser.expected_falvors)), 1)}%** affected<br>"
-            row += self._dropdown(self._diff_parser.missing_flavors)
+            row += f"**{round(100 * (len(self._diff_parser.missing_cnames) / len(self._diff_parser.expected_cnames)), 1)}%** affected<br>"
+            row += self._dropdown(self._diff_parser.missing_cnames)
             row += "|No analysis available|\n"
             rows += row
 
-        # Sort the problems by affected flavors in descending order and by files names for problems with the same number of affected flavors
+        # Sort the problems by affected cnames in descending order and by files names for problems with the same number of affected cnames
         # to get a derterministic ordering for testing
         def sorting_function(files: frozenset[str]) -> tuple[int, str]:
             return (-len(trees[files][0]), ",".join(sorted(files)))
 
         for files in sorted(trees, key=sorting_function):
-            flavors, tree = trees[files]
+            cnames, tree = trees[files]
             row = "|"
             row += self._dropdown(files)
             row += "|"
-            row += f"**{round(100 * (len(flavors) / len(self._diff_parser.expected_falvors)), 1)}%** affected<br>"
-            row += self._dropdown(flavors)
+            row += f"**{round(100 * (len(cnames) / len(self._diff_parser.expected_cnames)), 1)}%** affected<br>"
+            row += self._dropdown(cnames)
             row += "|"
             if len(tree) == 0:
                 row += "No analysis available"
@@ -295,20 +295,20 @@ with a new build"
             row += "|\n"
             rows += row
 
-        if len(self._diff_parser.reproducible_flavors) > 0:
+        if len(self._diff_parser.reproducible_cnames) > 0:
             # Success row
             row = "|"
             row += "✅ No problems found"
             row += "|"
-            row += f"**{round(100 * (len(self._diff_parser.reproducible_flavors) / len(self._diff_parser.expected_falvors)), 1)}%**<br>"
-            row += self._dropdown(self._diff_parser.reproducible_flavors)
+            row += f"**{round(100 * (len(self._diff_parser.reproducible_cnames) / len(self._diff_parser.expected_cnames)), 1)}%**<br>"
+            row += self._dropdown(self._diff_parser.reproducible_cnames)
             row += "|"
             row += "-"
             row += "|\n"
             rows += row
 
-        if len(self._diff_parser.reproducible_flavors) < len(
-            self._diff_parser.expected_falvors
+        if len(self._diff_parser.reproducible_cnames) < len(
+            self._diff_parser.expected_cnames
         ):
             rows += "\n*To add affected files to the whitelist, edit `src/gardenlinux/features/reproducibility/nightly_whitelist.json` in python-gardenlinux-lib*\n"
 
