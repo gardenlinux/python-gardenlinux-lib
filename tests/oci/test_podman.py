@@ -21,7 +21,7 @@ def test_podman_tag_list(
         try:
             podman.tag_list(
                 image_id,
-                Podman.get_container_tag_list("container-test", ["a", "b", "c"]),
+                Podman.get_image_tag_list("container-test", ["a", "b", "c"]),
             )
 
             image = podman_context.images.get(image_id)

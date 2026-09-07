@@ -6,13 +6,13 @@ from tempfile import TemporaryDirectory
 import pytest
 
 import gardenlinux.oci.__main__ as oci_main
-from gardenlinux.oci import Container, Podman
+from gardenlinux.oci import Podman, Repository
 from gardenlinux.oci.podman_context import PodmanContext
 
 from ..constants import REGISTRY, REPO_NAME, TEST_DATA_DIR
 
 
-def test_main_build_container(
+def test_main_build_image(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     monkeypatch.setattr(
@@ -20,18 +20,17 @@ def test_main_build_container(
         "argv",
         [
             "__main__.py",
-            "build-container",
+            "build-image",
             "--dir",
             f"{TEST_DATA_DIR}/oci/build",
-            "--container",
+            "--repository",
             "container-test",
             "--tag",
             "latest",
         ],
     )
 
-    with pytest.raises(SystemExit, match="0"):
-        oci_main.main()
+    oci_main.main()
 
     captured = capsys.readouterr()
     image_id = captured.out.strip()
@@ -46,7 +45,7 @@ def test_main_build_container(
             podman.images.remove(image)
 
 
-def test_main_build_container_and_save_as_oci_archive(
+def test_main_build_image_and_save_as_oci_archive(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     with TemporaryDirectory() as tmpdir:
@@ -55,14 +54,14 @@ def test_main_build_container_and_save_as_oci_archive(
             "argv",
             [
                 "__main__.py",
-                "build-container",
+                "build-image",
                 "--dir",
                 f"{TEST_DATA_DIR}/oci/build",
-                "--container",
+                "--repository",
                 "container-test",
                 "--tag",
                 "latest",
-                "--oci_archive",
+                "--oci-archive",
                 f"{tmpdir}/archive.oci",
             ],
         )
@@ -70,8 +69,7 @@ def test_main_build_container_and_save_as_oci_archive(
         image_id = None
 
         try:
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
             captured = capsys.readouterr()
             image_id = captured.out.strip()
@@ -84,7 +82,7 @@ def test_main_build_container_and_save_as_oci_archive(
                     podman.images.remove(image)
 
 
-def test_main_load_container(
+def test_main_load_image(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     with PodmanContext() as podman_context, TemporaryDirectory() as tmpdir:
@@ -102,14 +100,13 @@ def test_main_load_container(
                 "argv",
                 [
                     "__main__.py",
-                    "load-container",
-                    "--oci_archive",
+                    "load-image",
+                    "--oci-archive",
                     f"{tmpdir}/archive.oci",
                 ],
             )
 
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
             captured = capsys.readouterr()
             image_id_exported = captured.out.strip()
@@ -121,7 +118,7 @@ def test_main_load_container(
             podman_context.images.remove(image)
 
 
-def test_main_load_containers_from_directory(
+def test_main_load_images_from_directory(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     with PodmanContext() as podman_context, TemporaryDirectory() as tmpdir:
@@ -139,14 +136,13 @@ def test_main_load_containers_from_directory(
                 "argv",
                 [
                     "__main__.py",
-                    "load-containers-from-directory",
+                    "load-images-from-directory",
                     "--dir",
                     f"{tmpdir}",
                 ],
             )
 
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
             captured = capsys.readouterr()
             result = json.loads(captured.out)
@@ -161,7 +157,7 @@ def test_main_load_containers_from_directory(
 
 
 @pytest.mark.usefixtures("zot_session")
-def test_main_push_container(
+def test_main_push_image(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     with PodmanContext() as podman_context, TemporaryDirectory():
@@ -178,30 +174,28 @@ def test_main_push_container(
                 "argv",
                 [
                     "__main__.py",
-                    "push-container",
-                    "--container",
+                    "push-image",
+                    "--repository",
                     image_id,
                     "--destination",
                     f"docker://{REGISTRY}/{REPO_NAME}/kidden:latest",
                     "--insecure",
-                    "true",
                 ],
             )
 
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
-            container = Container(
+            repository = Repository(
                 f"http://{REGISTRY}/{REPO_NAME}/kidden:latest", insecure=True
             )
             # Assert - the following read would fail if push has not been successful
-            _ = container.read_manifest()
+            _ = repository.read_manifest()
         finally:
             if image_built is not None:
                 podman_context.images.remove(image_built)
 
 
-def test_main_tag_container(
+def test_main_tag_image(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
     with PodmanContext() as podman_context, TemporaryDirectory():
@@ -218,20 +212,19 @@ def test_main_tag_container(
                 "argv",
                 [
                     "__main__.py",
-                    "tag-container",
-                    "--container",
+                    "tag-image",
+                    "--repository",
                     image_id,
-                    "--additional_tag",
+                    "--additional-tag",
                     "latest",
-                    "--additional_tag",
+                    "--additional-tag",
                     "test:latest",
-                    "--additional_tag",
+                    "--additional-tag",
                     "localhost/kidden:latest",
                 ],
             )
 
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
             image = podman_context.images.get(image_id)
 
@@ -244,7 +237,7 @@ def test_main_tag_container(
                 podman_context.images.remove(image, force=True)
 
 
-def test_main_save_container(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_save_image(monkeypatch: pytest.MonkeyPatch) -> None:
     with PodmanContext() as podman, TemporaryDirectory() as tmpdir:
         image_id = Podman().build(
             f"{TEST_DATA_DIR}/oci/build", oci_tag="container-test:latest", podman=podman
@@ -255,19 +248,18 @@ def test_main_save_container(monkeypatch: pytest.MonkeyPatch) -> None:
             "argv",
             [
                 "__main__.py",
-                "save-container",
-                "--container",
+                "save-image",
+                "--repository",
                 "container-test:latest",
                 "--tag",
                 "localhost/container-test:latest",
-                "--oci_archive",
+                "--oci-archive",
                 f"{tmpdir}/archive.oci",
             ],
         )
 
         try:
-            with pytest.raises(SystemExit, match="0"):
-                oci_main.main()
+            oci_main.main()
 
             assert Path(tmpdir, "archive.oci").exists()
         finally:

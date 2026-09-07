@@ -22,7 +22,7 @@ from .constants import RELEASE_DATA, S3_METADATA
                 "--path",
                 "some/path",
                 "download-artifacts-from-bucket",
-                "--cname",
+                "--artifact-base-name",
                 "test-cname",
             ],
             "download_to_directory",
@@ -37,7 +37,7 @@ from .constants import RELEASE_DATA, S3_METADATA
                 "--path",
                 "some/path",
                 "upload-artifacts-to-bucket",
-                "--artifact-name",
+                "--artifact-base-name",
                 "test-cname",
             ],
             "upload_from_directory",
@@ -84,11 +84,11 @@ def test_main_with_expected_result(
             "--path",
             str(env.tmp_path),
             "upload-artifacts-to-bucket",
-            "--artifact-name",
-            env.cname,
+            "--artifact-base-name",
+            env.artifact_base_name,
         ],
     ):
-        release_path = env.tmp_path / f"{env.cname}.release"
+        release_path = env.tmp_path / f"{env.artifact_base_name}.release"
         release_path.write_text(RELEASE_DATA)
 
         s3m.main()
