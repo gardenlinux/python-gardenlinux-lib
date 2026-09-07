@@ -141,6 +141,7 @@ published_image_metadata:
   - image_id: 617f5ae7-91fd-4149-b783-7a3701a5f420
     image_name: gardenlinux-1877.3-baremetal
     region_name: ap-sa-2
+publishing_group: ''
 require_uefi: false
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/openstackbaremetal-gardener_prod-amd64-1877.3-75df9f40

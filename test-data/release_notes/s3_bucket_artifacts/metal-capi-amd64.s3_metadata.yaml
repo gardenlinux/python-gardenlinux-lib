@@ -81,6 +81,7 @@ paths:
   suffix: .release
 platform: metal
 published_image_metadata: null
+publishing_group: ''
 require_uefi: false
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/metal-capi-amd64-1877.3-75df9f40
