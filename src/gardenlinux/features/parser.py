@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 import networkx
 import yaml
 
-from ..constants import BARE_FLAVOR_FEATURE_CONTENT, BARE_FLAVOR_LIBC_FEATURE_CONTENT
+from ..constants import BARE_CNAME_FEATURE_CONTENT, BARE_CNAME_LIBC_FEATURE_CONTENT
 from ..logger import LoggerSetup
 
 
@@ -132,7 +132,7 @@ class Parser(object):
         :since:  0.7.0
         """
 
-        feature_set = Parser.get_flavor_as_feature_set(cname)
+        feature_set = Parser.get_cname_as_feature_set(cname)
 
         return self.filter_based_on_feature_set(
             feature_set, ignore_excludes, additional_filter_func
@@ -278,9 +278,9 @@ class Parser(object):
         # @TODO: Remove "special" handling once "bare" is a first-class citizen of the feature graph
         if "bare" in feature_set:
             if not self.graph.has_node("bare"):
-                self.graph.add_node("bare", content=BARE_FLAVOR_FEATURE_CONTENT)
+                self.graph.add_node("bare", content=BARE_CNAME_FEATURE_CONTENT)
             if not self.graph.has_node("libc"):
-                self.graph.add_node("libc", content=BARE_FLAVOR_LIBC_FEATURE_CONTENT)
+                self.graph.add_node("libc", content=BARE_CNAME_LIBC_FEATURE_CONTENT)
 
         for feature in feature_set:
             for node in networkx.descendants(
@@ -363,22 +363,36 @@ class Parser(object):
         return {"name": name, "content": content}
 
     @staticmethod
-    def get_flavor_from_feature_set(sorted_features: List[str]) -> str:
+    def get_cname_from_feature_set(feature_set_list: List[str]) -> str:
         """
         Get the base cname for the feature set given.
 
-        :param sorted_features: Sorted feature set
+        :param feature_set_list: Feature set list
 
-        :return: (str) Base cname
-        :since: 0.7.0
+        :return: (str) Garden Linux canonical name
+        :since: 1.0.0
         """
 
+        if not feature_set_list:
+            raise ValueError("At least one platform must be given as a feature")
+
+        platform = feature_set_list.pop(0)
+        features = []
+        flags = []
+
+        for feature in feature_set_list:
+            if feature[:1] == "_":
+                flags.append(feature)
+            else:
+                features.append(feature)
+
         return reduce(
-            lambda a, b: a + ("-" if not b.startswith("_") else "") + b, sorted_features
+            lambda a, b: a + ("-" if not b.startswith("_") else "") + b,
+            [platform] + sorted(features) + sorted(flags),
         )
 
     @staticmethod
-    def get_flavor_as_feature_set(cname: str) -> List[str]:
+    def get_cname_as_feature_set(cname: str) -> List[str]:
         """
         Returns the features of a given canonical name.
 
@@ -477,6 +491,19 @@ class Parser(object):
         """
 
         return node.get("content", {}).get("type")  # type: ignore[attr-defined, no-any-return]
+
+    @staticmethod
+    def get_minimal_feature_set(graph: networkx.Graph) -> Set[str]:
+        """
+        Returns the minimal set of features described by the given graph.
+
+        :param graph: networkx.Graph
+
+        :return: (set) Minimal set of features
+        :since:  1.0.0
+        """
+
+        return set([node for (node, degree) in graph.in_degree() if degree == 0])
 
     @staticmethod
     def set_default_gardenlinux_root_dir(root_dir: str) -> None:

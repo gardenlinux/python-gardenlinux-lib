@@ -138,11 +138,16 @@ def zot_session() -> Generator[subprocess.Popen[Any]]:
     os.close(fd)
 
     zot_config = {
-        "distSpecVersion": "1.1.0",
-        "storage": {"rootDirectory": "output/registry/zot"},
+        "distSpecVersion": "1.1.1",
+        "storage": {
+            "rootDirectory": "output/registry/zot",
+            "commit": True,
+            "gc": False,
+        },
         "http": {
             "address": "127.0.0.1",
             "port": "18081",
+            "externalURL": "http://127.0.0.1:18081",
             "auth": {"htpasswd": {"path": f"{htpasswd_file}"}},
             "accessControl": {
                 "repositories": {

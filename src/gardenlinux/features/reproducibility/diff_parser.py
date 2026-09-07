@@ -59,9 +59,9 @@ class DiffParser(object):
         self.all_flavors: set[str] = set()
         self.reproducible_flavors: set[str] = set()
         self.passed_by_whitelist: set[str] = set()
-        self.expected_falvors: set[str] = set()
+        self.expected_flavors: set[str] = set()
         self.missing_flavors: set[str] = set()
-        self.unexpected_falvors: set[str] = set()
+        self.unexpected_flavors: set[str] = set()
 
     def sort_features(self, graph: nx.DiGraph) -> list[str]:
         """
@@ -97,17 +97,17 @@ class DiffParser(object):
 
         diff_dir = Path(self._gardenlinux_root).joinpath(diff_dir)
 
-        self.expected_falvors = {
-            f"{variant['flavor']}-{variant['arch']}"
+        self.expected_flavors = {
+            f"{variant['cname']}-{variant['arch']}"
             for variant in (flavors_matrix["include"] + bare_flavors_matrix["include"])
         }
 
-        for flavor in os.listdir(diff_dir):
-            if flavor.endswith(self._SUFFIX):
-                with open(diff_dir.joinpath(flavor), "r") as f:
+        for artifact in os.listdir(diff_dir):
+            if artifact.endswith(self._SUFFIX):
+                with open(diff_dir.joinpath(artifact), "r") as f:
                     content = f.read()
 
-                flavor = flavor.rstrip(self._SUFFIX)
+                flavor = artifact.rstrip(self._SUFFIX)
                 self.all_flavors.add(flavor)
                 if content == "":
                     self.reproducible_flavors.add(flavor)
@@ -117,8 +117,8 @@ class DiffParser(object):
                 else:
                     non_reproducible_flavors[flavor] = content.split("\n")[:-1]
 
-        self.missing_flavors = self.expected_falvors - self.all_flavors
-        self.unexpected_falvors = self.all_flavors - self.expected_falvors
+        self.missing_flavors = self.expected_flavors - self.all_flavors
+        self.unexpected_flavors = self.all_flavors - self.expected_flavors
 
         # Map files to flavors
         affected_flavors: Dict[str, set[str]] = {}  # {file: {flavors...}}

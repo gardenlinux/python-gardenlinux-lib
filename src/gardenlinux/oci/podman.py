@@ -56,7 +56,7 @@ class Podman(object):
         **kwargs: Any,
     ) -> str:
         """
-        Build a container.
+        Build a image.
 
         :since: 1.0.0
         """
@@ -96,7 +96,7 @@ class Podman(object):
         **kwargs: Any,
     ) -> Dict[str, str]:
         """
-        Build a container and save the result as an OCI archive with the given path and file name.
+        Build a image and save the result as an OCI archive with the given path and file name.
 
         :since: 1.0.0
         """
@@ -119,41 +119,39 @@ class Podman(object):
     @PodmanContext.wrap
     def get_image(
         self,
-        container: str,
+        image: str,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
     ) -> Image:
         """
-        Returns the Podman image ID for a given OCI container tag.
+        Returns the Podman image ID for a given OCI image tag.
 
         :since: 1.0.0
         """
 
-        container_tag = container
-
         if oci_tag is not None:
             if ":" in oci_tag:
-                container_tag = oci_tag
+                image = oci_tag
             else:
-                container_tag += f":{oci_tag}"
+                image += f":{oci_tag}"
 
-        return Image(podman.images.get(container_tag))
+        return Image(podman.images.get(image))
 
     @PodmanContext.wrap
     def get_image_id(
         self,
-        container: str,
+        image: str,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
     ) -> str:
         """
-        Returns the Podman image ID for a given OCI container tag.
+        Returns the Podman image ID for a given OCI image tag.
 
         :since: 1.0.0
         """
 
-        image = self.get_image(container, oci_tag=oci_tag, podman=podman)
-        return image.id  # type: ignore[no-any-return]
+        image_object = self.get_image(image, oci_tag=oci_tag, podman=podman)
+        return image_object.id  # type: ignore[no-any-return]
 
     @PodmanContext.wrap
     def load_oci_archive(
@@ -195,13 +193,13 @@ class Podman(object):
     @PodmanContext.wrap
     def pull(
         self,
-        container: str,
+        image: str,
         podman: PodmanContext,
         platform: Optional[str] = None,
         oci_tag: Optional[str] = None,
     ) -> str:
         """
-        Pulls a given OCI container.
+        Pulls a given OCI image.
 
         :since: 1.0.0
         """
@@ -217,19 +215,19 @@ class Podman(object):
         if oci_tag is not None:
             kwargs["tag"] = oci_tag
 
-        image = podman.images.pull(container, **kwargs)
-        return image.id  # type: ignore[no-any-return]
+        image_object = podman.images.pull(image, **kwargs)
+        return image_object.id  # type: ignore[no-any-return]
 
     @PodmanContext.wrap
     def push(
         self,
-        container: str,
+        image: str,
         podman: PodmanContext,
         destination: Optional[str] = None,
         oci_tag: Optional[str] = None,
     ) -> None:
         """
-        Pushs a given OCI container.
+        Pushs a given OCI image.
 
         :since: 1.0.0
         """
@@ -245,7 +243,7 @@ class Podman(object):
         if oci_tag is not None:
             kwargs["tag"] = oci_tag
 
-        podman.images.push(container, **kwargs)
+        podman.images.push(image, **kwargs)
 
     @PodmanContext.wrap
     def save_oci_archive(
@@ -285,22 +283,22 @@ class Podman(object):
     def tag(
         self,
         image_id: str,
-        oci_container_tag: str,
+        oci_tag: str,
         podman: PodmanContext,
     ) -> None:
         """
-        Tags a given Podman image ID with the container tag given.
+        Tags a given Podman image ID with the image tag given.
 
         :since: 1.0.0
         """
 
-        if ":" in oci_container_tag:
-            oci_data = oci_container_tag.rsplit(":", 1)
+        if ":" in oci_tag:
+            oci_data = oci_tag.rsplit(":", 1)
 
             if len(oci_data) < 2:
                 raise RuntimeError("No tag given")
         else:
-            oci_data = ["", oci_container_tag]
+            oci_data = ["", oci_tag]
 
         image = podman.images.get(image_id)
         image.tag(oci_data[0], oci_data[1])
@@ -309,36 +307,36 @@ class Podman(object):
     def tag_list(
         self,
         image_id: str,
-        oci_container_tags_list: List[str],
+        oci_tags_list: List[str],
         podman: PodmanContext,
     ) -> None:
         """
-        Tags a given Podman image ID with the list of container tags given.
+        Tags a given Podman image ID with the list of image tags given.
 
         :since: 1.0.0
         """
 
-        for container_tag in oci_container_tags_list:
-            self.tag(image_id, container_tag, podman=podman)
+        for oci_tag in oci_tags_list:
+            self.tag(image_id, oci_tag, podman=podman)
 
     @staticmethod
-    def get_container_tag_list(container: str, tag_list: Sequence[str]) -> List[str]:
+    def get_image_tag_list(image: str, tag_list: Sequence[str]) -> List[str]:
         """
-        Returns a list of "container:tag" values.
+        Returns a list of "image:tag" values.
 
         :since: 1.0.0
         """
 
-        container_tag_list = []
+        image_tag_list = []
 
         if isinstance(tag_list, Sequence):
             for tag in tag_list:
                 if ":" in tag:
-                    container_tag_list.append(tag)
+                    image_tag_list.append(tag)
                 else:
-                    container_tag_list.append(f"{container}:{tag}")
+                    image_tag_list.append(f"{image}:{tag}")
 
-        return container_tag_list
+        return image_tag_list
 
     @staticmethod
     def parse_build_args_list(args_list: List[str]) -> Dict[str, str]:
