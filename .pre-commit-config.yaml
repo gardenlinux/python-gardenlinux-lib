@@ -22,6 +22,5 @@ repos:
     -   id: mypy
         args: [--strict, --ignore-missing-imports, --check-untyped-defs, --allow-untyped-decorators]
         additional_dependencies:
-          - types-click
           - types-PyYAML
           - types-requests

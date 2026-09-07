@@ -6,19 +6,19 @@ Available command-line tools provided by the Garden Linux Python Library
 Features Commands
 -----------------
 
-gl-cname
-~~~~~~~~
-
-Generate a canonical name (cname) from feature sets.
-
-.. autoprogram:: gardenlinux.features.cname_main:get_parser()
-
 gl-features-parse
 ~~~~~~~~~~~~~~~~~
 
-Parse and extract information from GardenLinux features.
+Parse and extract information from Garden Linux features.
 
 .. autoprogram:: gardenlinux.features.__main__:get_parser()
+
+gl-features-metadata
+~~~~~~~~~~~~~~~~~~~~
+
+Provides Garden Linux release metadata file handling.
+
+.. autoprogram:: gardenlinux.features.metadata_main:get_parser()
 
 Flavors Commands
 ----------------
@@ -38,9 +38,7 @@ gl-oci
 
 Push OCI artifacts to a registry and manage manifests.
 
-.. click:: gardenlinux.oci.__main__:cli
-   :prog: gl-oci
-   :show-nested:
+.. autoprogram:: gardenlinux.oci.__main__:get_parser()
 
 S3 Commands
 -----------

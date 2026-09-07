@@ -1,5 +1,6 @@
 import argparse
 import logging
+from pathlib import Path
 
 from gardenlinux.constants import GARDENLINUX_GITHUB_RELEASE_BUCKET_NAME
 from gardenlinux.logger import LoggerSetup
@@ -127,20 +128,21 @@ def get_parser() -> argparse.ArgumentParser:
     )
 
     upload_parser.add_argument(
-        "--release_id",
+        "--release-id",
         required=True,
         help="GitHub release ID to upload the file to (required).",
     )
 
     upload_parser.add_argument(
-        "--file_path",
+        "--file",
+        type=Path,
         required=True,
         help="Path to the file to upload (required).",
     )
 
     upload_parser.add_argument(
         "--dry-run",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
         default=False,
         help="Perform a dry run without actually uploading the file.",
     )
@@ -190,11 +192,9 @@ def main() -> None:
         if args.dry_run:
             print("Dry Run ...")
 
-            print(
-                f"The file {args.file_path} would be uploaded for release: {release.name}"
-            )
+            print(f"The file {args.file} would be uploaded for release: {release.name}")
         else:
-            release.upload_asset(args.file_path, args.overwrite_same_name)
+            release.upload_asset(args.file, args.overwrite_same_name)
     else:
         parser.print_help()
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import pytest
 
@@ -132,21 +132,36 @@ def test_parser_return_intersection_subset() -> None:
     assert result == ["a", "c"]
 
 
-def test_get_flavor_from_feature_set() -> None:
+def test_get_cname_from_feature_set() -> None:
     # Arrange
     sorted_features = ["base", "_hidden", "extra"]
 
     # Act
-    result = Parser.get_flavor_from_feature_set(sorted_features)
+    result = Parser.get_cname_from_feature_set(sorted_features)
 
     # Assert
-    assert result == "base_hidden-extra"
+    assert result == "base-extra_hidden"
 
 
-def test_gget_flavor_from_feature_set_empty_raises() -> None:
+def test_get_cname_from_feature_set_empty_raises() -> None:
     # get_flavor with empty iterable raises TypeError
-    with pytest.raises(TypeError):
-        Parser.get_flavor_from_feature_set([])
+    with pytest.raises(ValueError):
+        Parser.get_cname_from_feature_set([])
+
+
+def test_get_minimal_feature_set_filters() -> None:
+    # Arrange
+    class FakeGraph:
+        def in_degree(self) -> List[Tuple[str, int]]:
+            return [("a", 0), ("b", 1), ("c", 0)]
+
+    graph = FakeGraph()
+
+    # Act
+    result = Parser.get_minimal_feature_set(graph)
+
+    # Assert
+    assert result == {"a", "c"}
 
 
 def test_parser_subset_nomatch() -> None:

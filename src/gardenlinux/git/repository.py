@@ -92,7 +92,9 @@ class Repository(_Repository):  # type: ignore[misc]
             except Exception as exc:
                 self._logger.warning(f"Failed to inspect Git directory: {exc}")
 
-        self._logger.debug(f"Git root directory: {root_dir}")
+        self._logger.debug(
+            f"gardenlinux.git.Repository.root(): Git root directory: {root_dir}"
+        )
         return Path(root_dir)
 
     @property
