@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 RELEASE_DATA = """
-GARDENLINUX_CNAME="container_trustedboot_usi-amd64-1234.1"
+VARIANT_ID="container_trustedboot_usi-amd64"
+GARDENLINUX_CNAME="container_trustedboot_usi"
 GARDENLINUX_VERSION=1234.1
 GARDENLINUX_COMMIT_ID="abc123lo"
 GARDENLINUX_COMMIT_ID_LONG="abc123long"
@@ -21,6 +22,7 @@ logs: null
 modifiers:
 - _usi
 - _trustedboot
+publishing_group: ''
 require_uefi: true
 secureboot: true
 tpm2: false

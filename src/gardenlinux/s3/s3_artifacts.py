@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 
 import yaml
 
-from ..features import CName
+from ..features import ArtifactBaseName
 from .bucket import Bucket
 
 
@@ -67,13 +67,13 @@ class S3Artifacts(object):
         return self._bucket
 
     def download_to_directory(
-        self, cname: str, artifacts_dir: PathLike[str] | str
+        self, artifact_base_name: str, artifacts_dir: PathLike[str] | str
     ) -> None:
         """
         Download S3 artifacts to a given directory.
 
-        :param cname:         Canonical name of the GardenLinux S3 artifacts
-        :param artifacts_dir: Path for the image artifacts
+        :param artifact_base_name: Artifact base name of the Garden Linux S3 artifacts
+        :param artifacts_dir:      Path for the image artifacts
 
         :since: 0.8.0
         """
@@ -84,14 +84,17 @@ class S3Artifacts(object):
             raise RuntimeError(f"Artifacts directory given is invalid: {artifacts_dir}")
 
         release_object = list(
-            self._bucket.objects.filter(Prefix=f"meta/singles/{cname}")
+            self._bucket.objects.filter(Prefix=f"meta/singles/{artifact_base_name}")
         )[0]
 
         self._bucket.download_file(
-            release_object.key, str(artifacts_dir.joinpath(f"{cname}.s3_metadata.yaml"))
+            release_object.key,
+            str(artifacts_dir.joinpath(f"{artifact_base_name}.s3_metadata.yaml")),
         )
 
-        for s3_object in self._bucket.objects.filter(Prefix=f"objects/{cname}").all():
+        for s3_object in self._bucket.objects.filter(
+            Prefix=f"objects/{artifact_base_name}"
+        ).all():
             self._bucket.download_file(
                 s3_object.key, str(artifacts_dir.joinpath(basename(s3_object.key)))
             )
@@ -121,33 +124,43 @@ class S3Artifacts(object):
         release_file = artifacts_dir.joinpath(f"{base_name}.release")
 
         try:
-            cname_object = CName.new_from_release_file(release_file)
+            abn_object = ArtifactBaseName.new_from_release_file(release_file)
         except RuntimeError:
             if not release_file.exists():
                 raise RuntimeError(
                     f"Release metadata file given is invalid: {release_file}"
                 )
 
+            base_abn_object = ArtifactBaseName(base_name)
+
             release_config = ConfigParser(allow_unnamed_section=True)
             release_config.read(release_file)
 
-            cname_object = CName(
-                release_config.get(UNNAMED_SECTION, "GARDENLINUX_CNAME").strip("\"'"),
-                commit_hash=release_config.get(
-                    UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
-                ).strip("\"'"),
-                version=release_config.get(
-                    UNNAMED_SECTION, "GARDENLINUX_VERSION"
-                ).strip("\"'"),
-            )
+            artifact_base_name = release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_CNAME"
+            ).strip("\"'")
 
-        if cname_object.version_and_commit_id is None:
+            artifact_base_name += "-" + base_abn_object.arch
+
+            artifact_base_name += "-" + release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_VERSION"
+            ).strip("\"'")
+
+            artifact_base_name += "-" + release_config.get(
+                UNNAMED_SECTION, "GARDENLINUX_COMMIT_ID_LONG"
+            ).strip("\"'")
+
+            abn_object = ArtifactBaseName(artifact_base_name)
+
+        if abn_object.version_and_commit_id is None:
             raise RuntimeError(
                 "Version information could not be determined from release file"
             )
 
-        arch = cname_object.arch
-        feature_set_list = cname_object.feature_set_list
+        arch = abn_object.arch
+        feature_set_list = abn_object.feature_set_list
+        publishing_group = ""
+
         release_timestamp = stat(release_file).st_ctime
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
         require_uefi = None
@@ -160,6 +173,11 @@ class S3Artifacts(object):
 
             if requirements_config.has_option(UNNAMED_SECTION, "arch"):
                 arch = requirements_config.get(UNNAMED_SECTION, "arch")
+
+            if requirements_config.has_option(UNNAMED_SECTION, "publishing_group"):
+                publishing_group = requirements_config.get(
+                    UNNAMED_SECTION, "publishing_group"
+                )
 
             if requirements_config.has_option(UNNAMED_SECTION, "uefi"):
                 require_uefi = requirements_config.getboolean(UNNAMED_SECTION, "uefi")
@@ -190,32 +208,33 @@ class S3Artifacts(object):
         re_object = re.compile("[^a-zA-Z0-9\\s+\\-=.\\_:/@]")
 
         arch = re_object.sub("+", arch)
-        commit_id_or_hash = cname_object.commit_hash
+        commit_id_or_hash = abn_object.commit_hash
 
         if commit_id_or_hash is None:
-            commit_id_or_hash = cname_object.commit_id
+            commit_id_or_hash = abn_object.commit_id
 
         metadata = {
-            "platform": cname_object.platform,
+            "platform": abn_object.platform,
             "architecture": arch,
             "build_committish": commit_id_or_hash,
             "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
+            "publishing_group": publishing_group,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
             "tpm2": tpm2,
             "s3_bucket": self._bucket.name,
             "s3_key": f"meta/singles/{base_name}",
             "test_result": None,
-            "version": cname_object.version,
+            "version": abn_object.version,
             "paths": [],
         }
 
-        if cname_object.version_epoch is not None:
-            metadata["gardenlinux_epoch"] = cname_object.version_epoch
+        if abn_object.version_epoch is not None:
+            metadata["gardenlinux_epoch"] = abn_object.version_epoch
 
-        platform_variant = cname_object.platform_variant
+        platform_variant = abn_object.platform_variant
 
         if platform_variant is not None:
             metadata["platform_variant"] = platform_variant
@@ -244,8 +263,8 @@ class S3Artifacts(object):
 
             s3_tags = {
                 "architecture": arch,
-                "platform": re_object.sub("+", cname_object.platform),
-                "version": re_object.sub("+", cname_object.version),  # type: ignore[arg-type]
+                "platform": re_object.sub("+", abn_object.platform),
+                "version": re_object.sub("+", abn_object.version),
                 "committish": commit_id_or_hash,
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,

@@ -19,7 +19,7 @@ from gardenlinux.features.parser import Parser
 class DiffParser(object):
     """
     This class takes the differ_files results from the reproducibility check and detects problems
-    It also analyzes the features of the affected flavors
+    It also analyzes the features of the affected cnames
 
     :author:     Garden Linux Maintainers
     :copyright:  Copyright 2026 SAP SE
@@ -56,12 +56,12 @@ class DiffParser(object):
         self._parser = Parser(gardenlinux_root, feature_dir_name, logger)
         self._feature_dir_name = Path(self._gardenlinux_root).joinpath(feature_dir_name)
 
-        self.all_flavors: set[str] = set()
-        self.reproducible_flavors: set[str] = set()
+        self.all_cnames: set[str] = set()
+        self.reproducible_cnames: set[str] = set()
         self.passed_by_whitelist: set[str] = set()
-        self.expected_falvors: set[str] = set()
-        self.missing_flavors: set[str] = set()
-        self.unexpected_falvors: set[str] = set()
+        self.expected_cnames: set[str] = set()
+        self.missing_cnames: set[str] = set()
+        self.unexpected_cnames: set[str] = set()
 
     def sort_features(self, graph: nx.DiGraph) -> list[str]:
         """
@@ -76,107 +76,107 @@ class DiffParser(object):
 
     def parse(
         self,
-        flavors_matrix: Dict[str, list[Dict[str, str]]],
-        bare_flavors_matrix: Dict[str, list[Dict[str, str]]],
+        cnames_matrix: Dict[str, list[Dict[str, str]]],
+        bare_cnames_matrix: Dict[str, list[Dict[str, str]]],
         diff_dir: PathLike[str] = Path("diffs"),
     ) -> None:
         """
         Parses a diff result and sets the corresponding attributes
 
-        :param flavors_matrix:          The flavors matrix to identify missing diff files
-        :param bare_flavors_matrix:     The bare flavors matrix to identify missing diff files
+        :param cnames_matrix:          The cnames matrix to identify missing diff files
+        :param bare_cnames_matrix:     The bare cnames matrix to identify missing diff files
         :param diff_dir:                Directory containing the diff files
 
         :since:  1.0.0
         """
 
-        self.all_flavors = set()
-        self.reproducible_flavors = set()
+        self.all_cnames = set()
+        self.reproducible_cnames = set()
         self.passed_by_whitelist = set()
-        non_reproducible_flavors = {}  # {flavor: [files...]}
+        non_reproducible_cnames = {}  # {cname: [files...]}
 
         diff_dir = Path(self._gardenlinux_root).joinpath(diff_dir)
 
-        self.expected_falvors = {
-            f"{variant['flavor']}-{variant['arch']}"
-            for variant in (flavors_matrix["include"] + bare_flavors_matrix["include"])
+        self.expected_cnames = {
+            f"{variant['cname']}-{variant['arch']}"
+            for variant in (cnames_matrix["include"] + bare_cnames_matrix["include"])
         }
 
-        for flavor in os.listdir(diff_dir):
-            if flavor.endswith(self._SUFFIX):
-                with open(diff_dir.joinpath(flavor), "r") as f:
+        for cname in os.listdir(diff_dir):
+            if cname.endswith(self._SUFFIX):
+                with open(diff_dir.joinpath(cname), "r") as f:
                     content = f.read()
 
-                flavor = flavor.rstrip(self._SUFFIX)
-                self.all_flavors.add(flavor)
+                cname = cname.rstrip(self._SUFFIX)
+                self.all_cnames.add(cname)
                 if content == "":
-                    self.reproducible_flavors.add(flavor)
+                    self.reproducible_cnames.add(cname)
                 elif content == "whitelist\n":
-                    self.reproducible_flavors.add(flavor)
-                    self.passed_by_whitelist.add(flavor)
+                    self.reproducible_cnames.add(cname)
+                    self.passed_by_whitelist.add(cname)
                 else:
-                    non_reproducible_flavors[flavor] = content.split("\n")[:-1]
+                    non_reproducible_cnames[cname] = content.split("\n")[:-1]
 
-        self.missing_flavors = self.expected_falvors - self.all_flavors
-        self.unexpected_falvors = self.all_flavors - self.expected_falvors
+        self.missing_cnames = self.expected_cnames - self.all_cnames
+        self.unexpected_cnames = self.all_cnames - self.expected_cnames
 
-        # Map files to flavors
-        affected_flavors: Dict[str, set[str]] = {}  # {file: {flavors...}}
-        for flavor in non_reproducible_flavors:
-            for file in non_reproducible_flavors[flavor]:
-                if file not in affected_flavors:
-                    affected_flavors[file] = set()
-                affected_flavors[file].add(flavor)
+        # Map files to cnames
+        affected_cnames: Dict[str, set[str]] = {}  # {file: {cnames...}}
+        for cname in non_reproducible_cnames:
+            for file in non_reproducible_cnames[cname]:
+                if file not in affected_cnames:
+                    affected_cnames[file] = set()
+                affected_cnames[file].add(cname)
 
-        # Merge files affected_flavors by the same flavors by mapping flavor sets to files
-        self._bundled: Dict[frozenset[str], set[str]] = {}  # {{flavors...}: {files...}}
-        for file in affected_flavors:
-            if frozenset(affected_flavors[file]) not in self._bundled:
-                self._bundled[frozenset(affected_flavors[file])] = set()
-            self._bundled[frozenset(affected_flavors[file])].add(file)
+        # Merge files affected_cnames by the same cnames by mapping cname sets to files
+        self._bundled: Dict[frozenset[str], set[str]] = {}  # {{cnames...}: {files...}}
+        for file in affected_cnames:
+            if frozenset(affected_cnames[file]) not in self._bundled:
+                self._bundled[frozenset(affected_cnames[file])] = set()
+            self._bundled[frozenset(affected_cnames[file])].add(file)
 
     def intersectionTrees(
         self,
     ) -> Dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]:
         """
-        Intersects all features of the affected flavors and removes all features from unaffected flavors to identify features causing the issue
+        Intersects all features of the affected cnames and removes all features from unaffected cnames to identify features causing the issue
 
-        :return: (Dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]) Dict in the form of {{files...}: ({flavors..., intersectionTree})}
+        :return: (Dict[frozenset[str], tuple[frozenset[str], nx.DiGraph]]) Dict in the form of {{files...}: ({cnames..., intersectionTree})}
         :since:  1.0.0
         """
 
-        # Compute the intersecting features of the affected flavors and store them in a graph to allow hierarchical formatting
+        # Compute the intersecting features of the affected cnames and store them in a graph to allow hierarchical formatting
         trees = {}
-        for flavors in self._bundled:
+        for cnames in self._bundled:
             tree = None
-            # Compute the intersecting features of all affected flavors
-            for flavor in flavors:
-                # Ignore bare flavors, as they may not be affected due to removing the file and could therefore disrupt the analysis
-                if not flavor.startswith("bare-"):
+            # Compute the intersecting features of all affected cnames
+            for cname in cnames:
+                # Ignore bare cnames, as they may not be affected due to removing the file and could therefore disrupt the analysis
+                if not cname.startswith("bare-"):
                     # Compute intersecting features
                     tree = self._parser.filter(
-                        self._remove_arch.sub("", flavor),
+                        self._remove_arch.sub("", cname),
                         additional_filter_func=tree.__contains__
                         if tree is not None
                         else lambda _: True,
                     )
 
-            # Remove any features which are contained in unaffected flavors, as they cannot cause the problem
+            # Remove any features which are contained in unaffected cnames, as they cannot cause the problem
             if tree is not None:
                 # Unfreeze tree
                 tree = nx.DiGraph(tree)
-                unaffected = self.all_flavors - flavors
+                unaffected = self.all_cnames - cnames
                 merged_features: set[str] = set()
-                for flavor in unaffected:
-                    # Again, ignore bare flavors
-                    if not flavor.startswith("bare-"):
+                for cname in unaffected:
+                    # Again, ignore bare cnames
+                    if not cname.startswith("bare-"):
                         merged_features.update(
-                            self._parser.filter(self._remove_arch.sub("", flavor))
+                            self._parser.filter(self._remove_arch.sub("", cname))
                         )
                 tree.remove_nodes_from(n for n in merged_features)
             else:
                 tree = nx.DiGraph()
 
-            trees[frozenset(self._bundled[flavors])] = (flavors, tree)
+            trees[frozenset(self._bundled[cnames])] = (cnames, tree)
 
         return trees

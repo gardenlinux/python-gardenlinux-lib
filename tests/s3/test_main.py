@@ -85,10 +85,10 @@ def test_main_with_expected_result(
             str(env.tmp_path),
             "upload-artifacts-to-bucket",
             "--artifact-name",
-            env.cname,
+            env.artifact_base_name,
         ],
     ):
-        release_path = env.tmp_path / f"{env.cname}.release"
+        release_path = env.tmp_path / f"{env.artifact_base_name}.release"
         release_path.write_text(RELEASE_DATA)
 
         s3m.main()

@@ -12,6 +12,7 @@ import yaml
 from jsonschema import validate as jsonschema_validate
 
 from ..constants import GL_FLAVORS_SCHEMA
+from ..features import Parser as FeaturesParser
 from ..logger import LoggerSetup
 
 
@@ -111,13 +112,10 @@ class Parser(object):
                     continue
 
                 # Process features
-                formatted_features = f"-{'-'.join(features)}" if features else ""
+                cname = FeaturesParser.get_cname_from_feature_set([name] + features)
 
                 # Construct the combination
-                combination = f"{name}-{formatted_features}-{arch}"
-
-                # Format the combination to clean up "--" and "-_"
-                combination = combination.replace("--", "-").replace("-_", "_")
+                combination = f"{cname}-{arch}"
 
                 # Exclude combinations explicitly
                 if Parser.should_exclude(combination, [], wildcard_excludes):

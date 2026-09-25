@@ -2,12 +2,12 @@ import sys
 import types
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, List, Tuple
+from typing import Any
 
 import pytest
 
 import gardenlinux.features.__main__ as fema
-from gardenlinux.features import CName
+from gardenlinux.features import ArtifactBaseName
 
 from ..constants import GL_ROOT_DIR
 from .constants import generate_container_amd64_release_metadata
@@ -40,24 +40,9 @@ def test_graph_mermaid_raises_no_flavor() -> None:
 
     # Act / Assert
     with pytest.raises(
-        RuntimeError, match="Error while generating graph: Flavor is None!"
+        RuntimeError, match="Error while generating graph: CName is None!"
     ):
         fema.graph_as_mermaid_markup(None, MockGraph())
-
-
-def test_get_minimal_feature_set_filters() -> None:
-    # Arrange
-    class FakeGraph:
-        def in_degree(self) -> List[Tuple[str, int]]:
-            return [("a", 0), ("b", 1), ("c", 0)]
-
-    graph = FakeGraph()
-
-    # Act
-    result = fema.get_minimal_feature_set(graph)
-
-    # Assert
-    assert result == {"a", "c"}
 
 
 def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
@@ -68,20 +53,41 @@ def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
     version_file.write_text("1.2.3\n")
 
     # Act
-    version, commit = fema.get_version_and_commit_id_from_files(str(tmp_path))
+    version, commit = ArtifactBaseName.get_version_and_commit_id_from_files(
+        str(tmp_path)
+    )
 
     # Arrange
     assert version == "1.2.3"
     assert commit == "abcdef12"
 
 
-def test_get_version_missing_file_raises(tmp_path: Path) -> None:
+def test_get_version_missing_file_raises(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     # Arrange (one file only)
     (tmp_path / "COMMIT").write_text("abcdef1234\n")
 
+    argv = [
+        "prog",
+        "--arch",
+        "amd64",
+        "--cname",
+        "flav",
+        "version_and_commit_id",
+    ]
+
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
     # Act / Assert
-    with pytest.raises(RuntimeError):
-        fema.get_version_and_commit_id_from_files(str(tmp_path))
+    assert ArtifactBaseName.get_version_and_commit_id_from_files(str(tmp_path)) == (
+        None,
+        None,
+    )
+
+    with pytest.raises(ValueError, match="Argument missing: version"):
+        fema.main()
 
 
 # -------------------------------
@@ -91,7 +97,18 @@ def test_main_prints_arch(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "arch"]
+    argv = [
+        "prog",
+        "--arch",
+        "amd64",
+        "--cname",
+        "flav",
+        "--version",
+        "1.0",
+        "--commit",
+        "local",
+        "arch",
+    ]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
@@ -115,6 +132,8 @@ def test_main_prints_container_name(
         "container-pythonDev",
         "--version",
         "1.0",
+        "--commit",
+        "local",
         "container_name",
     ]
     monkeypatch.setattr(sys, "argv", argv)
@@ -141,7 +160,7 @@ def test_main_prints_container_tag(
         "--version",
         "1.0",
         "--commit",
-        "~post1",
+        "post1",
         "container_tag",
     ]
     monkeypatch.setattr(sys, "argv", argv)
@@ -168,7 +187,8 @@ def test_main_prints_commit_id(
     )
     # Patch get_version_and_commit_id_from_files
     monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+        "gardenlinux.features.artifact_base_name.ArtifactBaseName.get_version_and_commit_id_from_files",
+        lambda root: ("1.2.3", "abcdef12"),
     )
 
     # Act
@@ -190,16 +210,20 @@ def test_main_prints_flags_elements_platforms(
         "flav",
         "--version",
         "1.0",
+        "--commit",
+        "local",
         "flags",
     ]
     monkeypatch.setattr(sys, "argv", argv)
 
-    class FakeCName(CName):
+    class TestArtifactBaseName(ArtifactBaseName):
         def __init__(self, *a: Any, **k: Any):
-            CName.__init__(self, *a, **k)
-            self._feature_flags_cached = ["flag1"]
+            ArtifactBaseName.__init__(self, *a, **k)
+            self._features_cached = {"flag": ["flag1"]}
 
-    monkeypatch.setattr(fema, "CName", FakeCName)
+    monkeypatch.setattr(
+        "gardenlinux.features.artifact_base_name.ArtifactBaseName", TestArtifactBaseName
+    )
 
     # Act
     fema.main()
@@ -222,7 +246,8 @@ def test_main_prints_version(
     )
     # Patch get_version_and_commit_id_from_files
     monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+        "gardenlinux.features.artifact_base_name.ArtifactBaseName.get_version_and_commit_id_from_files",
+        lambda root: ("1.2.3", "abcdef12"),
     )
 
     # Act
@@ -245,7 +270,8 @@ def test_main_prints_version_and_commit_id(
     )
     # Patch get_version_and_commit_id_from_files
     monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+        "gardenlinux.features.artifact_base_name.ArtifactBaseName.get_version_and_commit_id_from_files",
+        lambda root: ("1.2.3", "abcdef12"),
     )
 
     # Act
@@ -261,7 +287,10 @@ def test_main_requires_cname(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(SystemExit):
+    with pytest.raises(
+        ValueError,
+        match="Argument missing: At least one of artifact_base_name, cname, flavor or versioned_flavor",
+    ):
         fema.main()
 
 
@@ -272,7 +301,7 @@ def test_main_cname_raises_missing_commit_id(monkeypatch: pytest.MonkeyPatch) ->
         "prog",
         "--cname",
         "flav",
-        "--default-arch",
+        "--arch",
         "amd64",
         "--version",
         "1.0",
@@ -281,7 +310,7 @@ def test_main_cname_raises_missing_commit_id(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Version and commit ID"):
+    with pytest.raises(ValueError, match="Argument missing: version"):
         fema.main()
 
 
@@ -292,7 +321,7 @@ def test_main_raises_no_arch_no_default(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
+    with pytest.raises(ValueError, match="Argument missing: arch"):
         fema.main()
 
 
@@ -314,7 +343,7 @@ def test_main_raises_missing_commit_id(
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Commit ID not specified"):
+    with pytest.raises(ValueError, match="Argument missing: version"):
         fema.main()
 
 
@@ -389,7 +418,7 @@ def test_main_with_exclude_cname_print_features(
     )
 
 
-def test_cname_release_file(
+def test_artifact_base_name_release_file(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """
@@ -404,11 +433,11 @@ def test_cname_release_file(
 
         argv = [
             "prog",
-            "--cname",
+            "--artifact-base-name",
             "container-amd64-today-local",
             "--release-file",
             str(os_release_file),
-            "cname",
+            "artifact_base_name",
         ]
         monkeypatch.setattr(sys, "argv", argv)
 
