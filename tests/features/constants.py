@@ -7,25 +7,29 @@ from gardenlinux.constants import (
 )
 
 
-def generate_container_amd64_release_metadata(version: str, commit_hash: str) -> str:
-    return f"""
+def generate_container_release_metadata(
+    version: str, commit_hash: str, arch: str = "amd64", variant: str = ""
+) -> str:
+    metadata = f"""
 ID={GL_RELEASE_ID}
 ID_LIKE=debian
 NAME="{GL_DISTRIBUTION_NAME}"
 PRETTY_NAME="{GL_DISTRIBUTION_NAME} {version}"
 IMAGE_VERSION={version}
-VARIANT_ID="container-amd64"
+VARIANT_ID="container-{arch}"
 HOME_URL="{GL_HOME_URL}"
 SUPPORT_URL="{GL_SUPPORT_URL}"
 BUG_REPORT_URL="{GL_BUG_REPORT_URL}"
-GARDENLINUX_CNAME="container-amd64-{version}-{commit_hash}"
-GARDENLINUX_FEATURES="_slim,base,container"
+GARDENLINUX_CNAME="container"
+GARDENLINUX_FEATURES="_archgrouped,_slim,base,container"
 GARDENLINUX_FEATURES_PLATFORMS="container"
 GARDENLINUX_FEATURES_ELEMENTS="base"
-GARDENLINUX_FEATURES_FLAGS="_slim"
+GARDENLINUX_FEATURES_FLAGS="_archgrouped,_slim"
 GARDENLINUX_PLATFORM="container"
-GARDENLINUX_PLATFORM_VARIANT=""
+GARDENLINUX_PLATFORM_VARIANT="{variant}"
 GARDENLINUX_VERSION="{version}"
 GARDENLINUX_COMMIT_ID="{commit_hash}"
 GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
-""".strip()
+"""
+
+    return metadata.strip()

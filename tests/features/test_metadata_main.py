@@ -6,7 +6,7 @@ import pytest
 
 import gardenlinux.features.metadata_main as metadata_main
 
-from .constants import generate_container_amd64_release_metadata
+from .constants import generate_container_release_metadata
 
 
 def test_main_output(
@@ -18,7 +18,7 @@ def test_main_output(
     # Arrange
     argv = [
         "prog",
-        "--cname",
+        "--flavor",
         "container-amd64",
         "--version",
         "today",
@@ -32,8 +32,8 @@ def test_main_output(
     metadata_main.main()
 
     # Assert
-    expected = generate_container_amd64_release_metadata("today", "local")
-    assert expected == capsys.readouterr().out.strip()
+    expected = generate_container_release_metadata("today", "local")
+    assert capsys.readouterr().out.strip() == expected
 
 
 def test_main_write(
@@ -47,7 +47,7 @@ def test_main_write(
         os_release_file = Path(tmpdir, "os_release")
         argv = [
             "prog",
-            "--cname",
+            "--flavor",
             "container-amd64",
             "--version",
             "today",
@@ -63,35 +63,60 @@ def test_main_write(
         metadata_main.main()
 
         # Assert
-        expected = generate_container_amd64_release_metadata("today", "local")
+        expected = generate_container_release_metadata("today", "local")
         assert expected == os_release_file.open("r").read()
 
 
-def test_main_validation(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_validation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """
     Test validation between release metadata and arguments given
     """
     # Arrange
-    with TemporaryDirectory() as tmpdir:
-        os_release_file = Path(tmpdir, "os_release")
+    os_release_file = Path(tmp_path, "os_release")
 
-        with os_release_file.open("w") as fp:
-            fp.write(generate_container_amd64_release_metadata("today", "local"))
+    with os_release_file.open("w") as fp:
+        fp.write(generate_container_release_metadata("today", "local"))
 
-        argv = [
-            "prog",
-            "--cname",
-            "base-python-amd64",
-            "--version",
-            "today",
-            "--commit",
-            "local",
-            "--release-file",
-            str(os_release_file),
-            "output-release-metadata",
-        ]
-        monkeypatch.setattr(sys, "argv", argv)
+    argv = [
+        "prog",
+        "--flavor",
+        "base-python-amd64",
+        "--version",
+        "today",
+        "--commit",
+        "local",
+        "--release-file",
+        str(os_release_file),
+        "output-release-metadata",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
 
-        # Act / Assert
-        with pytest.raises(RuntimeError):
-            metadata_main.main()
+    # Act / Assert
+    with pytest.raises(RuntimeError):
+        metadata_main.main()
+
+
+def test_main_version_missing_file_raises(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # Arrange
+    (tmp_path / "COMMIT").write_text("abcdef1234\n")
+
+    os_release_file = Path(tmp_path, "os_release")
+
+    with os_release_file.open("w") as fp:
+        fp.write(generate_container_release_metadata("today", "local"))
+
+    argv = [
+        "prog",
+        "--flavor",
+        "base-python-amd64",
+        "--release-file",
+        str(os_release_file),
+        "output-release-metadata",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+
+    # Act / Assert
+    with pytest.raises(ValueError, match="Argument missing: version"):
+        metadata_main.main()

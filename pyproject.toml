@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "0.10.19"
+version = "1.0.0"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -45,12 +45,12 @@ sphinxcontrib-autoprogram = "^0.1.8"
 sphinx-markdown-builder = "^0.6.10"
 
 [tool.poetry.scripts]
-gl-cname = "gardenlinux.features.cname_main:main"
 gl-feature-fs-diff = "gardenlinux.features.reproducibility.__main__:main"
 gl-features-parse = "gardenlinux.features.__main__:main"
 gl-flavors-parse = "gardenlinux.flavors.__main__:main"
 gl-gh-release = "gardenlinux.github.release.__main__:main"
 gl-oci = "gardenlinux.oci.__main__:main"
+gl-metadata = "gardenlinux.features.metadata_main:main"
 gl-s3 = "gardenlinux.s3.__main__:main"
 
 [tool.pytest.ini_options]
