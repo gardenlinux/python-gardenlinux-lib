@@ -106,4 +106,4 @@ def test_main_with_expected_result(
             "^(.*)(md5sum|sha256sum)\\: .+$", "\\1\\2: {\\2}", result, flags=re.M
         )
 
-        assert result == S3_METADATA
+        assert S3_METADATA == result
