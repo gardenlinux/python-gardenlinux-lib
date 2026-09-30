@@ -191,6 +191,7 @@ published_image_metadata:
   - image_id: 510d1ff1-4fc6-49ec-ad2f-a0985217dd14
     image_name: gardenlinux-1877.3
     region_name: ap-sa-2
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/openstack-gardener_prod_usi-amd64-1877.3-75df9f40

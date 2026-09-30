@@ -213,6 +213,7 @@ platform: gcp
 published_image_metadata:
   gcp_image_name: gardenlinux-gcp-63fd9d7dd465420fd4e499ab-1877-3-75df9f40
   gcp_project_name: sap-se-gcp-gardenlinux
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/gcp-gardener_prod_tpm2_trustedboot-arm64-1877.3-75df9f40

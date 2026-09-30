@@ -180,6 +180,7 @@ published_image_metadata:
   - image_id: m-gw86dlqmpaugljiykx91
     image_name: gardenlinux-ali-gardener_prod-amd64-1877.3-75df9f40
     region_id: eu-central-1
+publishing_group: ''
 require_uefi: false
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/ali-gardener_prod-amd64-1877.3-75df9f40

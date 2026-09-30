@@ -120,6 +120,7 @@ paths:
   suffix: .release
 platform: metal
 published_image_metadata: null
+publishing_group: ''
 require_uefi: true
 s3_bucket: gardenlinux-github-releases
 s3_key: meta/singles/metal-gardener_prod_usi-arm64-1877.3-75df9f40
