@@ -20,7 +20,6 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx_rtd_theme",
     "sphinx.ext.napoleon",
-    "sphinx_click",
     "sphinxcontrib.autoprogram",
     "sphinx_markdown_builder",
 ]

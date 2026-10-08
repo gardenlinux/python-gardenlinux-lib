@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-OCI container
+OCI repository
 """
 
 import json
@@ -22,7 +22,7 @@ from oras.utils import extract_targz, make_targz
 from requests import HTTPError, Response
 
 from ..constants import OCI_IMAGE_INDEX_MEDIA_TYPE
-from ..features.cname import CName
+from ..features import ArtifactBaseName
 from ..logger import LoggerSetup
 from .image_manifest import ImageManifest
 from .index import Index
@@ -31,55 +31,55 @@ from .manifest import Manifest
 from .schemas import index as IndexSchema
 
 
-class Container(Registry):  # type: ignore[misc]
+class Repository(Registry):  # type: ignore[misc]
     """
-    OCI container instance to provide methods for interaction.
+    OCI repository instance to provide methods for interaction.
 
     :author:     Garden Linux Maintainers
     :copyright:  Copyright 2024 SAP SE
     :package:    gardenlinux
     :subpackage: oci
-    :since:      0.7.0
+    :since:      1.0.0
     :license:    https://www.apache.org/licenses/LICENSE-2.0
                  Apache License, Version 2.0
     """
 
     def __init__(
         self,
-        container_url: str,
+        repository_url: str,
         insecure: bool = False,
         token: Optional[str] = None,
         logger: Optional[logging.Logger] = None,
     ):
         """
-        Constructor __init__(Container)
+        Constructor __init__(Repository)
 
-        :param container_url: OCI container URL
+        :param repository_url: OCI repository URL
         :param insecure: True if access is provided via HTTP without encryption
         :param token: OCI access token
         :param logger: Logger instance
 
-        :since: 0.7.0
+        :since: 1.0.0
         """
 
-        container_data = container_url.rsplit(":", 1)
+        repository_data = repository_url.rsplit(":", 1)
 
-        if len(container_data) < 2:
-            raise RuntimeError("Container name given is invalid")
+        if len(repository_data) < 2:
+            raise RuntimeError("Repository name given is invalid")
 
-        self._container_version = container_data[1]
+        self._repository_version = repository_data[1]
 
-        if "://" in container_data[0]:
-            scheme = container_data[0].split(":", 1)[0].lower()
+        if "://" in repository_data[0]:
+            scheme = repository_data[0].split(":", 1)[0].lower()
             insecure = scheme != "https"
 
-            self._container_url = container_data[0]
+            self._repository_url = repository_data[0]
         else:
             scheme = "http" if insecure else "https"
 
-            self._container_url = f"{scheme}://{container_data[0]}"
+            self._repository_url = f"{scheme}://{repository_data[0]}"
 
-        container_url_data = urlsplit(self._container_url)
+        repository_url_data = urlsplit(self._repository_url)
         self._token = None
 
         if token is None:
@@ -93,7 +93,7 @@ class Container(Registry):  # type: ignore[misc]
 
         Registry.__init__(
             self,
-            hostname=container_url_data.netloc,
+            hostname=repository_url_data.netloc,
             auth_backend=auth_backend,
             insecure=insecure,
         )
@@ -101,7 +101,7 @@ class Container(Registry):  # type: ignore[misc]
         if logger is None or not logger.hasHandlers():
             logger = LoggerSetup.get_logger("gardenlinux.oci")
 
-        self._container_name = container_url_data.path[1:]
+        self._repository_name = repository_url_data.path[1:]
         self._logger = logger
 
         if self._token is not None:
@@ -123,9 +123,9 @@ class Container(Registry):  # type: ignore[misc]
     def generate_image_manifest(
         self,
         cname: str,
-        architecture: Optional[str] = None,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
+        architecture: Optional[str],
+        version: Optional[str],
+        commit: Optional[str],
         feature_set: Optional[str] = None,
     ) -> ImageManifest:
         """
@@ -141,31 +141,21 @@ class Container(Registry):  # type: ignore[misc]
         :since:  0.10.0
         """
 
-        cname_object = CName(cname, architecture, version)
+        if not architecture or not version or not commit:
+            raise ValueError(
+                "Failed to validate input for generating an OCI image manifest"
+            )
 
-        if architecture is None:
-            architecture = cname_object.arch
-        if version is None:
-            version = cname_object.version
-        if commit is None:
-            commit = cname_object.commit_id
-        if feature_set is None:
-            feature_set = cname_object.feature_set
-
-        if commit is None:
-            commit = ""
-
+        abn_object = ArtifactBaseName(f"{cname}-{architecture}-{version}-{commit}")
         manifest = ImageManifest()
 
-        manifest.version = version  # type: ignore[assignment]
-        manifest.cname = cname
-        manifest.arch = architecture  # type: ignore[assignment]
-        manifest.feature_set = feature_set
+        manifest.flavor = abn_object.flavor
+        manifest.version = version
         manifest.commit = commit
 
         description = (
-            f"Image: {cname} "
-            f"Flavor: {cname_object.flavor} "
+            f"Image: {cname}-{architecture}-{version}-{commit}"
+            f"Flavor: {cname}-{architecture} "
             f"Architecture: {architecture} "
             f"Features: {feature_set} "
             f"Commit: {commit} "
@@ -198,11 +188,8 @@ class Container(Registry):  # type: ignore[misc]
         """
         Generates an OCI manifest
 
-        :param cname: Canonical name of the manifest
-        :param architecture: Target architecture of the manifest
         :param version: Artifacts version of the manifest
         :param commit: The commit hash of the manifest
-        :param feature_set: The expanded list of the included features of this manifest
 
         :return: (object) OCI manifest
         :since:  0.9.2
@@ -226,7 +213,7 @@ class Container(Registry):  # type: ignore[misc]
         """
 
         manifest_url = self.get_container(
-            f"{self._container_name}:{self._container_version}"
+            f"{self._repository_name}:{self._repository_version}"
         ).manifest_url()
 
         return self.do_request(  # type: ignore[no-any-return]
@@ -243,7 +230,7 @@ class Container(Registry):  # type: ignore[misc]
         """
 
         return self.do_request(  # type: ignore[no-any-return]
-            f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
+            f"{self.prefix}://{self.hostname}/v2/{self._repository_name}/manifests/{reference}",
             headers={"Accept": "application/vnd.oci.image.manifest.v1+json"},
         )
 
@@ -359,7 +346,7 @@ class Container(Registry):  # type: ignore[misc]
         if not isinstance(manifest, Manifest):
             raise RuntimeError("Artifacts image manifest given is invalid")
 
-        container_name = f"{self._container_name}:{self._container_version}"
+        repository_name = f"{self._repository_name}:{self._repository_version}"
 
         fd, config_file = mkstemp()
 
@@ -368,24 +355,26 @@ class Container(Registry):  # type: ignore[misc]
                 fp.write(manifest.config_json)
 
             self._check_200_response(
-                self.upload_blob(config_file, container_name, manifest["config"])
+                self.upload_blob(config_file, repository_name, manifest["config"])
             )
 
-            self._logger.debug(f"Successfully pushed config for {container_name}")
+            self._logger.debug(f"Successfully pushed config for {repository_name}")
         finally:
             Path(config_file).unlink()
 
-        manifest_url = f"{self._container_url}:{self._container_version}"
+        manifest_url = f"{self._repository_url}:{self._repository_version}"
 
         if isinstance(manifest, ImageManifest):
-            manifest_url += f"-{manifest.cname}-{manifest.arch}"
+            manifest_url += f"-{manifest.flavor}-{manifest.version}-{manifest.commit}-{manifest.arch}"
+        elif not self._repository_version:
+            raise RuntimeError("Failed to push OCI manifest with invalid tag")
 
-        manifest_container = OrasContainer(manifest_url)
+        manifest_repository = OrasContainer(manifest_url)
 
-        self._check_200_response(self.upload_manifest(manifest, manifest_container))
+        self._check_200_response(self.upload_manifest(manifest, manifest_repository))
 
         self._logger.info(
-            f"Successfully pushed {manifest_container} ({manifest.digest})"
+            f"Successfully pushed {manifest_repository} ({manifest.digest})"
         )
 
         if isinstance(additional_tags, Sequence) and len(additional_tags) > 0:
@@ -429,7 +418,7 @@ class Container(Registry):  # type: ignore[misc]
         if not isinstance(artifacts_dir, PathLike):
             artifacts_dir = Path(artifacts_dir)
 
-        container_name = f"{self._container_name}:{self._container_version}"
+        repository_name = f"{self._repository_name}:{self._repository_version}"
 
         # For each file, create sign, attach and push a layer
         for artifact in artifacts_with_metadata:
@@ -456,7 +445,7 @@ class Container(Registry):  # type: ignore[misc]
                 self._logger.debug(f"Layer: {layer_dict}")
 
                 self._check_200_response(
-                    self.upload_blob(file_path_name, container_name, layer_dict)
+                    self.upload_blob(file_path_name, repository_name, layer_dict)
                 )
 
                 self._logger.info(
@@ -506,7 +495,7 @@ class Container(Registry):  # type: ignore[misc]
             if file_name.is_file()
         ]
 
-        artifacts_with_metadata = Container.get_artifacts_metadata_from_files(
+        artifacts_with_metadata = Repository.get_artifacts_metadata_from_files(
             files, manifest.arch
         )
 
@@ -547,9 +536,11 @@ class Container(Registry):  # type: ignore[misc]
 
         # For each additional tag, push the manifest using Registry.upload_manifest
         for tag in tags:
-            manifest_container = OrasContainer(f"{self._container_url}:{tag}")
+            manifest_repository = OrasContainer(f"{self._repository_url}:{tag}")
 
-            self._check_200_response(self.upload_manifest(manifest, manifest_container))
+            self._check_200_response(
+                self.upload_manifest(manifest, manifest_repository)
+            )
 
     def read_index(self) -> Index:
         """
@@ -573,6 +564,7 @@ class Container(Registry):  # type: ignore[misc]
         cname: Optional[str] = None,
         architecture: Optional[str] = None,
         version: Optional[str] = None,
+        commit: Optional[str] = None,
     ) -> Manifest:
         """
         Reads the OCI manifest from registry.
@@ -580,6 +572,7 @@ class Container(Registry):  # type: ignore[misc]
         :param cname: Canonical name of the manifest
         :param architecture: Target architecture of the manifest
         :param version: Artifacts version of the manifest
+        :param commit: The Git commit ID of the manifest
 
         :return: OCI image manifest
         :since:  1.0.0
@@ -589,16 +582,14 @@ class Container(Registry):  # type: ignore[misc]
             manifest_type = Manifest
 
             response = self._get_manifest_without_response_parsing(
-                self._container_version
+                self._repository_version
             )
         else:
+            abn_object = ArtifactBaseName(f"{cname}-{architecture}-{version}-{commit}")
             manifest_type = ImageManifest
 
-            if architecture is None:
-                architecture = CName(cname, architecture, version).arch
-
             response = self._get_manifest_without_response_parsing(
-                f"{self._container_version}-{cname}-{architecture}"
+                f"{self._repository_version}-{abn_object}-{architecture}"
             )
 
         if response.ok:
@@ -619,7 +610,11 @@ class Container(Registry):  # type: ignore[misc]
         try:
             index = self.read_index()
         except HTTPError as exc:
-            if exc.response.status_code != 404:
+            if exc.response.status_code == 404:
+                self._logger.debug(
+                    f"gardenlinux.oci.Repository.read_index() failed: {exc}"
+                )
+            else:
                 raise
 
             index = self.generate_index()
@@ -647,18 +642,24 @@ class Container(Registry):  # type: ignore[misc]
         :since:  0.7.0
         """
 
-        try:
-            manifest = self.read_manifest(cname, architecture, version)
-        except HTTPError as exc:
-            if exc.response.status_code != 404:
-                raise
+        manifest = None
 
-            if cname is None:
-                manifest = self.generate_manifest(version, commit)
-            else:
-                manifest = self.generate_image_manifest(
-                    cname, architecture, version, commit, feature_set
-                )
+        if cname:
+            try:
+                manifest = self.read_manifest(cname, architecture, version, commit)
+            except HTTPError as exc:
+                if exc.response.status_code == 404:
+                    self._logger.debug(
+                        f"gardenlinux.oci.Repository.read_manifest() failed: {exc}"
+                    )
+                else:
+                    raise
+
+            manifest = self.generate_image_manifest(
+                cname, architecture, version, commit, feature_set
+            )
+        else:
+            manifest = self.generate_manifest(version, commit)
 
         return manifest
 
@@ -667,7 +668,7 @@ class Container(Registry):  # type: ignore[misc]
         Uploads the given OCI image index and returns the response.
 
         :param index:     OCI image index
-        :param reference: OCI container reference (tag) to push to
+        :param reference: OCI repository reference (tag) to push to
 
         :return: (object) OCI image index put response
         :since:  0.7.0
@@ -676,27 +677,29 @@ class Container(Registry):  # type: ignore[misc]
         jsonschema.validate(index, schema=IndexSchema)
 
         if reference is None:
-            reference = self._container_version
+            reference = self._repository_version
 
         return self.do_request(  # type: ignore[no-any-return]
-            f"{self.prefix}://{self.hostname}/v2/{self._container_name}/manifests/{reference}",
+            f"{self.prefix}://{self.hostname}/v2/{self._repository_name}/manifests/{reference}",
             "PUT",
             headers={"Content-Type": OCI_IMAGE_INDEX_MEDIA_TYPE},
             json=index.extended_dict,
         )
 
-    def upload_manifest(self, manifest: Manifest, container: OrasContainer) -> Response:
+    def upload_manifest(
+        self, manifest: Manifest, repository: OrasContainer
+    ) -> Response:
         """
         oras-project.github.io: Read a manifest file and upload it.
 
-        :param manifest:  manifest to upload
-        :param container: parsed container URI
+        :param manifest:   Manifest to upload
+        :param repository: Repository URI
 
         :return: (object) OCI manifest put response
         :since:  1.0.0
         """
 
-        return Registry.upload_manifest(self, manifest.extended_dict, container)  # type: ignore[no-any-return]
+        return Registry.upload_manifest(self, manifest.extended_dict, repository)  # type: ignore[no-any-return]
 
     @staticmethod
     def get_artifacts_metadata_from_files(

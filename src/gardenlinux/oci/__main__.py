@@ -4,636 +4,601 @@
 gl-oci main entrypoint
 """
 
+import argparse
 import json
-from typing import List
+from pathlib import Path
+from typing import Optional
 
-import click
-
-from .container import Container
 from .image_manifest import ImageManifest
 from .podman import Podman
 from .podman_context import PodmanContext
+from .repository import Repository
 
 
-@click.group()
-def cli() -> None:
+def _add_additional_tag_list_to_parser(parser: argparse.ArgumentParser) -> None:
     """
-    gl-oci provides functionality to handle OCI containers. It can pull and push
+    Add `--additional-tag` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--additional-tag",
+        action="append",
+        default=[],
+        dest="additional_tag",
+        help="Additional tag to push the index with",
+    )
+
+
+def _add_arch_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--arch` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--arch",
+        required=False,
+        dest="arch",
+        help="Target Image CPU Architecture",
+    )
+
+
+def _add_build_arg_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--build-arg` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--build-arg",
+        action="append",
+        default=[],
+        dest="build_arg",
+        help="Additional build args for Containerfile",
+    )
+
+
+def _add_cname_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--cname` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--cname",
+        required=True,
+        dest="cname",
+        help="Canonical Name of Image",
+    )
+
+
+def _add_commit_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--commit` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--commit",
+        required=False,
+        dest="commit",
+        help="Commit of image",
+    )
+
+
+def _add_cosign_file_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--cosign-file` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--cosign-file",
+        type=Path,
+        required=False,
+        dest="cosign_file",
+        help="A file where the pushed manifests digests is written to. The content can be used by an external tool (e.g. cosign) to sign the manifests contents",
+    )
+
+
+def _add_dir_to_parser(
+    parser: argparse.ArgumentParser, help_text: str, default_value: Optional[str] = None
+) -> None:
+    """
+    Add `--dir` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--dir",
+        type=Path,
+        required=(default_value is None),
+        default=default_value,
+        dest="directory",
+        help=help_text,
+    )
+
+
+def _add_manifest_file_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--manifest-file` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--manifest-file",
+        type=Path,
+        default="manifests/manifest.json",
+        dest="manifest_file",
+        help="A file where the index entry for the pushed manifest is written to.",
+    )
+
+
+def _add_oci_archive_to_parser(
+    parser: argparse.ArgumentParser, required: bool = True
+) -> None:
+    """
+    Add `--oci-archive` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--oci-archive",
+        type=Path,
+        required=required,
+        dest="oci_archive",
+        help="Write build result to the OCI archive path and file name",
+    )
+
+
+def _add_oci_destination_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--destination` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--destination",
+        required=False,
+        dest="destination",
+        help="OCI repository destination",
+    )
+
+
+def _add_oci_index_args_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--index and --index-tag` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--index",
+        required=True,
+        dest="index",
+        help="OCI image index",
+    )
+
+    parser.add_argument(
+        "--index-tag",
+        required=True,
+        dest="index_tag",
+        help="OCI image index tag",
+    )
+
+
+def _add_oci_insecure_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--insecure` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--insecure",
+        action=argparse.BooleanOptionalAction,
+        dest="insecure",
+        default=False,
+        help="Use HTTP to communicate with the registry",
+    )
+
+
+def _add_oci_platform_to_parser(
+    parser: argparse.ArgumentParser, required: bool = True
+) -> None:
+    """
+    Add `--platform` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--platform",
+        required=required,
+        dest="platform",
+        help="OCI platform as os/arch/variant",
+    )
+
+
+def _add_oci_repository_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--repository` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--repository",
+        required=True,
+        dest="repository",
+        help="Repository Path",
+    )
+
+
+def _add_oci_tag_to_parser(
+    parser: argparse.ArgumentParser,
+    required: bool = True,
+    multiple: bool = False,
+) -> None:
+    """
+    Add `--tag` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    kwargs = {
+        "required": required,
+        "dest": "tag",
+        "help": "OCI tag of image",
+    }
+
+    if multiple:
+        kwargs["action"] = "append"
+        kwargs["default"] = []
+
+    parser.add_argument("--tag", **kwargs)  # type: ignore[arg-type]
+
+
+def _add_version_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--version` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--version",
+        required=False,
+        dest="version",
+        help="Version of image",
+    )
+
+
+def get_parser() -> argparse.ArgumentParser:
+    """
+    Get the argument parser for gl-oci.
+    Used for documentation generation.
+
+    :return: ArgumentParser instance
+    :since: 1.0.0
+    """
+
+    parser = argparse.ArgumentParser(
+        prog="gl-oci",
+        description="gl-oci provides functionality to handle OCI images.",
+    )
+
+    subparsers = parser.add_subparsers(dest="action", help="Action to perform.")
+
+    add_image_to_index_parser = subparsers.add_parser("add-image-to-index")
+
+    _add_oci_index_args_to_parser(add_image_to_index_parser)
+    _add_oci_repository_to_parser(add_image_to_index_parser)
+    _add_oci_tag_to_parser(add_image_to_index_parser)
+    _add_oci_insecure_to_parser(add_image_to_index_parser)
+    _add_additional_tag_list_to_parser(add_image_to_index_parser)
+
+    build_image_parser = subparsers.add_parser("build-image")
+
+    _add_oci_repository_to_parser(build_image_parser)
+    _add_oci_tag_to_parser(build_image_parser)
+    _add_dir_to_parser(build_image_parser, "Path to the build Containerfile")
+    _add_oci_platform_to_parser(build_image_parser, False)
+    _add_additional_tag_list_to_parser(build_image_parser)
+    _add_build_arg_to_parser(build_image_parser)
+    _add_oci_archive_to_parser(build_image_parser, False)
+
+    load_image_parser = subparsers.add_parser("load-image")
+
+    _add_oci_archive_to_parser(load_image_parser, False)
+    _add_additional_tag_list_to_parser(load_image_parser)
+
+    load_images_from_directory_parser = subparsers.add_parser(
+        "load-images-from-directory"
+    )
+
+    _add_dir_to_parser(
+        load_images_from_directory_parser, "Directory of the build artifacts"
+    )
+
+    new_index_parser = subparsers.add_parser("new-index")
+
+    _add_oci_index_args_to_parser(new_index_parser)
+    _add_oci_insecure_to_parser(new_index_parser)
+    _add_additional_tag_list_to_parser(new_index_parser)
+
+    pull_image_parser = subparsers.add_parser("pull-image")
+
+    _add_oci_repository_to_parser(pull_image_parser)
+    _add_oci_tag_to_parser(pull_image_parser, False)
+    _add_oci_platform_to_parser(pull_image_parser, False)
+    _add_oci_insecure_to_parser(pull_image_parser)
+
+    push_image_parser = subparsers.add_parser("push-image")
+
+    _add_oci_repository_to_parser(push_image_parser)
+    _add_oci_tag_to_parser(push_image_parser, False)
+    _add_oci_destination_to_parser(push_image_parser)
+    _add_oci_insecure_to_parser(push_image_parser)
+
+    push_index_from_directory_parser = subparsers.add_parser(
+        "push-index-from-directory"
+    )
+
+    _add_oci_index_args_to_parser(push_index_from_directory_parser)
+
+    _add_dir_to_parser(
+        push_index_from_directory_parser,
+        default_value="manifests",
+        help_text="Directory to read index entry files from.",
+    )
+
+    _add_oci_insecure_to_parser(push_index_from_directory_parser)
+    _add_additional_tag_list_to_parser(push_index_from_directory_parser)
+
+    push_index_tags_parser = subparsers.add_parser("push-index-tags")
+
+    _add_oci_index_args_to_parser(push_index_tags_parser)
+    _add_oci_insecure_to_parser(push_index_tags_parser)
+    _add_oci_tag_to_parser(push_index_tags_parser, multiple=True)
+
+    push_manifest_parser = subparsers.add_parser("push-manifest")
+
+    _add_oci_repository_to_parser(push_manifest_parser)
+    _add_cname_to_parser(push_manifest_parser)
+    _add_arch_to_parser(push_manifest_parser)
+    _add_version_to_parser(push_manifest_parser)
+    _add_commit_to_parser(push_manifest_parser)
+    _add_dir_to_parser(push_manifest_parser, "Directory of the build artifacts")
+    _add_manifest_file_to_parser(push_manifest_parser)
+    _add_cosign_file_to_parser(push_manifest_parser)
+    _add_oci_insecure_to_parser(push_manifest_parser)
+    _add_additional_tag_list_to_parser(push_manifest_parser)
+
+    push_manifest_tags_parser = subparsers.add_parser("push-manifest-tags")
+
+    _add_oci_repository_to_parser(push_manifest_tags_parser)
+    _add_cname_to_parser(push_manifest_tags_parser)
+    _add_arch_to_parser(push_manifest_tags_parser)
+    _add_version_to_parser(push_manifest_tags_parser)
+    _add_commit_to_parser(push_manifest_tags_parser)
+    _add_oci_insecure_to_parser(push_manifest_tags_parser)
+    _add_oci_tag_to_parser(push_manifest_tags_parser, multiple=True)
+
+    save_image_parser = subparsers.add_parser("save-image")
+
+    _add_oci_repository_to_parser(save_image_parser)
+    _add_oci_tag_to_parser(save_image_parser, False)
+    _add_oci_archive_to_parser(save_image_parser, False)
+
+    tag_image_parser = subparsers.add_parser("tag-image")
+
+    _add_oci_repository_to_parser(tag_image_parser)
+    _add_oci_tag_to_parser(tag_image_parser, False)
+    _add_additional_tag_list_to_parser(tag_image_parser)
+
+    return parser
+
+
+def main() -> None:
+    """
+    gl-oci provides functionality to handle OCI images. It can pull and push
     images from remote repositories as well as handle GardenLinux artifacts, OCI
     image indices and manifests.
 
     :since: 0.7.0
     """
 
-    pass
+    parser = get_parser()
+    args = parser.parse_args()
 
-
-@cli.command()
-@click.option(
-    "--index",
-    required=True,
-    help="OCI image index",
-)
-@click.option(
-    "--index-tag",
-    required=True,
-    help="OCI image index tag",
-)
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=True,
-    help="OCI tag of image",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the index with",
-)
-def add_container_to_index(
-    index: str,
-    index_tag: str,
-    container: str,
-    tag: str,
-    insecure: bool,
-    additional_tag: List[str],
-) -> None:
-    """
-    Adds an image container to an OCI image index.
-
-    :since: 1.0.0
-    """
-
-    manifest_container = Container(f"{container}:{tag}", insecure=insecure)
-
-    manifest = manifest_container.read_manifest()
-
-    index_resource = Container(f"{index}:{index_tag}", insecure=insecure)
-
-    image_index = index_resource.read_or_generate_index()
-    image_index.append_manifest(manifest)
-
-    index_resource.push_index(image_index)
-    index_resource.push_index_for_tags(image_index, additional_tag)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=True,
-    help="OCI tag of image",
-)
-@click.option(
-    "--dir",
-    "directory",
-    required=True,
-    type=click.Path(),
-    help="Path to the build Containerfile",
-)
-@click.option(
-    "--platform",
-    required=False,
-    help="OCI platform as os/arch/variant",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the manifest with",
-)
-@click.option(
-    "--build_arg",
-    required=False,
-    default=[],
-    multiple=True,
-    help="Additional build args for Containerfile",
-)
-@click.option(
-    "--oci_archive",
-    required=False,
-    help="Write build result to the OCI archive path and file name",
-)
-def build_container(
-    container: str,
-    tag: str,
-    directory: str,
-    platform: str,
-    additional_tag: List[str],
-    build_arg: List[str],
-    oci_archive: str,
-) -> None:
-    """
-    Build an OCI container based on the defined `Containerfile`.
-
-    :since: 1.0.0
-    """
-
-    podman = Podman()
-
-    with PodmanContext() as podman_context:
-        if oci_archive is None:
-            image_id = podman.build(
-                directory,
-                podman=podman_context,
-                platform=platform,
-                oci_tag=f"{container}:{tag}",
-                build_args=Podman.parse_build_args_list(build_arg),
-            )
-        else:
-            build_result_data = podman.build_and_save_oci_archive(
-                directory,
-                oci_archive,
-                podman=podman_context,
-                platform=platform,
-                oci_tag=f"{container}:{tag}",
-                build_args=Podman.parse_build_args_list(build_arg),
+    match args.action:
+        case "add-image-to-index":
+            manifest_repository = Repository(
+                f"{args.repository}:{args.tag}", insecure=args.insecure
             )
 
-            _, image_id = build_result_data.popitem()
+            manifest = manifest_repository.read_manifest()
 
-        if additional_tag is not None:
-            podman.tag_list(
-                image_id, Podman.get_container_tag_list(container, additional_tag)
+            index_resource = Repository(
+                f"{args.index}:{args.index_tag}", insecure=args.insecure
             )
 
-    print(image_id)
+            image_index = index_resource.read_or_generate_index()
+            image_index.append_manifest(manifest)
 
+            index_resource.push_index(image_index)
+            index_resource.push_index_for_tags(image_index, args.additional_tag)
+        case "build-image":
+            podman = Podman()
 
-@cli.command()
-@click.option(
-    "--oci_archive",
-    required=False,
-    help="Write build result to the OCI archive path and file name",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the manifest with",
-)
-def load_container(oci_archive: str, additional_tag: List[str]) -> None:
-    """
-    Load an OCI archive.
+            with PodmanContext() as podman_context:
+                if args.oci_archive is None:
+                    image_id = podman.build(
+                        args.directory,
+                        podman=podman_context,
+                        platform=args.platform,
+                        oci_tag=f"{args.repository}:{args.tag}",
+                        build_args=Podman.parse_build_args_list(args.build_arg),
+                    )
+                else:
+                    build_result_data = podman.build_and_save_oci_archive(
+                        args.directory,
+                        args.oci_archive,
+                        podman=podman_context,
+                        platform=args.platform,
+                        oci_tag=f"{args.repository}:{args.tag}",
+                        build_args=Podman.parse_build_args_list(args.build_arg),
+                    )
 
-    :since: 1.0.0
-    """
+                    _, image_id = build_result_data.popitem()
 
-    podman = Podman()
+                if args.additional_tag is not None:
+                    podman.tag_list(
+                        image_id,
+                        Podman.get_image_tag_list(args.repository, args.additional_tag),
+                    )
 
-    with PodmanContext() as podman_context:
-        image_id = podman.load_oci_archive(oci_archive, podman=podman_context)
+            print(image_id)
+        case "load-image":
+            podman = Podman()
 
-        if additional_tag is not None:
-            podman.tag_list(image_id, additional_tag, podman=podman_context)
+            with PodmanContext() as podman_context:
+                image_id = podman.load_oci_archive(
+                    args.oci_archive, podman=podman_context
+                )
 
-    print(image_id)
+                if args.additional_tag is not None:
+                    podman.tag_list(
+                        image_id, args.additional_tag, podman=podman_context
+                    )
 
-
-@cli.command()
-@click.option(
-    "--dir",
-    "directory",
-    required=True,
-    type=click.Path(),
-    help="path to the build artifacts",
-)
-def load_containers_from_directory(directory: str) -> None:
-    """
-    Load multiple OCI archives.
-
-    :since: 1.0.0
-    """
-
-    result = Podman().load_oci_archives_from_directory(directory)
-    print(json.dumps(result))
-
-
-@cli.command()
-@click.option(
-    "--index",
-    required=True,
-    help="OCI image index",
-)
-@click.option(
-    "--index-tag",
-    required=True,
-    help="OCI image index tag",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the index with",
-)
-def new_index(
-    index: str, index_tag: str, insecure: bool, additional_tag: List[str]
-) -> None:
-    """
-    Create a new OCI image index.
-
-    :since: 1.0.0
-    """
-
-    index_resource = Container(f"{index}:{index_tag}", insecure=insecure)
-
-    image_index = index_resource.generate_index()
-    index_resource.push_index(image_index)
-    index_resource.push_index_for_tags(image_index, additional_tag)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=False,
-    help="OCI tag of image",
-)
-@click.option(
-    "--platform",
-    required=False,
-    help="OCI platform as os/arch/variant",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-def pull_container(container: str, tag: str, platform: str, insecure: bool) -> None:
-    """
-    Pull an OCI image container from a remote OCI registry.
-
-    :since: 1.0.0
-    """
-
-    image_id = Podman(insecure=insecure).pull(container, oci_tag=tag, platform=platform)
-    print(image_id)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=False,
-    help="OCI tag of image",
-)
-@click.option(
-    "--destination",
-    required=False,
-    help="OCI container destination",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-def push_container(container: str, tag: str, destination: str, insecure: bool) -> None:
-    """
-    Push an OCI image container to a remote OCI registry.
-
-    :since: 1.0.0
-    """
-
-    Podman(insecure=insecure).push(container, oci_tag=tag, destination=destination)
-
-
-@cli.command()
-@click.option(
-    "--index",
-    required=True,
-    help="OCI image index",
-)
-@click.option(
-    "--index-tag",
-    required=True,
-    help="OCI image index tag",
-)
-@click.option(
-    "--manifest_folder",
-    default="manifests",
-    help="A folder where the index entries are read from.",
-)
-@click.option(
-    "--insecure",
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the index with",
-)
-def push_index_from_directory(
-    index: str,
-    index_tag: str,
-    manifest_folder: str,
-    insecure: bool,
-    additional_tag: List[str],
-) -> None:
-    """
-    Pushes manifests stored in a directory to a given OCI image index.
-
-    :since: 0.10.9
-    """
-
-    index_resource = Container(f"{index}:{index_tag}", insecure=insecure)
-    index_resource.push_index_from_directory(manifest_folder, additional_tag)
-
-
-@cli.command()
-@click.option(
-    "--index",
-    required=True,
-    help="OCI image index",
-)
-@click.option(
-    "--index-tag",
-    required=True,
-    help="OCI image index tag",
-)
-@click.option(
-    "--insecure",
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--tag",
-    required=True,
-    multiple=True,
-    help="Tag to push the OCI image index with",
-)
-def push_index_tags(index: str, index_tag: str, insecure: bool, tag: List[str]) -> None:
-    """
-    Push OCI image index tags to a registry.
-
-    :since: 0.10.9
-    """
-
-    index_resource = Container(f"{index}:{index_tag}", insecure=insecure)
-
-    image_index = index_resource.read_or_generate_index()
-    index_resource.push_index_for_tags(image_index, tag)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option("--cname", required=True, help="Canonical Name of Image")
-@click.option(
-    "--arch",
-    required=False,
-    default=None,
-    help="Target Image CPU Architecture",
-)
-@click.option(
-    "--version",
-    required=False,
-    default=None,
-    help="Version of image",
-)
-@click.option(
-    "--commit",
-    required=False,
-    default=None,
-    help="Commit of image",
-)
-@click.option(
-    "--dir",
-    "directory",
-    required=True,
-    type=click.Path(),
-    help="path to the build artifacts",
-)
-@click.option(
-    "--cosign_file",
-    required=False,
-    help="A file where the pushed manifests digests is written to. The content can be used by an external tool (e.g. cosign) to sign the manifests contents",
-)
-@click.option(
-    "--manifest_file",
-    type=click.Path(),
-    default="manifests/manifest.json",
-    help="A file where the index entry for the pushed manifest is written to.",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the manifest with",
-)
-def push_manifest(
-    container: str,
-    cname: str,
-    arch: str,
-    version: str,
-    commit: str,
-    directory: str,
-    cosign_file: str,
-    manifest_file: str,
-    insecure: bool,
-    additional_tag: List[str],
-) -> None:
-    """
-    Push to an OCI image container given GardenLinux canonical named artifacts
-    in a specified directory.
-
-    :since: 0.7.0
-    """
-
-    container = Container(f"{container}:{version}", insecure=insecure)
-
-    manifest = container.read_or_generate_manifest(cname, arch, version, commit)
-
-    if not isinstance(manifest, ImageManifest):
-        raise RuntimeError("Data given for OCI image manifest is incomplete")
-
-    container.push_manifest_and_artifacts_from_directory(
-        manifest, directory, manifest_file, additional_tag
-    )
-
-    if cosign_file:
-        print(manifest.digest, file=open(cosign_file, "w"))
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--cname",
-    required=False,
-    default=None,
-    help="Canonical Name of Image",
-)
-@click.option(
-    "--arch",
-    required=False,
-    default=None,
-    help="Target Image CPU Architecture",
-)
-@click.option(
-    "--version",
-    required=False,
-    default=None,
-    help="Version of image",
-)
-@click.option(
-    "--commit",
-    required=False,
-    default=None,
-    help="Commit of image",
-)
-@click.option(
-    "--insecure",
-    type=bool,
-    default=False,
-    help="Use HTTP to communicate with the registry",
-)
-@click.option(
-    "--tag",
-    required=True,
-    multiple=True,
-    help="Tag to push the manifest with",
-)
-def push_manifest_tags(
-    container: str,
-    cname: str,
-    arch: str,
-    version: str,
-    commit: str,
-    insecure: bool,
-    tag: List[str],
-) -> None:
-    """
-    Push tags to an OCI image container for a given GardenLinux canonical named image.
-
-    :since: 0.10.0
-    """
-
-    container = Container(f"{container}:{version}", insecure=insecure)
-
-    manifest = container.read_or_generate_manifest(cname, arch, version, commit)
-    container.push_manifest_for_tags(manifest, tag)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=False,
-    help="OCI tag of image",
-)
-@click.option(
-    "--oci_archive",
-    required=False,
-    help="Write build result to the OCI archive path and file name",
-)
-def save_container(container: str, tag: str, oci_archive: str) -> None:
-    """
-    Saves a given OCI image container as an OCI archive.
-
-    :since: 1.0.0
-    """
-
-    podman = Podman()
-
-    image_id = podman.get_image_id(container, oci_tag=tag)
-    podman.save_oci_archive(image_id, oci_archive, oci_tag=tag)
-
-
-@cli.command()
-@click.option(
-    "--container",
-    required=True,
-    help="Container Name",
-)
-@click.option(
-    "--tag",
-    required=False,
-    help="OCI tag of image",
-)
-@click.option(
-    "--additional_tag",
-    required=False,
-    multiple=True,
-    help="Additional tag to push the manifest with",
-)
-def tag_container(container: str, tag: str, additional_tag: List[str]) -> None:
-    """
-    Adds additional tags to a given OCI image container.
-
-    :since: 1.0.0
-    """
-
-    podman = Podman()
-
-    with PodmanContext() as podman_context:
-        image_id = podman.get_image_id(container, podman=podman_context, oci_tag=tag)
-
-        if additional_tag is not None:
-            podman.tag_list(
-                image_id,
-                Podman.get_container_tag_list(container, additional_tag),
-                podman=podman_context,
+            print(image_id)
+        case "load-images-from-directory":
+            result = Podman().load_oci_archives_from_directory(args.directory)
+            print(json.dumps(result))
+        case "new-index":
+            index_resource = Repository(
+                f"{args.index}:{args.index_tag}", insecure=args.insecure
             )
 
+            image_index = index_resource.generate_index()
+            index_resource.push_index(image_index)
+            index_resource.push_index_for_tags(image_index, args.additional_tag)
+        case "pull-image":
+            image_id = Podman(insecure=args.insecure).pull(
+                args.repository, oci_tag=args.tag, platform=args.platform
+            )
+            print(image_id)
+        case "push-image":
+            Podman(insecure=args.insecure).push(
+                args.repository, oci_tag=args.tag, destination=args.destination
+            )
+        case "push-index-from-directory":
+            index_resource = Repository(
+                f"{args.index}:{args.index_tag}", insecure=args.insecure
+            )
+            index_resource.push_index_from_directory(
+                args.directory, args.additional_tag
+            )
+        case "push-index-tags":
+            index_resource = Repository(
+                f"{args.index}:{args.index_tag}", insecure=args.insecure
+            )
 
-def main() -> None:
-    """
-    gl-oci main()
+            image_index = index_resource.read_or_generate_index()
+            index_resource.push_index_for_tags(image_index, args.tag)
+        case "push-manifest":
+            repository = Repository(
+                f"{args.repository}:{args.version}", insecure=args.insecure
+            )
 
-    :since: 0.7.0
-    """
+            manifest = repository.read_or_generate_manifest(
+                args.cname, args.arch, args.version, args.commit
+            )
 
-    cli()
+            if not isinstance(manifest, ImageManifest):
+                raise RuntimeError("Data given for OCI image manifest is incomplete")
+
+            repository.push_manifest_and_artifacts_from_directory(
+                manifest, args.directory, args.manifest_file, args.additional_tag
+            )
+
+            if args.cosign_file:
+                print(manifest.digest, file=open(args.cosign_file, "w"))
+        case "push-manifest-tags":
+            repository = Repository(
+                f"{args.repository}:{args.version}", insecure=args.insecure
+            )
+
+            manifest = repository.read_or_generate_manifest(
+                args.cname, args.arch, args.version, args.commit
+            )
+
+            repository.push_manifest_for_tags(manifest, args.tag)
+        case "save-image":
+            podman = Podman()
+
+            image_id = podman.get_image_id(args.repository, oci_tag=args.tag)
+            podman.save_oci_archive(image_id, args.oci_archive, oci_tag=args.tag)
+        case "tag-image":
+            podman = Podman()
+
+            with PodmanContext() as podman_context:
+                image_id = podman.get_image_id(
+                    args.repository, podman=podman_context, oci_tag=args.tag
+                )
+
+                if args.additional_tag is not None:
+                    podman.tag_list(
+                        image_id,
+                        Podman.get_image_tag_list(args.repository, args.additional_tag),
+                        podman=podman_context,
+                    )
 
 
 if __name__ == "__main__":
-    cli()
+    main()
