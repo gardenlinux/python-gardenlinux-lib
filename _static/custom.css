@@ -1,0 +1,318 @@
+/* Garden Linux Design System - Sphinx Theme Customization */
+
+:root {
+  /* Primary Green */
+  --gardenlinux-primary-base: #027154;
+  --gardenlinux-primary-dark: #015a43;
+  --gardenlinux-primary-darker: #014332;
+  --gardenlinux-primary-darkest: #012c21;
+  --gardenlinux-primary-light: #038865;
+  --gardenlinux-primary-lighter: #04a076;
+  --gardenlinux-primary-lightest: #05b887;
+
+  /* Secondary Green */
+  --gardenlinux-secondary-base: #009f76;
+  --gardenlinux-secondary-dark: #008060;
+  --gardenlinux-secondary-darker: #006149;
+  --gardenlinux-secondary-darkest: #004232;
+  --gardenlinux-secondary-light: #00be8c;
+  --gardenlinux-secondary-lighter: #00dd9f;
+  --gardenlinux-secondary-lightest: #00fcb2;
+
+  /* Accent Yellow/Gold */
+  --gardenlinux-accent-base: #dfbe00;
+  --gardenlinux-accent-dark: #b29900;
+  --gardenlinux-accent-darker: #857400;
+  --gardenlinux-accent-darkest: #584f00;
+  --gardenlinux-accent-light: #ffd500;
+  --gardenlinux-accent-lighter: #ffec33;
+  --gardenlinux-accent-lightest: #fff366;
+
+  /* Semantic Colors */
+  --gardenlinux-success: #009f76;
+  --gardenlinux-success-light: #00be8c;
+  --gardenlinux-success-dark: #008060;
+  --gardenlinux-warning: #dfbe00;
+  --gardenlinux-warning-light: #ffd500;
+  --gardenlinux-warning-dark: #b29900;
+  --gardenlinux-error: #d32f2f;
+  --gardenlinux-error-light: #ef5350;
+  --gardenlinux-error-dark: #c62828;
+  --gardenlinux-info: #027154;
+  --gardenlinux-info-light: #038865;
+  --gardenlinux-info-dark: #015a43;
+}
+
+/* Override Read the Docs theme colors with Garden Linux colors */
+.wy-side-nav-search {
+  background-color: var(--gardenlinux-primary-base);
+}
+
+.wy-side-nav-search > a {
+  color: #ffffff !important;
+}
+
+.wy-side-nav-search > div.version {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Ensure all text in the search header is white */
+.wy-side-nav-search * {
+  color: #ffffff !important;
+}
+
+.wy-side-nav-search input[type="text"] {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.wy-side-nav-search input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Menu colors - improved readability - white background */
+.wy-side-scroll {
+  background-color: #ffffff;
+}
+
+.wy-menu-vertical {
+  background-color: #ffffff;
+}
+
+.wy-menu-vertical a {
+  color: #1a1a1a !important;
+  font-weight: 500;
+}
+
+/* Make unselected/collapsed menu items more readable */
+.wy-menu-vertical li:not(.current) > a {
+  color: #1a1a1a !important;
+}
+
+.wy-menu-vertical li.toctree-l1:not(.current) > a {
+  color: #1a1a1a !important;
+  font-weight: 500;
+}
+
+.wy-menu-vertical a:hover {
+  background-color: var(--gardenlinux-primary-lightest);
+  color: var(--gardenlinux-primary-darkest) !important;
+}
+
+.wy-menu-vertical li.current {
+  background-color: var(--gardenlinux-primary-lightest);
+}
+
+.wy-menu-vertical li.current > a {
+  color: var(--gardenlinux-primary-darkest) !important;
+  border-right: 3px solid var(--gardenlinux-primary-base);
+  font-weight: 600;
+  background-color: var(--gardenlinux-primary-lightest);
+}
+
+.wy-menu-vertical li.toctree-l1.current > a {
+  border-bottom: 1px solid var(--gardenlinux-primary-light);
+}
+
+/* Improve nested menu items readability */
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a,
+.wy-menu-vertical li.toctree-l4 a {
+  color: #1a1a1a !important;
+}
+
+/* Make unselected nested items more readable */
+.wy-menu-vertical li.toctree-l2:not(.current) > a,
+.wy-menu-vertical li.toctree-l3:not(.current) > a,
+.wy-menu-vertical li.toctree-l4:not(.current) > a {
+  color: #1a1a1a !important;
+  font-weight: 400;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l3.current > a,
+.wy-menu-vertical li.toctree-l4.current > a {
+  background-color: var(--gardenlinux-primary-lightest) !important;
+  color: var(--gardenlinux-primary-darkest) !important;
+  font-weight: 600;
+}
+
+.wy-menu-vertical header,
+.wy-menu-vertical p.caption {
+  color: #1a1a1a;
+  font-weight: 600;
+  background-color: #ffffff;
+}
+
+/* Ensure all sidebar elements have white background */
+.wy-nav-side {
+  background-color: #ffffff !important;
+}
+
+.wy-nav-side .wy-menu-vertical {
+  background-color: #ffffff !important;
+}
+
+.wy-side-nav-search input[type="text"] {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Override any black/dark backgrounds in sidebar */
+.wy-menu-vertical ul {
+  background-color: #ffffff !important;
+}
+
+.wy-menu-vertical li {
+  background-color: transparent;
+}
+
+/* Fix selected sub-sections - use light background with dark text */
+.wy-menu-vertical li.current a,
+.wy-menu-vertical li.current a:visited {
+  color: var(--gardenlinux-primary-darkest) !important;
+  background-color: var(--gardenlinux-primary-lightest) !important;
+}
+
+.wy-menu-vertical li.current a:hover {
+  color: var(--gardenlinux-primary-darkest) !important;
+  background-color: var(--gardenlinux-primary-lighter) !important;
+}
+
+/* Fix expand/collapse icon squares - make them dark and readable */
+.wy-menu-vertical .toctree-expand,
+.wy-menu-vertical span.toctree-expand,
+.wy-menu-vertical a .toctree-expand {
+  color: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+  opacity: 1 !important;
+  font-weight: bold;
+}
+
+.wy-menu-vertical .toctree-expand:before,
+.wy-menu-vertical span.toctree-expand:before,
+.wy-menu-vertical a .toctree-expand:before {
+  color: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+}
+
+/* Fix icon boxes for expandable items at all levels */
+.wy-menu-vertical li.toctree-l1 > a .toctree-expand,
+.wy-menu-vertical li.toctree-l2 > a .toctree-expand,
+.wy-menu-vertical li.toctree-l3 > a .toctree-expand,
+.wy-menu-vertical li.toctree-l4 > a .toctree-expand {
+  color: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+  background-color: transparent !important;
+}
+
+/* Target the icon element directly */
+.wy-menu-vertical li .toctree-expand {
+  color: #1a1a1a !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+/* Make sure plus/minus signs are dark */
+.wy-menu-vertical .toctree-expand:after {
+  color: #1a1a1a !important;
+}
+
+/* Links */
+a {
+  color: var(--gardenlinux-primary-base);
+}
+
+a:hover {
+  color: var(--gardenlinux-secondary-base);
+}
+
+a:visited {
+  color: var(--gardenlinux-primary-dark);
+}
+
+/* Code blocks */
+.highlight {
+  background-color: #f5f5f5;
+}
+
+.highlight .hll {
+  background-color: var(--gardenlinux-primary-lightest);
+}
+
+/* Buttons and important elements */
+.btn-primary,
+.rst-content .btn-primary {
+  background-color: var(--gardenlinux-primary-base);
+  border-color: var(--gardenlinux-primary-base);
+  color: #ffffff;
+}
+
+.btn-primary:hover,
+.rst-content .btn-primary:hover {
+  background-color: var(--gardenlinux-primary-dark);
+  border-color: var(--gardenlinux-primary-dark);
+}
+
+/* Admonitions */
+.rst-content .admonition {
+  border-left: 4px solid;
+}
+
+.rst-content .admonition.note {
+  border-left-color: var(--gardenlinux-info);
+  background-color: var(--gardenlinux-info-lightest);
+}
+
+.rst-content .admonition.warning {
+  border-left-color: var(--gardenlinux-warning);
+  background-color: var(--gardenlinux-accent-lightest);
+}
+
+.rst-content .admonition.danger,
+.rst-content .admonition.error {
+  border-left-color: var(--gardenlinux-error);
+  background-color: var(--gardenlinux-error-light);
+}
+
+.rst-content .admonition.success,
+.rst-content .admonition.tip {
+  border-left-color: var(--gardenlinux-success);
+  background-color: var(--gardenlinux-secondary-lightest);
+}
+
+/* Headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--gardenlinux-primary-base);
+}
+
+/* Table of contents */
+.rst-content .toctree-wrapper > p.caption {
+  color: var(--gardenlinux-primary-base);
+  font-weight: bold;
+}
+
+/* Logo styling */
+.logo {
+  max-width: 250px;
+  height: auto;
+  margin: 10px 0;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--gardenlinux-primary-light);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .wy-side-nav-search {
+    padding: 0.809em;
+  }
+}
