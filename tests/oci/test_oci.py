@@ -3,19 +3,18 @@ import sys
 from typing import Any, List, Optional, Tuple
 
 import pytest
-from click.testing import CliRunner
 from oras.client import OrasClient
 from oras.provider import Registry
 
 sys.path.append("src")
 
-from gardenlinux.oci.__main__ import cli as gl_oci
+from gardenlinux.oci.__main__ import main as gl_oci
 
 from ..constants import (
-    CONTAINER_NAME_ZOT_EXAMPLE,
     GARDENLINUX_ROOT_DIR_EXAMPLE,
     REGISTRY,
     REGISTRY_URL,
+    REPOSITORY_NAME_ZOT_EXAMPLE,
     TEST_ARCHITECTURES,
     TEST_COMMIT,
     TEST_FEATURE_SET,
@@ -27,124 +26,118 @@ from ..constants import (
 
 
 def push_manifest(
-    runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
     version: str,
     arch: str,
     cname: str,
     additional_tags: Optional[List[str]] = None,
-) -> bool:
+) -> None:
     """Push manifest to registry and return success status"""
     print(f"Pushing manifest for {cname} {arch}")
 
-    cmd = [
+    args = [
+        "gl-oci",
         "push-manifest",
-        "--container",
-        CONTAINER_NAME_ZOT_EXAMPLE,
-        "--version",
-        version,
-        "--arch",
-        arch,
+        "--repository",
+        REPOSITORY_NAME_ZOT_EXAMPLE,
         "--cname",
         cname,
+        "--arch",
+        arch,
+        "--version",
+        version,
+        "--commit",
+        TEST_COMMIT,
         "--dir",
         GARDENLINUX_ROOT_DIR_EXAMPLE,
-        "--insecure",
-        "True",
-        "--cosign_file",
+        "--cosign-file",
         "digest",
-        "--manifest_file",
+        "--manifest-file",
         "manifests/manifest.json",
+        "--insecure",
     ]
 
     if additional_tags:
         for tag in additional_tags:
-            cmd.extend(["--additional_tag", tag])
+            args.extend(["--additional-tag", tag])
 
-    try:
-        result = runner.invoke(
-            gl_oci,
-            cmd,
-            catch_exceptions=False,
-        )
-        print(f"Push manifest output: {result.output}")
-        return result.exit_code == 0
-    except Exception as e:
-        print(f"Error during push manifest: {str(e)}")
-        return False
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        args,
+    )
+
+    gl_oci()
 
 
 def push_manifest_tags(
-    runner: CliRunner,
+    monkeypatch: pytest.MonkeyPatch,
     version: str,
     arch: str,
     cname: str,
     tags: Optional[List[str]] = None,
-) -> bool:
+) -> None:
     """Push manifest to registry and return success status"""
     print(f"Pushing manifest for {cname} {arch}")
 
-    cmd = [
+    args = [
+        "gl-oci",
         "push-manifest-tags",
-        "--container",
-        CONTAINER_NAME_ZOT_EXAMPLE,
-        "--version",
-        version,
-        "--arch",
-        arch,
+        "--repository",
+        REPOSITORY_NAME_ZOT_EXAMPLE,
         "--cname",
         cname,
+        "--arch",
+        arch,
+        "--version",
+        version,
+        "--commit",
+        TEST_COMMIT,
         "--insecure",
-        "True",
     ]
 
     if tags:
         for tag in tags:
-            cmd.extend(["--tag", tag])
+            args.extend(["--tag", tag])
 
-    try:
-        result = runner.invoke(
-            gl_oci,
-            cmd,
-            catch_exceptions=False,
-        )
-        print(f"Push manifest tags output: {result.output}")
-        return result.exit_code == 0
-    except Exception as e:
-        print(f"Error during push manifest tags: {str(e)}")
-        return False
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        args,
+    )
+
+    gl_oci()
 
 
 def update_index(
-    runner: CliRunner, version: str, additional_tags: Optional[List[str]] = None
-) -> bool:
+    monkeypatch: pytest.MonkeyPatch,
+    version: str,
+    additional_tags: Optional[List[str]] = None,
+) -> None:
     """Update index in registry and return success status"""
     print("Updating index")
 
-    cmd = [
+    args = [
+        "gl-oci",
         "push-index-from-directory",
         "--index",
-        CONTAINER_NAME_ZOT_EXAMPLE,
+        REPOSITORY_NAME_ZOT_EXAMPLE,
         "--index-tag",
         version,
         "--insecure",
-        "True",
     ]
 
     if additional_tags:
         for tag in additional_tags:
-            cmd.extend(["--additional_tag", tag])
+            args.extend(["--additional-tag", tag])
 
-    try:
-        result = runner.invoke(
-            gl_oci,
-            cmd,
-            catch_exceptions=False,
-        )
-        print(f"Update index output: {result.output}")
-        return result.exit_code == 0
-    except Exception as e:
-        print(f"Error during update index: {str(e)}")
-        return False
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        args,
+    )
+
+    gl_oci()
 
 
 def get_catalog(client: OrasClient) -> List[Any]:
@@ -223,18 +216,21 @@ def verify_combined_tag_manifest(
     assert "annotations" in manifest, "Manifest should contain annotations"
 
     annotations = manifest.get("annotations", {})
+
+    assert annotations.get("cname") == cname, f"Manifest should have cname {cname}"
+
     assert annotations.get("architecture") == arch, (
         f"Manifest should have architecture {arch}"
-    )
-    assert annotations.get("cname") == cname, f"Manifest should have cname {cname}"
-    assert annotations.get("version") == version, (
-        f"Manifest should have version {version}"
     )
 
     if feature_set:
         assert annotations.get("feature_set") == feature_set, (
             f"Manifest should have feature_set {feature_set}"
         )
+
+    assert annotations.get("version") == version, (
+        f"Manifest should have version {version}"
+    )
 
     if commit:
         assert annotations.get("commit") == commit, (
@@ -339,11 +335,11 @@ def test_push_manifest_and_index(
     cname: str,
     additional_tags_index: List[str],
     additional_tags_manifest: List[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     print(f"\n\n=== Starting test for {cname} {arch} {version} ===")
-    runner = CliRunner()
     repo_name = "gardenlinux-example"
-    combined_tag = f"{version}-{cname}-{arch}"
+    combined_tag = f"{version}-{cname}-{arch}-{version}-{TEST_COMMIT}-{arch}"
 
     post_push_manifest_tags = []
 
@@ -352,20 +348,12 @@ def test_push_manifest_and_index(
         post_push_manifest_tags = additional_tags_manifest
         additional_tags_manifest = []
 
-    push_successful = push_manifest(
-        runner, version, arch, cname, additional_tags_manifest
-    )
-    assert push_successful, "Manifest push should succeed"
+    push_manifest(monkeypatch, version, arch, cname, additional_tags_manifest)
 
     if len(post_push_manifest_tags) > 0:
-        push_successful = push_manifest_tags(
-            runner, version, arch, cname, post_push_manifest_tags
-        )
-        assert push_successful, "Manifest tags push should succeed"
+        push_manifest_tags(monkeypatch, version, arch, cname, post_push_manifest_tags)
 
-    if push_successful:
-        update_index_successful = update_index(runner, version, additional_tags_index)
-        assert update_index_successful, "Index update should succeed"
+    update_index(monkeypatch, version, additional_tags_index)
 
     # Verify registry contents
     print(f"\n=== Verifying registry for {cname} {arch} {version} ===")

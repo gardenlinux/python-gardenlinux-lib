@@ -7,6 +7,7 @@ gl-s3 main entrypoint
 
 import argparse
 
+from ..logger import LoggerSetup
 from .s3_artifacts import S3Artifacts
 
 
@@ -43,16 +44,23 @@ def get_parser() -> argparse.ArgumentParser:
     download_parser = subparsers.add_parser("download-artifacts-from-bucket")
 
     download_parser.add_argument(
-        "--cname",
+        "--artifact-base-name",
         required=False,
-        dest="cname",
-        help="Canonical name (cname) used as the S3 key prefix for artifacts.",
+        dest="artifact_base_name",
+        help="Artifact base name used as the S3 key prefix for artifacts.",
+    )
+
+    download_parser.add_argument(
+        "--ignore-missing",
+        dest="ignore_missing",
+        action="store_true",
+        help="Create a log entry only if the given S3 key prefix has not been found.",
     )
 
     upload_parser = subparsers.add_parser("upload-artifacts-to-bucket")
 
     upload_parser.add_argument(
-        "--artifact-name", dest="artifact_name", help="S3 artifact base name."
+        "--artifact-base-name", dest="artifact_base_name", help="S3 artifact base name."
     )
 
     return parser
@@ -69,8 +77,18 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.action == "download-artifacts-from-bucket":
-        S3Artifacts(args.bucket).download_to_directory(args.cname, args.path)
+        try:
+            S3Artifacts(args.bucket).download_to_directory(
+                args.artifact_base_name, args.path
+            )
+        except RuntimeError as exc:
+            if not args.ignore_missing:
+                raise
+
+            LoggerSetup.get_logger("gardenlinux.s3").warning(
+                f"gl-s3 download-artifacts-from-bucket failed: {exc}"
+            )
     elif args.action == "upload-artifacts-to-bucket":
         S3Artifacts(args.bucket).upload_from_directory(
-            args.artifact_name, args.path, dry_run=args.dry_run
+            args.artifact_base_name, args.path, dry_run=args.dry_run
         )
