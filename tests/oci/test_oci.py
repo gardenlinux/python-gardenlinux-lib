@@ -8,6 +8,7 @@ from oras.provider import Registry
 
 sys.path.append("src")
 
+from gardenlinux.oci import ImageManifest
 from gardenlinux.oci.__main__ import main as gl_oci
 
 from ..constants import (
@@ -217,24 +218,46 @@ def verify_combined_tag_manifest(
 
     annotations = manifest.get("annotations", {})
 
-    assert annotations.get("cname") == cname, f"Manifest should have cname {cname}"
-
     assert annotations.get("architecture") == arch, (
         f"Manifest should have architecture {arch}"
     )
 
-    if feature_set:
-        assert annotations.get("feature_set") == feature_set, (
-            f"Manifest should have feature_set {feature_set}"
-        )
+    assert annotations.get(ImageManifest.ANNOTATION_CNAME_KEY) == cname, (
+        f"Manifest should have cname {cname}"
+    )
 
-    assert annotations.get("version") == version, (
+    if feature_set:
+        assert (
+            annotations.get(ImageManifest.ANNOTATION_FEATURE_SET_KEY) == feature_set
+        ), f"Manifest should have feature set {feature_set}"
+
+    assert annotations.get(ImageManifest.ANNOTATION_VERSION_KEY) == version, (
         f"Manifest should have version {version}"
     )
 
     if commit:
-        assert annotations.get("commit") == commit, (
+        assert annotations.get(ImageManifest.ANNOTATION_COMMIT_KEY) == commit, (
             f"Manifest should have commit {commit}"
+        )
+
+    # Deprecated annotations
+
+    if feature_set:
+        assert annotations.get("feature_set") == feature_set, (
+            f"Manifest should have deprecated feature set {feature_set}"
+        )
+
+    assert annotations.get("version") == version, (
+        f"Manifest should have deprecated version {version}"
+    )
+
+    if commit:
+        assert annotations.get("cname") == f"{cname}-{arch}-{version}-{commit}", (
+            f"Manifest should have deprecated cname {cname}"
+        )
+
+        assert annotations.get("commit") == commit, (
+            f"Manifest should have deprecated commit {commit}"
         )
 
 
