@@ -8,6 +8,7 @@ import json
 from copy import deepcopy
 from typing import Any, Dict
 
+from .image_manifest import ImageManifest
 from .schemas import empty_index
 
 
@@ -71,10 +72,14 @@ class Index(dict):  # type: ignore[type-arg]
         manifests = {}
 
         for manifest in self["manifests"]:
-            if "annotations" not in manifest or "cname" not in manifest["annotations"]:
+            if ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY not in manifest.get(
+                "annotations", {}
+            ):
                 manifest_key = manifest["digest"]
             else:
-                manifest_key = manifest["annotations"]["cname"]
+                manifest_key = manifest["annotations"][
+                    ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
+                ]
 
             manifests[manifest_key] = manifest
 
@@ -90,20 +95,26 @@ class Index(dict):  # type: ignore[type-arg]
         """
 
         if not isinstance(manifest, dict):
-            raise RuntimeError("Unexpected manifest type given")
+            raise TypeError("Unexpected manifest type given")
 
-        if "cname" not in manifest.get("annotations", {}):
-            raise RuntimeError("Unexpected layer with missing annotation 'cname' found")
+        image_manifest = ImageManifest(manifest)
 
-        cname = manifest["annotations"]["cname"]
         existing_manifest_index = 0
 
         for existing_manifest in self["manifests"]:
-            if "cname" not in existing_manifest.get("annotations", {}):
+            if (
+                ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
+                not in existing_manifest.get("annotations", {})
+            ):
                 existing_manifest_index += 1
                 continue
 
-            if cname == existing_manifest["annotations"]["cname"]:
+            if (
+                image_manifest.artifact_base_name
+                == existing_manifest["annotations"][
+                    ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
+                ]
+            ):
                 break
 
             existing_manifest_index += 1

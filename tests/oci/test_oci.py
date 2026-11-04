@@ -218,7 +218,7 @@ def verify_combined_tag_manifest(
 
     annotations = manifest.get("annotations", {})
 
-    assert annotations.get("architecture") == arch, (
+    assert annotations.get(ImageManifest.ANNOTATION_ARCH_KEY) == arch, (
         f"Manifest should have architecture {arch}"
     )
 
@@ -241,6 +241,10 @@ def verify_combined_tag_manifest(
         )
 
     # Deprecated annotations
+
+    assert annotations.get("architecture") == arch, (
+        f"Manifest should have deprecated architecture {arch}"
+    )
 
     if feature_set:
         assert annotations.get("feature_set") == feature_set, (

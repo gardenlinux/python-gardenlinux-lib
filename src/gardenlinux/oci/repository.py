@@ -282,9 +282,14 @@ class Repository(Registry):  # type: ignore[misc]
             with open(file_path_name, "r") as fp:
                 manifest = json.loads(fp.read())
 
-            if manifest["annotations"]["cname"] in index.manifests_as_dict:
+            if (
+                manifest["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]
+                in index.manifests_as_dict
+            ):
                 existing_manifest = index.manifests_as_dict[
-                    manifest["annotations"]["cname"]
+                    manifest["annotations"][
+                        ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
+                    ]
                 ]
 
                 if manifest["digest"] == existing_manifest["digest"]:
@@ -297,7 +302,7 @@ class Repository(Registry):  # type: ignore[misc]
             index.append_manifest(manifest)
 
             self._logger.info(
-                f"Index appended locally {manifest['annotations']['cname']}"
+                f"Index appended locally {manifest['annotations'][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]}"
             )
 
             new_entries += 1

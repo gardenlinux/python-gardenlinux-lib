@@ -58,6 +58,9 @@ class Manifest(dict):  # type: ignore[type-arg]
         self.update(*args)
         self.update(**kwargs)
 
+        if "digest" not in self:
+            raise ValueError(f"Manifest given is invalid: {self}")
+
     @property
     def commit(self) -> str:
         """
