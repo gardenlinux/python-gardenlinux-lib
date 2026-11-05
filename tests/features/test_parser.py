@@ -1,6 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import pytest
+from networkx import DiGraph
 
 from gardenlinux.features import Parser
 
@@ -132,21 +133,62 @@ def test_parser_return_intersection_subset() -> None:
     assert result == ["a", "c"]
 
 
-def test_get_flavor_from_feature_set() -> None:
+def test_get_cname_from_feature_set() -> None:
     # Arrange
     sorted_features = ["base", "_hidden", "extra"]
 
     # Act
-    result = Parser.get_flavor_from_feature_set(sorted_features)
+    result = Parser._get_cname_from_feature_set(sorted_features)
 
     # Assert
-    assert result == "base_hidden-extra"
+    assert result == "base-extra_hidden"
 
 
-def test_gget_flavor_from_feature_set_empty_raises() -> None:
+def test_get_cname_from_feature_set_empty_raises() -> None:
     # get_flavor with empty iterable raises TypeError
-    with pytest.raises(TypeError):
-        Parser.get_flavor_from_feature_set([])
+    with pytest.raises(ValueError):
+        Parser._get_cname_from_feature_set([])
+
+
+def test_get_cname_from_graph(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange
+    graph = DiGraph()
+    graph.add_node("container", content={"type": "platform"})
+
+    graph.add_node("base", content={"type": "element"})
+    graph.add_edge("container", "base", attr="include")
+
+    graph.add_node("tpm", content={"type": "element"})
+
+    graph.add_node("_slim", content={"type": "flag"})
+    graph.add_edge("base", "_slim", attr="include")
+
+    parser = Parser()
+    monkeypatch.setattr(parser, "_graph", graph)
+
+    graph = parser.filter("container")
+
+    # Act
+    cname = Parser.get_cname_from_graph(graph)
+
+    # Assert
+    assert cname == "container"
+    assert parser.filter_as_string("container") == "_slim,base,container"
+
+
+def test_get_minimal_feature_set_filters() -> None:
+    # Arrange
+    class FakeGraph:
+        def in_degree(self) -> List[Tuple[str, int]]:
+            return [("a", 0), ("b", 1), ("c", 0)]
+
+    graph = FakeGraph()
+
+    # Act
+    result = Parser.get_minimal_feature_set(graph)
+
+    # Assert
+    assert result == {"a", "c"}
 
 
 def test_parser_subset_nomatch() -> None:

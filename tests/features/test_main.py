@@ -1,16 +1,14 @@
 import sys
-import types
 from pathlib import Path
-from tempfile import TemporaryDirectory
-from typing import Any, List, Tuple
+from typing import List, Optional
 
 import pytest
 
 import gardenlinux.features.__main__ as fema
-from gardenlinux.features import CName
+from gardenlinux.features import ArtifactBaseName
 
 from ..constants import GL_ROOT_DIR
-from .constants import generate_container_amd64_release_metadata
+from .constants import generate_container_release_metadata
 
 # -------------------------------
 # Helper function tests
@@ -40,24 +38,9 @@ def test_graph_mermaid_raises_no_flavor() -> None:
 
     # Act / Assert
     with pytest.raises(
-        RuntimeError, match="Error while generating graph: Flavor is None!"
+        RuntimeError, match="Error while generating graph: CName is None!"
     ):
         fema.graph_as_mermaid_markup(None, MockGraph())
-
-
-def test_get_minimal_feature_set_filters() -> None:
-    # Arrange
-    class FakeGraph:
-        def in_degree(self) -> List[Tuple[str, int]]:
-            return [("a", 0), ("b", 1), ("c", 0)]
-
-    graph = FakeGraph()
-
-    # Act
-    result = fema.get_minimal_feature_set(graph)
-
-    # Assert
-    assert result == {"a", "c"}
 
 
 def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
@@ -68,191 +51,463 @@ def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
     version_file.write_text("1.2.3\n")
 
     # Act
-    version, commit = fema.get_version_and_commit_id_from_files(str(tmp_path))
+    version, commit = ArtifactBaseName.get_version_and_commit_id_from_files(
+        str(tmp_path)
+    )
 
     # Arrange
     assert version == "1.2.3"
     assert commit == "abcdef12"
 
 
-def test_get_version_missing_file_raises(tmp_path: Path) -> None:
-    # Arrange (one file only)
-    (tmp_path / "COMMIT").write_text("abcdef1234\n")
-
-    # Act / Assert
-    with pytest.raises(RuntimeError):
-        fema.get_version_and_commit_id_from_files(str(tmp_path))
-
-
 # -------------------------------
 # Tests for main()
 # -------------------------------
-def test_main_prints_arch(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "--version", "1.0", "arch"]
-    monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
-
-    # Act
-    fema.main()
-
-    # Assert
-    out = capsys.readouterr().out
-    assert "amd64" in out
 
 
-def test_main_prints_container_name(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+@pytest.mark.parametrize(
+    "input_argv, monkeypatch_version, release_metadata, ignored_features, expected_output",
+    [
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "flav",
+                "--version",
+                "1.0",
+                "--commit",
+                "local",
+                "arch",
+            ],
+            False,
+            None,
+            "",
+            "amd64",
+        ),
+        (
+            [
+                "--arch",
+                "arm64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "arch",
+            ],
+            False,
+            generate_container_release_metadata("today", "local", "arm64"),
+            "",
+            "arm64",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container-pythonDev",
+                "artifact-base-name",
+            ],
+            True,
+            None,
+            "",
+            "container-pythonDev-amd64-1.2.3-abcdef12",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "artifact-base-name",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "container-amd64-today-local",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container-pythonDev",
+                "artifact-base-name",
+            ],
+            True,
+            None,
+            "_archgrouped",
+            "container-pythonDev-amd64-1.2.3-abcdef12",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "flav", "cname"],
+            True,
+            None,
+            "",
+            "flav",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "cname",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "container",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "flav", "commit-id"],
+            True,
+            None,
+            "",
+            "abcdef12",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "commit-id",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "local",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container-pythonDev",
+                "--version",
+                "1.0",
+                "--commit",
+                "local",
+                "container-name",
+            ],
+            True,
+            None,
+            "",
+            "container-python-dev",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "flav",
+                "--version",
+                "1.0",
+                "--commit",
+                "post1",
+                "container-tag",
+            ],
+            False,
+            None,
+            "",
+            "1-0-post1",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "elements"],
+            True,
+            None,
+            "",
+            "python,pythonDev,base",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "elements",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "base",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "features"],
+            True,
+            None,
+            "",
+            "python,pythonDev,_archgrouped,_slim,base,container",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "features"],
+            True,
+            None,
+            "_archgrouped",
+            "python,pythonDev,_slim,base,container",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "features",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "_archgrouped,_slim,base,container",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "features",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "_archgrouped",
+            "_slim,base,container",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "flags"],
+            True,
+            None,
+            "",
+            "_archgrouped,_slim",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "flags"],
+            True,
+            None,
+            "_archgrouped",
+            "_slim",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "flags",
+            ],
+            False,
+            generate_container_release_metadata("today", "local"),
+            "",
+            "_archgrouped,_slim",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "flavor"],
+            True,
+            None,
+            "",
+            "container-pythonDev-amd64",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "platform"],
+            True,
+            None,
+            "",
+            "container",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "platform",
+            ],
+            False,
+            generate_container_release_metadata(
+                "today", "local", variant="magicMachine"
+            ),
+            "",
+            "container",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "platforms"],
+            True,
+            None,
+            "",
+            "container",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "--version",
+                "today",
+                "--commit",
+                "local",
+                "platform-variant",
+            ],
+            False,
+            generate_container_release_metadata(
+                "today", "local", variant="magicMachine"
+            ),
+            "",
+            "magicMachine",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "version"],
+            True,
+            None,
+            "",
+            "1.2.3",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container-pythonDev",
+                "version_and_commit-id",
+            ],
+            True,
+            None,
+            "",
+            "1.2.3-abcdef12",
+        ),
+        (
+            [
+                "--arch",
+                "amd64",
+                "--cname",
+                "container",
+                "version_and_commit-id",
+            ],
+            True,
+            generate_container_release_metadata("1.2.3", "abcdef12"),
+            "",
+            "1.2.3-abcdef12",
+        ),
+        (
+            ["--arch", "amd64", "--cname", "container-pythonDev", "versioned-flavor"],
+            True,
+            None,
+            "",
+            "container-pythonDev-amd64-1.2.3",
+        ),
+    ],
+)
+def test_main_prints_result(
+    input_argv: List[str],
+    monkeypatch_version: bool,
+    release_metadata: Optional[str],
+    ignored_features: Optional[str],
+    expected_output: str,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
 ) -> None:
     # Arrange
     argv = [
-        "prog",
-        "--arch",
-        "amd64",
-        "--cname",
-        "container-pythonDev",
-        "--version",
-        "1.0",
-        "container_name",
-    ]
+        "gl-feature-parse",
+        "--feature-dir",
+        f"{GL_ROOT_DIR}/features",
+    ] + input_argv
+
+    if release_metadata:
+        os_release_file = Path(tmp_path, "os_release")
+
+        with os_release_file.open("w") as fp:
+            fp.write(release_metadata)
+
+        argv += [
+            "--release-file",
+            str(os_release_file),
+        ]
+
+    if ignored_features:
+        argv += [
+            "--ignore",
+            str(ignored_features),
+        ]
+
     monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+    # monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
+
+    if monkeypatch_version:
+        monkeypatch.setattr(
+            "gardenlinux.features.artifact_base_name.ArtifactBaseName.get_version_and_commit_id_from_files",
+            lambda root: ("1.2.3", "abcdef12"),
+        )
 
     # Act
     fema.main()
 
     # Assert
-    out = capsys.readouterr().out
-    assert "container-python-dev" in out
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected_output
 
 
-def test_main_prints_container_tag(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+def test_get_version_missing_file_raises(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    # Arrange
+    # Arrange (one file only)
+    (tmp_path / "COMMIT").write_text("abcdef1234\n")
+
     argv = [
         "prog",
         "--arch",
         "amd64",
         "--cname",
         "flav",
-        "--version",
-        "1.0",
-        "--commit",
-        "~post1",
-        "container_tag",
+        "version",
     ]
+
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
-    # Act
-    fema.main()
-
-    # Assert
-    out = capsys.readouterr().out.strip()
-    assert "1-0-post1" == out
-
-
-def test_main_prints_commit_id(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "commit_id"]
-    monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(
-        fema,
-        "Parser",
-        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
-    )
-    # Patch get_version_and_commit_id_from_files
-    monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
+    # Act / Assert
+    assert ArtifactBaseName.get_version_and_commit_id_from_files(str(tmp_path)) == (
+        None,
+        None,
     )
 
-    # Act
-    fema.main()
-
-    captured = capsys.readouterr()
-    assert "abcdef12" == captured.out.strip()
-
-
-def test_main_prints_flags_elements_platforms(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    # Arrange
-    argv = [
-        "prog",
-        "--arch",
-        "amd64",
-        "--cname",
-        "flav",
-        "--version",
-        "1.0",
-        "flags",
-    ]
-    monkeypatch.setattr(sys, "argv", argv)
-
-    class FakeCName(CName):
-        def __init__(self, *a: Any, **k: Any):
-            CName.__init__(self, *a, **k)
-            self._feature_flags_cached = ["flag1"]
-
-    monkeypatch.setattr(fema, "CName", FakeCName)
-
-    # Act
-    fema.main()
-
-    # Assert
-    out = capsys.readouterr().out
-    assert "flag1" in out
-
-
-def test_main_prints_version(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "version"]
-    monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(
-        fema,
-        "Parser",
-        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
-    )
-    # Patch get_version_and_commit_id_from_files
-    monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
-    )
-
-    # Act
-    fema.main()
-
-    captured = capsys.readouterr()
-    assert "1.2.3" == captured.out.strip()
-
-
-def test_main_prints_version_and_commit_id(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    # Arrange
-    argv = ["prog", "--arch", "amd64", "--cname", "flav", "version_and_commit_id"]
-    monkeypatch.setattr(sys, "argv", argv)
-    monkeypatch.setattr(
-        fema,
-        "Parser",
-        lambda *a, **kw: types.SimpleNamespace(filter=lambda *a, **k: None),
-    )
-    # Patch get_version_and_commit_id_from_files
-    monkeypatch.setattr(
-        fema, "get_version_and_commit_id_from_files", lambda root: ("1.2.3", "abcdef12")
-    )
-
-    # Act
-    fema.main()
-
-    captured = capsys.readouterr()
-    assert "1.2.3-abcdef12" == captured.out.strip()
+    with pytest.raises(ValueError, match="Argument missing: version"):
+        fema.main()
 
 
 def test_main_requires_cname(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -261,7 +516,10 @@ def test_main_requires_cname(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(SystemExit):
+    with pytest.raises(
+        ValueError,
+        match="Argument missing: At least one of artifact_base_name, cname, flavor or versioned_flavor",
+    ):
         fema.main()
 
 
@@ -272,7 +530,7 @@ def test_main_cname_raises_missing_commit_id(monkeypatch: pytest.MonkeyPatch) ->
         "prog",
         "--cname",
         "flav",
-        "--default-arch",
+        "--arch",
         "amd64",
         "--version",
         "1.0",
@@ -281,7 +539,7 @@ def test_main_cname_raises_missing_commit_id(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Version and commit ID"):
+    with pytest.raises(ValueError, match="Argument missing: version"):
         fema.main()
 
 
@@ -292,7 +550,7 @@ def test_main_raises_no_arch_no_default(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr(sys, "argv", argv)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Architecture could not be determined"):
+    with pytest.raises(ValueError, match="Argument missing: arch"):
         fema.main()
 
 
@@ -308,13 +566,13 @@ def test_main_raises_missing_commit_id(
         "flav",
         "--version",
         "1.0",
-        "version_and_commit_id",
+        "version_and_commit-id",
     ]
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(fema, "Parser", lambda *a, **kw: None)
 
     # Act / Assert
-    with pytest.raises(RuntimeError, match="Commit ID not specified"):
+    with pytest.raises(ValueError, match="Argument missing: version"):
         fema.main()
 
 
@@ -387,34 +645,3 @@ def test_main_with_exclude_cname_print_features(
         "sap,ssh,_fwcfg,_ignite,_legacy,_nopkg,_prod,_slim,base,server,cloud,kvm,multipath,iscsi,nvme,gardener"
         == captured
     )
-
-
-def test_cname_release_file(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """
-    Test validation between release metadata and arguments given
-    """
-    # Arrange
-    with TemporaryDirectory() as tmpdir:
-        os_release_file = Path(tmpdir, "os_release")
-
-        with os_release_file.open("w") as fp:
-            fp.write(generate_container_amd64_release_metadata("today", "local"))
-
-        argv = [
-            "prog",
-            "--cname",
-            "container-amd64-today-local",
-            "--release-file",
-            str(os_release_file),
-            "cname",
-        ]
-        monkeypatch.setattr(sys, "argv", argv)
-
-        # Act / Assert
-        fema.main()
-
-        # Assert
-        out = capsys.readouterr().out
-        assert "container-amd64-today-local" in out

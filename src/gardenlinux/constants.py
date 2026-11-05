@@ -4,9 +4,9 @@ from pathlib import Path
 ARCHS = ["amd64", "arm64"]
 
 # GardenLinux "bare" feature
-BARE_FLAVOR_FEATURE_CONTENT = {"description": "Bare flavor", "type": "platform"}
+BARE_CNAME_FEATURE_CONTENT = {"description": "Bare flavor", "type": "platform"}
 
-BARE_FLAVOR_LIBC_FEATURE_CONTENT = {
+BARE_CNAME_LIBC_FEATURE_CONTENT = {
     "description": "Bare libc feature",
     "type": "element",
 }
@@ -147,6 +147,7 @@ GL_MEDIA_TYPE_LOOKUP = {
 
 GL_BUG_REPORT_URL = "https://github.com/gardenlinux/gardenlinux/issues"
 GL_COMMIT_SPECIAL_VALUES = ("local",)
+GL_VERSION_SPECIAL_VALUES = ("today",)
 GL_CONTAINER_REGISTRY_BASE_URL = "ghcr.io/gardenlinux/gardenlinux"
 GL_DEB_REPO_BASE_URL = "https://packages.gardenlinux.io/gardenlinux"
 GL_DISTRIBUTION_NAME = "Garden Linux"
