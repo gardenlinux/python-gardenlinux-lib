@@ -365,9 +365,13 @@ class Parser(object):
         return {"name": name, "content": content}
 
     @staticmethod
-    def get_cname_from_feature_set(feature_set_list: List[str]) -> str:
+    def _get_cname_from_feature_set(feature_set_list: List[str]) -> str:
         """
         Get the base cname for the feature set given.
+
+        Note: This method accept an feature set list without validation. The
+        resulting canonical name is only valid if the minimal feature set has
+        been calculated by a feature graph before.
 
         :param feature_set_list: Feature set list
 
@@ -423,6 +427,24 @@ class Parser(object):
         return [platform] + sorted(features) + sorted(flags)  # type: ignore[return-value]
 
     @staticmethod
+    def get_cname_from_graph(graph: networkx.Graph) -> str:
+        """
+        Get the base cname for the feature graph given.
+
+        :param graph: Graph to generate cname for
+
+        :return: (str) Garden Linux canonical name
+        :since: 1.0.0
+        """
+
+        sorted_features = Parser.sort_graph_nodes(graph)
+        minimal_feature_set = Parser.get_minimal_feature_set(graph)
+
+        sorted_minimal_features = Parser.subset(minimal_feature_set, sorted_features)
+
+        return Parser._get_cname_from_feature_set(sorted_minimal_features)
+
+    @staticmethod
     def _get_filter_set_callable(
         filter_set: List[str],
         additional_filter_func: Optional[Callable[[str], bool]] = None,
@@ -451,8 +473,8 @@ class Parser(object):
         """
         Returns a graph view to return `attr` data.
 
-        :param filter_set:             Filter set
-        :param additional_filter_func: Additional filter function to apply
+        :param graph: Graph to filter
+        :param attr: Graph edge attribute to filter for
 
         :return: (object) networkx view
         :since:  0.7.0

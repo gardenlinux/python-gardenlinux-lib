@@ -100,6 +100,7 @@ def test_append_manifest_cname_not_found() -> None:
 @pytest.mark.parametrize(
     "manifest",
     [
+        {"annotations": {}},
         {"annotations": {}, "digest": "sha256:foo"},
     ],
 )
@@ -117,7 +118,6 @@ def test_append_accept_all_manifests(manifest: Dict[str, Any]) -> None:
     "bad_manifest",
     [
         "not-a-dict",
-        {"annotations": {}},
     ],
 )
 def test_append_invalid_input_raises(bad_manifest: Dict[str, Any]) -> None:
