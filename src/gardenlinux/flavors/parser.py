@@ -114,7 +114,7 @@ class Parser(object):
                     continue
 
                 # Process features
-                cname = FeaturesParser.get_cname_from_feature_set([name] + features)
+                cname = FeaturesParser._get_cname_from_feature_set([name] + features)
 
                 # Construct the combination
                 combination = f"{cname}-{arch}"

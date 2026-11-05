@@ -5,6 +5,7 @@ OCI manifest
 """
 
 import json
+from collections.abc import Mapping
 from copy import deepcopy
 from hashlib import sha256
 from typing import Any, Dict
@@ -55,11 +56,14 @@ class Manifest(dict):  # type: ignore[type-arg]
         self._config_bytes = b"{}"
 
         self.update(deepcopy(EmptyManifest))
-        self.update(*args)
-        self.update(**kwargs)
 
-        if "digest" not in self:
-            raise ValueError(f"Manifest given is invalid: {self}")
+        for arg in args:
+            if not isinstance(arg, Mapping):
+                raise TypeError("Arguments given to Manifest are invalid")
+
+            self.update(arg)
+
+        self.update(**kwargs)
 
     @property
     def commit(self) -> str:
@@ -111,6 +115,9 @@ class Manifest(dict):  # type: ignore[type-arg]
         :return: (str) OCI image manifest digest
         :since:  0.7.0
         """
+
+        if "digest" in self:
+            return self["digest"]  #  type: ignore[no-any-return]
 
         digest = sha256(self.json).hexdigest()
         return f"sha256:{digest}"

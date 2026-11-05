@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Tuple
 
 import pytest
+from networkx import DiGraph
 
 from gardenlinux.features import Parser
 
@@ -137,7 +138,7 @@ def test_get_cname_from_feature_set() -> None:
     sorted_features = ["base", "_hidden", "extra"]
 
     # Act
-    result = Parser.get_cname_from_feature_set(sorted_features)
+    result = Parser._get_cname_from_feature_set(sorted_features)
 
     # Assert
     assert result == "base-extra_hidden"
@@ -146,7 +147,33 @@ def test_get_cname_from_feature_set() -> None:
 def test_get_cname_from_feature_set_empty_raises() -> None:
     # get_flavor with empty iterable raises TypeError
     with pytest.raises(ValueError):
-        Parser.get_cname_from_feature_set([])
+        Parser._get_cname_from_feature_set([])
+
+
+def test_get_cname_from_graph(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange
+    graph = DiGraph()
+    graph.add_node("container", content={"type": "platform"})
+
+    graph.add_node("base", content={"type": "element"})
+    graph.add_edge("container", "base", attr="include")
+
+    graph.add_node("tpm", content={"type": "element"})
+
+    graph.add_node("_slim", content={"type": "flag"})
+    graph.add_edge("base", "_slim", attr="include")
+
+    parser = Parser()
+    monkeypatch.setattr(parser, "_graph", graph)
+
+    graph = parser.filter("container")
+
+    # Act
+    cname = Parser.get_cname_from_graph(graph)
+
+    # Assert
+    assert cname == "container"
+    assert parser.filter_as_string("container") == "_slim,base,container"
 
 
 def test_get_minimal_feature_set_filters() -> None:

@@ -282,15 +282,7 @@ def print_output_from_features_parser(
             print(abn_object.platform_variant)
         case _:
             graph = parser.filter(cname, additional_filter_func=additional_filter_func)
-
-            sorted_features = Parser.sort_graph_nodes(graph)
-            minimal_feature_set = Parser.get_minimal_feature_set(graph)
-
-            sorted_minimal_features = Parser.subset(
-                minimal_feature_set, sorted_features
-            )
-
-            cname = Parser.get_cname_from_feature_set(sorted_minimal_features)
+            cname = Parser.get_cname_from_graph(graph)
 
             match output_type:
                 case "artifact-base-name":

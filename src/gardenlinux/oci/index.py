@@ -75,7 +75,7 @@ class Index(dict):  # type: ignore[type-arg]
             if ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY not in manifest.get(
                 "annotations", {}
             ):
-                manifest_key = manifest["digest"]
+                manifest_key = ImageManifest(manifest).digest
             else:
                 manifest_key = manifest["annotations"][
                     ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
