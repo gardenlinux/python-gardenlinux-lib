@@ -48,6 +48,7 @@ class Podman(object):
     def build(
         self,
         build_path: str,
+        /,
         podman: PodmanContext,
         platform: Optional[str] = None,
         build_args: Optional[Dict[str, str]] = None,
@@ -88,6 +89,7 @@ class Podman(object):
         self,
         build_path: str,
         oci_archive_file_name: str | PathLike[str],
+        /,
         podman: PodmanContext,
         platform: Optional[str] = None,
         build_args: Optional[Dict[str, str]] = None,
@@ -101,7 +103,8 @@ class Podman(object):
         :since: 1.0.0
         """
 
-        oci_archive_file_name = Path(oci_archive_file_name)
+        if not isinstance(oci_archive_file_name, Path):
+            oci_archive_file_name = Path(oci_archive_file_name)
 
         image_id = self.build(
             build_path,
@@ -120,6 +123,7 @@ class Podman(object):
     def get_image(
         self,
         image: str,
+        /,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
     ) -> Image:
@@ -141,6 +145,7 @@ class Podman(object):
     def get_image_id(
         self,
         image: str,
+        /,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
     ) -> str:
@@ -163,7 +168,8 @@ class Podman(object):
         :since: 1.0.0
         """
 
-        oci_archive_file_name = Path(oci_archive_file_name)
+        if not isinstance(oci_archive_file_name, Path):
+            oci_archive_file_name = Path(oci_archive_file_name)
 
         image = next(podman.images.load(file_path=oci_archive_file_name))
         return image.id  # type: ignore[no-any-return]
@@ -179,7 +185,9 @@ class Podman(object):
         """
 
         oci_archives = {}
-        oci_dir = Path(oci_dir)
+
+        if not isinstance(oci_dir, Path):
+            oci_dir = Path(oci_dir)
 
         for oci_archive in oci_dir.iterdir():
             if not oci_archive.match("*.oci"):
@@ -222,6 +230,7 @@ class Podman(object):
     def push(
         self,
         image: str,
+        /,
         podman: PodmanContext,
         destination: Optional[str] = None,
         oci_tag: Optional[str] = None,
@@ -250,6 +259,7 @@ class Podman(object):
         self,
         image_id: str,
         oci_archive_file_name: str | PathLike[str],
+        /,
         podman: PodmanContext,
         oci_tag: Optional[str] = None,
     ) -> None:
@@ -260,12 +270,13 @@ class Podman(object):
         :since: 1.0.0
         """
 
-        oci_archive_file_name = Path(oci_archive_file_name)
+        if not isinstance(oci_archive_file_name, Path):
+            oci_archive_file_name = Path(oci_archive_file_name)
 
         if oci_archive_file_name.exists():
             raise RuntimeError("OCI archive file does already exist")
 
-        image = podman.images.get(image_id)
+        image = self.get_image(image_id, podman=podman)
 
         with oci_archive_file_name.open("wb") as fp:
             named: bool | str = True
@@ -276,7 +287,7 @@ class Podman(object):
 
                 named = oci_tag
 
-            for chunk in image.save(named=named):
+            for chunk in image.save_oci_archive(named=named, podman=podman):
                 fp.write(chunk)
 
     @PodmanContext.wrap
@@ -284,6 +295,7 @@ class Podman(object):
         self,
         image_id: str,
         oci_tag: str,
+        /,
         podman: PodmanContext,
     ) -> None:
         """

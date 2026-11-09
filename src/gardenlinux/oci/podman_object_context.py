@@ -83,6 +83,29 @@ class PodmanObjectContext(object):
 
             del kwargs["podman"]
 
-            return f(podman=podman, *args, **kwargs)
+            return f(*args, podman=podman, **kwargs)
+
+        return decorator
+
+    @staticmethod
+    def wrap_for_self_podman(f: Any) -> Any:
+        """
+        Wraps the given function to provide access to a podman client.
+
+        :since: 1.0.0
+        """
+
+        @wraps(f)
+        def decorator(self: Any, *args: Any, **kwargs: Any) -> Any:
+            """
+            Decorator for wrapping a function or method with a call context.
+            """
+
+            podman = self._podman
+
+            if podman is None:
+                raise RuntimeError("Podman context not ready")
+
+            return f(self, *args, podman=podman, **kwargs)
 
         return decorator

@@ -195,6 +195,52 @@ def test_main_push_image(
                 podman_context.images.remove(image_built)
 
 
+@pytest.mark.usefixtures("zot_session")
+def test_main_push_oci_image(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    with PodmanContext() as podman_context, TemporaryDirectory() as tmpdir:
+        podman = Podman(insecure=True)
+
+        image_built = None
+
+        build_result = podman.build_and_save_oci_archive(
+            f"{TEST_DATA_DIR}/oci/build", f"{tmpdir}/archive.oci", podman=podman_context
+        )
+
+        assert "archive.oci" in build_result
+
+        try:
+            image_built = podman_context.images.get(build_result["archive.oci"])
+
+            monkeypatch.setattr(
+                sys,
+                "argv",
+                [
+                    "__main__.py",
+                    "push-oci-archive",
+                    "--oci-archive",
+                    f"{tmpdir}/archive.oci",
+                    "--repository",
+                    f"{REGISTRY}/{REPO_NAME}/kidden",
+                    "--tag",
+                    "latest",
+                    "--insecure",
+                ],
+            )
+
+            oci_main.main()
+
+            repository = Repository(
+                f"http://{REGISTRY}/{REPO_NAME}/kidden:latest", insecure=True
+            )
+            # Assert - the following read would fail if push has not been successful
+            _ = repository.read_manifest()
+        finally:
+            if image_built is not None:
+                podman_context.images.remove(image_built)
+
+
 def test_main_tag_image(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:

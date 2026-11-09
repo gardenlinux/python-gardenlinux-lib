@@ -196,6 +196,24 @@ def _add_oci_destination_to_parser(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_oci_image_ref_name_to_parser(parser: argparse.ArgumentParser) -> None:
+    """
+    Add `--oci-image-ref-name` to the given argument parser.
+
+    :param parser: ArgumentParser instance
+
+    :since: 1.0.0
+    """
+
+    parser.add_argument(
+        "--oci-image-ref-name",
+        required=False,
+        dest="oci_image_ref_name",
+        default="",
+        help="OCI image ref name",
+    )
+
+
 def _add_oci_index_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     Add `--index and --index-tag` to the given argument parser.
@@ -428,6 +446,15 @@ def get_parser() -> argparse.ArgumentParser:
     _add_oci_insecure_to_parser(push_manifest_tags_parser)
     _add_oci_tag_to_parser(push_manifest_tags_parser, multiple=True)
 
+    push_oci_archive_parser = subparsers.add_parser("push-oci-archive")
+
+    _add_oci_repository_to_parser(push_oci_archive_parser)
+    _add_oci_tag_to_parser(push_oci_archive_parser)
+    _add_oci_archive_to_parser(push_oci_archive_parser)
+    _add_oci_image_ref_name_to_parser(push_oci_archive_parser)
+    _add_oci_insecure_to_parser(push_oci_archive_parser)
+    _add_additional_tag_list_to_parser(push_oci_archive_parser)
+
     save_image_parser = subparsers.add_parser("save-image")
 
     _add_oci_repository_to_parser(save_image_parser)
@@ -579,6 +606,14 @@ def main() -> None:
             )
 
             repository.push_manifest_for_tags(manifest, args.tag)
+        case "push-oci-archive":
+            repository = Repository(
+                f"{args.repository}:{args.tag}", insecure=args.insecure
+            )
+
+            repository.push_oci_archive(
+                args.oci_archive, args.oci_image_ref_name, args.additional_tag
+            )
         case "save-image":
             podman = Podman()
 

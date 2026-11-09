@@ -11,12 +11,14 @@ from collections.abc import Sequence
 from configparser import UNNAMED_SECTION, ConfigParser
 from os import PathLike, fdopen, getenv
 from pathlib import Path
-from tempfile import mkstemp
+from tarfile import TarFile
+from tempfile import TemporaryDirectory, mkstemp
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit
 
 import jsonschema
 from oras.container import Container as OrasContainer
+from oras.layout import NewLayout
 from oras.provider import Registry
 from oras.utils import extract_targz, make_targz
 from requests import HTTPError, Response
@@ -67,7 +69,7 @@ class Repository(Registry):  # type: ignore[misc]
         if len(repository_data) < 2:
             raise RuntimeError("Repository name given is invalid")
 
-        self._repository_version = repository_data[1]
+        self._repository_tag = repository_data[1]
 
         if "://" in repository_data[0]:
             scheme = repository_data[0].split(":", 1)[0].lower()
@@ -215,7 +217,7 @@ class Repository(Registry):  # type: ignore[misc]
         """
 
         manifest_url = self.get_container(
-            f"{self._repository_name}:{self._repository_version}"
+            f"{self._repository_name}:{self._repository_tag}"
         ).manifest_url()
 
         return self.do_request(  # type: ignore[no-any-return]
@@ -353,7 +355,7 @@ class Repository(Registry):  # type: ignore[misc]
         if not isinstance(manifest, Manifest):
             raise RuntimeError("Artifacts image manifest given is invalid")
 
-        repository_name = f"{self._repository_name}:{self._repository_version}"
+        repository_name = f"{self._repository_name}:{self._repository_tag}"
 
         fd, config_file = mkstemp()
 
@@ -371,11 +373,11 @@ class Repository(Registry):  # type: ignore[misc]
         finally:
             Path(config_file).unlink()
 
-        manifest_url = f"{self._repository_url}:{self._repository_version}"
+        manifest_url = f"{self._repository_url}:{self._repository_tag}"
 
         if isinstance(manifest, ImageManifest):
             manifest_url += f"-{manifest.flavor}-{manifest.version}-{manifest.commit}-{manifest.arch}"
-        elif not self._repository_version:
+        elif not self._repository_tag:
             raise RuntimeError("Failed to push OCI manifest with invalid tag")
 
         manifest_repository = OrasContainer(manifest_url)
@@ -427,7 +429,7 @@ class Repository(Registry):  # type: ignore[misc]
         if not isinstance(artifacts_dir, PathLike):
             artifacts_dir = Path(artifacts_dir)
 
-        repository_name = f"{self._repository_name}:{self._repository_version}"
+        repository_name = f"{self._repository_name}:{self._repository_tag}"
 
         # For each file, create sign, attach and push a layer
         for artifact in artifacts_with_metadata:
@@ -553,6 +555,37 @@ class Repository(Registry):  # type: ignore[misc]
                 self.upload_manifest(manifest, manifest_repository)
             )
 
+    def push_oci_archive(
+        self,
+        oci_archive_file_name: str | PathLike[str],
+        oci_image_ref_name: Optional[str] = None,
+        additional_tags: Optional[List[str]] = None,
+    ) -> None:
+        """
+        Pushes an OCI image archive.
+
+        :param oci_archive_file_name: Path of the image artifacts
+        :param oci_image_ref_name:    File name where the modified manifest is written to
+        :param additional_tags:       Additional tags to push the manifest with
+
+        :since: 1.0.0
+        """
+
+        if not isinstance(oci_archive_file_name, PathLike):
+            oci_archive_file_name = Path(oci_archive_file_name)
+
+        if not oci_image_ref_name:
+            oci_image_ref_name = None
+
+        with TemporaryDirectory(delete=False) as tmpdir:
+            tar_file = TarFile.taropen(oci_archive_file_name)
+            tar_file.extractall(tmpdir)
+
+            repository_name = f"{self._repository_name}:{self._repository_tag}"
+
+            layout = NewLayout(tmpdir)
+            layout.push_to_registry(self, repository_name, tag=oci_image_ref_name)
+
     def read_index(self) -> Index:
         """
         Reads the OCI image index from registry.
@@ -592,15 +625,13 @@ class Repository(Registry):  # type: ignore[misc]
         if cname is None:
             manifest_type = Manifest
 
-            response = self._get_manifest_without_response_parsing(
-                self._repository_version
-            )
+            response = self._get_manifest_without_response_parsing(self._repository_tag)
         else:
             abn_object = ArtifactBaseName(f"{cname}-{architecture}-{version}-{commit}")
             manifest_type = ImageManifest
 
             response = self._get_manifest_without_response_parsing(
-                f"{self._repository_version}-{abn_object}-{architecture}"
+                f"{self._repository_tag}-{abn_object}-{architecture}"
             )
 
         if response.ok:
@@ -688,7 +719,7 @@ class Repository(Registry):  # type: ignore[misc]
         jsonschema.validate(index, schema=IndexSchema)
 
         if reference is None:
-            reference = self._repository_version
+            reference = self._repository_tag
 
         return self.do_request(  # type: ignore[no-any-return]
             f"{self.prefix}://{self.hostname}/v2/{self._repository_name}/manifests/{reference}",
