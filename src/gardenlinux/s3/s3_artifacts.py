@@ -148,6 +148,7 @@ class S3Artifacts(object):
 
         arch = cname_object.arch
         feature_set_list = cname_object.feature_set_list
+        publishing_group = ""
         release_timestamp = stat(release_file).st_ctime
         requirements_file = artifacts_dir.joinpath(f"{base_name}.requirements")
         publishing_group = ""
@@ -208,6 +209,7 @@ class S3Artifacts(object):
             "build_timestamp": datetime.fromtimestamp(release_timestamp),
             "logs": None,
             "modifiers": feature_set_list,
+            "publishing_group": publishing_group,
             "require_uefi": require_uefi,
             "secureboot": secureboot,
             "tpm2": tpm2,
