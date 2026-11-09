@@ -37,13 +37,11 @@ runs:
           echo "gardenlinux @ git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${{ inputs.version }}" | tee -a requirements.txt
           echo "package_tool=pip" >> $GITHUB_OUTPUT
         fi
-
     - name: Install Poetry
       if: steps.env-check.outputs.package_tool == 'poetry'
-      uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a # v1.4.1
-
+      uses: snok/install-poetry@a783c322200f0519c7926aa6faa857c4e23e9263 # pin@v1.4.2
     - name: Set up Python ${{ inputs.python_version }}
-      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # pin@v7.1.0
       with:
         python-version: ${{ inputs.python_version }}
         cache: ${{ steps.env-check.outputs.package_tool }}
