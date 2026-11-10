@@ -190,19 +190,19 @@ with a new build"
             100
             * (
                 len(self._diff_parser.reproducible_flavors)
-                / len(self._diff_parser.expected_falvors)
+                / len(self._diff_parser.expected_flavors)
             ),
             1,
         )
 
         emoji = (
             "✅"
-            if len(self._diff_parser.expected_falvors)
+            if len(self._diff_parser.expected_flavors)
             == len(self._diff_parser.reproducible_flavors)
             else ("⚠️" if successrate >= SUCCESS_TRESHOLD else "❌")
         )
 
-        total_count = len(self._diff_parser.expected_falvors)
+        total_count = len(self._diff_parser.expected_flavors)
 
         problem_count = (
             ""
@@ -226,18 +226,18 @@ with a new build"
                 + "</pre></details>"
             )
 
-        if len(self._diff_parser.unexpected_falvors) > 0:
+        if len(self._diff_parser.unexpected_flavors) > 0:
             # This should never happen, but print a warning if it somehow does
             explanation += (
                 "\n\n<details><summary>⁉️ These flavors were not expected to appear in the results, please check for errors in the workflow\
 </summary><pre>"
-                + "<br>".join(sorted(self._diff_parser.unexpected_falvors))
+                + "<br>".join(sorted(self._diff_parser.unexpected_flavors))
                 + "</pre></details>"
             )
 
         explanation += (
             ""
-            if len(self._diff_parser.expected_falvors)
+            if len(self._diff_parser.expected_flavors)
             <= len(self._diff_parser.reproducible_flavors)
             else "\n\n*The mentioned features are included in every affected flavor and not included in every unaffected flavor.*"
         )
@@ -270,7 +270,7 @@ with a new build"
 
         if len(self._diff_parser.missing_flavors) > 0:
             row = "|❌ Workflow run did not produce any results|"
-            row += f"**{round(100 * (len(self._diff_parser.missing_flavors) / len(self._diff_parser.expected_falvors)), 1)}%** affected<br>"
+            row += f"**{round(100 * (len(self._diff_parser.missing_flavors) / len(self._diff_parser.expected_flavors)), 1)}%** affected<br>"
             row += self._dropdown(self._diff_parser.missing_flavors)
             row += "|No analysis available|\n"
             rows += row
@@ -285,7 +285,7 @@ with a new build"
             row = "|"
             row += self._dropdown(files)
             row += "|"
-            row += f"**{round(100 * (len(flavors) / len(self._diff_parser.expected_falvors)), 1)}%** affected<br>"
+            row += f"**{round(100 * (len(flavors) / len(self._diff_parser.expected_flavors)), 1)}%** affected<br>"
             row += self._dropdown(flavors)
             row += "|"
             if len(tree) == 0:
@@ -300,7 +300,7 @@ with a new build"
             row = "|"
             row += "✅ No problems found"
             row += "|"
-            row += f"**{round(100 * (len(self._diff_parser.reproducible_flavors) / len(self._diff_parser.expected_falvors)), 1)}%**<br>"
+            row += f"**{round(100 * (len(self._diff_parser.reproducible_flavors) / len(self._diff_parser.expected_flavors)), 1)}%**<br>"
             row += self._dropdown(self._diff_parser.reproducible_flavors)
             row += "|"
             row += "-"
@@ -308,7 +308,7 @@ with a new build"
             rows += row
 
         if len(self._diff_parser.reproducible_flavors) < len(
-            self._diff_parser.expected_falvors
+            self._diff_parser.expected_flavors
         ):
             rows += "\n*To add affected files to the whitelist, edit `src/gardenlinux/features/reproducibility/nightly_whitelist.json` in python-gardenlinux-lib*\n"
 

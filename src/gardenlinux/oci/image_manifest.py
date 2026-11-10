@@ -13,7 +13,7 @@ from typing import Any, Dict
 from oras.defaults import annotation_title as ANNOTATION_TITLE
 
 from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
-from ..features import CName
+from ..features import ArtifactBaseName, Flavor
 from .layer import Layer
 from .manifest import Manifest
 from .platform import new_platform
@@ -37,25 +37,45 @@ class ImageManifest(Manifest):
     """
     OCI image manifest architecture annotation
     """
-    ANNOTATION_CNAME_KEY = "cname"
+    ANNOTATION_ARTIFACT_BASE_NAME_KEY = "io.gardenlinux.image.artifact-base-name"
     """
-    OCI image manifest GardenLinux canonical name annotation
+    OCI image manifest Garden Linux artifact base name annotation
+    """
+    ANNOTATION_CNAME_KEY = "io.gardenlinux.image.cname"
+    """
+    OCI image manifest Garden Linux canonical name annotation
+    """
+    ANNOTATION_CNAME_DEPRECATED_KEY = "cname"
+    """
+    OCI image manifest Garden Linux canonical name deprecated annotation
+    """
+    ANNOTATION_COMMIT_KEY = "org.opencontainers.image.revision"
+    """
+    OCI image manifest GardenLinux commit hash annotation
     """
     ANNOTATION_DESCRIPTION_KEY = "org.opencontainers.image.description"
     """
     OCI image manifest description annotation
     """
-    ANNOTATION_FEATURE_SET_KEY = "feature_set"
+    ANNOTATION_FEATURE_SET_KEY = "io.gardenlinux.image.feature-set"
     """
-    OCI image manifest GardenLinux feature set annotation
+    OCI image manifest Garden Linux feature set annotation
+    """
+    ANNOTATION_FEATURE_SET_DEPRECATED_KEY = "feature_set"
+    """
+    OCI image manifest Garden Linux feature set deprecated annotation
     """
     ANNOTATION_SOURCE_REPO_KEY = "org.opencontainers.image.source"
     """
-    OCI image manifest GardenLinux source repository URL annotation
+    OCI image manifest Garden Linux source repository URL annotation
     """
     ANNOTATION_TITLE_KEY = ANNOTATION_TITLE
     """
     OCI image manifest title annotation
+    """
+    ANNOTATION_VERSION_KEY = "org.opencontainers.image.version"
+    """
+    OCI image manifest GardenLinux version annotation
     """
 
     @property
@@ -88,11 +108,44 @@ class ImageManifest(Manifest):
         self["annotations"][ImageManifest.ANNOTATION_ARCH_KEY] = value
 
     @property
+    def artifact_base_name(self) -> str:
+        """
+        Returns the Garden Linux artifact base name of the OCI image manifest.
+
+        :return: (str) OCI image Garden Linux artifact base name
+        :since:  1.0.0
+        """
+
+        if ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY in self.get(
+            "annotations", {}
+        ):
+            return self["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]  # type: ignore[no-any-return]
+
+        return f"{self.cname}-{self.arch}-{self.version}-{self.commit}"
+
+    @artifact_base_name.setter
+    def artifact_base_name(self, value: str) -> None:
+        """
+        Sets the Garden Linux artifact base name of the OCI image manifest.
+
+        :param value: OCI image Garden Linux artifact base name
+
+        :since: 1.0.0
+        """
+
+        abn_object = ArtifactBaseName(value)
+
+        self.cname = abn_object.cname
+        self.arch = abn_object.arch
+        self.version = abn_object.version
+        self.commit = abn_object.commit_id
+
+    @property
     def cname(self) -> str:
         """
-        Returns the GardenLinux canonical name of the OCI image manifest.
+        Returns the Garden Linux canonical name of the OCI image manifest.
 
-        :return: (str) OCI image GardenLinux canonical name
+        :return: (str) OCI image Garden Linux canonical name
         :since:  0.7.0
         """
 
@@ -106,9 +159,9 @@ class ImageManifest(Manifest):
     @cname.setter
     def cname(self, value: str) -> None:
         """
-        Sets the GardenLinux canonical name of the OCI image manifest.
+        Sets the Garden Linux canonical name of the OCI image manifest.
 
-        :param value: OCI image GardenLinux canonical name
+        :param value: OCI image Garden Linux canonical name
 
         :since: 0.7.0
         """
@@ -119,9 +172,9 @@ class ImageManifest(Manifest):
     @property
     def feature_set(self) -> str:
         """
-        Returns the GardenLinux feature set of the OCI image manifest.
+        Returns the Garden Linux feature set of the OCI image manifest.
 
-        :return: (str) OCI image GardenLinux feature set
+        :return: (str) OCI image Garden Linux feature set
         :since:  0.7.0
         """
 
@@ -135,9 +188,9 @@ class ImageManifest(Manifest):
     @feature_set.setter
     def feature_set(self, value: str) -> None:
         """
-        Sets the GardenLinux feature set of the OCI image manifest.
+        Sets the Garden Linux feature set of the OCI image manifest.
 
-        :param value: OCI image GardenLinux feature set
+        :param value: OCI image Garden Linux feature set
 
         :since: 0.7.0
         """
@@ -148,13 +201,32 @@ class ImageManifest(Manifest):
     @property
     def flavor(self) -> str:
         """
-        Returns the GardenLinux flavor of the OCI image manifest.
+        Returns the Garden Linux flavor of the OCI image manifest.
 
-        :return: (str) OCI image GardenLinux flavor
+        :return: (str) OCI image Garden Linux flavor
         :since:  0.7.0
         """
 
-        return CName(self.cname).flavor
+        return Flavor(self.cname, self.arch).flavor
+
+    @flavor.setter
+    def flavor(self, value: str) -> None:
+        """
+        Sets the Garden Linux flavor of the OCI image manifest.
+
+        :param value: OCI image Garden Linux flavor
+
+        :since: 1.0.0
+        """
+
+        self._ensure_annotations_dict()
+
+        if "-" not in value:
+            raise RuntimeError(f"Garden Linux flavor is invalid: {value}")
+
+        cname, arch = value.rsplit("-", 1)
+        self["annotations"][ImageManifest.ANNOTATION_ARCH_KEY] = arch
+        self["annotations"][ImageManifest.ANNOTATION_CNAME_KEY] = cname
 
     @property
     def extended_dict(self) -> Dict[str, Any]:
@@ -165,7 +237,7 @@ class ImageManifest(Manifest):
         :since:  1.0.0
         """
 
-        manifest_dict = Manifest(self).extended_dict
+        manifest_dict: Dict[str, Any] = Manifest.extended_dict.fget(self)  # type: ignore[attr-defined]
         manifest_annotations = manifest_dict["annotations"]
 
         if ImageManifest.ANNOTATION_TITLE_KEY not in manifest_annotations:
@@ -175,22 +247,34 @@ class ImageManifest(Manifest):
 
         manifest_description = manifest_annotations[ImageManifest.ANNOTATION_TITLE_KEY]
 
+        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+            manifest_description += f" ({self.arch})"
+
         if ImageManifest.ANNOTATION_SOURCE_REPO_KEY not in manifest_annotations:
             manifest_annotations[ImageManifest.ANNOTATION_SOURCE_REPO_KEY] = (
                 GL_REPOSITORY_URL
             )
 
-        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
-            manifest_annotations["architecture"] = self.arch
-            manifest_description += f" ({self.arch})"
-
         if ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations:
-            manifest_annotations["org.opencontainers.image.version"] = self.version
+            manifest_annotations[ImageManifest.ANNOTATION_VERSION_KEY] = self.version
             manifest_description += " " + self.version
 
         if ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations:
-            manifest_annotations["org.opencontainers.image.revision"] = self.commit
+            manifest_annotations[ImageManifest.ANNOTATION_COMMIT_KEY] = self.commit
             manifest_description += f" ({self.commit})"
+
+        if (
+            ImageManifest.ANNOTATION_CNAME_KEY in manifest_annotations
+            and ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations
+            and ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations
+            and ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations
+        ):
+            manifest_annotations[ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY] = (
+                self.artifact_base_name
+            )
+            manifest_annotations[ImageManifest.ANNOTATION_CNAME_DEPRECATED_KEY] = (
+                self.artifact_base_name
+            )
 
         if ImageManifest.ANNOTATION_FEATURE_SET_KEY in manifest_annotations:
             manifest_description += (
@@ -201,6 +285,15 @@ class ImageManifest(Manifest):
             manifest_annotations[ImageManifest.ANNOTATION_DESCRIPTION_KEY] = (
                 manifest_description
             )
+
+        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+            # @TODO: Deprectated annotation
+            manifest_annotations["architecture"] = self.arch
+
+        if ImageManifest.ANNOTATION_FEATURE_SET_KEY in manifest_annotations:
+            manifest_annotations[
+                ImageManifest.ANNOTATION_FEATURE_SET_DEPRECATED_KEY
+            ] = manifest_annotations[ImageManifest.ANNOTATION_FEATURE_SET_KEY]
 
         return manifest_dict
 
@@ -280,17 +373,11 @@ class ImageManifest(Manifest):
         if not isinstance(manifest_file_path_name, PathLike):
             manifest_file_path_name = Path(manifest_file_path_name)
 
-        metadata_annotations = {
-            "cname": self.cname,
-            "architecture": self.arch,
-            "feature_set": self.feature_set,
-        }
-
         metadata = deepcopy(empty_manifest_metadata)
         metadata["mediaType"] = "application/vnd.oci.image.manifest.v1+json"
         metadata["digest"] = self.digest
         metadata["size"] = self.size
-        metadata["annotations"] = metadata_annotations
+        metadata["annotations"] = self.extended_dict["annotations"]
         metadata["platform"] = new_platform(self.arch, self.version)
 
         with open(manifest_file_path_name, "w") as fp:

@@ -74,7 +74,7 @@ class Bucket(object):
         :since:  0.8.0
         """
 
-        self._logger.debug(f"Returning all S3 bucket objects for {self._bucket.name}")
+        self._logger.debug(f"gardenlinux.s3.Bucket.objects(): {self._bucket.name}")
 
         return self._bucket.objects.all()
 

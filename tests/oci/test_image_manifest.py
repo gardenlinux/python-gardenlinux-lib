@@ -5,6 +5,34 @@ import pytest
 from gardenlinux.oci import ImageManifest, Layer
 
 
+def test_ImageManifest_artifact_base_name() -> None:
+    # Arrange
+    arch = "amd64"
+    cname = "container"
+    version = "today"
+    commit = "local"
+    artifact_base_name = f"{cname}-{arch}-{version}-{commit}"
+
+    empty_manifest = ImageManifest()
+    manifest = ImageManifest(
+        annotations={
+            ImageManifest.ANNOTATION_CNAME_KEY: cname,
+            ImageManifest.ANNOTATION_ARCH_KEY: arch,
+            ImageManifest.ANNOTATION_VERSION_KEY: version,
+            ImageManifest.ANNOTATION_COMMIT_KEY: commit,
+        }
+    )
+
+    # Assert
+    with pytest.raises(RuntimeError):
+        assert empty_manifest.artifact_base_name == artifact_base_name
+
+    empty_manifest.artifact_base_name = artifact_base_name
+    assert empty_manifest.artifact_base_name == artifact_base_name
+
+    assert manifest.artifact_base_name == artifact_base_name
+
+
 def test_ImageManifest_arch() -> None:
     # Arrange
     empty_manifest = ImageManifest()
@@ -22,10 +50,16 @@ def test_ImageManifest_arch() -> None:
 
 def test_ImageManifest_cname() -> None:
     # Arrange
-    cname = "container-amd64-today-local"
+    arch = "amd64"
+    cname = "container"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={ImageManifest.ANNOTATION_CNAME_KEY: cname})
+    manifest = ImageManifest(
+        annotations={
+            ImageManifest.ANNOTATION_CNAME_KEY: cname,
+            ImageManifest.ANNOTATION_ARCH_KEY: arch,
+        }
+    )
 
     # Assert
     with pytest.raises(RuntimeError):
@@ -58,18 +92,25 @@ def test_ImageManifest_feature_set() -> None:
 
 def test_ImageManifest_flavor() -> None:
     # Arrange
-    flavor = "container"
-    cname = f"{flavor}-amd64-today-local"
+    arch = "amd64"
+    cname = "container"
+    flavor = f"{cname}-{arch}"
 
     empty_manifest = ImageManifest()
-    manifest = ImageManifest(annotations={ImageManifest.ANNOTATION_CNAME_KEY: cname})
+    manifest = ImageManifest(
+        annotations={
+            ImageManifest.ANNOTATION_CNAME_KEY: cname,
+            ImageManifest.ANNOTATION_ARCH_KEY: arch,
+        }
+    )
 
     # Assert
     with pytest.raises(RuntimeError):
-        assert empty_manifest.flavor == flavor
+        assert empty_manifest.cname == cname
 
-    empty_manifest.cname = cname
-    assert empty_manifest.flavor == flavor
+    empty_manifest.flavor = flavor
+    assert empty_manifest.cname == cname
+    assert empty_manifest.arch == arch
 
     assert manifest.flavor == flavor
 

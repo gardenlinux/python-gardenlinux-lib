@@ -9,10 +9,13 @@ from os import PathLike
 from pathlib import Path
 from shutil import copyfile
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
+from urllib.parse import quote as url_quote
 from urllib.parse import urlencode
 
+from podman.api import DEFAULT_CHUNK_SIZE
 from podman.domain.images import Image as _Image
+from podman.errors import ImageNotFound, InvalidArgument
 
 from ..constants import (
     PODMAN_FS_CHANGE_ADDED,
@@ -66,11 +69,11 @@ class Image(PodmanObjectContext):
 
     @property
     @PodmanContext.wrap
-    def labels(self, podman: PodmanContext) -> Dict[str, str]:
+    def labels(self, /, podman: PodmanContext) -> Dict[str, str]:
         """
-        podman-py.readthedocs.io: Returns the identifier for the object.
+        podman-py.readthedocs.io: Return labels associated with Image.
 
-        :return: (str) Identifier for the object
+        :return: (dict) Labels dict
         :since:  1.0.0
         """
 
@@ -78,7 +81,19 @@ class Image(PodmanObjectContext):
 
     @property
     @PodmanContext.wrap
-    def layer_image_ids(self, podman: PodmanContext) -> List[str]:
+    def tags(self, /, podman: PodmanContext) -> Dict[str, str]:
+        """
+        podman-py.readthedocs.io: Return tags from Image.
+
+        :return: (list) Tags
+        :since:  1.0.0
+        """
+
+        return self._get(podman=podman).tags  # type: ignore[no-any-return]
+
+    @property
+    @PodmanContext.wrap
+    def layer_image_ids(self, /, podman: PodmanContext) -> List[str]:
         """
         Returns the podman image IDs of all parent layers.
 
@@ -93,6 +108,55 @@ class Image(PodmanObjectContext):
             for image_data in self.history(podman=podman)
             if len(image_data["Id"]) == 64
         ]
+
+    @PodmanContext.wrap
+    def save_oci_archive(
+        self,
+        /,
+        podman: PodmanContext,
+        chunk_size: Optional[int] = DEFAULT_CHUNK_SIZE,
+        named: str | bool = False,
+    ) -> Iterator[bytes]:
+        """
+        Returns image as an OCI archive.
+
+        This code copies Podman Image.save() method to generate OCI archives.
+
+        :param chunk_size: If None, data will be streamed in received buffer size.
+               If not None, data will be returned in sized buffers. Default: 2MB
+        :param named: If ``False`` (default), the tarball will not
+               retain repository and tag information for this image. If set
+               to ``True``, the first tag in the tags list will be used to
+               identify the image. Alternatively, any element of the tags list can
+               be used as an argument to use that specific tag as the saved
+               identifier.
+        :param podman: Podman context
+
+        :return: (object) Image data iterator
+        :since:  1.0.0
+        """
+
+        if named:
+            image_id = url_quote(self.tags[0] if self.tags else self._image_id)
+
+            if isinstance(named, str):
+                if named not in self.tags:
+                    raise InvalidArgument(
+                        f"'{named}' is not a valid tag for this image"
+                    )
+
+                image_id = url_quote(named)
+
+        response = self._raw_request(
+            "get",
+            f"/images/{image_id}/get?format=oci-archive",
+            podman=podman,
+            stream=True,
+        )
+
+        response.raise_for_status(not_found=ImageNotFound)
+
+        return response.iter_content(chunk_size=chunk_size)  # type: ignore[no-any-return]
 
     def __getattr__(
         self,
@@ -134,7 +198,7 @@ class Image(PodmanObjectContext):
 
     @PodmanContext.wrap
     def get_filesystem_changes(
-        self, podman: PodmanContext, parent_layer_image_id: Optional[str] = None
+        self, /, podman: PodmanContext, parent_layer_image_id: Optional[str] = None
     ) -> Dict[str, List[str]]:
         """
         Returns the underlying podman image object.
@@ -172,7 +236,9 @@ class Image(PodmanObjectContext):
 
     @staticmethod
     @PodmanContext.wrap
-    def import_plain_tar(tar_file_name: PathLike[str], podman: PodmanContext) -> str:
+    def import_plain_tar(
+        tar_file_name: str | PathLike[str], /, podman: PodmanContext
+    ) -> str:
         """
         Import a plain filesystem tar archive into an OCI image.
 
