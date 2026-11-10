@@ -31,7 +31,7 @@ python-dotenv = "^1.2.2"
 pytest = "^9.1.1"
 pytest-cov = "^7.1.0"
 requests-mock = "^1.12.1"
-mypy = "2.1.0"
+mypy = "2.4.1"
 types-pyyaml = "^6.0.12.20260518"
 types-requests = "^2.33.0.20260518"
 boto3-stubs = { extras = ["s3"], version = "^1.42.41" }
