@@ -46,9 +46,13 @@ def test_graph_mermaid_raises_no_flavor() -> None:
 def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
     # Arrange
     commit_file = tmp_path / "COMMIT"
-    commit_file.write_text("abcdef12\n")
+
+    commit_file.write_text(
+        "2e8f62e0560b2c3913f4d9aaf3b3d9f1cdc8b79c1929d5026ca6f053969a4a24\n"
+    )
+
     version_file = tmp_path / "VERSION"
-    version_file.write_text("1.2.3\n")
+    version_file.write_text("42.0.0\n")
 
     # Act
     version, commit = ArtifactBaseName.get_version_and_commit_id_from_files(
@@ -56,8 +60,8 @@ def test_get_version_and_commit_from_file(tmp_path: Path) -> None:
     )
 
     # Arrange
-    assert version == "1.2.3"
-    assert commit == "abcdef12"
+    assert version == "42.0.0"
+    assert commit == "2e8f62e0"
 
 
 # -------------------------------
