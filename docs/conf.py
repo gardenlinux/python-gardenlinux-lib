@@ -1,4 +1,43 @@
+from typing import Any
+
 from sphinx.application import Sphinx
+
+
+def _register_relative_headings(app: Sphinx) -> None:
+    try:
+        from sphinx_markdown_builder.contexts import TitleContext
+        from sphinx_markdown_builder.translator import (
+            MarkdownTranslator,
+            pushing_context,
+        )
+    except ImportError:
+        return
+
+    class SectionRelativeMarkdownTranslator(MarkdownTranslator):  # type: ignore[misc]
+        """Render rubric and signature headings relative to their section.
+
+        sphinx-markdown-builder pins these headings to level 3 while section
+        titles use their absolute nesting depth. Nested sphinx-click and
+        sphinxcontrib-autoprogram sections then jump from level 3 to 5, which
+        breaks the aggregated documentation (gldq HEAD-SKIP).
+        """
+
+        @pushing_context
+        def visit_rubric(self, _node: Any) -> None:
+            self._push_context(TitleContext(self.status.section_level + 1))
+
+        @pushing_context
+        def visit_desc_signature(self, node: Any) -> None:
+            if self.config.markdown_anchor_signatures:
+                for anchor in node.get("ids", []):
+                    self._add_anchor(anchor)
+            level = self.status.section_level + 1
+            if node.get("class"):
+                level += 1
+            self._push_context(TitleContext(level))
+
+    app.set_translator("markdown", SectionRelativeMarkdownTranslator, override=True)
+
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -61,3 +100,4 @@ html_theme_options = {
 # Add custom CSS
 def setup(app: Sphinx) -> None:
     app.add_css_file("custom.css")
+    _register_relative_headings(app)
