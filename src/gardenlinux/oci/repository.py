@@ -577,7 +577,7 @@ class Repository(Registry):  # type: ignore[misc]
         if not oci_image_ref_name:
             oci_image_ref_name = None
 
-        with TemporaryDirectory(delete=False) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             tar_file = TarFile.taropen(oci_archive_file_name)
             tar_file.extractall(tmpdir)
 
