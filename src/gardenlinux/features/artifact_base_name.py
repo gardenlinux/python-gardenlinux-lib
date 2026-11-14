@@ -434,9 +434,11 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
             raise RuntimeError("Version does not match the given argument")
 
         if commit_id_or_hash:
+            commit_id = commit_id_or_hash[:8]
+
             if abn_object.commit_hash and abn_object.commit_hash != commit_id_or_hash:
                 raise RuntimeError("Commit hash does not match the given argument")
-            elif abn_object.commit_id != commit_id_or_hash[:8]:
+            elif abn_object.commit_id != commit_id:
                 raise RuntimeError("Commit ID does not match the given argument")
 
         return abn_object
