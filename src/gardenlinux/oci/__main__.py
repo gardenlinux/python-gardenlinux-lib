@@ -7,6 +7,7 @@ gl-oci main entrypoint
 import argparse
 import json
 from pathlib import Path
+from os import getenv
 from typing import Optional
 
 from .image_manifest import ImageManifest
@@ -556,11 +557,16 @@ def main() -> None:
             index_resource.push_index(image_index)
             index_resource.push_index_for_tags(image_index, args.additional_tag)
         case "pull-image":
+            _set_podman_auth_data_from_env(args.repository)
+
             image_id = Podman(insecure=args.insecure).pull(
                 args.repository, oci_tag=args.tag, platform=args.platform
             )
+
             print(image_id)
         case "push-image":
+            _set_podman_auth_data_from_env(args.repository)
+
             Podman(insecure=args.insecure).push(
                 args.repository, oci_tag=args.tag, destination=args.destination
             )
@@ -633,6 +639,36 @@ def main() -> None:
                         Podman.get_image_tag_list(args.repository, args.additional_tag),
                         podman=podman_context,
                     )
+
+
+def _set_podman_auth_data_from_env(registry_url: str) -> None:
+    """
+    Sets the default registry auth data for Podman.
+
+    :param registry_url: Registry URL
+
+    :since: 1.0.3
+    """
+
+    if "/" not in registry_url:
+        return None
+
+    registry_host = registry_url.split("/", 1)[0]
+
+    password = getenv("GL_CLI_REGISTRY_PASSWORD", "")
+    token = getenv("GL_CLI_REGISTRY_TOKEN", "")
+    username = getenv("GL_CLI_REGISTRY_USERNAME", "gardenlinux")
+
+    auth_data = {
+        registry_host: {
+            "token": token,
+            "username": username,
+            "password": password,
+        }
+    }
+
+    if password:
+        PodmanContext.set_default_registry_auth_data(auth_data)
 
 
 if __name__ == "__main__":

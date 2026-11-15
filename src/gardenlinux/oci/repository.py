@@ -127,10 +127,10 @@ class Repository(Registry):  # type: ignore[misc]
     def generate_image_manifest(
         self,
         cname: str,
-        architecture: Optional[str],
-        version: Optional[str],
-        commit: Optional[str],
-        feature_set: Optional[str] = None,
+        architecture: str,
+        version: str,
+        commit: str,
+        feature_set: str = "",
     ) -> ImageManifest:
         """
         Generates an OCI image manifest
@@ -186,8 +186,8 @@ class Repository(Registry):  # type: ignore[misc]
 
     def generate_manifest(
         self,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
+        version: str = "",
+        commit: str = "",
     ) -> Manifest:
         """
         Generates an OCI manifest
@@ -201,8 +201,8 @@ class Repository(Registry):  # type: ignore[misc]
 
         manifest = Manifest()
 
-        manifest.version = version  # type: ignore[assignment]
-        manifest.commit = commit  # type: ignore[assignment]
+        manifest.version = version
+        manifest.commit = commit
 
         manifest.config_from_dict({}, {})
 
@@ -606,9 +606,9 @@ class Repository(Registry):  # type: ignore[misc]
     def read_manifest(
         self,
         cname: Optional[str] = None,
-        architecture: Optional[str] = None,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
+        architecture: str = "",
+        version: str = "",
+        commit: str = "",
     ) -> Manifest:
         """
         Reads the OCI manifest from registry.
@@ -666,10 +666,10 @@ class Repository(Registry):  # type: ignore[misc]
     def read_or_generate_manifest(
         self,
         cname: Optional[str] = None,
-        architecture: Optional[str] = None,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
-        feature_set: Optional[str] = None,
+        architecture: str = "",
+        version: str = "",
+        commit: str = "",
+        feature_set: str = "",
     ) -> Manifest | ImageManifest:
         """
         Reads from registry or generates the OCI manifest.
