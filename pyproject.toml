@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gardenlinux"
-version = "1.0.2"
+version = "1.0.3"
 description = "Contains tools to work with the features directory of gardenlinux, for example deducting dependencies from feature sets or validating cnames"
 authors = ["Garden Linux Maintainers <contact@gardenlinux.io>"]
 license = "Apache-2.0"
@@ -27,7 +27,7 @@ bandit = "^1.9.4"
 boto3-stubs = { extras = ["s3"], version = "^1.44.2" }
 isort = "^8.0.1"
 moto = "^5.2.5"
-mypy = "2.1.0"
+mypy = "2.4.1"
 pre-commit = "^4.7.0"
 python-dotenv = "^1.2.2"
 pytest = "^9.2.0"
