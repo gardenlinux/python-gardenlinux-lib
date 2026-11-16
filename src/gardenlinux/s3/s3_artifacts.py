@@ -217,7 +217,7 @@ class S3Artifacts(object):
         arch = re_object.sub("+", arch)
         commit_id_or_hash = abn_object.commit_hash
 
-        if commit_id_or_hash is None:
+        if not commit_id_or_hash:
             commit_id_or_hash = abn_object.commit_id
 
         metadata = {
@@ -231,7 +231,7 @@ class S3Artifacts(object):
             "secureboot": secureboot,
             "tpm2": tpm2,
             "s3_bucket": self._bucket.name,
-            "s3_key": f"meta/singles/{base_name}",
+            "s3_key": f"meta/singles/{abn_object}",
             "test_result": None,
             "version": abn_object.version,
             "paths": [],
@@ -254,7 +254,8 @@ class S3Artifacts(object):
             if not artifact.match(f"{base_name}*"):
                 continue
 
-            s3_key = f"objects/{base_name}/{artifact.name}"
+            s3_suffix = artifact.name[base_name_length:]
+            s3_key = f"objects/{abn_object}/{abn_object}{s3_suffix}"
 
             with artifact.open("rb") as fp:
                 md5sum = file_digest(fp, "md5").hexdigest()
@@ -262,10 +263,10 @@ class S3Artifacts(object):
                 sha256sum = file_digest(fp, "sha256").hexdigest()
 
             artifact_metadata = {
-                "name": artifact.name,
+                "name": f"{abn_object}{s3_suffix}",
                 "s3_bucket_name": self._bucket.name,
                 "s3_key": s3_key,
-                "suffix": re_object.sub("+", artifact.name[base_name_length:]),
+                "suffix": re_object.sub("+", s3_suffix),
                 "md5sum": md5sum,
                 "sha256sum": sha256sum,
             }
@@ -296,7 +297,7 @@ class S3Artifacts(object):
         else:
             if delete_before_push:
                 self._bucket.delete_objects(
-                    Delete={"Objects": [{"Key": f"meta/singles/{base_name}"}]}
+                    Delete={"Objects": [{"Key": f"meta/singles/{abn_object}"}]}
                 )
 
             with TemporaryFile(mode="wb+") as fp:
@@ -305,6 +306,6 @@ class S3Artifacts(object):
 
                 self._bucket.upload_fileobj(
                     fp,
-                    f"meta/singles/{base_name}",
+                    f"meta/singles/{abn_object}",
                     ExtraArgs={"ContentType": "text/yaml"},
                 )

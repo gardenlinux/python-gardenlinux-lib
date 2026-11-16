@@ -11,6 +11,7 @@ import re
 from os import path
 from typing import Any, Set
 
+from ..constants import COMMIT_ID_LENGTH
 from .artifact_base_name import ArtifactBaseName
 from .parser import Parser
 
@@ -201,13 +202,13 @@ def main() -> None:
         else:
             print_output_from_abn_object(args.type, abn_object)
     elif args.type == "commit-id":
-        print(commit_id_or_hash[:8])
+        print(commit_id_or_hash[:COMMIT_ID_LENGTH])
     elif args.type == "container-tag":
-        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:8]}"))
+        print(re.sub("\\W+", "-", f"{version}-{commit_id_or_hash[:COMMIT_ID_LENGTH]}"))
     elif args.type == "version":
         print(version)
     elif args.type == "version_and_commit-id":
-        print(f"{version}-{commit_id_or_hash[:8]}")
+        print(f"{version}-{commit_id_or_hash[:COMMIT_ID_LENGTH]}")
 
 
 def graph_as_mermaid_markup(cname: str | None, graph: Any) -> str:
