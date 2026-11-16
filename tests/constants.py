@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from gardenlinux.constants import COMMIT_ID_LENGTH
 from gardenlinux.git import Repository
 
 TEST_DATA_DIR = "test-data"
@@ -18,14 +19,14 @@ TEST_PLATFORMS = ["aws", "azure", "baremetal", "gcp", "openstack"]
 TEST_ARCHITECTURES = ["arm64", "amd64"]
 TEST_FEATURE_STRINGS_SHORT = ["gardener_prod"]
 TEST_FEATURE_SET = "_slim,base,container"
-TEST_COMMIT = Repository(GL_ROOT_DIR).commit_id[:8]
+TEST_COMMIT = Repository(GL_ROOT_DIR).commit_id[:COMMIT_ID_LENGTH]
 TEST_VERSION = "1000.0"
 TEST_VERSION_STABLE = "1000"
 
 TEST_GARDENLINUX_RELEASE_MAJOR = "2150.0.0"
 TEST_GARDENLINUX_RELEASE_MINOR = "1877.3"
 TEST_GARDENLINUX_COMMIT = "75df9f401a842914563f312899ec3ce34b24515c"
-TEST_GARDENLINUX_COMMIT_SHORT = TEST_GARDENLINUX_COMMIT[:8]
+TEST_GARDENLINUX_COMMIT_SHORT = TEST_GARDENLINUX_COMMIT[:COMMIT_ID_LENGTH]
 TEST_GARDENLINUX_RELEASE_BUCKET_NAME = "test__gardenlinux__releases"
 
 RELEASE_NOTES_TEST_DATA_DIR = (

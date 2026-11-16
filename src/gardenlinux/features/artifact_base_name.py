@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Optional, Self
 
 from ..constants import (
+    COMMIT_HASH_LENGTH,
+    COMMIT_ID_LENGTH,
     GL_BUG_REPORT_URL,
     GL_COMMIT_SPECIAL_VALUES,
     GL_DISTRIBUTION_NAME,
@@ -60,11 +62,11 @@ class ArtifactBaseName(VersionedFlavor):
 
         commit_id_or_hash = re_match[5]
 
-        self._commit_id = commit_id_or_hash[:8]
+        self._commit_id = commit_id_or_hash[:COMMIT_ID_LENGTH]
         self._commit_hash = None
 
         if (
-            len(commit_id_or_hash) == 40
+            len(commit_id_or_hash) == COMMIT_HASH_LENGTH
             or commit_id_or_hash in GL_COMMIT_SPECIAL_VALUES
         ):  # sha1 hex
             self._commit_hash = commit_id_or_hash
@@ -95,7 +97,7 @@ class ArtifactBaseName(VersionedFlavor):
         if self._commit_id is not None and not commit_hash.startswith(self._commit_id):
             raise RuntimeError("Commit hash given differs from commit ID already set")
 
-        self._commit_id = commit_hash[:8]
+        self._commit_id = commit_hash[:COMMIT_ID_LENGTH]
         self._commit_hash = commit_hash
 
     @property
@@ -357,7 +359,7 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
 
         if os.access(gardenlinux_root.joinpath("COMMIT"), os.R_OK):
             with gardenlinux_root.joinpath("COMMIT").open("r") as fp:
-                commit_hash = fp.read().strip()[:8]
+                commit_hash = fp.read().strip()[:COMMIT_ID_LENGTH]
 
         if os.access(gardenlinux_root.joinpath("VERSION"), os.R_OK):
             with gardenlinux_root.joinpath("VERSION").open("r") as fp:
@@ -434,7 +436,7 @@ GARDENLINUX_COMMIT_ID_LONG="{commit_hash}"
             raise RuntimeError("Version does not match the given argument")
 
         if commit_id_or_hash:
-            commit_id = commit_id_or_hash[:8]
+            commit_id = commit_id_or_hash[:COMMIT_ID_LENGTH]
 
             if abn_object.commit_hash and abn_object.commit_hash != commit_id_or_hash:
                 raise RuntimeError("Commit hash does not match the given argument")

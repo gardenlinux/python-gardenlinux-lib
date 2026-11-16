@@ -4,6 +4,8 @@ import pytest
 
 from gardenlinux.oci import ImageManifest, Layer
 
+from ..constants import TEST_GARDENLINUX_COMMIT, TEST_GARDENLINUX_COMMIT_SHORT
+
 
 def test_ImageManifest_artifact_base_name() -> None:
     # Arrange
@@ -46,6 +48,24 @@ def test_ImageManifest_arch() -> None:
     assert empty_manifest.arch == "amd64"
 
     assert manifest.arch == "amd64"
+
+
+def test_ImageManifest_commit() -> None:
+    # Arrange
+    empty_manifest = ImageManifest()
+
+    manifest = ImageManifest(
+        annotations={ImageManifest.ANNOTATION_COMMIT_KEY: TEST_GARDENLINUX_COMMIT}
+    )
+
+    # Assert
+    with pytest.raises(RuntimeError):
+        assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+
+    empty_manifest.commit = TEST_GARDENLINUX_COMMIT_SHORT
+    assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+
+    assert manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
 
 
 def test_ImageManifest_cname() -> None:

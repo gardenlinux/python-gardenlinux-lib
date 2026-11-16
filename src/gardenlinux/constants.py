@@ -11,6 +11,9 @@ BARE_CNAME_LIBC_FEATURE_CONTENT = {
     "type": "element",
 }
 
+COMMIT_ID_LENGTH = 8
+COMMIT_HASH_LENGTH = 40
+
 # GardenLinux flavors schema for validation
 GL_FLAVORS_SCHEMA = {
     "type": "object",

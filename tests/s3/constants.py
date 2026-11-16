@@ -5,7 +5,7 @@ VARIANT_ID="container_trustedboot_usi-amd64"
 GARDENLINUX_CNAME="container_trustedboot_usi"
 GARDENLINUX_VERSION=1234.1
 GARDENLINUX_COMMIT_ID="abc123lo"
-GARDENLINUX_COMMIT_ID_LONG="abc123long"
+GARDENLINUX_COMMIT_ID_LONG="abc123long000000000000000000000000000040"
 GARDENLINUX_PLATFORM="container"
 GARDENLINUX_FEATURES="_usi,_trustedboot"
 GARDENLINUX_FEATURES_ELEMENTS=
@@ -16,7 +16,7 @@ GARDENLINUX_FEATURES_PLATFORMS="container"
 S3_METADATA = """
 platform: container
 architecture: amd64
-build_committish: abc123lo
+build_committish: abc123long000000000000000000000000000040
 build_timestamp: {build_timestamp}
 logs: null
 modifiers:
