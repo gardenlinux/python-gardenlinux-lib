@@ -9,6 +9,7 @@ from copy import deepcopy
 from typing import Any, Dict
 
 from .image_manifest import ImageManifest
+from .manifest import Manifest
 from .schemas import empty_index
 
 
@@ -99,6 +100,9 @@ class Index(dict):  # type: ignore[type-arg]
 
         image_manifest = ImageManifest(manifest)
 
+        if image_manifest.size < 1:
+            raise ValueError("Manifest to be added is empty")
+
         existing_manifest_index = 0
 
         for existing_manifest in self["manifests"]:
@@ -122,4 +126,11 @@ class Index(dict):  # type: ignore[type-arg]
         if len(self["manifests"]) > existing_manifest_index:
             self["manifests"].pop(existing_manifest_index)
 
-        self["manifests"].append(manifest)
+        index_manifest = Manifest()
+        index_manifest["mediaType"] = image_manifest["mediaType"]
+        index_manifest["digest"] = image_manifest.digest
+        index_manifest["size"] = image_manifest.size
+        index_manifest["annotations"] = image_manifest["annotations"]
+        index_manifest["platform"] = image_manifest.get("platform", {})
+
+        self["manifests"].append(index_manifest)
