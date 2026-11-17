@@ -154,18 +154,9 @@ class Repository(Registry):  # type: ignore[misc]
         manifest = ImageManifest()
 
         manifest.flavor = abn_object.flavor
+        manifest.feature_set = feature_set
         manifest.version = version
         manifest.commit = commit
-
-        description = (
-            f"Image: {cname}-{architecture}-{version}-{commit}"
-            f"Flavor: {cname}-{architecture} "
-            f"Architecture: {architecture} "
-            f"Features: {feature_set} "
-            f"Commit: {commit} "
-        )
-
-        manifest["annotations"]["org.opencontainers.image.description"] = description
 
         manifest.config_from_dict(
             {},
@@ -624,7 +615,6 @@ class Repository(Registry):  # type: ignore[misc]
 
         if cname is None:
             manifest_type = Manifest
-
             response = self._get_manifest_without_response_parsing(self._repository_tag)
         else:
             abn_object = ArtifactBaseName(f"{cname}-{architecture}-{version}-{commit}")
@@ -635,7 +625,15 @@ class Repository(Registry):  # type: ignore[misc]
             )
 
         if response.ok:
-            manifest = manifest_type(**response.json())
+            response_data = response.json()
+
+            if (
+                response_data.get("mediaType")
+                == ImageManifest.IMAGE_MANIFEST_MEDIA_TYPE
+            ):
+                manifest_type = ImageManifest
+
+            manifest = manifest_type(**response_data)
         else:
             response.raise_for_status()
 
