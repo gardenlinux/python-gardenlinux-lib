@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from oras.defaults import annotation_title as ANNOTATION_TITLE
+from oras.defaults import default_manifest_media_type as IMAGE_MANIFEST_MEDIA_TYPE
 
 from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
 from ..features import ArtifactBaseName, Flavor
@@ -76,6 +77,10 @@ class ImageManifest(Manifest):
     ANNOTATION_VERSION_KEY = "org.opencontainers.image.version"
     """
     OCI image manifest GardenLinux version annotation
+    """
+    IMAGE_MANIFEST_MEDIA_TYPE = IMAGE_MANIFEST_MEDIA_TYPE
+    """
+    OCI image manifest media type
     """
 
     @property

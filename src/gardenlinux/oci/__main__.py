@@ -6,8 +6,8 @@ gl-oci main entrypoint
 
 import argparse
 import json
-from pathlib import Path
 from os import getenv
+from pathlib import Path
 from typing import Optional
 
 from .image_manifest import ImageManifest

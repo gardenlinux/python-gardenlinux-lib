@@ -8,7 +8,7 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+*"
 
 env:
-  GIT_CLIFF_VERSION: 2.13.1
+  GIT_CLIFF_VERSION: 2.14.2
 
 jobs:
   docs:
@@ -50,7 +50,7 @@ jobs:
     - uses: gardenlinux/python-gardenlinux-lib/.github/actions/setup@main
     - name: Use cargo cache
       id: cache-cargo
-      uses: actions/cache@v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
       with:
         path: |
           ~/.cargo
