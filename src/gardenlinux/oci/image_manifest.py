@@ -379,7 +379,7 @@ class ImageManifest(Manifest):
             manifest_file_path_name = Path(manifest_file_path_name)
 
         metadata = deepcopy(empty_manifest_metadata)
-        metadata["mediaType"] = "application/vnd.oci.image.manifest.v1+json"
+        metadata["mediaType"] = IMAGE_MANIFEST_MEDIA_TYPE
         metadata["digest"] = self.digest
         metadata["size"] = self.size
         metadata["annotations"] = self.extended_dict["annotations"]
