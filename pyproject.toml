@@ -11,7 +11,7 @@ packages = [{ include = "gardenlinux", from = "src" }]
 python = ">=3.13,!=3.14.1"
 apt-repo = "^0.5"
 boto3 = "^1.44.3"
-cryptography = "^49.0.0"
+cryptography = "^50.0.2"
 jsonschema = "^4.26.0"
 networkx = "^3.7"
 oras = "^0.2.43"
