@@ -4,8 +4,6 @@
 OCI image manifest
 """
 
-import json
-from copy import deepcopy
 from os import PathLike
 from pathlib import Path
 from typing import Any, Dict
@@ -17,8 +15,6 @@ from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
 from ..features import ArtifactBaseName, Flavor
 from .layer import Layer
 from .manifest import Manifest
-from .platform import new_platform
-from .schemas import empty_manifest_metadata
 
 
 class ImageManifest(Manifest):
@@ -378,12 +374,6 @@ class ImageManifest(Manifest):
         if not isinstance(manifest_file_path_name, PathLike):
             manifest_file_path_name = Path(manifest_file_path_name)
 
-        metadata = deepcopy(empty_manifest_metadata)
-        metadata["mediaType"] = IMAGE_MANIFEST_MEDIA_TYPE
-        metadata["digest"] = self.digest
-        metadata["size"] = self.size
-        metadata["annotations"] = self.extended_dict["annotations"]
-        metadata["platform"] = new_platform(self.arch, self.version)
-
-        with open(manifest_file_path_name, "w") as fp:
-            fp.write(json.dumps(metadata))
+        # The manifest file must contain the whole OCI image manifest, otherwise digest calculation will fail
+        with open(manifest_file_path_name, "wb") as fp:
+            fp.write(self.json)
