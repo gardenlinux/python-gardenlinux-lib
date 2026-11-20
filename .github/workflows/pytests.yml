@@ -31,9 +31,7 @@ jobs:
         run: make install-test
 
       - name: Run tests
-        run: |
-          export GLOCI_REGISTRY_TOKEN="invalid"
-          make test-coverage-ci
+        run: make test-coverage-ci
 
       - name: Check for report
         run: test -f coverage.xml
