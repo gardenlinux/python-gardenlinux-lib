@@ -123,9 +123,6 @@ class Manifest(dict):  # type: ignore[type-arg]
         :since:  0.7.0
         """
 
-        if "digest" in self:
-            return self["digest"]  #  type: ignore[no-any-return]
-
         digest = sha256(self.json).hexdigest()
         return f"sha256:{digest}"
 
