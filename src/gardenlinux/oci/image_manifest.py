@@ -340,27 +340,30 @@ class ImageManifest(Manifest):
 
         image_title = layer_dict["annotations"][ImageManifest.ANNOTATION_TITLE_KEY]
         existing_layer_index = 0
+        sorted_layer_keys: Dict[str | int, int] = {image_title: -1}
 
         for existing_layer in self["layers"]:
-            if ImageManifest.ANNOTATION_TITLE_KEY not in existing_layer.get(
-                "annotations", {}
-            ):
-                raise RuntimeError(
-                    f"Unexpected layer with missing annotation '{ImageManifest.ANNOTATION_TITLE_KEY}' found"
-                )
+            existing_title = existing_layer["annotations"].get(
+                ImageManifest.ANNOTATION_TITLE_KEY
+            )
 
-            if (
-                image_title
-                == existing_layer["annotations"][ImageManifest.ANNOTATION_TITLE_KEY]
-            ):
-                break
+            if not existing_title:
+                sorted_layer_keys[existing_layer_index] = existing_layer_index
+
+            if image_title != existing_title:
+                sorted_layer_keys[existing_title] = existing_layer_index
 
             existing_layer_index += 1
 
-        if len(self["layers"]) > existing_layer_index:
-            self["layers"].pop(existing_layer_index)
+        layers_sorted = []
 
-        self["layers"].append(layer_dict)
+        for key in sorted(sorted_layer_keys):
+            if sorted_layer_keys[key] >= 0:
+                layers_sorted.append(self["layers"][sorted_layer_keys[key]])
+            else:
+                layers_sorted.append(layer_dict)
+
+        self["layers"] = layers_sorted
 
     def write_metadata_file(self, manifest_file_path_name: PathLike[str] | str) -> None:
         """
