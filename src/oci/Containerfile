@@ -1,0 +1,24 @@
+ARG GL_VERSION=2150.0.0
+ARG PY_GL_VERSION=0.10.20
+
+FROM ghcr.io/gardenlinux/gardenlinux:${GL_VERSION} as installer
+
+ARG PY_GL_VERSION
+ENV PY_GL_VERSION=${PY_GL_VERSION}
+
+RUN apt-get update
+RUN apt-get install -y ca-certificates git python3 python3-pip
+RUN mkdir -p /opt/app
+RUN python3 -m venv --system-site-packages --without-pip /opt/app
+RUN /opt/app/bin/python -m pip install git+https://github.com/gardenlinux/python-gardenlinux-lib.git@${PY_GL_VERSION}
+
+FROM ghcr.io/gardenlinux/gardenlinux:${GL_VERSION} as base
+LABEL org.opencontainers.image.source="https://github.com/gardenlinux/python-gardenlinux-lib"
+
+RUN apt-get update
+RUN apt-get install -y podman python3
+
+COPY --from=installer /opt/app /opt/app
+
+WORKDIR /opt/app
+ENTRYPOINT ["/opt/app/bin/gl-oci"]
