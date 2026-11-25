@@ -58,7 +58,7 @@ command line.
 
    Or in `requirements.txt`:
 
-   ```
+   ```text
    gardenlinux @ git+https://github.com/gardenlinux/python-gardenlinux-lib.git@1.0.0
    ```
 
