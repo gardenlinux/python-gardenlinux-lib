@@ -147,7 +147,7 @@ def test_ImageManifest_layer(tmp_path: Path) -> None:
     layer = Layer(blob)
 
     manifest = ImageManifest()
-    manifest.append_layer(layer)
+    manifest.add_layer(layer)
 
     # Assert
 
@@ -156,7 +156,7 @@ def test_ImageManifest_layer(tmp_path: Path) -> None:
 
     # Assert
     with pytest.raises(RuntimeError):
-        manifest.append_layer({"test": "invalid"})
+        manifest.add_layer({"test": "invalid"})
 
 
 def test_ImageManifest_version() -> None:

@@ -87,7 +87,7 @@ class Index(dict):  # type: ignore[type-arg]
 
         return manifests
 
-    def append_manifest(self, manifest: Dict[str, Any]) -> None:
+    def add_manifest(self, manifest: Dict[str, Any]) -> None:
         """
         Appends the given OCI image manifest to the index
 
@@ -137,13 +137,32 @@ class Index(dict):  # type: ignore[type-arg]
         index_manifest["size"] = image_manifest.size
         index_manifest["annotations"] = image_annotations
 
+        annotation_arch_key = ImageManifest.ANNOTATION_ARCH_KEY
+        annotation_os_id_key = ImageManifest.ANNOTATION_OS_ID_KEY
+        annotation_version_key = ImageManifest.ANNOTATION_VERSION_KEY
+
         if (
-            ImageManifest.ANNOTATION_ARCH_KEY in image_annotations
-            and ImageManifest.ANNOTATION_VERSION_KEY in image_annotations
+            annotation_arch_key in image_annotations
+            or annotation_os_id_key in image_annotations
+            or annotation_version_key in image_annotations
         ):
-            index_manifest["platform"] = new_platform(
-                image_annotations[ImageManifest.ANNOTATION_ARCH_KEY],
-                image_annotations[ImageManifest.ANNOTATION_VERSION_KEY],
-            )
+            kwargs = {}
+
+            annotation_os_id_key = ImageManifest.ANNOTATION_OS_ID_KEY
+
+            if annotation_os_id_key in image_annotations:
+                kwargs["os_name"] = image_annotations[annotation_os_id_key]
+
+            annotation_version_key = ImageManifest.ANNOTATION_VERSION_KEY
+
+            if annotation_version_key in image_annotations:
+                kwargs["os_version"] = image_annotations[annotation_version_key]
+
+            annotation_arch_key = ImageManifest.ANNOTATION_ARCH_KEY
+
+            if annotation_arch_key in image_annotations:
+                kwargs["architecture"] = image_annotations[annotation_arch_key]
+
+            index_manifest["platform"] = new_platform(**kwargs)
 
         self["manifests"].append(index_manifest)

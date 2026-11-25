@@ -10,7 +10,12 @@ from typing import Any, Dict
 
 from oras.defaults import default_manifest_media_type as IMAGE_MANIFEST_MEDIA_TYPE
 
-from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
+from ..constants import (
+    GL_DISTRIBUTION_NAME,
+    GL_RELEASE_ID,
+    GL_REPOSITORY_URL,
+    GL_VENDOR_NAME,
+)
 from ..features import ArtifactBaseName, Flavor
 from .layer import Layer
 from .manifest import Manifest
@@ -47,7 +52,7 @@ class ImageManifest(Manifest):
     """
     ANNOTATION_COMMIT_KEY = "org.opencontainers.image.revision"
     """
-    OCI image manifest GardenLinux commit hash annotation
+    OCI image manifest commit hash annotation
     """
     ANNOTATION_FEATURE_SET_KEY = "io.gardenlinux.image.feature-set"
     """
@@ -57,13 +62,21 @@ class ImageManifest(Manifest):
     """
     OCI image manifest Garden Linux feature set deprecated annotation
     """
+    ANNOTATION_OS_ID_KEY = "io.gardenlinux.image.os-id"
+    """
+    OCI image manifest Garden Linux operating system annotation
+    """
     ANNOTATION_SOURCE_REPO_KEY = "org.opencontainers.image.source"
     """
-    OCI image manifest Garden Linux source repository URL annotation
+    OCI image manifest source repository URL annotation
+    """
+    ANNOTATION_VENDOR_KEY = "org.opencontainers.image.vendor"
+    """
+    OCI image manifest vendor annotation
     """
     ANNOTATION_VERSION_KEY = "org.opencontainers.image.version"
     """
-    OCI image manifest GardenLinux version annotation
+    OCI image manifest version annotation
     """
     IMAGE_MANIFEST_MEDIA_TYPE = IMAGE_MANIFEST_MEDIA_TYPE
     """
@@ -242,7 +255,11 @@ class ImageManifest(Manifest):
 
         manifest_description = manifest_annotations[ImageManifest.ANNOTATION_TITLE_KEY]
 
-        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+        annotation_arch_key = ImageManifest.ANNOTATION_ARCH_KEY
+        annotation_commit_key = ImageManifest.ANNOTATION_COMMIT_KEY
+        annotation_version_key = ImageManifest.ANNOTATION_VERSION_KEY
+
+        if annotation_arch_key in manifest_annotations:
             manifest_description += f" ({self.arch})"
 
         if ImageManifest.ANNOTATION_SOURCE_REPO_KEY not in manifest_annotations:
@@ -250,13 +267,13 @@ class ImageManifest(Manifest):
                 GL_REPOSITORY_URL
             )
 
-        if ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations:
+        if annotation_version_key in manifest_annotations:
             manifest_annotations[Manifest.ANNOTATION_VERSION_DEPRECATED_KEY] = (
                 self.version
             )
             manifest_description += " " + self.version
 
-        if ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations:
+        if annotation_commit_key in manifest_annotations:
             manifest_annotations[Manifest.ANNOTATION_COMMIT_DEPRECATED_KEY] = (
                 self.commit
             )
@@ -264,16 +281,25 @@ class ImageManifest(Manifest):
 
         if (
             ImageManifest.ANNOTATION_CNAME_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations
+            and annotation_arch_key in manifest_annotations
+            and annotation_version_key in manifest_annotations
+            and annotation_commit_key in manifest_annotations
         ):
             manifest_annotations[ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY] = (
                 self.artifact_base_name
             )
+
             manifest_annotations[ImageManifest.ANNOTATION_CNAME_DEPRECATED_KEY] = (
                 self.artifact_base_name
             )
+
+            if ImageManifest.ANNOTATION_OS_ID_KEY not in manifest_annotations:
+                manifest_annotations[ImageManifest.ANNOTATION_OS_ID_KEY] = GL_RELEASE_ID
+
+            annotation_vendor_key = ImageManifest.ANNOTATION_VENDOR_KEY
+
+            if annotation_vendor_key not in manifest_annotations:
+                manifest_annotations[annotation_vendor_key] = GL_VENDOR_NAME
 
         if ImageManifest.ANNOTATION_FEATURE_SET_KEY in manifest_annotations:
             manifest_description += (
@@ -285,7 +311,7 @@ class ImageManifest(Manifest):
                 manifest_description
             )
 
-        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+        if annotation_arch_key in manifest_annotations:
             # @TODO: Deprectated annotation
             manifest_annotations["architecture"] = self.arch
 
@@ -317,7 +343,7 @@ class ImageManifest(Manifest):
 
         return layers
 
-    def append_layer(self, layer: Layer | Dict[str, Any]) -> None:
+    def add_layer(self, layer: Layer | Dict[str, Any]) -> None:
         """
         Appends the given OCI image manifest layer to the manifest
 
