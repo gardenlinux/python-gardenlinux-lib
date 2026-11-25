@@ -9,6 +9,8 @@ from copy import deepcopy
 from typing import Any, Dict
 
 from .image_manifest import ImageManifest
+from .manifest import Manifest
+from .platform import new_platform
 from .schemas import empty_index
 
 
@@ -99,6 +101,9 @@ class Index(dict):  # type: ignore[type-arg]
 
         image_manifest = ImageManifest(manifest)
 
+        if image_manifest.size < 1:
+            raise ValueError("Manifest to be added is empty")
+
         existing_manifest_index = 0
 
         for existing_manifest in self["manifests"]:
@@ -122,4 +127,23 @@ class Index(dict):  # type: ignore[type-arg]
         if len(self["manifests"]) > existing_manifest_index:
             self["manifests"].pop(existing_manifest_index)
 
-        self["manifests"].append(manifest)
+        image_manifest_data = image_manifest.extended_dict
+
+        image_annotations = image_manifest_data["annotations"]
+
+        index_manifest = Manifest()
+        index_manifest["mediaType"] = image_manifest_data["mediaType"]
+        index_manifest["digest"] = image_manifest.digest
+        index_manifest["size"] = image_manifest.size
+        index_manifest["annotations"] = image_annotations
+
+        if (
+            ImageManifest.ANNOTATION_ARCH_KEY in image_annotations
+            and ImageManifest.ANNOTATION_VERSION_KEY in image_annotations
+        ):
+            index_manifest["platform"] = new_platform(
+                image_annotations[ImageManifest.ANNOTATION_ARCH_KEY],
+                image_annotations[ImageManifest.ANNOTATION_VERSION_KEY],
+            )
+
+        self["manifests"].append(index_manifest)

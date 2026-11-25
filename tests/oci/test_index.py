@@ -25,11 +25,20 @@ def test_manifests_as_dict() -> None:
     """Verify manifests_as_dict returns correct keys for cname and digest cases."""
     # Arrange
     idx = Index()
+
     manifest_abn = {
-        "digest": "sha256:abc",
-        "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "foo"},
+        "annotations": {
+            ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "foo",
+            "digest": "sha256:abc",
+        },
     }
-    manifest_no_abn = {"digest": "sha256:def"}
+
+    manifest_no_abn_key = (
+        "sha256:59c0c0fff3045cd6620473355babb85fc8b83cf93ee461a9d2519d333cb2a8d7"
+    )
+
+    manifest_no_abn = {"annotations": {"digest": "sha256:def"}}
+
     idx["manifests"] = [manifest_abn, manifest_no_abn]
 
     # Act
@@ -37,26 +46,34 @@ def test_manifests_as_dict() -> None:
 
     # Assert
     assert result["foo"] == manifest_abn
-    assert result["sha256:def"] == manifest_no_abn
+    assert result[manifest_no_abn_key] == manifest_no_abn
 
 
 def test_append_manifest_replace() -> None:
     """Ensure append_manifest replaces existing manifest with same cname."""
     # Arrange
     idx = Index()
+
     idx["manifests"] = [
         {
-            "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "old"},
-            "digest": "sha256:old",
+            "annotations": {
+                ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "old",
+                "digest": "sha256:old",
+            },
         },
         {
-            "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "other"},
-            "digest": "sha256:other",
+            "annotations": {
+                ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "other",
+                "digest": "sha256:other",
+            },
         },
     ]
+
     new_manifest = {
-        "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "old"},
-        "digest": "sha256:new",
+        "annotations": {
+            ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "old",
+            "digest": "sha256:new",
+        },
     }
 
     # Act
@@ -67,23 +84,34 @@ def test_append_manifest_replace() -> None:
         manifest["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]
         for manifest in idx["manifests"]
     ]
+
     assert "old" in abns
-    assert any(manifest["digest"] == "sha256:new" for manifest in idx["manifests"])
+
+    assert any(
+        manifest["annotations"]["digest"] == "sha256:new"
+        for manifest in idx["manifests"]
+    )
 
 
 def test_append_manifest_cname_not_found() -> None:
     """Test appending new manifest if cname isn't found."""
     # Arrange
     idx = Index()
+
     idx["manifests"] = [
         {
-            "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "foo"},
-            "digest": "sha256:foo",
+            "annotations": {
+                ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "foo",
+                "digest": "sha256:foo",
+            },
         }
     ]
+
     new_manifest = {
-        "annotations": {ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "bar"},
-        "digest": "sha256:bar",
+        "annotations": {
+            ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "bar",
+            "digest": "sha256:bar",
+        },
     }
 
     # Act
@@ -94,6 +122,7 @@ def test_append_manifest_cname_not_found() -> None:
         manifest["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]
         for manifest in idx["manifests"]
     ]
+
     assert "bar" in abns
 
 
@@ -101,7 +130,7 @@ def test_append_manifest_cname_not_found() -> None:
     "manifest",
     [
         {"annotations": {}},
-        {"annotations": {}, "digest": "sha256:foo"},
+        {"annotations": {"digest": "sha256:foo"}},
     ],
 )
 def test_append_accept_all_manifests(manifest: Dict[str, Any]) -> None:

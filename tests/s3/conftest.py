@@ -11,6 +11,8 @@ import pytest
 from moto import mock_aws
 from mypy_boto3_s3.service_resource import S3ServiceResource
 
+from gardenlinux.constants import COMMIT_ID_LENGTH
+
 BUCKET_NAME = "test-bucket"
 REGION = "us-east-1"
 
@@ -32,7 +34,7 @@ def make_artifact_base_name(
     """
     Helper function to build cname. Can be used to customized the cname.
     """
-    return f"{flavor}-{arch}-{version}-{commit[:8]}"
+    return f"{flavor}-{arch}-{version}-{commit[:COMMIT_ID_LENGTH]}"
 
 
 # Helpers to compute digests for fake files

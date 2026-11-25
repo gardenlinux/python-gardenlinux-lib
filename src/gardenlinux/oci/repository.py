@@ -127,10 +127,10 @@ class Repository(Registry):  # type: ignore[misc]
     def generate_image_manifest(
         self,
         cname: str,
-        architecture: Optional[str],
-        version: Optional[str],
-        commit: Optional[str],
-        feature_set: Optional[str] = None,
+        architecture: str,
+        version: str,
+        commit: str,
+        feature_set: str = "",
     ) -> ImageManifest:
         """
         Generates an OCI image manifest
@@ -154,18 +154,9 @@ class Repository(Registry):  # type: ignore[misc]
         manifest = ImageManifest()
 
         manifest.flavor = abn_object.flavor
+        manifest.feature_set = feature_set
         manifest.version = version
         manifest.commit = commit
-
-        description = (
-            f"Image: {cname}-{architecture}-{version}-{commit}"
-            f"Flavor: {cname}-{architecture} "
-            f"Architecture: {architecture} "
-            f"Features: {feature_set} "
-            f"Commit: {commit} "
-        )
-
-        manifest["annotations"]["org.opencontainers.image.description"] = description
 
         manifest.config_from_dict(
             {},
@@ -186,8 +177,8 @@ class Repository(Registry):  # type: ignore[misc]
 
     def generate_manifest(
         self,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
+        version: str = "",
+        commit: str = "",
     ) -> Manifest:
         """
         Generates an OCI manifest
@@ -201,8 +192,8 @@ class Repository(Registry):  # type: ignore[misc]
 
         manifest = Manifest()
 
-        manifest.version = version  # type: ignore[assignment]
-        manifest.commit = commit  # type: ignore[assignment]
+        manifest.version = version
+        manifest.commit = commit
 
         manifest.config_from_dict({}, {})
 
@@ -577,7 +568,7 @@ class Repository(Registry):  # type: ignore[misc]
         if not oci_image_ref_name:
             oci_image_ref_name = None
 
-        with TemporaryDirectory(delete=False) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             tar_file = TarFile.taropen(oci_archive_file_name)
             tar_file.extractall(tmpdir)
 
@@ -606,9 +597,9 @@ class Repository(Registry):  # type: ignore[misc]
     def read_manifest(
         self,
         cname: Optional[str] = None,
-        architecture: Optional[str] = None,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
+        architecture: str = "",
+        version: str = "",
+        commit: str = "",
     ) -> Manifest:
         """
         Reads the OCI manifest from registry.
@@ -624,7 +615,6 @@ class Repository(Registry):  # type: ignore[misc]
 
         if cname is None:
             manifest_type = Manifest
-
             response = self._get_manifest_without_response_parsing(self._repository_tag)
         else:
             abn_object = ArtifactBaseName(f"{cname}-{architecture}-{version}-{commit}")
@@ -635,7 +625,15 @@ class Repository(Registry):  # type: ignore[misc]
             )
 
         if response.ok:
-            manifest = manifest_type(**response.json())
+            response_data = response.json()
+
+            if (
+                response_data.get("mediaType")
+                == ImageManifest.IMAGE_MANIFEST_MEDIA_TYPE
+            ):
+                manifest_type = ImageManifest
+
+            manifest = manifest_type(**response_data)
         else:
             response.raise_for_status()
 
@@ -666,10 +664,10 @@ class Repository(Registry):  # type: ignore[misc]
     def read_or_generate_manifest(
         self,
         cname: Optional[str] = None,
-        architecture: Optional[str] = None,
-        version: Optional[str] = None,
-        commit: Optional[str] = None,
-        feature_set: Optional[str] = None,
+        architecture: str = "",
+        version: str = "",
+        commit: str = "",
+        feature_set: str = "",
     ) -> Manifest | ImageManifest:
         """
         Reads from registry or generates the OCI manifest.

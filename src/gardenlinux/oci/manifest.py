@@ -13,6 +13,8 @@ from typing import Any, Dict
 from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.oci import EmptyManifest
 
+from ..constants import COMMIT_HASH_LENGTH, COMMIT_ID_LENGTH
+
 
 class Manifest(dict):  # type: ignore[type-arg]
     """
@@ -81,7 +83,12 @@ class Manifest(dict):  # type: ignore[type-arg]
                 f"Unexpected manifest with missing config annotation '{annotation_commit_key}' found"
             )
 
-        return self["annotations"][annotation_commit_key]  #  type: ignore[no-any-return]
+        commit_id: str = self["annotations"][annotation_commit_key]
+
+        if len(commit_id) == COMMIT_HASH_LENGTH:
+            commit_id = commit_id[:COMMIT_ID_LENGTH]
+
+        return commit_id
 
     @commit.setter
     def commit(self, value: str) -> None:
@@ -115,9 +122,6 @@ class Manifest(dict):  # type: ignore[type-arg]
         :return: (str) OCI image manifest digest
         :since:  0.7.0
         """
-
-        if "digest" in self:
-            return self["digest"]  #  type: ignore[no-any-return]
 
         digest = sha256(self.json).hexdigest()
         return f"sha256:{digest}"

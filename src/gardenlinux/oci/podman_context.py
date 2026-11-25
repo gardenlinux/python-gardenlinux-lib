@@ -7,12 +7,12 @@ OCI podman context
 import logging
 from contextlib import ExitStack
 from functools import wraps
-from os import rmdir
+from os import getenv, rmdir
 from pathlib import Path
 from subprocess import PIPE, STDOUT, Popen
 from tempfile import mkdtemp
 from time import sleep
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from podman.client import PodmanClient
 
@@ -34,7 +34,16 @@ class PodmanContext(ExitStack):
                  Apache License, Version 2.0
     """
 
-    def __init__(self, logger: Optional[logging.Logger] = None):
+    _REGISTRY_AUTH_DATA: Dict[str, Dict[str, str]] = {}
+    """
+    Default list of registry auth data
+    """
+
+    def __init__(
+        self,
+        registry_auth_data: Dict[str, Dict[str, str]] = {},
+        logger: Optional[logging.Logger] = None,
+    ):
         """
         Constructor __init__(PodmanContext)
 
@@ -46,10 +55,17 @@ class PodmanContext(ExitStack):
         if logger is None or not logger.hasHandlers():
             logger = LoggerSetup.get_logger("gardenlinux.oci")
 
+        if len(registry_auth_data) < 1:
+            registry_auth_data = PodmanContext._REGISTRY_AUTH_DATA
+
+        self._auth_data = registry_auth_data
         self._logger = logger
-        self._podman = None
+        self._podman: PodmanClient = None
         self._podman_daemon: Optional[Popen[bytes]] = None
         self._tmpdir: Optional[str] = None
+
+        if len(registry_auth_data) < 1:
+            self._set_auth_data_from_env()
 
     def __enter__(self) -> Any:
         """
@@ -79,7 +95,19 @@ class PodmanContext(ExitStack):
 
         self.enter_context(self._podman_daemon)
         self._wait_for_socket(podman_sock)
-        self.enter_context(self._podman)  # type: ignore[arg-type]
+        self.enter_context(self._podman)
+
+        for url in self._auth_data:
+            kwargs = {
+                "registry": url,
+                "username": self._auth_data[url]["username"],
+                "password": self._auth_data[url]["password"],
+            }
+
+            if "token" in self._auth_data[url]:
+                kwargs["registrytoken"] = self._auth_data[url]["token"]
+
+            self._podman.login(**kwargs)
 
         return self
 
@@ -130,6 +158,28 @@ class PodmanContext(ExitStack):
 
         return getattr(self._podman, name)
 
+    def _set_auth_data_from_env(self) -> None:
+        """
+        Sets registry auth data based on environment variables.
+
+        :since: 1.0.3
+        """
+
+        url = getenv("PODMAN_REGISTRY_URL")
+
+        if url:
+            password = getenv("PODMAN_REGISTRY_PASSWORD", "")
+            token = getenv("PODMAN_REGISTRY_TOKEN")
+            username = getenv("PODMAN_REGISTRY_USERNAME", "")
+
+            self._auth_data[url] = {
+                "username": username,
+                "password": password,
+            }
+
+            if token:
+                self._auth_data[url]["token"] = token
+
     def _wait_for_socket(self, sock: str) -> None:
         """
         Waits for the socket file to be created.
@@ -179,3 +229,17 @@ class PodmanContext(ExitStack):
                 return f(*args, **kwargs)
 
         return decorator
+
+    @staticmethod
+    def set_default_registry_auth_data(
+        registry_auth_data: Dict[str, Dict[str, str]] = {},
+    ) -> None:
+        """
+        Sets the default registry auth data.
+
+        :param registry_auth_data: Registry auth data
+
+        :since: 1.0.3
+        """
+
+        PodmanContext._REGISTRY_AUTH_DATA = registry_auth_data
