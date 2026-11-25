@@ -10,6 +10,7 @@ from copy import deepcopy
 from hashlib import sha256
 from typing import Any, Dict
 
+from oras.defaults import annotation_title as ANNOTATION_TITLE
 from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 from oras.oci import EmptyManifest
 
@@ -36,6 +37,14 @@ class Manifest(dict):  # type: ignore[type-arg]
     ANNOTATION_COMMIT_DEPRECATED_KEY = "commit"
     """
     OCI image manifest GardenLinux commit hash deprecated annotation
+    """
+    ANNOTATION_DESCRIPTION_KEY = "org.opencontainers.image.description"
+    """
+    OCI image manifest description annotation
+    """
+    ANNOTATION_TITLE_KEY = ANNOTATION_TITLE
+    """
+    OCI image manifest title annotation
     """
     ANNOTATION_VERSION_KEY = "io.gardenlinux.manifest.version"
     """
@@ -70,9 +79,9 @@ class Manifest(dict):  # type: ignore[type-arg]
     @property
     def commit(self) -> str:
         """
-        Returns the GardenLinux Git commit ID of the OCI manifest.
+        Returns the GardenLinux Git commit hash of the OCI manifest.
 
-        :return: (str) OCI GardenLinux Git commit ID
+        :return: (str) OCI GardenLinux Git commit hash
         :since:  0.7.0
         """
 
@@ -83,25 +92,36 @@ class Manifest(dict):  # type: ignore[type-arg]
                 f"Unexpected manifest with missing config annotation '{annotation_commit_key}' found"
             )
 
-        commit_id: str = self["annotations"][annotation_commit_key]
-
-        if len(commit_id) == COMMIT_HASH_LENGTH:
-            commit_id = commit_id[:COMMIT_ID_LENGTH]
-
-        return commit_id
+        return self["annotations"][annotation_commit_key]  # type: ignore[no-any-return]
 
     @commit.setter
     def commit(self, value: str) -> None:
         """
-        Sets the GardenLinux Git commit ID of the OCI manifest.
+        Sets the GardenLinux Git commit hash of the OCI manifest.
 
-        :param value: OCI GardenLinux Git commit ID
+        :param value: OCI GardenLinux Git commit hash
 
         :since: 0.7.0
         """
 
         self._ensure_annotations_dict()
         self["annotations"][self.__class__.ANNOTATION_COMMIT_KEY] = value
+
+    @property
+    def commit_id(self) -> str:
+        """
+        Returns the GardenLinux Git commit ID of the OCI manifest.
+
+        :return: (str) OCI GardenLinux Git commit ID
+        :since:  1.0.8
+        """
+
+        commit_id = self.commit
+
+        if len(commit_id) == COMMIT_HASH_LENGTH:
+            commit_id = commit_id[:COMMIT_ID_LENGTH]
+
+        return commit_id
 
     @property
     def config_json(self) -> bytes:

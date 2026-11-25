@@ -8,7 +8,6 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, Dict
 
-from oras.defaults import annotation_title as ANNOTATION_TITLE
 from oras.defaults import default_manifest_media_type as IMAGE_MANIFEST_MEDIA_TYPE
 
 from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
@@ -50,10 +49,6 @@ class ImageManifest(Manifest):
     """
     OCI image manifest GardenLinux commit hash annotation
     """
-    ANNOTATION_DESCRIPTION_KEY = "org.opencontainers.image.description"
-    """
-    OCI image manifest description annotation
-    """
     ANNOTATION_FEATURE_SET_KEY = "io.gardenlinux.image.feature-set"
     """
     OCI image manifest Garden Linux feature set annotation
@@ -65,10 +60,6 @@ class ImageManifest(Manifest):
     ANNOTATION_SOURCE_REPO_KEY = "org.opencontainers.image.source"
     """
     OCI image manifest Garden Linux source repository URL annotation
-    """
-    ANNOTATION_TITLE_KEY = ANNOTATION_TITLE
-    """
-    OCI image manifest title annotation
     """
     ANNOTATION_VERSION_KEY = "org.opencontainers.image.version"
     """
@@ -122,7 +113,7 @@ class ImageManifest(Manifest):
         ):
             return self["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]  # type: ignore[no-any-return]
 
-        return f"{self.cname}-{self.arch}-{self.version}-{self.commit}"
+        return f"{self.cname}-{self.arch}-{self.version}-{self.commit_id}"
 
     @artifact_base_name.setter
     def artifact_base_name(self, value: str) -> None:
@@ -139,7 +130,10 @@ class ImageManifest(Manifest):
         self.cname = abn_object.cname
         self.arch = abn_object.arch
         self.version = abn_object.version
-        self.commit = abn_object.commit_id
+        # Reuse the whole commit hash if available, otherwise fall back to the commit ID
+        self.commit = (
+            abn_object.commit_hash if abn_object.commit_hash else abn_object.commit_id
+        )
 
     @property
     def cname(self) -> str:
@@ -257,12 +251,16 @@ class ImageManifest(Manifest):
             )
 
         if ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations:
-            manifest_annotations[ImageManifest.ANNOTATION_VERSION_KEY] = self.version
+            manifest_annotations[Manifest.ANNOTATION_VERSION_DEPRECATED_KEY] = (
+                self.version
+            )
             manifest_description += " " + self.version
 
         if ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations:
-            manifest_annotations[ImageManifest.ANNOTATION_COMMIT_KEY] = self.commit
-            manifest_description += f" ({self.commit})"
+            manifest_annotations[Manifest.ANNOTATION_COMMIT_DEPRECATED_KEY] = (
+                self.commit
+            )
+            manifest_description += f" ({self.commit_id})"
 
         if (
             ImageManifest.ANNOTATION_CNAME_KEY in manifest_annotations

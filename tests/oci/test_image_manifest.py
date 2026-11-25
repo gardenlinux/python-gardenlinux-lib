@@ -60,12 +60,15 @@ def test_ImageManifest_commit() -> None:
 
     # Assert
     with pytest.raises(RuntimeError):
-        assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+        assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT
+        assert empty_manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
-    empty_manifest.commit = TEST_GARDENLINUX_COMMIT_SHORT
-    assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+    empty_manifest.commit = TEST_GARDENLINUX_COMMIT
+    assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT
+    assert empty_manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
-    assert manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+    assert manifest.commit == TEST_GARDENLINUX_COMMIT
+    assert manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
 
 def test_ImageManifest_cname() -> None:
