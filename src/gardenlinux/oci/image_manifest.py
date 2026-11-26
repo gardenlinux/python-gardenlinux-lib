@@ -4,14 +4,21 @@
 OCI image manifest
 """
 
+from hashlib import sha256
+from json import dumps as json_dumps
 from os import PathLike
 from pathlib import Path
 from typing import Any, Dict
 
-from oras.defaults import annotation_title as ANNOTATION_TITLE
 from oras.defaults import default_manifest_media_type as IMAGE_MANIFEST_MEDIA_TYPE
+from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 
-from ..constants import GL_DISTRIBUTION_NAME, GL_REPOSITORY_URL
+from ..constants import (
+    GL_DISTRIBUTION_NAME,
+    GL_RELEASE_ID,
+    GL_REPOSITORY_URL,
+    GL_VENDOR_NAME,
+)
 from ..features import ArtifactBaseName, Flavor
 from .layer import Layer
 from .manifest import Manifest
@@ -48,11 +55,7 @@ class ImageManifest(Manifest):
     """
     ANNOTATION_COMMIT_KEY = "org.opencontainers.image.revision"
     """
-    OCI image manifest GardenLinux commit hash annotation
-    """
-    ANNOTATION_DESCRIPTION_KEY = "org.opencontainers.image.description"
-    """
-    OCI image manifest description annotation
+    OCI image manifest commit hash annotation
     """
     ANNOTATION_FEATURE_SET_KEY = "io.gardenlinux.image.feature-set"
     """
@@ -62,22 +65,43 @@ class ImageManifest(Manifest):
     """
     OCI image manifest Garden Linux feature set deprecated annotation
     """
+    ANNOTATION_OS_ID_KEY = "io.gardenlinux.image.os-id"
+    """
+    OCI image manifest Garden Linux operating system annotation
+    """
     ANNOTATION_SOURCE_REPO_KEY = "org.opencontainers.image.source"
     """
-    OCI image manifest Garden Linux source repository URL annotation
+    OCI image manifest source repository URL annotation
     """
-    ANNOTATION_TITLE_KEY = ANNOTATION_TITLE
+    ANNOTATION_VENDOR_KEY = "org.opencontainers.image.vendor"
     """
-    OCI image manifest title annotation
+    OCI image manifest vendor annotation
     """
     ANNOTATION_VERSION_KEY = "org.opencontainers.image.version"
     """
-    OCI image manifest GardenLinux version annotation
+    OCI image manifest version annotation
     """
     IMAGE_MANIFEST_MEDIA_TYPE = IMAGE_MANIFEST_MEDIA_TYPE
     """
     OCI image manifest media type
     """
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        """
+        Constructor __init__(Manifest)
+
+        :since: 0.7.0
+        """
+
+        Manifest.__init__(self, *args, **kwargs)
+
+        self._config_bytes = b"{}"
+
+        if "config" not in self:
+            self["config"] = {}
+
+        if "layers" not in self:
+            self["layers"] = []
 
     @property
     def arch(self) -> str:
@@ -122,7 +146,7 @@ class ImageManifest(Manifest):
         ):
             return self["annotations"][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]  # type: ignore[no-any-return]
 
-        return f"{self.cname}-{self.arch}-{self.version}-{self.commit}"
+        return f"{self.cname}-{self.arch}-{self.version}-{self.commit_id}"
 
     @artifact_base_name.setter
     def artifact_base_name(self, value: str) -> None:
@@ -139,7 +163,10 @@ class ImageManifest(Manifest):
         self.cname = abn_object.cname
         self.arch = abn_object.arch
         self.version = abn_object.version
-        self.commit = abn_object.commit_id
+        # Reuse the whole commit hash if available, otherwise fall back to the commit ID
+        self.commit = (
+            abn_object.commit_hash if abn_object.commit_hash else abn_object.commit_id
+        )
 
     @property
     def cname(self) -> str:
@@ -169,6 +196,17 @@ class ImageManifest(Manifest):
 
         self._ensure_annotations_dict()
         self["annotations"][ImageManifest.ANNOTATION_CNAME_KEY] = value
+
+    @property
+    def config_json(self) -> bytes:
+        """
+        Returns the OCI image manifest config.
+
+        :return: (bytes) OCI image manifest config
+        :since:  0.7.0
+        """
+
+        return self._config_bytes
 
     @property
     def feature_set(self) -> str:
@@ -248,7 +286,11 @@ class ImageManifest(Manifest):
 
         manifest_description = manifest_annotations[ImageManifest.ANNOTATION_TITLE_KEY]
 
-        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+        annotation_arch_key = ImageManifest.ANNOTATION_ARCH_KEY
+        annotation_commit_key = ImageManifest.ANNOTATION_COMMIT_KEY
+        annotation_version_key = ImageManifest.ANNOTATION_VERSION_KEY
+
+        if annotation_arch_key in manifest_annotations:
             manifest_description += f" ({self.arch})"
 
         if ImageManifest.ANNOTATION_SOURCE_REPO_KEY not in manifest_annotations:
@@ -256,26 +298,39 @@ class ImageManifest(Manifest):
                 GL_REPOSITORY_URL
             )
 
-        if ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations:
-            manifest_annotations[ImageManifest.ANNOTATION_VERSION_KEY] = self.version
+        if annotation_version_key in manifest_annotations:
+            manifest_annotations[Manifest.ANNOTATION_VERSION_DEPRECATED_KEY] = (
+                self.version
+            )
             manifest_description += " " + self.version
 
-        if ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations:
-            manifest_annotations[ImageManifest.ANNOTATION_COMMIT_KEY] = self.commit
-            manifest_description += f" ({self.commit})"
+        if annotation_commit_key in manifest_annotations:
+            manifest_annotations[Manifest.ANNOTATION_COMMIT_DEPRECATED_KEY] = (
+                self.commit
+            )
+            manifest_description += f" ({self.commit_id})"
 
         if (
             ImageManifest.ANNOTATION_CNAME_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_VERSION_KEY in manifest_annotations
-            and ImageManifest.ANNOTATION_COMMIT_KEY in manifest_annotations
+            and annotation_arch_key in manifest_annotations
+            and annotation_version_key in manifest_annotations
+            and annotation_commit_key in manifest_annotations
         ):
             manifest_annotations[ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY] = (
                 self.artifact_base_name
             )
+
             manifest_annotations[ImageManifest.ANNOTATION_CNAME_DEPRECATED_KEY] = (
                 self.artifact_base_name
             )
+
+            if ImageManifest.ANNOTATION_OS_ID_KEY not in manifest_annotations:
+                manifest_annotations[ImageManifest.ANNOTATION_OS_ID_KEY] = GL_RELEASE_ID
+
+            annotation_vendor_key = ImageManifest.ANNOTATION_VENDOR_KEY
+
+            if annotation_vendor_key not in manifest_annotations:
+                manifest_annotations[annotation_vendor_key] = GL_VENDOR_NAME
 
         if ImageManifest.ANNOTATION_FEATURE_SET_KEY in manifest_annotations:
             manifest_description += (
@@ -287,7 +342,7 @@ class ImageManifest(Manifest):
                 manifest_description
             )
 
-        if ImageManifest.ANNOTATION_ARCH_KEY in manifest_annotations:
+        if annotation_arch_key in manifest_annotations:
             # @TODO: Deprectated annotation
             manifest_annotations["architecture"] = self.arch
 
@@ -319,7 +374,7 @@ class ImageManifest(Manifest):
 
         return layers
 
-    def append_layer(self, layer: Layer | Dict[str, Any]) -> None:
+    def add_layer(self, layer: Layer | Dict[str, Any]) -> None:
         """
         Appends the given OCI image manifest layer to the manifest
 
@@ -340,27 +395,55 @@ class ImageManifest(Manifest):
 
         image_title = layer_dict["annotations"][ImageManifest.ANNOTATION_TITLE_KEY]
         existing_layer_index = 0
+        sorted_layer_keys: Dict[str | int, int] = {image_title: -1}
 
         for existing_layer in self["layers"]:
-            if ImageManifest.ANNOTATION_TITLE_KEY not in existing_layer.get(
-                "annotations", {}
-            ):
-                raise RuntimeError(
-                    f"Unexpected layer with missing annotation '{ImageManifest.ANNOTATION_TITLE_KEY}' found"
-                )
+            existing_title = existing_layer["annotations"].get(
+                ImageManifest.ANNOTATION_TITLE_KEY
+            )
 
-            if (
-                image_title
-                == existing_layer["annotations"][ImageManifest.ANNOTATION_TITLE_KEY]
-            ):
-                break
+            if not existing_title:
+                sorted_layer_keys[existing_layer_index] = existing_layer_index
+
+            if image_title != existing_title:
+                sorted_layer_keys[existing_title] = existing_layer_index
 
             existing_layer_index += 1
 
-        if len(self["layers"]) > existing_layer_index:
-            self["layers"].pop(existing_layer_index)
+        layers_sorted = []
 
-        self["layers"].append(layer_dict)
+        for key in sorted(sorted_layer_keys):
+            if sorted_layer_keys[key] >= 0:
+                layers_sorted.append(self["layers"][sorted_layer_keys[key]])
+            else:
+                layers_sorted.append(layer_dict)
+
+        self["layers"] = layers_sorted
+
+    def config_from_dict(
+        self, config: Dict[str, Any], annotations: Dict[str, Any]
+    ) -> None:
+        """
+        Write a new OCI configuration to file, and generate oci metadata for it.
+
+        For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
+        annotations, mediatype, size, digest are not part of digest and size calculation,
+        and therefore must be attached to the output dict and not written to the file.
+
+        :param config: dict with custom configuration (the payload of the configuration)
+        :param annotations: dict with custom annotations to be attached to metadata part of config
+
+        :since: 0.7.0
+        """
+
+        self._config_bytes = json_dumps(config).encode("utf-8")
+
+        config["annotations"] = annotations
+        config["mediaType"] = UNKNOWN_CONFIG_MEDIA_TYPE
+        config["size"] = len(self._config_bytes)
+        config["digest"] = f"sha256:{sha256(self._config_bytes).hexdigest()}"
+
+        self["config"] = config
 
     def write_metadata_file(self, manifest_file_path_name: PathLike[str] | str) -> None:
         """

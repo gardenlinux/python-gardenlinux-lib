@@ -5,6 +5,8 @@ import pytest
 
 from gardenlinux.oci import ImageManifest, Index
 
+from ..constants import TEST_GARDENLINUX_RELEASE_MAJOR
+
 
 def test_index_init_and_json() -> None:
     """Ensure Index init works correctly"""
@@ -34,7 +36,7 @@ def test_manifests_as_dict() -> None:
     }
 
     manifest_no_abn_key = (
-        "sha256:59c0c0fff3045cd6620473355babb85fc8b83cf93ee461a9d2519d333cb2a8d7"
+        "sha256:fd3685b29dfd577fd6369bd8f43ae887fb0570ff4650b96e5e6b427a972367e3"
     )
 
     manifest_no_abn = {"annotations": {"digest": "sha256:def"}}
@@ -49,8 +51,46 @@ def test_manifests_as_dict() -> None:
     assert result[manifest_no_abn_key] == manifest_no_abn
 
 
-def test_append_manifest_replace() -> None:
-    """Ensure append_manifest replaces existing manifest with same cname."""
+def test_add_manifests() -> None:
+    """Ensure add_manifest handles manifests correctly."""
+    # Arrange
+    idx = Index()
+
+    idx["manifests"] = [
+        {
+            "annotations": {
+                ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "other",
+                "digest": "sha256:other",
+            },
+        },
+    ]
+
+    new_manifest = {
+        "annotations": {
+            ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY: "new",
+            ImageManifest.ANNOTATION_ARCH_KEY: "arm64",
+            ImageManifest.ANNOTATION_OS_ID_KEY: "linux",
+            ImageManifest.ANNOTATION_VERSION_KEY: TEST_GARDENLINUX_RELEASE_MAJOR,
+            "digest": "sha256:new",
+        },
+    }
+
+    # Act
+    idx.add_manifest(new_manifest)
+
+    result = idx.manifests_as_dict
+
+    # Assert
+    assert "new" in result
+    assert result["new"]["platform"] == {
+        "architecture": "arm64",
+        "os": "linux",
+        "os.version": TEST_GARDENLINUX_RELEASE_MAJOR,
+    }
+
+
+def test_add_manifest_replace() -> None:
+    """Ensure add_manifest replaces existing manifest with same cname."""
     # Arrange
     idx = Index()
 
@@ -77,7 +117,7 @@ def test_append_manifest_replace() -> None:
     }
 
     # Act
-    idx.append_manifest(new_manifest)
+    idx.add_manifest(new_manifest)
 
     # Assert
     abns = [
@@ -93,7 +133,7 @@ def test_append_manifest_replace() -> None:
     )
 
 
-def test_append_manifest_cname_not_found() -> None:
+def test_add_manifest_cname_not_found() -> None:
     """Test appending new manifest if cname isn't found."""
     # Arrange
     idx = Index()
@@ -115,7 +155,7 @@ def test_append_manifest_cname_not_found() -> None:
     }
 
     # Act
-    idx.append_manifest(new_manifest)
+    idx.add_manifest(new_manifest)
 
     # Assert
     abns = [
@@ -134,10 +174,10 @@ def test_append_manifest_cname_not_found() -> None:
     ],
 )
 def test_append_accept_all_manifests(manifest: Dict[str, Any]) -> None:
-    """Test proper error handling for invalid append_manifest input."""
+    """Test proper error handling for invalid add_manifest input."""
     # Arrange
     idx = Index()
-    idx.append_manifest(manifest)
+    idx.add_manifest(manifest)
 
     # Act
     assert len(idx.manifests_as_dict) == 1
@@ -150,10 +190,10 @@ def test_append_accept_all_manifests(manifest: Dict[str, Any]) -> None:
     ],
 )
 def test_append_invalid_input_raises(bad_manifest: Dict[str, Any]) -> None:
-    """Test proper error handling for invalid append_manifest input."""
+    """Test proper error handling for invalid add_manifest input."""
     # Arrange
     idx = Index()
 
     # Act / Assert
     with pytest.raises((TypeError, ValueError)):
-        idx.append_manifest(bad_manifest)
+        idx.add_manifest(bad_manifest)

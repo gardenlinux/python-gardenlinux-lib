@@ -23,7 +23,11 @@ from oras.provider import Registry
 from oras.utils import extract_targz, make_targz
 from requests import HTTPError, Response
 
-from ..constants import OCI_IMAGE_INDEX_MEDIA_TYPE
+from ..constants import (
+    GL_CONTAINER_REGISTRY_BASE_URL,
+    GL_DISTRIBUTION_NAME,
+    OCI_IMAGE_INDEX_MEDIA_TYPE,
+)
 from ..features import ArtifactBaseName
 from ..logger import LoggerSetup
 from .image_manifest import ImageManifest
@@ -173,7 +177,11 @@ class Repository(Registry):  # type: ignore[misc]
         :since:  0.7.0
         """
 
-        return Index()
+        index = Index()
+        index[Manifest.ANNOTATION_DESCRIPTION_KEY] = (
+            f"{GL_DISTRIBUTION_NAME} ({GL_CONTAINER_REGISTRY_BASE_URL})"
+        )
+        return index
 
     def generate_manifest(
         self,
@@ -194,8 +202,6 @@ class Repository(Registry):  # type: ignore[misc]
 
         manifest.version = version
         manifest.commit = commit
-
-        manifest.config_from_dict({}, {})
 
         return manifest
 
@@ -292,7 +298,7 @@ class Repository(Registry):  # type: ignore[misc]
 
                     continue
 
-            index.append_manifest(manifest)
+            index.add_manifest(manifest)
 
             self._logger.info(
                 f"Index appended locally {manifest['annotations'][ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY]}"
@@ -350,23 +356,23 @@ class Repository(Registry):  # type: ignore[misc]
 
         fd, config_file = mkstemp()
 
-        try:
-            with fdopen(fd, mode="wb") as fp:
-                fp.write(manifest.config_json)
-
-            self._check_200_response(
-                self.upload_blob(config_file, repository_name, manifest["config"])
-            )
-
-            self._logger.debug(
-                f"gardenlinux.oci.Repository.push_manifest(): Successfully pushed config for {repository_name}"
-            )
-        finally:
-            Path(config_file).unlink()
-
         manifest_url = f"{self._repository_url}:{self._repository_tag}"
 
         if isinstance(manifest, ImageManifest):
+            try:
+                with fdopen(fd, mode="wb") as fp:
+                    fp.write(manifest.config_json)
+
+                self._check_200_response(
+                    self.upload_blob(config_file, repository_name, manifest["config"])
+                )
+
+                self._logger.debug(
+                    f"gardenlinux.oci.Repository.push_manifest(): Successfully pushed config for {repository_name}"
+                )
+            finally:
+                Path(config_file).unlink()
+
             manifest_url += f"-{manifest.flavor}-{manifest.version}-{manifest.commit}-{manifest.arch}"
         elif not self._repository_tag:
             raise RuntimeError("Failed to push OCI manifest with invalid tag")
@@ -441,7 +447,7 @@ class Repository(Registry):  # type: ignore[misc]
                     file_path_name = Path(make_targz(file_path_name))
                     cleanup_blob = True
 
-                manifest.append_layer(layer)
+                manifest.add_layer(layer)
                 layer_dict = layer.dict
 
                 self._logger.debug(

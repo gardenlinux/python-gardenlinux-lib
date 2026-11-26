@@ -60,12 +60,15 @@ def test_ImageManifest_commit() -> None:
 
     # Assert
     with pytest.raises(RuntimeError):
-        assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+        assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT
+        assert empty_manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
-    empty_manifest.commit = TEST_GARDENLINUX_COMMIT_SHORT
-    assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+    empty_manifest.commit = TEST_GARDENLINUX_COMMIT
+    assert empty_manifest.commit == TEST_GARDENLINUX_COMMIT
+    assert empty_manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
-    assert manifest.commit == TEST_GARDENLINUX_COMMIT_SHORT
+    assert manifest.commit == TEST_GARDENLINUX_COMMIT
+    assert manifest.commit_id == TEST_GARDENLINUX_COMMIT_SHORT
 
 
 def test_ImageManifest_cname() -> None:
@@ -144,7 +147,7 @@ def test_ImageManifest_layer(tmp_path: Path) -> None:
     layer = Layer(blob)
 
     manifest = ImageManifest()
-    manifest.append_layer(layer)
+    manifest.add_layer(layer)
 
     # Assert
 
@@ -153,7 +156,7 @@ def test_ImageManifest_layer(tmp_path: Path) -> None:
 
     # Assert
     with pytest.raises(RuntimeError):
-        manifest.append_layer({"test": "invalid"})
+        manifest.add_layer({"test": "invalid"})
 
 
 def test_ImageManifest_version() -> None:

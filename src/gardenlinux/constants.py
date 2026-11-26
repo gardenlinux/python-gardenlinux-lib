@@ -159,6 +159,7 @@ GL_PLATFORM_FRANKENSTEIN = "frankenstein"
 GL_RELEASE_ID = "gardenlinux"
 GL_REPOSITORY_URL = "https://github.com/gardenlinux/gardenlinux"
 GL_SUPPORT_URL = "https://github.com/gardenlinux/gardenlinux"
+GL_VENDOR_NAME = "SAP SE"
 
 OCI_ANNOTATION_SIGNATURE_KEY = "io.gardenlinux.oci.signature"
 OCI_ANNOTATION_SIGNED_STRING_KEY = "io.gardenlinux.oci.signed-string"

@@ -5,6 +5,8 @@
 
 # TODO: add more schemas, and validate dicts with schemas before accessing them.
 
+from ..constants import GL_RELEASE_ID
+
 schema_url = "http://json-schema.org/draft-07/schema"
 
 platform_properties = {
@@ -41,16 +43,11 @@ index = {
     "additionalProperties": True,
 }
 
-empty_platform = {
-    "architecture": "",
-    "os": "gardenlinux",
-    "os.version": "experimental",
-}
+empty_platform = {"os": GL_RELEASE_ID}
 
 empty_manifest_metadata = {
+    "schemaVersion": 2,
     "mediaType": "application/vnd.oci.image.manifest.v1+json",
-    "digest": "",
-    "size": 0,
     "annotations": {},
 }
 

@@ -6,7 +6,9 @@ from typing import Any, Dict
 from .schemas import empty_platform
 
 
-def new_platform(architecture: str, version: str) -> Dict[str, Any]:
+def new_platform(
+    os_name: str = "", os_version: str = "", architecture: str = ""
+) -> Dict[str, Any]:
     """
     Create an OCI image platform for the architecture and version given.
 
@@ -18,7 +20,14 @@ def new_platform(architecture: str, version: str) -> Dict[str, Any]:
     """
 
     platform = deepcopy(empty_platform)
-    platform["architecture"] = architecture
-    platform["os.version"] = version
+
+    if architecture:
+        platform["architecture"] = architecture
+
+    if os_name:
+        platform["os"] = os_name
+
+    if os_version:
+        platform["os.version"] = os_version
 
     return platform

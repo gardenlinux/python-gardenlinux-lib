@@ -10,10 +10,10 @@ from copy import deepcopy
 from hashlib import sha256
 from typing import Any, Dict
 
-from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
-from oras.oci import EmptyManifest
+from oras.defaults import annotation_title as ANNOTATION_TITLE
 
 from ..constants import COMMIT_HASH_LENGTH, COMMIT_ID_LENGTH
+from .schemas import empty_manifest_metadata
 
 
 class Manifest(dict):  # type: ignore[type-arg]
@@ -37,6 +37,14 @@ class Manifest(dict):  # type: ignore[type-arg]
     """
     OCI image manifest GardenLinux commit hash deprecated annotation
     """
+    ANNOTATION_DESCRIPTION_KEY = "org.opencontainers.image.description"
+    """
+    OCI image manifest description annotation
+    """
+    ANNOTATION_TITLE_KEY = ANNOTATION_TITLE
+    """
+    OCI image manifest title annotation
+    """
     ANNOTATION_VERSION_KEY = "io.gardenlinux.manifest.version"
     """
     OCI image manifest GardenLinux version annotation
@@ -55,9 +63,7 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         dict.__init__(self)
 
-        self._config_bytes = b"{}"
-
-        self.update(deepcopy(EmptyManifest))
+        self.update(deepcopy(empty_manifest_metadata))
 
         for arg in args:
             if not isinstance(arg, Mapping):
@@ -70,9 +76,9 @@ class Manifest(dict):  # type: ignore[type-arg]
     @property
     def commit(self) -> str:
         """
-        Returns the GardenLinux Git commit ID of the OCI manifest.
+        Returns the GardenLinux Git commit hash of the OCI manifest.
 
-        :return: (str) OCI GardenLinux Git commit ID
+        :return: (str) OCI GardenLinux Git commit hash
         :since:  0.7.0
         """
 
@@ -80,22 +86,17 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         if annotation_commit_key not in self.get("annotations", {}):
             raise RuntimeError(
-                f"Unexpected manifest with missing config annotation '{annotation_commit_key}' found"
+                f"Unexpected manifest with missing annotation '{annotation_commit_key}' found"
             )
 
-        commit_id: str = self["annotations"][annotation_commit_key]
-
-        if len(commit_id) == COMMIT_HASH_LENGTH:
-            commit_id = commit_id[:COMMIT_ID_LENGTH]
-
-        return commit_id
+        return self["annotations"][annotation_commit_key]  # type: ignore[no-any-return]
 
     @commit.setter
     def commit(self, value: str) -> None:
         """
-        Sets the GardenLinux Git commit ID of the OCI manifest.
+        Sets the GardenLinux Git commit hash of the OCI manifest.
 
-        :param value: OCI GardenLinux Git commit ID
+        :param value: OCI GardenLinux Git commit hash
 
         :since: 0.7.0
         """
@@ -104,15 +105,20 @@ class Manifest(dict):  # type: ignore[type-arg]
         self["annotations"][self.__class__.ANNOTATION_COMMIT_KEY] = value
 
     @property
-    def config_json(self) -> bytes:
+    def commit_id(self) -> str:
         """
-        Returns the OCI image manifest config.
+        Returns the GardenLinux Git commit ID of the OCI manifest.
 
-        :return: (bytes) OCI image manifest config
-        :since:  0.7.0
+        :return: (str) OCI GardenLinux Git commit ID
+        :since:  1.0.8
         """
 
-        return self._config_bytes
+        commit_id = self.commit
+
+        if len(commit_id) == COMMIT_HASH_LENGTH:
+            commit_id = commit_id[:COMMIT_ID_LENGTH]
+
+        return commit_id
 
     @property
     def digest(self) -> str:
@@ -207,31 +213,6 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         self._ensure_annotations_dict()
         self["annotations"][self.__class__.ANNOTATION_VERSION_KEY] = value
-
-    def config_from_dict(
-        self, config: Dict[str, Any], annotations: Dict[str, Any]
-    ) -> None:
-        """
-        Write a new OCI configuration to file, and generate oci metadata for it.
-
-        For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
-        annotations, mediatype, size, digest are not part of digest and size calculation,
-        and therefore must be attached to the output dict and not written to the file.
-
-        :param config: dict with custom configuration (the payload of the configuration)
-        :param annotations: dict with custom annotations to be attached to metadata part of config
-
-        :since: 0.7.0
-        """
-
-        self._config_bytes = json.dumps(config).encode("utf-8")
-
-        config["annotations"] = annotations
-        config["mediaType"] = UNKNOWN_CONFIG_MEDIA_TYPE
-        config["size"] = len(self._config_bytes)
-        config["digest"] = f"sha256:{sha256(self._config_bytes).hexdigest()}"
-
-        self["config"] = config
 
     def _ensure_annotations_dict(self) -> None:
         """

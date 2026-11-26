@@ -357,6 +357,7 @@ def get_parser() -> argparse.ArgumentParser:
     _add_oci_index_args_to_parser(add_image_to_index_parser)
     _add_oci_repository_to_parser(add_image_to_index_parser)
     _add_oci_tag_to_parser(add_image_to_index_parser)
+    _add_oci_platform_to_parser(add_image_to_index_parser, False)
     _add_oci_insecure_to_parser(add_image_to_index_parser)
     _add_additional_tag_list_to_parser(add_image_to_index_parser)
 
@@ -490,13 +491,32 @@ def main() -> None:
             )
 
             manifest = manifest_repository.read_manifest()
+            manifest_annotations = manifest["annotations"]
+
+            if (
+                args.platform
+                and ImageManifest.ANNOTATION_OS_ID_KEY not in manifest_annotations
+            ):
+                platform_data = args.platform.split("/", 2)
+
+                manifest_annotations[ImageManifest.ANNOTATION_OS_ID_KEY] = (
+                    platform_data[0]
+                )
+
+                if (
+                    len(platform_data) > 1
+                    and ImageManifest.ANNOTATION_ARCH_KEY not in manifest_annotations
+                ):
+                    manifest_annotations[ImageManifest.ANNOTATION_ARCH_KEY] = (
+                        platform_data[1]
+                    )
 
             index_resource = Repository(
                 f"{args.index}:{args.index_tag}", insecure=args.insecure
             )
 
             image_index = index_resource.read_or_generate_index()
-            image_index.append_manifest(manifest)
+            image_index.add_manifest(manifest)
 
             index_resource.push_index(image_index)
             index_resource.push_index_for_tags(image_index, args.additional_tag)
