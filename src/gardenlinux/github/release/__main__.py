@@ -129,6 +129,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     upload_parser.add_argument(
         "--release-id",
+        type=int,
         required=True,
         help="GitHub release ID to upload the file to (required).",
     )
