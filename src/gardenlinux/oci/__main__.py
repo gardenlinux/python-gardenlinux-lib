@@ -491,16 +491,25 @@ def main() -> None:
             )
 
             manifest = manifest_repository.read_manifest()
+            manifest_annotations = manifest["annotations"]
 
-            if args.platform and ImageManifest.ANNOTATION_OS_ID_KEY not in manifest:
+            if (
+                args.platform
+                and ImageManifest.ANNOTATION_OS_ID_KEY not in manifest_annotations
+            ):
                 platform_data = args.platform.split("/", 2)
-                manifest[ImageManifest.ANNOTATION_OS_ID_KEY] = platform_data[0]
+
+                manifest_annotations[ImageManifest.ANNOTATION_OS_ID_KEY] = (
+                    platform_data[0]
+                )
 
                 if (
                     len(platform_data) > 1
-                    and ImageManifest.ANNOTATION_ARCH_KEY not in manifest
+                    and ImageManifest.ANNOTATION_ARCH_KEY not in manifest_annotations
                 ):
-                    manifest[ImageManifest.ANNOTATION_ARCH_KEY] = platform_data[1]
+                    manifest_annotations[ImageManifest.ANNOTATION_ARCH_KEY] = (
+                        platform_data[1]
+                    )
 
             index_resource = Repository(
                 f"{args.index}:{args.index_tag}", insecure=args.insecure
