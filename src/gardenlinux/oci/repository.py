@@ -203,8 +203,6 @@ class Repository(Registry):  # type: ignore[misc]
         manifest.version = version
         manifest.commit = commit
 
-        manifest.config_from_dict({}, {})
-
         return manifest
 
     def _get_index_without_response_parsing(self) -> Response:
@@ -358,23 +356,23 @@ class Repository(Registry):  # type: ignore[misc]
 
         fd, config_file = mkstemp()
 
-        try:
-            with fdopen(fd, mode="wb") as fp:
-                fp.write(manifest.config_json)
-
-            self._check_200_response(
-                self.upload_blob(config_file, repository_name, manifest["config"])
-            )
-
-            self._logger.debug(
-                f"gardenlinux.oci.Repository.push_manifest(): Successfully pushed config for {repository_name}"
-            )
-        finally:
-            Path(config_file).unlink()
-
         manifest_url = f"{self._repository_url}:{self._repository_tag}"
 
         if isinstance(manifest, ImageManifest):
+            try:
+                with fdopen(fd, mode="wb") as fp:
+                    fp.write(manifest.config_json)
+
+                self._check_200_response(
+                    self.upload_blob(config_file, repository_name, manifest["config"])
+                )
+
+                self._logger.debug(
+                    f"gardenlinux.oci.Repository.push_manifest(): Successfully pushed config for {repository_name}"
+                )
+            finally:
+                Path(config_file).unlink()
+
             manifest_url += f"-{manifest.flavor}-{manifest.version}-{manifest.commit}-{manifest.arch}"
         elif not self._repository_tag:
             raise RuntimeError("Failed to push OCI manifest with invalid tag")

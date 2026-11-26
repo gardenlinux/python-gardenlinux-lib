@@ -36,7 +36,7 @@ def test_manifests_as_dict() -> None:
     }
 
     manifest_no_abn_key = (
-        "sha256:59c0c0fff3045cd6620473355babb85fc8b83cf93ee461a9d2519d333cb2a8d7"
+        "sha256:fd3685b29dfd577fd6369bd8f43ae887fb0570ff4650b96e5e6b427a972367e3"
     )
 
     manifest_no_abn = {"annotations": {"digest": "sha256:def"}}

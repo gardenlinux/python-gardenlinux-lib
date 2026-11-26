@@ -4,11 +4,14 @@
 OCI image manifest
 """
 
+from hashlib import sha256
+from json import dumps as json_dumps
 from os import PathLike
 from pathlib import Path
 from typing import Any, Dict
 
 from oras.defaults import default_manifest_media_type as IMAGE_MANIFEST_MEDIA_TYPE
+from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
 
 from ..constants import (
     GL_DISTRIBUTION_NAME,
@@ -82,6 +85,23 @@ class ImageManifest(Manifest):
     """
     OCI image manifest media type
     """
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        """
+        Constructor __init__(Manifest)
+
+        :since: 0.7.0
+        """
+
+        Manifest.__init__(self, *args, **kwargs)
+
+        self._config_bytes = b"{}"
+
+        if "config" not in self:
+            self["config"] = {}
+
+        if "layers" not in self:
+            self["layers"] = []
 
     @property
     def arch(self) -> str:
@@ -176,6 +196,17 @@ class ImageManifest(Manifest):
 
         self._ensure_annotations_dict()
         self["annotations"][ImageManifest.ANNOTATION_CNAME_KEY] = value
+
+    @property
+    def config_json(self) -> bytes:
+        """
+        Returns the OCI image manifest config.
+
+        :return: (bytes) OCI image manifest config
+        :since:  0.7.0
+        """
+
+        return self._config_bytes
 
     @property
     def feature_set(self) -> str:
@@ -388,6 +419,31 @@ class ImageManifest(Manifest):
                 layers_sorted.append(layer_dict)
 
         self["layers"] = layers_sorted
+
+    def config_from_dict(
+        self, config: Dict[str, Any], annotations: Dict[str, Any]
+    ) -> None:
+        """
+        Write a new OCI configuration to file, and generate oci metadata for it.
+
+        For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
+        annotations, mediatype, size, digest are not part of digest and size calculation,
+        and therefore must be attached to the output dict and not written to the file.
+
+        :param config: dict with custom configuration (the payload of the configuration)
+        :param annotations: dict with custom annotations to be attached to metadata part of config
+
+        :since: 0.7.0
+        """
+
+        self._config_bytes = json_dumps(config).encode("utf-8")
+
+        config["annotations"] = annotations
+        config["mediaType"] = UNKNOWN_CONFIG_MEDIA_TYPE
+        config["size"] = len(self._config_bytes)
+        config["digest"] = f"sha256:{sha256(self._config_bytes).hexdigest()}"
+
+        self["config"] = config
 
     def write_metadata_file(self, manifest_file_path_name: PathLike[str] | str) -> None:
         """

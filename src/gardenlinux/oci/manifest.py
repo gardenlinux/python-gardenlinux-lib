@@ -11,10 +11,9 @@ from hashlib import sha256
 from typing import Any, Dict
 
 from oras.defaults import annotation_title as ANNOTATION_TITLE
-from oras.defaults import unknown_config_media_type as UNKNOWN_CONFIG_MEDIA_TYPE
-from oras.oci import EmptyManifest
 
 from ..constants import COMMIT_HASH_LENGTH, COMMIT_ID_LENGTH
+from .schemas import empty_manifest_metadata
 
 
 class Manifest(dict):  # type: ignore[type-arg]
@@ -64,9 +63,7 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         dict.__init__(self)
 
-        self._config_bytes = b"{}"
-
-        self.update(deepcopy(EmptyManifest))
+        self.update(deepcopy(empty_manifest_metadata))
 
         for arg in args:
             if not isinstance(arg, Mapping):
@@ -89,7 +86,7 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         if annotation_commit_key not in self.get("annotations", {}):
             raise RuntimeError(
-                f"Unexpected manifest with missing config annotation '{annotation_commit_key}' found"
+                f"Unexpected manifest with missing annotation '{annotation_commit_key}' found"
             )
 
         return self["annotations"][annotation_commit_key]  # type: ignore[no-any-return]
@@ -122,17 +119,6 @@ class Manifest(dict):  # type: ignore[type-arg]
             commit_id = commit_id[:COMMIT_ID_LENGTH]
 
         return commit_id
-
-    @property
-    def config_json(self) -> bytes:
-        """
-        Returns the OCI image manifest config.
-
-        :return: (bytes) OCI image manifest config
-        :since:  0.7.0
-        """
-
-        return self._config_bytes
 
     @property
     def digest(self) -> str:
@@ -227,31 +213,6 @@ class Manifest(dict):  # type: ignore[type-arg]
 
         self._ensure_annotations_dict()
         self["annotations"][self.__class__.ANNOTATION_VERSION_KEY] = value
-
-    def config_from_dict(
-        self, config: Dict[str, Any], annotations: Dict[str, Any]
-    ) -> None:
-        """
-        Write a new OCI configuration to file, and generate oci metadata for it.
-
-        For reference see https://github.com/opencontainers/image-spec/blob/main/config.md
-        annotations, mediatype, size, digest are not part of digest and size calculation,
-        and therefore must be attached to the output dict and not written to the file.
-
-        :param config: dict with custom configuration (the payload of the configuration)
-        :param annotations: dict with custom annotations to be attached to metadata part of config
-
-        :since: 0.7.0
-        """
-
-        self._config_bytes = json.dumps(config).encode("utf-8")
-
-        config["annotations"] = annotations
-        config["mediaType"] = UNKNOWN_CONFIG_MEDIA_TYPE
-        config["size"] = len(self._config_bytes)
-        config["digest"] = f"sha256:{sha256(self._config_bytes).hexdigest()}"
-
-        self["config"] = config
 
     def _ensure_annotations_dict(self) -> None:
         """

@@ -46,9 +46,8 @@ index = {
 empty_platform = {"os": GL_RELEASE_ID}
 
 empty_manifest_metadata = {
+    "schemaVersion": 2,
     "mediaType": "application/vnd.oci.image.manifest.v1+json",
-    "digest": "",
-    "size": 0,
     "annotations": {},
 }
 
