@@ -104,28 +104,22 @@ class Index(dict):  # type: ignore[type-arg]
         if image_manifest.size < 1:
             raise ValueError("Manifest to be added is empty")
 
-        existing_manifest_index = 0
-
-        for existing_manifest in self["manifests"]:
-            if (
+        if ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY in manifest.get(
+            "annotations", {}
+        ):
+            image_abn = manifest["annotations"][
                 ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
-                not in existing_manifest.get("annotations", {})
-            ):
-                existing_manifest_index += 1
-                continue
+            ]
 
-            if (
-                image_manifest.artifact_base_name
-                == existing_manifest["annotations"][
+            manifests = []
+
+            for existing_manifest in self["manifests"]:
+                if image_abn != existing_manifest.get("annotations", {}).get(
                     ImageManifest.ANNOTATION_ARTIFACT_BASE_NAME_KEY
-                ]
-            ):
-                break
-
-            existing_manifest_index += 1
-
-        if len(self["manifests"]) > existing_manifest_index:
-            self["manifests"].pop(existing_manifest_index)
+                ):
+                    manifests.append(existing_manifest)
+        else:
+            manifests = self["manifests"]
 
         image_manifest_data = image_manifest.extended_dict
 
@@ -165,4 +159,5 @@ class Index(dict):  # type: ignore[type-arg]
 
             index_manifest["platform"] = new_platform(**kwargs)
 
-        self["manifests"].append(index_manifest)
+        manifests.append(index_manifest)
+        self["manifests"] = manifests
